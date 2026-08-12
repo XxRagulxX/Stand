@@ -36,14 +36,14 @@ namespace Stand
 				name_results.emplace_back(i->get());
 			}
 		}
-		std::optional<uint64_t> rid = soup::string::toInt<uint64_t, soup::string::TI_FULL>(arg);
+		std::optional<uint64_t> rid = soup::string::toIntOpt<uint64_t>(arg, soup::string::TI_FULL);
 		if (!rid.has_value())
 		{
 			if (arg.substr(0, 2) == "0x")
 			{
 				arg.erase(0, 2);
 			}
-			rid = soup::string::hexToInt<uint64_t>(arg);
+			rid = soup::string::hexToIntOpt<uint64_t>(arg);
 		}
 		if (rid.has_value())
 		{

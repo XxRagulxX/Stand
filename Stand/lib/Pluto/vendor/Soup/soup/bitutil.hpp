@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "base.hpp"
+#include "bit.hpp" // popcount, countl_zero, countr_zero
 
 NAMESPACE_SOUP
 {
@@ -74,46 +74,17 @@ NAMESPACE_SOUP
 #endif
 		}
 
-		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint16_t mask) noexcept
+		template <typename T>
+		[[nodiscard]] static unsigned int getLeastSignificantSetBit(T mask) noexcept
 		{
-			SOUP_DEBUG_ASSERT(mask != 0); // UB!
-
-			// These intrinsic functions just use the bsf instruction.
-#if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanForward(&ret, static_cast<uint32_t>(mask));
-			return ret;
-#else
-			return __builtin_ctz(mask);
-#endif
+			SOUP_DEBUG_ASSERT(mask != 0);
+			return getNumTrailingZeros(mask);
 		}
 
-		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint32_t mask) noexcept
+		template <typename T>
+		[[nodiscard]] static unsigned int getNumTrailingZeros(T mask) noexcept
 		{
-			SOUP_DEBUG_ASSERT(mask != 0); // UB!
-
-			// These intrinsic functions just use the bsf instruction.
-#if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanForward(&ret, mask);
-			return ret;
-#else
-			return __builtin_ctz(mask);
-#endif
-		}
-
-		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint64_t mask) noexcept
-		{
-			SOUP_DEBUG_ASSERT(mask != 0); // UB!
-
-			// These intrinsic functions just use the bsf instruction.
-#if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanForward64(&ret, mask);
-			return ret;
-#else
-			return __builtin_ctz(mask);
-#endif
+			return soup::countr_zero<T>(mask);
 		}
 
 		template <typename T>
@@ -122,20 +93,10 @@ NAMESPACE_SOUP
 			val &= (val - 1);
 		}
 
-		[[nodiscard]] static unsigned int getNumLeadingZeros(uint32_t mask) noexcept
+		template <typename T>
+		[[nodiscard]] static unsigned int getNumLeadingZeros(T mask) noexcept
 		{
-			unsigned int res = 32;
-			if (mask != 0)
-			{
-#if defined(_MSC_VER) && !defined(__clang__)
-				unsigned long ret;
-				_BitScanReverse(&ret, mask);
-				res -= ret;
-#else
-				res = __builtin_clz(mask);
-#endif
-			}
-			return res;
+			return soup::countl_zero<T>(mask);
 		}
 
 		[[nodiscard]] static unsigned int getMostSignificantSetBit(uint32_t mask) noexcept
@@ -143,26 +104,18 @@ NAMESPACE_SOUP
 			SOUP_DEBUG_ASSERT(mask != 0); // UB!
 
 #if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanReverse(&ret, mask);
-			return ret;
+			unsigned long idx;
+			_BitScanReverse(&idx, mask);
+			return idx;
 #else
- 			return 31 - __builtin_clz(mask);
+			return 31 - __builtin_clz(mask);
 #endif
 		}
 
-		[[nodiscard]] static uint32_t getNumSetBits(uint32_t i) noexcept
+		template <typename T>
+		[[nodiscard]] static auto getNumSetBits(const T val) noexcept
 		{
-#if defined(_MSC_VER) && !defined(__clang__)
-			// https://stackoverflow.com/a/109025
-			i = i - ((i >> 1) & 0x55555555);
-			i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
-			i = (i + (i >> 4)) & 0x0F0F0F0F;
-			i *= 0x01010101;
-			return i >> 24;
-#else
-			return __builtin_popcount(i);
-#endif
+			return soup::popcount<T>(val);
 		}
 
 		// https://stackoverflow.com/a/2602885
@@ -173,6 +126,9 @@ NAMESPACE_SOUP
 			b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
 			return b;
 		}
+
+		[[nodiscard]] static uint32_t parallelDeposit(uint32_t src, uint32_t mask);
+		[[nodiscard]] static uint64_t parallelDeposit(uint64_t src, uint64_t mask);
 
 		[[nodiscard]] static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
 	};

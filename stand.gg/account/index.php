@@ -1,3 +1,10 @@
+<?php
+if ($_SERVER["REQUEST_URI"] == "/account/index")
+{
+	header("Location: /account/");
+	exit;
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -57,7 +64,7 @@
 								</p>
 							</div>
 						</div>
-						<div class="suspended-no d-none col-lg-3 col-sm-6">
+						<!--<div class="suspended-no d-none col-lg-3 col-sm-6">
 							<div class="uk-card uk-card-default uk-margin-bottom">
 								<div class="card p-20 m-10">
 									<h3 class="card-title">Need Help?</h3>
@@ -66,7 +73,7 @@
 									</p>
 								</div>
 							</div>
-						</div>
+						</div>-->
 						<div class="suspended-no d-none col-lg-3 col-sm-6">
 							<div class="uk-card uk-card-default uk-margin-bottom">
 								<div class="card p-20 m-10">
@@ -79,7 +86,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="have-coins d-none col-xl-3 col-sm-6">
+						<!--<div class="have-coins d-none col-xl-3 col-sm-6">
 							<div class="uk-card uk-card-default uk-margin-bottom">
 								<div class="card p-20 m-10">
 									<h3 class="card-title">Your Balance (<span id="balance"></span>€)</h3>
@@ -87,8 +94,8 @@
 									<a class="btn btn-default" href="topup">Top Up</a>
 								</div>
 							</div>
-						</div>
-						<div class="privilege-2 privilege-3 d-none col-xl-3 col-sm-6">
+						</div>-->
+						<div class="privilege-2 privilege-3 d-none col-lg-3 col-sm-6">
 							<div class="uk-card uk-card-default uk-margin-bottom">
 								<div class="card p-20 m-10">
 									<h3 class="card-title">Web Interface</h3>
@@ -98,7 +105,9 @@
 								</div>
 							</div>
 						</div>
-						<div class="privilege-1 privilege-2 d-none col-sm-3">
+					</div>
+					<div class="row pl-20 pr-20">
+						<div class="privilege-1 privilege-2 col-lg-4 col-md-6">
 							<div class="uk-card uk-card-default uk-margin-bottom">
 								<div class="card p-20 m-10">
 									<div class="privilege-1 d-none">
@@ -262,7 +271,7 @@
 
 			if(updatePrivilege())
 			{
-				document.getElementById("balance").textContent=format_coins(localStorage.getItem("account_coins"));
+				//document.getElementById("balance").textContent=format_coins(localStorage.getItem("account_coins"));
 
 				if (localStorage.getItem("account_created_quiz_success") === "false")
 				{
@@ -280,7 +289,6 @@
 		{
 			localStorage.removeItem("account_id");
 			forget_account_data();
-			localStorage.removeItem("account_id_downloaded");
 
 			document.querySelector("#logged-in").classList.add("d-none");
 			document.querySelector("#logged-out").classList.remove("d-none");
@@ -303,28 +311,7 @@
 					document.getElementById("quiz-finisher").classList.add("d-none");
 				}
 			};
-			if(time() - localStorage.getItem("last_account_data_update") > (60 * 60)
-				&& location.hostname != "localhost"
-				)
-			{
-				$.post("/api/basic_account_info", {
-					account_id: localStorage.getItem("account_id")
-				}).done(function(data)
-				{
-					if (data != "bad")
-					{
-						store_account_data(data);
-						updateAccountData();
-					}
-					else
-					{
-						logout();
-					}
-				}).fail(function()
-				{
-					logout();
-				});
-			}
+			ensure_account_info_is_up_to_date(updateAccountData, logout);
 		}
 	</script>
 </body>

@@ -1,16 +1,20 @@
 #include "IpAddr.hpp"
 
-#include "Endian.hpp"
 #include "IpGroups.hpp"
 #include "netConfig.hpp"
 #include "string.hpp"
 
 NAMESPACE_SOUP
 {
-	bool IpAddr::fromString(const char* str) noexcept
+	bool IpAddr::fromString(const char* str) SOUP_EXCAL
 	{
 		if (strstr(str, ":") != nullptr)
 		{
+			if (*str == '[')
+			{
+				// We're not gonna do this C-style.
+				return fromString(std::string(str));
+			}
 			return inet_pton(AF_INET6, str, &data) == 1;
 		}
 		else
@@ -20,10 +24,15 @@ NAMESPACE_SOUP
 		}
 	}
 
-	bool IpAddr::fromString(const std::string& str) noexcept
+	bool IpAddr::fromString(const std::string& str) SOUP_EXCAL
 	{
 		if (str.find(':') != std::string::npos)
 		{
+			if (str.front() == '[' && str.back() == ']')
+			{
+				auto ipstr = str.substr(1, str.size() - 2);
+				return inet_pton(AF_INET6, ipstr.data(), &data) == 1;
+			}
 			return inet_pton(AF_INET6, str.data(), &data) == 1;
 		}
 		else
@@ -49,11 +58,6 @@ NAMESPACE_SOUP
 	bool IpAddr::isLocalnet() const noexcept
 	{
 		return isLoopback() || isPrivate();
-	}
-
-	native_u32_t IpAddr::getV4NativeEndian() const noexcept
-	{
-		return Endianness::toNative(getV4());
 	}
 
 	std::string IpAddr::getArpaName() const
@@ -85,7 +89,8 @@ NAMESPACE_SOUP
 #if !SOUP_WASM
 	std::string IpAddr::getReverseDns() const
 	{
-		return getReverseDns(netConfig::get().getDnsResolver());
+		auto resolver = netConfig::get().getDnsResolver();
+		return getReverseDns(*resolver);
 	}
 
 	std::string IpAddr::getReverseDns(dnsResolver& resolver) const

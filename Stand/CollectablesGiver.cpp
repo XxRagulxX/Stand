@@ -32,6 +32,9 @@ namespace Stand
 
 		case 19: // Los Santos Tags
 			return 5;
+
+		case 21:
+			return 36;
 		}
 		return 10;
 	}

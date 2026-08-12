@@ -65,7 +65,7 @@ namespace rage
 			char buf[0x394u];
 
 			unsigned int written;
-			if (msg.Export<Msg>(buf, 0x394u, &written))
+			if (netMessage::Export(msg, buf, 0x394u, &written))
 			{
 				netSequence seq;
 				(*::Stand::pointers::network_player_mgr)->SendBuffer(&player, buf, written, 1u, &seq, sender);

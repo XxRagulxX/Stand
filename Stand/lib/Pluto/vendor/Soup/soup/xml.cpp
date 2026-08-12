@@ -1,9 +1,11 @@
 #include "xml.hpp"
 
 #include "Exception.hpp"
+#include "joaat.hpp"
 #include "string.hpp"
 #include "StringBuilder.hpp"
 #include "UniquePtr.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 #define DEBUG_PARSE false
 
@@ -13,9 +15,11 @@
 
 NAMESPACE_SOUP
 {
+	static constexpr const uint32_t HTML_SELF_CLOSING_TAGS[] = { joaat::compileTimeHash("area"), joaat::compileTimeHash("base"), joaat::compileTimeHash("br"), joaat::compileTimeHash("col"), joaat::compileTimeHash("embed"), joaat::compileTimeHash("hr"), joaat::compileTimeHash("img"), joaat::compileTimeHash("input"), joaat::compileTimeHash("keygen"), joaat::compileTimeHash("link"), joaat::compileTimeHash("meta"), joaat::compileTimeHash("param"), joaat::compileTimeHash("source"), joaat::compileTimeHash("track"), joaat::compileTimeHash("wbr"), 0 };
+
 	XmlMode xml::MODE_XML{};
-	XmlMode xml::MODE_LAX_XML{ {}, true, true };
-	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" }, true, true };
+	XmlMode xml::MODE_LAX_XML{ XmlMode::NO_SELF_CLOSING_TAGS, true, true };
+	XmlMode xml::MODE_HTML{ HTML_SELF_CLOSING_TAGS, true, true };
 
 	UniquePtr<XmlTag> xml::parseAndDiscardMetadata(const std::string& xml, const XmlMode& mode)
 	{
@@ -67,7 +71,7 @@ NAMESPACE_SOUP
 		auto i = begin;
 		do
 		{
-			if (auto node = parseImpl(i, end, mode))
+			if (auto node = parseImpl(i, end, mode, 1000))
 			{
 				res.emplace_back(std::move(node));
 			}
@@ -76,8 +80,10 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	UniquePtr<XmlNode> xml::parseImpl(const char*& i, const char* end, const XmlMode& mode)
+	UniquePtr<XmlNode> xml::parseImpl(const char*& i, const char* end, const XmlMode& mode, int max_depth)
 	{
+		SOUP_ASSERT(max_depth != 0, "Depth limit exceeded");
+
 		while (i != end && string::isSpace(*i))
 		{
 			++i;
@@ -154,7 +160,7 @@ NAMESPACE_SOUP
 							}
 							name.clear();
 						}
-						if (mode.self_closing_tags.empty()
+						if (!mode.hasSelfClosingTags()
 							&& (i + 1) != end
 							&& *(i + 1) == '>'
 							)
@@ -271,11 +277,7 @@ NAMESPACE_SOUP
 			++i;
 			if (tag->name.c_str()[0] == '?' // <?xml ... ?>
 				|| tag->name.c_str()[0] == '!' // <!DOCTYPE ...>
-#if SOUP_CPP20
-				|| mode.self_closing_tags.contains(tag->name)
-#else
-				|| mode.self_closing_tags.count(tag->name)
-#endif
+				|| mode.isSelfClosingTag(tag->name)
 				)
 			{
 				return tag; // Won't have children
@@ -392,11 +394,11 @@ NAMESPACE_SOUP
 					text.clear();
 				}
 #if DEBUG_PARSE
-				auto child = parseImpl(i, end, mode);
+				auto child = parseImpl(i, end, mode, max_depth - 1);
 				std::cout << "Recursed for " << child->encode() << std::endl;
 				tag->children.emplace_back(std::move(child));
 #else
-				tag->children.emplace_back(parseImpl(i, end, mode));
+				tag->children.emplace_back(parseImpl(i, end, mode, max_depth - 1));
 #endif
 				if (i == end)
 				{
@@ -496,11 +498,7 @@ NAMESPACE_SOUP
 
 	void XmlTag::encodeAndAppendTo(std::string& str, const XmlMode& mode) const SOUP_EXCAL
 	{
-#if SOUP_CPP20
-		const bool is_self_closing = mode.self_closing_tags.contains(name);
-#else
-		const bool is_self_closing = mode.self_closing_tags.count(name);
-#endif
+		const bool is_self_closing = mode.isSelfClosingTag(name);
 		str.push_back('<');
 		str.append(name);
 		encodeAttributesAndAppendTo(str, mode);
@@ -523,11 +521,7 @@ NAMESPACE_SOUP
 
 	void XmlTag::encodePrettyAndAppendTo(std::string& str, const XmlMode& mode, unsigned depth) const SOUP_EXCAL
 	{
-#if SOUP_CPP20
-		const bool is_self_closing = mode.self_closing_tags.contains(name);
-#else
-		const bool is_self_closing = mode.self_closing_tags.count(name);
-#endif
+		const bool is_self_closing = mode.isSelfClosingTag(name);
 		str.push_back('<');
 		str.append(name);
 		encodeAttributesAndAppendTo(str, mode);
@@ -636,6 +630,8 @@ NAMESPACE_SOUP
 		string::replaceAll(this->contents, "&amp;", "&");
 		string::replaceAll(this->contents, "&lt;", "<");
 		string::replaceAll(this->contents, "&gt;", ">");
+
+		string::replaceAll(this->contents, "&#34;", "\"");
 	}
 
 	void XmlText::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
@@ -645,5 +641,18 @@ NAMESPACE_SOUP
 		string::replaceAll(contents, "<", "&lt;");
 		string::replaceAll(contents, ">", "&gt;");
 		str.append(contents);
+	}
+
+	bool XmlMode::isSelfClosingTag(const std::string& name) const noexcept
+	{
+		const auto hash = joaat::hash(name);
+		for (const uint32_t* i = self_closing_tags; *i != 0; ++i)
+		{
+			if (*i == hash)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

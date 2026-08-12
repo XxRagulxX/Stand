@@ -1590,6 +1590,10 @@ DLC_640=洛圣都毒品战
 DLC_670=圣安地列斯雇佣兵
 DLC_680=赃车店
 DLC_690=油水榨干赏金生意
+DLC_700=破坏行动探员
+DLC_710=此地无银
+DLC_720=山中安全屋
+DLC_730=科兹中心豪劫
 
 MANUFNS=制造商名称
 
@@ -3347,9 +3351,6 @@ PTX_SI=传入的同步信息
 PTX_SO=传出的同步信息
 PTX_SI_ANY=任何传入的同步信息
 
-OUTSBH=阻止向主机传出同步
-OUTSBH_H=这可以帮助您避免为非主机身份时被 BattlEye 踢出, 但也意味着战局主机将无法与您互动.
-
 PTX_CSB=自定义模型同步反应
 ADDMDL=添加模型
 PTX_CSB_T=模型同步 {hash} 来自 {player}
@@ -3446,7 +3447,6 @@ PTX_HK_H=当您被主机踢时,只会收到被主机踢的通知,而不会强制
 PTX_HK_T=有人对您使用了主机踢 ({method}), 可能来自 {player}.
 
 HKI=主机很快就要踢你了.
-HKI_BS=我建议阻止与TA的同步.
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=投票踢
@@ -3743,6 +3743,7 @@ GIVECOLL_16=雪人
 GIVECOLL_17=杰拉德的包裹
 ! Tags as in graffiti
 GIVECOLL_19=洛圣都涂鸦
+GIVECOLL_21=元宝
 
 GIVECOLLE=给予收藏品
 GIVECOLLE_NCEO=给予收藏品(不是我的老大)
@@ -4825,6 +4826,9 @@ SGMELNG_H=有些语言有不同的字体,只有在游戏重新启动后才会被
 
 STUTFIX=修复高 FPS 时的卡顿
 STUTFIX_H=修复游戏接近188 FPS时出现的卡顿现象.
+
+UNCAPFPS=移除 FPS 限制
+UNCAPFPS_H=允许游戏帧数超过 188 FPS.
 
 NKBDHK=禁用键盘Hook
 NKBDHK_H=允许您在GTA游戏里的时候按Windows键,并阻止游戏卡顿导致的按键延迟.

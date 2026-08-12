@@ -2,7 +2,8 @@
 
 #include <soup/Task.hpp>
 
-#include <soup/DelayedCtor.hpp>
+#include <optional>
+
 #include <soup/HttpRequestTask.hpp>
 #include "Package.hpp"
 
@@ -13,7 +14,7 @@ namespace Stand
 	public:
 		Package& package;
 		size_t fi = 0;
-		soup::DelayedCtor<soup::HttpRequestTask> hr;
+		std::optional<soup::HttpRequestTask> hr;
 
 		PackageInstallTask(Package& package)
 			: package(package)

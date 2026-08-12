@@ -49,6 +49,7 @@
 #include "is_rid.hpp"
 #include "is_session.hpp"
 #include "LeaveReasons.hpp"
+#include "main.hpp" // g_deez_was_called
 #include "MsgTextMessage.hpp"
 #include "name_validation.hpp"
 #include "Names.hpp"
@@ -162,11 +163,6 @@ namespace Stand
 
 						if (g_player != host_ap)
 						{
-							if (g_hooking.block_outgoing_syncs_to_host)
-							{
-								host_ap.sendCloneDelete(g_player_ped.getNetObjId());
-							}
-
 							if (BattlEyeServer::isRunningDueToUs())
 							{
 								FiberPool::queueJob([]
@@ -184,7 +180,13 @@ namespace Stand
 					{
 						if (!BattlEyeServer::isRunning())
 						{
-							BattlEyeServer::start();
+							FiberPool::queueJob([]
+							{
+								if (!BattlEyeServer::isRunning())
+								{
+									BattlEyeServer::start();
+								}
+							});
 						}
 					}
 				}
@@ -1283,9 +1285,7 @@ if (cmd->flags & (1 << id)) \
 			if (isValid())
 			{
 				reactions |= g_hooking.player_sync_out_reactions[p];
-				if ((g_hooking.block_outgoing_syncs_to_host && isHost())
-					|| isInTimeout()
-					)
+				if (isInTimeout())
 				{
 					reactions |= REACTION_BLOCK;
 				}
@@ -2543,7 +2543,7 @@ if (cmd->flags & (1 << id)) \
 				g_player,
 				0,
 				0,
-				soup::rand(220, 0x7fffffff)
+				soup::rand(1000, 0x7fffffff)
 			};
 			TSE(1 << p, args);
 		}
@@ -2556,7 +2556,7 @@ if (cmd->flags & (1 << id)) \
 				1,
 				1,
 				1,
-				soup::rand(220, 0x7fffffff)
+				soup::rand(1000, 0x7fffffff)
 			};
 			TSE(1 << p, args);
 		}

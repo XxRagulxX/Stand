@@ -1,9 +1,12 @@
-#pragma once
 /*
 ** $Id: luaconf.h $
 ** Configuration file for Lua
 ** See Copyright Notice in lua.h
 */
+
+
+#ifndef luaconf_h
+#define luaconf_h
 
 #include <limits.h>
 #include <stddef.h>
@@ -61,25 +64,41 @@
 
 #if defined(LUA_USE_WINDOWS)
 #define LUA_DL_DLL	/* enable support for DLL */
-#define LUA_USE_C89	/* broadly, Windows is C89 */
+/* [Pluto] Windows does NOT need to be restricted to C89 */
 #endif
 
 
+/*
+** When POSIX DLL ('LUA_USE_DLOPEN') is enabled, the Lua stand-alone
+** application will try to dynamically link a 'readline' facility
+** for its REPL.  In that case, LUA_READLINELIB is the name of the
+** library it will look for those facilities.  If lua.c cannot open
+** the specified library, it will generate a warning and then run
+** without 'readline'.  If that macro is not defined, lua.c will not
+** use 'readline'.
+*/
 #if defined(LUA_USE_LINUX)
 #define LUA_USE_POSIX
 #define LUA_USE_DLOPEN		/* needs an extra library: -ldl */
+#define LUA_READLINELIB		"libreadline.so"
 #endif
 
 
 #if defined(LUA_USE_MACOSX)
 #define LUA_USE_POSIX
-#define LUA_USE_DLOPEN		/* MacOS does not need -ldl */
+#define LUA_USE_DLOPEN		/* macOS does not need -ldl */
+#define LUA_READLINELIB		"libedit.dylib"
 #endif
 
 
 #if defined(LUA_USE_IOS)
 #define LUA_USE_POSIX
 #define LUA_USE_DLOPEN
+#endif
+
+
+#if defined(LUA_USE_C89) && defined(LUA_USE_POSIX)
+#error "POSIX is not compatible with C89"
 #endif
 
 
@@ -129,7 +148,7 @@
 /*
 @@ LUA_32BITS enables Lua with 32-bit integers and 32-bit floats.
 */
-#define LUA_32BITS	0
+/* #define LUA_32BITS */
 
 
 /*
@@ -144,7 +163,7 @@
 #endif
 
 
-#if LUA_32BITS		/* { */
+#if defined(LUA_32BITS)	/* { */
 /*
 ** 32-bit integers and 'float'
 */
@@ -215,18 +234,18 @@
 
 #if !defined(LUA_PATH_DEFAULT)
 #define LUA_PATH_DEFAULT  \
-        LUA_LDIR"?.lua;"  LUA_LDIR"?\\init.lua;" \
-        LUA_CDIR"?.lua;"  LUA_CDIR"?\\init.lua;" \
-        LUA_SHRDIR"?.lua;" LUA_SHRDIR"?\\init.lua;" \
-        ".\\?.lua;" ".\\?\\init.lua;" \
-        ".\\?.pluto;" ".\\?\\init.pluto"
+		LUA_LDIR"?.lua;"  LUA_LDIR"?\\init.lua;" \
+		LUA_CDIR"?.lua;"  LUA_CDIR"?\\init.lua;" \
+		LUA_SHRDIR"?.lua;" LUA_SHRDIR"?\\init.lua;" \
+		".\\?.lua;" ".\\?\\init.lua;" \
+		".\\?.pluto;" ".\\?\\init.pluto"
 #endif
 
 #if !defined(LUA_CPATH_DEFAULT)
 #define LUA_CPATH_DEFAULT \
-        LUA_CDIR"?.dll;" \
-        LUA_CDIR"..\\lib\\lua\\" LUA_VDIR "\\?.dll;" \
-        LUA_CDIR"loadall.dll;" ".\\?.dll"
+		LUA_CDIR"?.dll;" \
+		LUA_CDIR"..\\lib\\lua\\" LUA_VDIR "\\?.dll;" \
+		LUA_CDIR"loadall.dll;" ".\\?.dll"
 #endif
 
 #else			/* }{ */
@@ -237,15 +256,15 @@
 
 #if !defined(LUA_PATH_DEFAULT)
 #define LUA_PATH_DEFAULT  \
-        LUA_LDIR"?.lua;"  LUA_LDIR"?/init.lua;" \
-        LUA_CDIR"?.lua;"  LUA_CDIR"?/init.lua;" \
-        "./?.lua;" "./?/init.lua;" \
-        "./?.pluto;" "./?/init.pluto"
+		LUA_LDIR"?.lua;"  LUA_LDIR"?/init.lua;" \
+		LUA_CDIR"?.lua;"  LUA_CDIR"?/init.lua;" \
+		"./?.lua;" "./?/init.lua;" \
+		"./?.pluto;" "./?/init.pluto"
 #endif
 
 #if !defined(LUA_CPATH_DEFAULT)
 #define LUA_CPATH_DEFAULT \
-        LUA_CDIR"?.so;" LUA_CDIR"loadall.so;" "./?.so"
+		LUA_CDIR"?.so;" LUA_CDIR"loadall.so;" "./?.so"
 #endif
 
 #endif			/* } */
@@ -265,6 +284,7 @@
 #endif
 
 #endif
+
 
 /*
 ** LUA_IGMARK is a mark to ignore all after it when building the
@@ -293,18 +313,12 @@
 ** LUA_BUILD_AS_DLL to get it).
 */
 #if defined(LUA_BUILD_AS_DLL)
-  #ifndef PLUTO_C_LINKAGE
-    #define PLUTO_C_LINKAGE true
-  #endif
   #if defined(LUA_CORE) || defined(LUA_LIB)
     #define PLUTO_DLLSPEC __declspec(dllexport)
   #else
     #define PLUTO_DLLSPEC __declspec(dllimport)
   #endif
 #else
-  #ifndef PLUTO_C_LINKAGE
-    #define PLUTO_C_LINKAGE false
-  #endif
   #ifdef __EMSCRIPTEN__
     #include "emscripten.h"
     #define PLUTO_DLLSPEC EMSCRIPTEN_KEEPALIVE
@@ -318,48 +332,29 @@
 // Additions by Pluto that are not compatible with `extern "C"` use PLUTO_API instead of LUA_API.
 #define PLUTO_API	PLUTO_DLLSPEC
 
-#if PLUTO_C_LINKAGE
-  #define LUA_API			extern "C" PLUTO_API
-  #define LUA_API_NORETURN	extern "C" [[noreturn]] PLUTO_API
+#ifdef __cplusplus
+  #define LUA_API          extern "C" PLUTO_API
+  #define LUA_API_NORETURN extern "C" [[noreturn]] PLUTO_API
 #else
-  #define LUA_API			PLUTO_API
-  #define LUA_API_NORETURN	[[noreturn]] LUA_API
+  #define LUA_API          PLUTO_API
+  #define LUA_API_NORETURN PLUTO_API
 #endif
 
 /*
 ** More often than not the libs go together with the core.
 */
 #define LUALIB_API	LUA_API
+
+#if defined(__cplusplus)
+/* Lua uses the "C name" when calling open functions */
+#define LUAMOD_API	extern "C"
+#else
 #define LUAMOD_API	LUA_API
+#endif
 
 #define LUALIB_API_NORETURN	LUA_API_NORETURN
 
 #define PLUTOLIB_API	PLUTO_API
-
-
-/*
-@@ LUAI_FUNC is a mark for all extern functions that are not to be
-** exported to outside modules.
-@@ LUAI_DDEF and LUAI_DDEC are marks for all extern (const) variables,
-** none of which to be exported to outside modules (LUAI_DDEF for
-** definitions and LUAI_DDEC for declarations).
-** CHANGE them if you need to mark them in some special way. Elf/gcc
-** (versions 3.2 and later) mark them as "hidden" to optimize access
-** when Lua is compiled as a shared library. Not all elf targets support
-** this attribute. Unfortunately, gcc does not offer a way to check
-** whether the target offers that support, and those without support
-** give a warning about it. To avoid these warnings, change to the
-** default definition.
-*/
-#if defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \
-    defined(__ELF__)		/* { */
-#define LUAI_FUNC	__attribute__((visibility("internal"))) extern
-#else				/* }{ */
-#define LUAI_FUNC	extern
-#endif				/* } */
-
-#define LUAI_DDEC(dec)	LUAI_FUNC dec
-#define LUAI_DDEF	/* empty */
 
 /* }================================================================== */
 
@@ -371,11 +366,10 @@
 */
 
 /*
-@@ LUA_COMPAT_5_3 controls other macros for compatibility with Lua 5.3.
-** You can define it to get all options, or change specific options
-** to fit your specific needs.
+@@ LUA_COMPAT_GLOBAL avoids 'global' being a reserved word
 */
-#if defined(LUA_COMPAT_5_3)	/* { */
+#define LUA_COMPAT_GLOBAL
+
 
 /*
 @@ LUA_COMPAT_MATHLIB controls the presence of several deprecated
@@ -383,23 +377,7 @@
 ** (These functions were already officially removed in 5.3;
 ** nevertheless they are still available here.)
 */
-#define LUA_COMPAT_MATHLIB
-
-/*
-@@ LUA_COMPAT_APIINTCASTS controls the presence of macros for
-** manipulating other integer types (lua_pushunsigned, lua_tounsigned,
-** luaL_checkint, luaL_checklong, etc.)
-** (These macros were also officially removed in 5.3, but they are still
-** available here.)
-*/
-#define LUA_COMPAT_APIINTCASTS
-
-
-/*
-@@ LUA_COMPAT_LT_LE controls the emulation of the '__le' metamethod
-** using '__lt'.
-*/
-#define LUA_COMPAT_LT_LE
+/* #define LUA_COMPAT_MATHLIB */
 
 
 /*
@@ -415,8 +393,6 @@
 
 #define lua_equal(L,idx1,idx2)		lua_compare(L,(idx1),(idx2),LUA_OPEQ)
 #define lua_lessthan(L,idx1,idx2)	lua_compare(L,(idx1),(idx2),LUA_OPLT)
-
-#endif				/* } */
 
 /* }================================================================== */
 
@@ -436,34 +412,22 @@
 @@ l_floatatt(x) corrects float attribute 'x' to the proper float type
 ** by prefixing it with one of FLT/DBL/LDBL.
 @@ LUA_NUMBER_FRMLEN is the length modifier for writing floats.
-@@ LUA_NUMBER_FMT is the format for writing floats.
-@@ lua_number2str converts a float to a string.
+@@ LUA_NUMBER_FMT is the format for writing floats with the maximum
+** number of digits that respects tostring(tonumber(numeral)) == numeral.
+** (That would be floor(log10(2^n)), where n is the number of bits in
+** the float mantissa.)
+@@ LUA_NUMBER_FMT_N is the format for writing floats with the minimum
+** number of digits that ensures tonumber(tostring(number)) == number.
+** (That would be LUA_NUMBER_FMT+2.)
 @@ l_mathop allows the addition of an 'l' or 'f' to all math operations.
 @@ l_floor takes the floor of a float.
 @@ lua_str2number converts a decimal numeral to a number.
 */
 
 
-/* The following definitions are good for most cases here */
+/* The following definition is good for most cases here */
 
 #define l_floor(x)		(l_mathop(floor)(x))
-
-#define lua_number2str(s,sz,n)  \
-    l_sprintf((s), sz, LUA_NUMBER_FMT, (LUAI_UACNUMBER)(n))
-
-/*
-@@ lua_numbertointeger converts a float number with an integral value
-** to an integer, or returns 0 if float is not within the range of
-** a lua_Integer.  (The range comparisons are tricky because of
-** rounding. The tests here assume a two-complement representation,
-** where MININTEGER always has an exact representation as a float;
-** MAXINTEGER may not have one, and therefore its conversion to float
-** may have an ill-defined value.)
-*/
-#define lua_numbertointeger(n,p) \
-  ((n) >= (LUA_NUMBER)(LUA_MININTEGER) && \
-   (n) < -(LUA_NUMBER)(LUA_MININTEGER) && \
-      (*(p) = (LUA_INTEGER)(n), 1))
 
 
 /* now the variable definitions */
@@ -478,6 +442,7 @@
 
 #define LUA_NUMBER_FRMLEN	""
 #define LUA_NUMBER_FMT		"%.7g"
+#define LUA_NUMBER_FMT_N	"%.9g"
 
 #define l_mathop(op)		op##f
 
@@ -494,6 +459,7 @@
 
 #define LUA_NUMBER_FRMLEN	"L"
 #define LUA_NUMBER_FMT		"%.19Lg"
+#define LUA_NUMBER_FMT_N	"%.21Lg"
 
 #define l_mathop(op)		op##l
 
@@ -508,7 +474,8 @@
 #define LUAI_UACNUMBER	double
 
 #define LUA_NUMBER_FRMLEN	""
-#define LUA_NUMBER_FMT		"%.14g"
+#define LUA_NUMBER_FMT		"%.15g"
+#define LUA_NUMBER_FMT_N	"%.17g"
 
 #define l_mathop(op)		op
 
@@ -542,7 +509,7 @@
 #define LUAI_UACINT		LUA_INTEGER
 
 #define lua_integer2str(s,sz,n)  \
-    l_sprintf((s), sz, LUA_INTEGER_FMT, (LUAI_UACINT)(n))
+	l_sprintf((s), sz, LUA_INTEGER_FMT, (LUAI_UACINT)(n))
 
 /*
 ** use LUAI_UACINT here to avoid problems with promotions (which
@@ -657,7 +624,7 @@
 */
 #if !defined(LUA_USE_C89)
 #define lua_number2strx(L,b,sz,f,n)  \
-    ((void)L, l_sprintf(b,sz,f,(LUAI_UACNUMBER)(n)))
+	((void)L, l_sprintf(b,sz,f,(LUAI_UACNUMBER)(n)))
 #endif
 
 
@@ -722,13 +689,6 @@
 #endif
 
 
-#if defined(LUA_CORE) || defined(LUA_LIB)
-/* shorter names for Lua's own use */
-#define l_likely(x)	luai_likely(x)
-#define l_unlikely(x)	luai_unlikely(x)
-#endif
-
-
 
 /* }================================================================== */
 
@@ -753,10 +713,7 @@
 @@ LUA_USE_APICHECK turns on several consistency checks on the C API.
 ** Define it as a help when debugging C code.
 */
-#if defined(LUA_USE_APICHECK)
-#include <assert.h>
-#define luai_apicheck(l,e)	assert(e)
-#endif
+/* #define LUA_USE_APICHECK */
 
 /* }================================================================== */
 
@@ -768,20 +725,6 @@
 ** Lua).
 ** =====================================================================
 */
-
-/*
-@@ LUAI_MAXSTACK limits the size of the Lua stack.
-** CHANGE it if you need a different limit. This limit is arbitrary;
-** its only purpose is to stop Lua from consuming unlimited stack
-** space (and to reserve some numbers for pseudo-indices).
-** (It must fit into max(size_t)/32.)
-*/
-#if LUAI_IS32INT
-#define LUAI_MAXSTACK		1000000
-#else
-#define LUAI_MAXSTACK		15000
-#endif
-
 
 /*
 @@ LUA_EXTRASPACE defines the size of a raw memory area associated with
@@ -816,7 +759,7 @@
 
 /*
 ** {====================================================================
-** Pluto configuration
+** Pluto Configuration
 ** =====================================================================}
 */
 
@@ -836,9 +779,20 @@
 // If defined, Pluto won't imbue tables with a metatable by default.
 //#define PLUTO_NO_DEFAULT_TABLE_METATABLE
 
+// If defined, Pluto will add table.isfrozen & table.freeze to the standard library,
+// lua_freezetable, lua_istablefrozen, & lua_erriffrozen to the C API,
+// and all the hooks required to make it work. Note that coverage may not be perfect.
+//#define PLUTO_ENABLE_TABLE_FREEZING
+
+// If defined, Pluto will cache the bytecode of text files that parsed without warnings or errors,
+// and if the contents remained unchanged, it'll load the bytecode instead of reparsing the file.
+// The worst-case scenario for this optimization is small files and files that change often,
+// but even then, the overhead should be at most 1ms on modern systems.
+//#define PLUTO_PARSER_CACHE
+
 /*
 ** {====================================================================
-** Pluto configuration: Warnings
+** Pluto Configuration: Warnings
 ** =====================================================================}
 */
 
@@ -859,9 +813,46 @@
 // If defined, the "non-portable-name" warning is enabled by default.
 //#define PLUTO_WARN_NON_PORTABLE_NAME
 
+// If defined, the "implicit-global" warning is enabled by default.
+//#define PLUTO_WARN_IMPLICIT_GLOBAL
+
+// If defined, the "var-shadow" warning is disabled by default.
+//#define PLUTO_NO_WARN_VAR_SHADOW
+
+// If defined, the "type-mismatch" warning is disabled by default.
+//#define PLUTO_NO_WARN_TYPE_MISMATCH
+
+// If defined, the "unreachable-code" warning is disabled by default.
+//#define PLUTO_NO_WARN_UNREACHABLE_CODE
+
+// If defined, the "excessive-arguments" warning is disabled by default.
+//#define PLUTO_NO_WARN_EXCESSIVE_ARGUMENTS
+
+// If defined, the "deprecated"," warning is disabled by default.
+//#define PLUTO_NO_WARN_DEPRECATED
+
+// If defined, the "bad-practice" warning is disabled by default.
+//#define PLUTO_NO_WARN_BAD_PRACTICE
+
+// If defined, the "possible-typo" warning is disabled by default.
+//#define PLUTO_NO_WARN_POSSIBLE_TYPO
+
+// If defined, the "unannotated-fallthrough" warning is disabled by default.
+//#define PLUTO_NO_WARN_UNANNOTATED_FALLTHROUGH
+
+// If defined, the "discarded-return" warning is disabled by default.
+//#define PLUTO_NO_WARN_DISCARDED_RETURN
+
+// If defined, the "field-shadow" warning is disabled by default.
+//#define PLUTO_NO_WARN_FIELD_SHADOW
+
+// If defined, the "unused" warning is disabled by default.
+//#define PLUTO_NO_WARN_UNUSED
+
+
 /*
 ** {====================================================================
-** Pluto configuration: Compatibility
+** Pluto Configuration: Compatibility
 ** =====================================================================}
 */
 
@@ -878,9 +869,11 @@
     #define PLUTO_COMPATIBLE_CLASS
     #define PLUTO_COMPATIBLE_PARENT
     #define PLUTO_COMPATIBLE_EXPORT
-    #define PLUTO_COMPATIBLE_TRY
-    #define PLUTO_COMPATIBLE_CATCH
 #endif
+
+// If defined, Pluto's automatic keyword detection will more aggressively disable keywords if they're not used exactly as expected.
+// This will help when scripters use these keywords as globals across files or before their definition.
+//#define PLUTO_PARANOID_KEYWORD_DETECTION
 
 // If defined, Pluto disables optimisations of Lua macros that would make your code unable to be linked
 // against Lua if your code is using these macros with Pluto's definitions.
@@ -888,24 +881,7 @@
 
 /*
 ** {====================================================================
-** Pluto configuration: Optional keywords
-** =====================================================================}
-*/
-
-// If defined, Pluto will imply 'pluto_use let' at the beginning of every script.
-// Note that this keyword is deprecated as of 0.9.0.
-//#define PLUTO_USE_LET
-
-// If defined, Pluto will imply 'pluto_use const' at the beginning of every script.
-// Note that this keyword is deprecated as of 0.9.0.
-//#define PLUTO_USE_CONST
-
-// If defined, Pluto will imply 'pluto_use global' at the beginning of every script.
-//#define PLUTO_USE_GLOBAL
-
-/*
-** {====================================================================
-** Pluto configuration: Infinite Loop Prevention (ILP)
+** Pluto Configuration: Infinite Loop Prevention (ILP)
 **
 ** This is only useful in game regions, where a long loop may block the main thread and crash the game.
 ** These places usually implement a yield (or wait) function, which can be detected and hooked to reset iterations.
@@ -943,7 +919,7 @@
 
 /*
 ** {====================================================================
-** Pluto configuration: Execution Time Limit (ETL)
+** Pluto Configuration: Execution Time Limit (ETL)
 **
 ** This is only useful in sandbox environments where stalling is absolutely unacceptable.
 ** =====================================================================}
@@ -970,7 +946,7 @@
 
 /*
 ** {====================================================================
-** Pluto configuration: Memory Limit
+** Pluto Configuration: Memory Limit
 **
 ** For sandbox environments. This changes the memory allocator in luaL_newstate.
 ** =====================================================================}
@@ -980,7 +956,7 @@
 
 /*
 ** {====================================================================
-** Pluto configuration: VM Dump
+** Pluto Configuration: VM Dump
 ** =====================================================================}
 */
 
@@ -1014,7 +990,7 @@
 
 /*
 ** {====================================================================
-** Pluto configuration: Content Moderation
+** Pluto Configuration: Content Moderation
 ** =====================================================================}
 */
 
@@ -1027,7 +1003,7 @@
 
 // If defined, the provided function will be called as bool(lua_State* L, const char* filename).
 // If it returns false, a Lua error is raised.
-// This will affect require and dofile.
+// This will affect require, dofile, and $include.
 //#define PLUTO_LOADFILE_HOOK ContmodOnLoadfile
 
 // It is possible to pass a reader function to the load function.
@@ -1040,7 +1016,7 @@
 // This will affect require and package.loadlib.
 //#define PLUTO_LOADCLIB_HOOK ContmodOnLoadCLib
 
-// If defined, Pluto will not load the io library, and exclude os.remove and os.rename.
+// If defined, Pluto will not load the io library, exclude os.remove and os.rename, and error on any use of the $include directive.
 // It's highly suggested in most cases to define PLUTO_NO_OS_EXECUTE below too, since os.execute can be used for filesystem access. 
 // It's suggested you implement PLUTO_LOADCLIB_HOOK, etc, for even more powerful coverage. Package.loadlib can still load other Pluto/Lua libraries and use their lua_CFunction objects.
 //#define PLUTO_NO_FILESYSTEM
@@ -1048,18 +1024,12 @@
 // Disables os.execute & io.popen.
 //#define PLUTO_NO_OS_EXECUTE
 
-// Eliminate any loading of any binaries. This removes package.loadlib and prevents 'require' from loading any C modules or shared libraries.
+// Eliminate any loading of any binaries. This removes package.loadlib & ffi.open and prevents 'require' from loading any C modules or shared libraries.
 //#define PLUTO_NO_BINARIES
 
 #ifdef PLUTO_NO_BINARIES
 #define PLUTO_NO_BINARIES_FAIL luaL_error(L, "binary modules cannot be loaded in this environment");
 #endif
-
-// If defined, luaL_openlibs will not include the 'debug' library.
-//#define PLUTO_NO_DEBUGLIB
-
-// If defined, luaL_openlibs will not include the 'coroutine' library.
-//#define PLUTO_NO_COROLIB
 
 // If defined, all HTTP requests will fail.
 // Note that the 'socket' library can still be used to the same effect (with more effort).
@@ -1072,25 +1042,18 @@
 
 // If defined, the provided function will be called as bool(lua_State* L, const char* path)
 // for any attempt to read a file's contents or metadata. The path will be UTF-8 encoded.
-// If the function hook returns false, a Lua error is raised.
+// If it returns false, a Lua error is raised.
 //#define PLUTO_READ_FILE_HOOK ContmodOnReadFile
 
 // If defined, the provided function will be called as bool(lua_State* L, const char* path)
 // for any attempt to write a file's contents or metadata. The path will be UTF-8 encoded.
-// If the function hook returns false, a Lua error is raised.
+// If it returns false, a Lua error is raised.
 //#define PLUTO_WRITE_FILE_HOOK ContmodOnWriteFile
 
-/*
-** {====================================================================
-** Pluto configuration: Performance
-**
-** We recommend not touching this section because the only options here are to disable Pluto features
-** and doing so will not affect performance as trivially as "less features = more performance."
-** =====================================================================}
-*/
-
-//#define PLUTO_DISABLE_LENGTH_CACHE
-//#define PLUTO_DISABLE_TABLE_FREEZING
+// If defined, the provided function will be called as bool(lua_State* L, void* addr)
+// for any attempt to call a foreign function.
+// If it returns false, a Lua error is raised.
+//#define PLUTO_FFI_CALL_HOOK ContmodOnFfiCall
 
 /*
 ** {====================================================================
@@ -1237,5 +1200,19 @@
 #define COLOR_RESET ESC
 #endif // PLUTO_USE_COLORED_OUTPUT
 
-
 /* }================================================================== */
+
+
+
+
+/* =================================================================== */
+
+/*
+** Local configuration. You can use this space to add your redefinitions
+** without modifying the main part of the file.
+*/
+
+
+
+#endif
+

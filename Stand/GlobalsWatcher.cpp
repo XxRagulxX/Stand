@@ -15,40 +15,6 @@
 
 namespace Stand
 {
-	const std::pair<int, int> broadcast_vars[] = {
-		// Player broadcast
-		{ GPBD_FM_2, 32 },
-		{ GPBD_Interactions, 32 },
-		{ GPBD_FM, 32 },
-		{ GSBD_FM_IMPORTANT_ARRAY, 95 },
-		{ GPBD_MissionName, 32 },
-		{ GPBD_Kicking, 32 },
-		{ GPBD_SCTV, 32 },
-		{ GPBD_FM_HeistPlanning, 32 },
-		{ g_AMC_playerBD, 32 },
-		{ GPBD_FM_3, 32 },
-		{ GlobalplayerBD, 32 },
-		{ GPBD_FM_4, 32 },
-		// Host broadcast
-		{ GSBD_BlockC, 32 },
-		{ GLOBAL_BLOCK_C_IMPORTANT_ARRAY, 26 },
-		{ GlobalServerBD_BlockC_g_iAssignedCarMeetParkingSpots, 32 },
-		{ GSBD_MissionRequest, 16 },
-		{ GSBD_MissionList, 16 },
-		{ GSBD_ExclusionAreas, 16 },
-		{ GSBD_Betting, 32 },
-		{ GSBD_HoldUp, 20 },
-		{ GSBD_HoldUp + 41, 20 },
-		{ GSBD_SyncedInteractions, 32 },
-		{ GSBD_Kicking, 32 },
-		{ GSBD_PropertyInstances, 33 },
-		{ GPBD_CasinoHeist, 32 },
-		{ GSBD_RandomEvents + 1, 20 },
-		{ GPBD_HeistIsland, 32 },
-		{ GPBD_NetHeistPlanningGeneric, 32 },
-		{ GPBD_Flow, 32 },
-	};
-
 	void GlobalsWatcher::onTickSessionActive()
 	{
 		// Get SH directly to avoid latency with pool's closed kick, where AbstractPlayer::getScriptHost might return previous SH
@@ -69,6 +35,39 @@ namespace Stand
 		}
 
 		// Watch for broadcast variable size poisoning (NETWORK_FINISH_BROADCASTING_DATA)
+		const std::pair<int, int> broadcast_vars[] = {
+			// Player broadcast
+			{ GPBD_FM_2, 32 },
+			{ GPBD_Interactions, 32 },
+			{ GPBD_FM, 32 },
+			{ GSBD_FM_IMPORTANT_ARRAY, 95 },
+			{ GPBD_MissionName, 32 },
+			{ GPBD_Kicking, 32 },
+			{ GPBD_SCTV, 32 },
+			{ GPBD_FM_HeistPlanning, 32 },
+			{ g_AMC_playerBD, 32 },
+			{ GPBD_FM_3, 32 },
+			{ GlobalplayerBD, 32 },
+			{ GPBD_FM_4, 32 },
+			// Host broadcast
+			{ GSBD_BlockC, 32 },
+			{ GLOBAL_BLOCK_C_IMPORTANT_ARRAY, 26 },
+			{ GlobalServerBD_BlockC_g_iAssignedCarMeetParkingSpots, 32 },
+			{ GSBD_MissionRequest, 16 },
+			{ GSBD_MissionList, 16 },
+			{ GSBD_ExclusionAreas, 16 },
+			{ GSBD_Betting, 32 },
+			{ GSBD_HoldUp, 20 },
+			{ GSBD_HoldUp + 41, 20 },
+			{ GSBD_SyncedInteractions, 32 },
+			{ GSBD_Kicking, 32 },
+			{ GSBD_PropertyInstances, 33 },
+			{ GPBD_CasinoHeist, 32 },
+			{ GSBD_RandomEvents + 1, 24 },
+			{ GPBD_HeistIsland, 32 },
+			{ GPBD_NetHeistPlanningGeneric, 32 },
+			{ GPBD_Flow, 32 },
+		};
 		for (const auto& bv : broadcast_vars)
 		{
 			SOUP_IF_UNLIKELY (ScriptGlobal(bv.first).get<int>() != bv.second)

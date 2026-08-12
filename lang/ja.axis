@@ -1590,6 +1590,10 @@ DLC_640=ドラッグウォーズ
 DLC_670=サンアンドレアスの傭兵
 DLC_680=チョップ・ショップ
 DLC_690=ボトム・ダラー・バウンティ
+DLC_700=エージェント・オブ・サボタージュ
+DLC_710=マネーフロント
+# DLC_720=A Safehouse in the Hills
+# DLC_730=The Kortz Center Heist
 
 MANUFNS=メーカー名を表示
 
@@ -3347,9 +3351,6 @@ PTX_SI=受信した同期
 PTX_SO=送信した同期
 PTX_SI_ANY=あらゆる受信した同期
 
-OUTSBH=ホストへの同期の送信をブロック
-OUTSBH_H=これは非ホストとしてBattlEyeのキックを避けるのに役立ちますが、ホストがあなたと干渉できないことも意味します。
-
 PTX_CSB=カスタムモデル同期のリアクション
 ADDMDL=モデルを追加
 PTX_CSB_T={player}による{hash}のモデル同期
@@ -3446,7 +3447,6 @@ PTX_HK_H=ホストによるキックを軽減し、ホストがキックを行�
 PTX_HK_T=あなたに対してホストキックが使用されました({method})、おそらく{player}が使用しました。
 
 HKI=間もなくホストにキックされます。
-HKI_BS=彼らとの同期をブロックすることをお勧めします。
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=投票キック
@@ -3743,6 +3743,7 @@ GIVECOLL_16=スノーマン
 GIVECOLL_17=ジェロの隠しアイテム
 ! Tags as in graffiti
 GIVECOLL_19=ロスサントスタグ
+GIVECOLL_21=Yuanbao
 
 GIVECOLLE=収集品を付与
 GIVECOLLE_NCEO=収集品を付与 (私のボスではない)
@@ -4017,7 +4018,7 @@ SPFPOS=現在地を偽装
 SPFDPOS=偽装する座標
 
 PLYMGNT=プレイヤーマグネット
-PLYMGNT_H=使用することで、あなたのセッションに他のプレーヤーの参加が早くなります。
+PLYMGNT_H=使用することで、あなたのセッションに他のプレーヤーが加わるのが早くなります。
 
 STRMSPF=他のプレイヤーの名前を偽装
 
@@ -4258,9 +4259,9 @@ MAXPLYS=最大プレイヤー数
 SSS=シームレスなセッション切り替え
 
 WRLDSTCNG=ワールドの状態を変更
-WRLDSTCNG_1=延期
-WRLDSTCNG_2=延期、オンラインのみ
-WRLDSTCNG_3=延期、ストーリーモードのみ
+WRLDSTCNG_1=遅延
+WRLDSTCNG_2=遅延、オンラインのみ
+WRLDSTCNG_3=遅延、ストーリーモードのみ
 WRLDSTCNG_T=ワールド状態を{}に変更中...
 
 SPDUP=スピードアップ
@@ -4826,6 +4827,9 @@ SGMELNG_H=一部の言語では、ゲームを再起動後にのみ読み込ま�
 STUTFIX=高FPS時のスタッタリングを修正
 STUTFIX_H=ゲームが188 FPSに近づくと発生するスタッタリングを修正します。
 
+UNCAPFPS=FPS上限を削除
+UNCAPFPS_H=ゲームが188FPSを超えることを可能にします。
+
 NKBDHK=キーボードフックを無効化
 NKBDHK_H=GTAがフォーカスされているときにWindowsキーを押すことを許可し、キーストロークの遅延を引き起こすゲームの遅延を停止します。
 
@@ -4842,11 +4846,11 @@ ANAL=アナログキーボードをサポート
 ANAL_H=アナログキーボードに対応している場合、キーを押す強さをゲームに認識させることができます。
 ANAL_L=対応キーボード
 
-PRSRSUB=押下圧減数
-PRSRDIV=押下圧除数
+PRSRSUB=圧力減数
+PRSRDIV=圧力除数
 
 DEV=デバイス
-PRSR=押下圧
+PRSR=圧力
 
 EJ=早期のインジェクトを強化
 EJ_H=ゲームが開始されると同時にStandが注入される場合に適用されるゲームの強化機能。

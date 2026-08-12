@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "AntiDbg.hpp"
 #include "ColourUtil.hpp"
 #include "CommandInput.hpp"
 #include "CommandColour.hpp"
@@ -15,6 +14,7 @@
 #include "CommandToggleCustom.hpp"
 #include "CommandToggleNoCorrelation.hpp"
 #include "Exceptional.hpp"
+#include "get_current_time_millis.hpp"
 #include "MenuGrid.hpp"
 #include "Gui.hpp"
 #include "input.hpp"
@@ -329,10 +329,7 @@ namespace Stand
 			updated_draw_data->has_extra_top = false;
 		}
 
-		if (AntiDbg::wasDebuggerCheckedRecently())
-		{
-			draw_data = std::move(updated_draw_data);
-		}
+		draw_data = std::move(updated_draw_data);
 	}
 
 	LONG GridItemList::drawSpriteCommandRight(DrawCommandData& draw_data, Texture* texture, const DirectX::SimpleMath::Color& colour, bool leftbound)

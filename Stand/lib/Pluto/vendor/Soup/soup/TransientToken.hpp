@@ -6,33 +6,70 @@ NAMESPACE_SOUP
 {
 	class TransientTokenBase
 	{
-	private:
+	public:
 		SharedPtr<bool> sp;
 
+		explicit TransientTokenBase(bool valid) SOUP_EXCAL
+			: TransientTokenBase(soup::make_shared<bool>(valid))
+		{
+		}
+
+	protected:
+		TransientTokenBase(SharedPtr<bool>&& sp) noexcept
+			: sp(std::move(sp))
+		{
+		}
+
+		TransientTokenBase(const SharedPtr<bool>& sp) noexcept
+			: sp(sp)
+		{
+		}
+
 	public:
-		TransientTokenBase() SOUP_EXCAL
-			: sp(soup::make_shared<bool>(true))
-		{
-		}
-
-		TransientTokenBase(bool valid) SOUP_EXCAL
-			: sp(soup::make_shared<bool>(valid))
-		{
-		}
-
 		[[nodiscard]] bool isValid() const noexcept
 		{
 			return *sp;
 		}
 
+		void reset() SOUP_EXCAL
+		{
+			sp = soup::make_shared<bool>(false);
+		}
+	};
+
+	struct TransientToken : public TransientTokenBase
+	{
+		using TransientTokenBase::TransientTokenBase;
+
+		TransientToken() SOUP_EXCAL
+			: TransientTokenBase(soup::make_shared<bool>(true))
+		{
+		}
+
+		TransientToken(const TransientToken& tt) = delete;
+
+		TransientToken(TransientToken&& tt) SOUP_EXCAL
+			: TransientTokenBase(std::move(tt.sp))
+		{
+			tt.reset();
+		}
+		
+		void operator=(const TransientToken& tt) = delete;
+
+		void operator=(TransientToken&& tt) SOUP_EXCAL
+		{
+			sp = std::move(tt.sp);
+			tt.reset();
+		}
+
+		~TransientToken() noexcept
+		{
+			invalidate();
+		}
+
 		void invalidate() const noexcept
 		{
 			*sp = false;
-		}
-
-		void reset() noexcept
-		{
-			sp.reset();
 		}
 
 		void refresh() SOUP_EXCAL
@@ -42,15 +79,18 @@ NAMESPACE_SOUP
 		}
 	};
 
-	struct TransientToken : public TransientTokenBase
+	struct TransientTokenRef : public TransientTokenBase
 	{
 		using TransientTokenBase::TransientTokenBase;
 
-		~TransientToken() noexcept
+		TransientTokenRef() SOUP_EXCAL
+			: TransientTokenBase(soup::make_shared<bool>(false))
 		{
-			invalidate();
+		}
+
+		TransientTokenRef(const TransientTokenBase& tt) noexcept
+			: TransientTokenBase(tt.sp)
+		{
 		}
 	};
-
-	using TransientTokenRef = TransientTokenBase;
 }

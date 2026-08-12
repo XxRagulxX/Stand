@@ -51,13 +51,13 @@ Self — Command: t self
 			Playable Characters
 				<5 Options>
 			Ground Animals
-				<31 Options>
+				<33 Options>
 			Water Animals
 				<7 Options>
 			Flying Animals
 				<5 Options>
 			NPCs
-				<1025 Options>
+				<1063 Options>
 		Outfit — Command: outfit
 			Wardrobe — Command: wardrobe
 				Save Outfit
@@ -176,47 +176,47 @@ Self — Command: t self
 			Vehicle
 				Random
 				Super
-					<57 Options>
+					<61 Options>
 				Service
-					<13 Options>
+					<14 Options>
 				Utility
-					<47 Options>
+					<49 Options>
 				Helicopters
-					<29 Options>
+					<31 Options>
 				Motorcycles
 					<59 Options>
 				SUVs
-					<46 Options>
+					<48 Options>
 				Sports
-					<115 Options>
+					<122 Options>
 				Planes
-					<33 Options>
+					<35 Options>
 				Emergency
-					<27 Options>
+					<34 Options>
 				Military
 					<17 Options>
 				Sports Classic
-					<47 Options>
+					<54 Options>
 				Compacts
 					<18 Options>
 				Sedans
-					<42 Options>
+					<48 Options>
 				Boats
 					<25 Options>
 				Commercial
-					<23 Options>
+					<24 Options>
 				Off-Road
-					<67 Options>
+					<70 Options>
 				Vans
-					<40 Options>
+					<41 Options>
 				Muscle
-					<90 Options>
+					<94 Options>
 				Cycles
 					<9 Options>
 				Industrial
-					<10 Options>
+					<11 Options>
 				Coupes
-					<20 Options>
+					<21 Options>
 				Open Wheel
 					<4 Options>
 			Speed (20 to 200) — Command: vehiclegunspeed [20 to 200]
@@ -307,13 +307,13 @@ Self — Command: t self
 				Playable Characters
 					<6 Options>
 				Ground Animals
-					<31 Options>
+					<33 Options>
 				Water Animals
 					<7 Options>
 				Flying Animals
 					<5 Options>
 				NPCs
-					<1025 Options>
+					<1063 Options>
 			Primary Weapon — Bodyguards will use their primary weapon whenever possible. Otherwise, they will try to use their secondary weapon. — Command: bodyguardprimary (value)
 				Melee Weapons
 					<20 Options>
@@ -393,6 +393,12 @@ Vehicle — Command: t vehicle
 	Spawner — Command: spawner
 		Search — Command: findvehicle [clue]
 		DLCs
+			A Safehouse in the Hills
+				<15 Options>
+			Money Fronts
+				<19 Options>
+			Agents of Sabotage
+				<18 Options>
 			Bottom Dollar Bounties
 				<21 Options>
 			The Chop Shop
@@ -483,49 +489,49 @@ Vehicle — Command: t vehicle
 			Boats
 				<26 Options>
 			Commercial
-				<23 Options>
+				<24 Options>
 			Compacts
 				<18 Options>
 			Coupes
-				<20 Options>
+				<21 Options>
 			Cycles
 				<9 Options>
 			Emergency
-				<27 Options>
+				<34 Options>
 			Helicopters
-				<29 Options>
+				<31 Options>
 			Industrial
-				<11 Options>
+				<12 Options>
 			Military
 				<17 Options>
 			Motorcycles
 				<59 Options>
 			Muscle
-				<90 Options>
+				<94 Options>
 			Off-Road
-				<67 Options>
+				<70 Options>
 			Open Wheel
 				<4 Options>
 			Planes
-				<44 Options>
-			SUVs
 				<46 Options>
+			SUVs
+				<48 Options>
 			Sedans
-				<42 Options>
+				<48 Options>
 			Service
-				<13 Options>
+				<14 Options>
 			Sports
-				<115 Options>
+				<122 Options>
 			Sports Classic
-				<47 Options>
+				<54 Options>
 			Super
-				<57 Options>
+				<61 Options>
 			Trains
-				<10 Options>
+				<11 Options>
 			Utility
-				<50 Options>
+				<52 Options>
 			Vans
-				<40 Options>
+				<41 Options>
 		List Of Spawned Vehicles — Command: listofspawnedvehicles
 		Input Model Name — The "expert mode" way of spawning vehicles. — Command: spawn [model name] — Can be used by other players with the Spawn Commands permission.
 		On Foot Behaviour
@@ -1033,7 +1039,7 @@ Online — Command: t online
 				Cutscenes
 					<3 Options>
 				Uncategorised
-					<183 Options>
+					<209 Options>
 		Session Code — Command: sessioncode
 			Session Code
 			Join Session Via Code — Command: codejoin [code]
@@ -1044,26 +1050,6 @@ Online — Command: t online
 			From Non-Whitelisted (On/Off) — Blocks joins from any players you have not specifically whitelisted.
 			From Known Advertisers (On/Off)
 			From Removed Players (On/Off) — Blocks joins from players you have kicked or crashed.
-			Message — This will only have an effect when you're the session host.
-				Not Intended Session — Failed to join intended GTA Online session.
-				Incompatible Assets — Failed to join session due to incompatible assets.
-				Ensure Latest Title Update — Please make sure all players have the latest Title Update.
-				Different Targeting Preference — The session you are trying to join is using a different targeting preference. You can change your preference in the Settings tab of the Pause Menu in Grand Theft Auto V. Joining a new GTA Online Session.
-				Your Account Has A Bad Reputation — Unable to join this session, your account has a bad reputation.
-				You Are A Cheater — You are classed as a cheat and can only play with other cheats until you are forgiven.
-				You Are A Bad Sport — The session you are trying to join is for people who are not Bad Sports or cheaters - you are a Bad Sport.
-				Incompatible Downloadable Content — Incompatible downloadable content. All players must have the latest compatibility pack.
-				Different Build Type — The session you are trying to join is a different build type.
-				Different Content — The session you are trying to join is not using the same content.
-				Bad Sports Only — The session you are trying to join is for Bad Sports only.
-				Cheaters Only — The session you are trying to join is for cheaters only.
-				Premium Race — Unable to Join. The session you are trying to join is a Premium Race. Joining and accepting invites is disabled for this mode.
-				Unable To Connect — Unable to connect to session. The session may no longer exist.
-				Private — The session you are trying to join is private. You will need to be invited to join this session.
-				Friends Only — The session you are trying to join is friends only.
-				You Were Already Voted Out — You have already been voted out of this game session.
-				Invites Disabled — Invites are currently disabled in the session.
-				No Longer Exists — The session you are trying to join no longer exists.
 			Removed Players — A list of players who are currently blocked from joining because you removed them.
 			Notifications
 				From Anyone
@@ -1606,7 +1592,6 @@ Online — Command: t online
 			Damage Multiplier (On/Off)
 			Modded Health (On/Off)
 		Syncs
-			Block Outgoing Syncs To Host (On/Off) — This helps you avoid BattlEye kicks as non-host, but also means the host won't be able to interact with you.
 			Custom Model Sync Reactions
 				Add Model — Command: addblacklistmodel [model name]
 			Cage — Other players can resync objects spawned by modders, so be aware of that.
@@ -2166,8 +2151,6 @@ Online — Command: t online
 	Reactions
 		Player Join Reactions
 			<16 Options>
-		RID Join Reactions
-			<21 Options>
 		Host Change Reactions
 			<16 Options>
 		Script Host Change Reactions
@@ -2385,6 +2368,7 @@ Players — Command: t players
 				Snowmen
 				G's Cache
 				Los Santos Tags
+				Yuanbao
 			CEO Money Loop — Gives associates and bodyguards some decent pay. The recipients don't have to be your associates or bodyguards. — Command: ceopayall [on/off] — Can be used by other players with the Neutral Commands permission.
 			Give RP — Gives the player a bunch of RP. Can be used multiple times. — Command: rpall — Can be used by other players with the Neutral Commands permission.
 			Drop Casino Figurines — Can be used to give RP and cash. — Command: figurinesall [on/off] — Can be used by other players with the Neutral Commands permission.
@@ -2465,6 +2449,7 @@ Players — Command: t players
 			Non-Host — Blocked by most menus. — Command: nonhostkickall — Can be used by other players with the Aggressive Commands permission.
 		Crash
 			Elegant — Blocked by most menus. — Command: crashall — Can be used by other players with the Toxic Commands permission.
+			Steamroller — Command: steamrollall — Can be used by other players with the Toxic Commands permission.
 		Outgoing Syncs
 			Block — Stops your position being updated for other players and can even prevent other players from knowing that you're in the session if joining with this enabled. — Command: desyncall [on/off]
 			Write To Log File — Command: syncoutlogall [on/off]
@@ -2568,6 +2553,7 @@ Players — Command: t players
 				Snowmen
 				G's Cache
 				Los Santos Tags
+				Yuanbao
 			CEO Money Loop — Gives associates and bodyguards some decent pay. The recipients don't have to be your associates or bodyguards. — Command: ceopay[player] [on/off] — Can be used by other players with the Neutral Commands permission.
 			Give RP — Gives the player a bunch of RP. Can be used multiple times. — Command: rp[player] — Can be used by other players with the Neutral Commands permission.
 			Drop Casino Figurines — Can be used to give RP and cash. — Command: figurines[player] [on/off] — Can be used by other players with the Neutral Commands permission.
@@ -2580,7 +2566,6 @@ Players — Command: t players
 				<85 Options>
 			Impact Particles — Works best in close proximity.
 				<501 Options>
-			Give Script Host — Command: givesh[player] — Can be used by other players with the Friendly Commands permission.
 		Chat
 			Mock Chat Messages — HeRe'S sOmE tExT tO fEaSt YoUr EyEs UpOn — Command: chatmock[player] [on/off] — Can be used by other players with the Rude Commands permission.
 			OwO-ify Chat Messages — Hewe's some text to feast youw eyes upon — Command: chatowo[player] [on/off] — Can be used by other players with the Rude Commands permission.
@@ -2621,52 +2606,52 @@ Players — Command: t players
 						Ground Animals
 							<4 Options>
 						NPCs
-							<805 Options>
+							<843 Options>
 					Vehicle
 						None
 						Random
 						Super
-							<57 Options>
+							<61 Options>
 						Service
-							<13 Options>
+							<14 Options>
 						Utility
-							<24 Options>
+							<26 Options>
 						Helicopters
-							<29 Options>
+							<31 Options>
 						Motorcycles
 							<59 Options>
 						SUVs
-							<46 Options>
+							<48 Options>
 						Planes
-							<44 Options>
+							<46 Options>
 						Sports
-							<115 Options>
+							<122 Options>
 						Emergency
-							<27 Options>
+							<34 Options>
 						Military
 							<17 Options>
 						Sports Classic
-							<47 Options>
+							<54 Options>
 						Compacts
 							<18 Options>
 						Sedans
-							<42 Options>
+							<48 Options>
 						Boats
 							<26 Options>
 						Commercial
-							<23 Options>
+							<24 Options>
 						Off-Road
-							<67 Options>
+							<70 Options>
 						Vans
-							<40 Options>
+							<41 Options>
 						Muscle
-							<90 Options>
+							<94 Options>
 						Cycles
 							<9 Options>
 						Industrial
-							<11 Options>
+							<12 Options>
 						Coupes
-							<20 Options>
+							<21 Options>
 						Open Wheel
 							<4 Options>
 					Weapon
@@ -2704,49 +2689,49 @@ Players — Command: t players
 				Vehicle
 					Random
 					Super
-						<57 Options>
+						<61 Options>
 					Service
-						<13 Options>
+						<14 Options>
 					Utility
-						<50 Options>
+						<52 Options>
 					Helicopters
-						<29 Options>
+						<31 Options>
 					Motorcycles
 						<59 Options>
 					SUVs
-						<46 Options>
+						<48 Options>
 					Planes
-						<44 Options>
+						<46 Options>
 					Sports
-						<115 Options>
+						<122 Options>
 					Emergency
-						<27 Options>
+						<34 Options>
 					Military
 						<17 Options>
 					Sports Classic
-						<47 Options>
+						<54 Options>
 					Compacts
 						<18 Options>
 					Sedans
-						<42 Options>
+						<48 Options>
 					Boats
 						<26 Options>
 					Commercial
-						<23 Options>
+						<24 Options>
 					Off-Road
-						<67 Options>
+						<70 Options>
 					Vans
-						<40 Options>
+						<41 Options>
 					Muscle
-						<90 Options>
+						<94 Options>
 					Cycles
 						<9 Options>
 					Industrial
-						<11 Options>
+						<12 Options>
 					Trains
-						<10 Options>
+						<11 Options>
 					Coupes
-						<20 Options>
+						<21 Options>
 					Open Wheel
 						<4 Options>
 				Invisibility (On/Off)
@@ -2833,9 +2818,7 @@ Players — Command: t players
 			Invalid Pickup — Blocked by most menus. — Command: pickupkick[player] — Can be used by other players with the Aggressive Commands permission.
 		Crash
 			Elegant — Blocked by most menus. — Command: crash[player] — Can be used by other players with the Toxic Commands permission.
-			Burger King Foot Lettuce — Blocked by popular menus. — Command: footlettuce[player] — Can be used by other players with the Toxic Commands permission.
 			Vehicular Manslaughter — Blocked by popular menus. — Command: slaughter[player] — Can be used by other players with the Toxic Commands permission.
-			Steamroller — Note: This may also crash other players close to your target. — Command: steamroll[player] — Can be used by other players with the Toxic Commands permission.
 		Timeout — Temporarily blocks most network traffic from and to this player. — Command: timeout[player] [on/off]
 		Network Events
 			Block — Command: ignore[player] [on/off]
@@ -3272,7 +3255,7 @@ World — Command: t world
 			Input Model Name — The "expert mode" way of spawning objects. — Command: spawnobject [model name]
 			Downtown
 				<130 Options>
-			<20224 More Options>
+			<20991 More Options>
 		Tools
 			Freecam — Command: editorfreecam [on/off]
 			Teleport To Where I'm Looking — Command: editorteleport
@@ -3489,47 +3472,47 @@ Game — Command: t game
 			Spoof Models (On/Off) — Spoofs models from custom DLCs to models that are actually in the game so that players without the custom DLC can still see something.
 			Vehicles — Command: spoofmodelveh (value)
 				Super
-					<57 Options>
+					<61 Options>
 				Service
-					<13 Options>
+					<14 Options>
 				Utility
-					<24 Options>
+					<26 Options>
 				Motorcycles
 					<59 Options>
 				SUVs
-					<46 Options>
+					<48 Options>
 				Sports
-					<115 Options>
+					<122 Options>
 				Emergency
-					<27 Options>
+					<34 Options>
 				Military
 					<17 Options>
 				Sports Classic
-					<47 Options>
+					<54 Options>
 				Compacts
 					<18 Options>
 				Sedans
-					<42 Options>
+					<48 Options>
 				Commercial
-					<23 Options>
+					<24 Options>
 				Off-Road
-					<67 Options>
+					<70 Options>
 				Vans
-					<40 Options>
+					<41 Options>
 				Muscle
-					<90 Options>
+					<94 Options>
 				Industrial
-					<11 Options>
+					<12 Options>
 				Coupes
-					<20 Options>
+					<21 Options>
 				Open Wheel
 					<4 Options>
 			Motorcycles — Command: spoofmodelmotorbike (value)
 				<59 Options>
 			Planes — Command: spoofmodelplane (value)
-				<44 Options>
+				<46 Options>
 			Helicopters — Command: spoofmodelheli (value)
-				<29 Options>
+				<31 Options>
 			Boats — Command: spoofmodelboat (value)
 				<26 Options>
 			Cycles — Command: spoofmodelcycle (value)
@@ -3653,7 +3636,7 @@ Game — Command: t game
 		Spanish - Español — Command: gamelang es
 		Spanish (Mexican) - Española (Mexicana) — Command: gamelang esmx
 	Fix Stuttering At High FPS — Fixes the stuttering that occurs when the game approaches 188 FPS. — Command: stutterfix [on/off]
-	Disable Keyboard Hook (On/Off) — Allows you to press the Windows key with GTA focused and stops game lag resulting in keystroke lag.
+	Remove FPS Limit — Allows the game to go beyond 188 FPS. — Command: uncapfps [on/off]
 	Override Debug Natives — Implements and overrides the debug natives which are still used in some of the game's scripts. — Command: debugnatives [on/off]
 	Patches
 		Projectile Pool (On/Off) — Instead of refusing to spawn new projectiles when the projectile pool is full, this patch will delete the oldest projectile.
@@ -4015,7 +3998,6 @@ Stand — Command: t stand
 			Keep Draft When Closed — Command: cbkeepdraft [on/off]
 		Session Joining
 			Automatically Change Targeting Mode (On/Off) — This only applies when joining sessions via Stand. Join methods without dialogs always do this.
-			Check If Join Will Succeed (On/Off) — Aborts the join attempt if the host won't allow the join, e.g. because the session is full.
 		Language — If you're unable to comprehend the language in which this text was written, change this maybe. — Command: lang (value)
 			Chinese (Simplified) - 简体中文 — Command: lang zh
 			Dutch - Nederlands — Command: lang nl
@@ -4084,13 +4066,14 @@ Stand — Command: t stand
 		Command List
 	Experiments
 		Run Network Diagnostics
+		Deactivate Profile — Command: deactivateprofile
 		Unbrick Account
 		Read All Org Chats (On/Off) — Players in an org will see you under their org in the player list, and if the script host has an org, creating an org of your own will not work flawlessly.
 		Chat Gadget — Command: chatgadget (value)
 			Disabled
 			Window
 			Direct
-		Been Playing Since The Game Came Out! — Irreversibly changes various stats related to your onboarding date. This doesn't improve or worsen safety as far as we know. Ideally we'd have a "stats editor".
+		Been Playing Since The Game Came Out! — Irreversibly changes various stats related to your onboarding date. This doesn't improve or worsen safety as far as we know.
 		Show Nav Mesh — Command: navmesh [on/off]
 		Show Nav Mesh Neighbors (On/Off)
 		Show Ped Tasks — Command: showpedtasks [on/off]

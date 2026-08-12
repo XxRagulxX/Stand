@@ -323,10 +323,8 @@ namespace Stand
 #if USE_CROSSMAP
 		// From crossmap
 		std::unordered_set<rage::scrNativeHash> natives_mapped_cur_hashes{};
-		for (const auto& mapping : g_crossmap)
+		for (const auto& [og_hash, current_hash] : g_crossmap)
 		{
-			auto og_hash = (mapping.first ^ MAGIC_CROSSMAP);
-			auto current_hash = (mapping.second ^ MAGIC_CROSSMAP);
 #if LOG_DUPLICATE_ENTRYPOINTS
 			auto entrypoint = pointers::native_registration_table->getHandler(current_hash);
 			if (reverse_entrypoint_map.contains(entrypoint))
@@ -415,9 +413,9 @@ namespace Stand
 		mapDetour(0xB69317BF5E782347, &NETWORK_REQUEST_CONTROL_OF_ENTITY, &NETWORK_REQUEST_CONTROL_OF_ENTITY_ogfp);
 		mapDetour(0x213AEB2B90CBA7AC, &COPY_SCRIPT_STRUCT);
 
-		SharedNativeHooks::enable([](XoredNativeHash target, rage::scrNativeHandler detour, rage::scrNativeHandler* pOriginal)
+		SharedNativeHooks::enable([](rage::scrNativeHash target, rage::scrNativeHandler detour, rage::scrNativeHandler* pOriginal)
 		{
-			g_script_mgr.mapDetour(target.getHash(), detour, pOriginal);
+			g_script_mgr.mapDetour(target, detour, pOriginal);
 		});
 	}
 

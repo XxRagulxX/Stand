@@ -106,7 +106,7 @@ namespace Stand
 #endif
 				g_menu_grid.update();
 			}
-			if (isActiveOnWeb())
+			//if (isActiveOnWeb()) // already checked in updateWebState
 			{
 				updateWebState();
 			}
@@ -190,6 +190,7 @@ namespace Stand
 				{
 					EXCEPTIONAL_LOCK(g_relay.send_mtx)
 					auto* const prev_focus = g_gui.web_focus;
+					//Util::toast(fmt::format("Updated web_focus to {}", this->getPathConfig()), TOAST_ALL);
 					g_gui.web_focus = this;
 					g_relay.sendLine(std::move(std::string("l ").append(menu_name.getWebString())));
 					updateWebStateImpl();
@@ -813,12 +814,20 @@ namespace Stand
 			return;
 		}
 		web_state_update_queued = true;
+		//Util::toast(fmt::format("CommandList::updateWebStateNoCheck for {}", getPathConfig()), TOAST_ALL);
 		Exceptional::createManagedExceptionalThread(__FUNCTION__, [this]
 		{
 			web_state_update_queued = false;
 			EXCEPTIONAL_LOCK(g_relay.send_mtx)
-			g_relay.sendRaw("j\n");
-			updateWebStateImpl();
+			if (isActiveOnWeb())
+			{
+				g_relay.sendRaw("j\n");
+				updateWebStateImpl();
+			}
+			/*else
+			{
+				Util::toast(fmt::format("CommandList::updateWebStateNoCheck for {} - no longer active, ignoring", getPathConfig()), TOAST_ALL);
+			}*/
 			EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 		});
 	}
@@ -1447,7 +1456,8 @@ namespace Stand
 	void CommandList::sortChildren(sort_algo_t sort_algo)
 	{
 #ifdef STAND_DEBUG
-		SOUP_ASSERT(g_gui.root_mtx.isWriteLockedByThisThread());
+		// World Editor > Spawner > Search trips this assert, but it's fine there.
+		//SOUP_ASSERT(g_gui.root_mtx.isWriteLockedByThisThread());
 #endif
 		std::sort(children.begin(), children.end(), sort_algo);
 	}

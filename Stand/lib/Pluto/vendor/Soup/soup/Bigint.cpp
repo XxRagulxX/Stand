@@ -198,14 +198,14 @@ NAMESPACE_SOUP
 	Bigint Bigint::randomProbablePrime(const size_t bits, const int miller_rabin_iterations) SOUP_EXCAL
 	{
 		Bigint i = random(bits);
-		for (; i.enableBitInbounds(0), !i.isProbablePrime(miller_rabin_iterations); i = random(bits));
+		for (; i.enableBit(0), !i.isProbablePrime(miller_rabin_iterations); i = random(bits));
 		return i;
 	}
 
 	Bigint Bigint::randomProbablePrime(RngInterface& rng, const size_t bits, const int miller_rabin_iterations) SOUP_EXCAL
 	{
 		Bigint i = random(rng, bits);
-		for (; i.enableBitInbounds(0), !i.isProbablePrime(miller_rabin_iterations); i = random(rng, bits));
+		for (; i.enableBit(0), !i.isProbablePrime(miller_rabin_iterations); i = random(rng, bits));
 		return i;
 	}
 
@@ -456,13 +456,16 @@ NAMESPACE_SOUP
 
 	int Bigint::cmp(const Bigint& b) const noexcept
 	{
-		if (getNumChunks() != b.getNumChunks())
-		{
-			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
-		}
 		if (negative ^ b.negative)
 		{
-			return branchless::trinary(negative, -1, +1);
+			bool both_zero = isZero();
+			both_zero &= b.isZero();
+			return branchless::trinary(negative, -1, +1) * !both_zero;
+		}
+		int factor = branchless::trinary(negative & b.negative, -1, +1);
+		if (getNumChunks() != b.getNumChunks())
+		{
+			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1) * factor;
 		}
 		size_t i = chunks.size();
 		while (i != 0)
@@ -470,7 +473,7 @@ NAMESPACE_SOUP
 			--i;
 			if (getChunkInbounds(i) != b.getChunkInbounds(i))
 			{
-				return branchless::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1);
+				return branchless::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1) * factor;
 			}
 		}
 		return 0;
@@ -626,7 +629,9 @@ NAMESPACE_SOUP
 	{
 		if (negative ^ b.negative)
 		{
+			negative ^= 1;
 			subUnsigned(b);
+			negative ^= 1;
 		}
 		else
 		{
@@ -637,11 +642,10 @@ NAMESPACE_SOUP
 	void Bigint::addUnsigned(const Bigint& b) SOUP_EXCAL
 	{
 		chunk_t carry = 0;
-		if (cmp(b) >= 0)
+		const size_t nc = getNumChunks();
+		const size_t b_nc = b.getNumChunks();
+		if (nc >= b_nc)
 		{
-			const size_t nc = getNumChunks();
-			const size_t b_nc = b.getNumChunks();
-			SOUP_ASSUME(nc >= b_nc);
 			size_t i = 0;
 			for (; i != b_nc; ++i)
 			{
@@ -698,7 +702,7 @@ NAMESPACE_SOUP
 
 	void Bigint::subUnsigned(const Bigint& subtrahend) noexcept
 	{
-		const auto cmp_res = cmp(subtrahend);
+		const auto cmp_res = cmpUnsigned(subtrahend);
 		if (cmp_res == 0)
 		{
 			reset();
@@ -760,7 +764,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	void Bigint::divide(const Bigint& divisor, Bigint& outQuotient, Bigint& outRemainder) const SOUP_EXCAL
+	void Bigint::divide(const Bigint& divisor, Bigint& SOUP_UNIQADDR outQuotient, Bigint& SOUP_UNIQADDR outRemainder) const SOUP_EXCAL
 	{
 		outQuotient.reset();
 		outRemainder.reset();
@@ -800,7 +804,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	void Bigint::divideUnsigned(const Bigint& divisor, Bigint& remainder) SOUP_EXCAL
+	void Bigint::divideUnsigned(const Bigint& divisor, Bigint& SOUP_UNIQADDR remainder) SOUP_EXCAL
 	{
 		remainder.reset();
 		SOUP_IF_LIKELY (!divisor.isZero())
@@ -924,7 +928,7 @@ NAMESPACE_SOUP
 		if (nb != 0)
 		{
 			// add new chunks
-			for (size_t i = (b / getBitsPerChunk()) - getNumChunks(); i-- != 0; )
+			for (size_t i = (b / getBitsPerChunk()); i-- != 0; )
 			{
 				addChunk(0);
 			}
@@ -1446,7 +1450,19 @@ NAMESPACE_SOUP
 
 	Bigint Bigint::gcd(Bigint v) const SOUP_EXCAL
 	{
+		SOUP_IF_UNLIKELY (isZero())
+		{
+			return v;
+		}
+		SOUP_IF_UNLIKELY (v.isZero())
+		{
+			return *this;
+		}
+
 		Bigint u(*this);
+
+		u.negative = false;
+		v.negative = false;
 
 		auto i = u.getTrailingZeroesBinary(); u >>= i;
 		auto j = v.getTrailingZeroesBinary(); v >>= j;
@@ -1454,12 +1470,12 @@ NAMESPACE_SOUP
 
 		while (true)
 		{
-			if (u > v)
+			if (u.cmpUnsigned(v) > 0)
 			{
 				std::swap(u, v);
 			}
 
-			v -= u;
+			v.subUnsigned(u);
 
 			if (v.isZero())
 			{
@@ -1727,9 +1743,9 @@ NAMESPACE_SOUP
 
 		const Bigint two = (chunk_t)2u;
 		Bigint y = (*this / two);
-		Bigint x_over_y;
+		Bigint x_over_y, remainder;
 
-		while (x_over_y = (*this / y), y > x_over_y)
+		while (this->divide(y, x_over_y, remainder), y > x_over_y)
 		{
 			y = (x_over_y + y) / two;
 		}
@@ -2017,13 +2033,12 @@ NAMESPACE_SOUP
 		return str;
 	}
 
-	std::string Bigint::toBinary(size_t bytes) const
+	std::string Bigint::toBinary(size_t min_bytes) const SOUP_EXCAL
 	{
 		auto bin = toBinary();
-		SOUP_ASSERT(bytes >= bin.size());
-		if (size_t pad = (bytes - bin.size()))
+		if (bin.size() < min_bytes)
 		{
-			bin.insert(bin.begin(), pad, '\0');
+			bin.insert(bin.begin(), min_bytes - bin.size(), '\0');
 		}
 		return bin;
 	}

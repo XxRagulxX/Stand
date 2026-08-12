@@ -6,6 +6,7 @@
 #include <fmt/core.h>
 
 #include "AbstractPlayer.hpp"
+#include "FiberPool.hpp"
 #ifdef STAND_DEBUG
 #include "FileLogger.hpp"
 #endif

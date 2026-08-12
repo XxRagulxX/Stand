@@ -82,24 +82,24 @@
 	</div>
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.5.7/dist/js/uikit.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.5.7/dist/js/uikit-icons.min.js"></script>
-	<script src="https://use-soup-wasm.calamity.inc"></script>
+	<script src="https://use.soup.do"></script>
 	<script src="/common.js"></script>
-	 <script src="lang/en.js?v=24.10.1"></script>
-	 <script src="lang/de.js?v=24.10.1"></script>
-	 <script src="lang/nl.js?v=24.10.1"></script>
-	 <script src="lang/lt.js?v=24.10.1"></script>
-	 <script src="lang/pt.js?v=24.10.1"></script>
-	 <script src="lang/zh.js?v=24.10.1"></script>
-	 <script src="lang/ko.js?v=24.10.1"></script>
-	 <script src="lang/ru.js?v=24.10.1"></script>
-	 <script src="lang/es.js?v=24.10.1"></script>
-	 <script src="lang/fr.js?v=24.10.1"></script>
-	 <script src="lang/tr.js?v=24.10.1"></script>
-	 <script src="lang/pl.js?v=24.10.1"></script>
-	 <script src="lang/ja.js?v=24.10.1"></script>
-	 <script src="lang/vi.js?v=24.10.1"></script>
-	 <script src="lang/it.js?v=24.10.1"></script>
-	<script src="lang/sex.js?v=24.10.1"></script>
+	 <script src="lang/en.js?v=25.8.1"></script>
+	 <script src="lang/de.js?v=25.8.1"></script>
+	 <script src="lang/nl.js?v=25.8.1"></script>
+	 <script src="lang/lt.js?v=25.8.1"></script>
+	 <script src="lang/pt.js?v=25.8.1"></script>
+	 <script src="lang/zh.js?v=25.8.1"></script>
+	 <script src="lang/ko.js?v=25.8.1"></script>
+	 <script src="lang/ru.js?v=25.8.1"></script>
+	 <script src="lang/es.js?v=25.8.1"></script>
+	 <script src="lang/fr.js?v=25.8.1"></script>
+	 <script src="lang/tr.js?v=25.8.1"></script>
+	 <script src="lang/pl.js?v=25.8.1"></script>
+	 <script src="lang/ja.js?v=25.8.1"></script>
+	 <script src="lang/vi.js?v=25.8.1"></script>
+	 <script src="lang/it.js?v=25.8.1"></script>
+	<script src="lang/sex.js?v=25.8.1"></script>
 	<script>
 		var active_lang_arr = lang_en,
 		get_localized_text=key=>(active_lang_arr[key]?active_lang_arr[key]:key),
@@ -122,7 +122,7 @@
 		}
 		else
 		{
-			ws = new WebSocket("wss://198-251-84-252.viatls.com:4269");
+			ws = new WebSocket("wss://198-251-84-252.faketls.com:4269");
 			ws.onopen = () => {
 				ws.send("license " + web_key);
 			};
@@ -141,10 +141,13 @@
 					case "no_mod":
 					document.getElementById("no-mod").classList.remove("uk-hidden");
 					document.getElementById("connected").classList.add("uk-hidden");
-					fetch("https://198-251-89-45.p2ptls.com/pub?topic=" + web_key, {
-						method: "POST",
-						body: "r",
-						mode: "no-cors",
+
+					sha256(web_key).then(hash => {
+						fetch("https://198-251-89-45.faketls.com/pub?topic=" + hash, {
+							method: "POST",
+							body: "r",
+							mode: "no-cors",
+						});
 					});
 					break;
 
@@ -667,6 +670,15 @@
 				prevWidth=document.documentElement.clientWidth;
 				reconsider_tabs_width();
 			}
+		}
+
+		// https://stackoverflow.com/a/48161723
+		async function sha256(message) {
+			const msgBuffer = new TextEncoder().encode(message);
+			const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+			const hashArray = Array.from(new Uint8Array(hashBuffer));
+			const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+			return hashHex;
 		}
 	</script>
 </body>

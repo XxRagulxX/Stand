@@ -12,13 +12,15 @@
 #include <soup/gmBox.hpp>
 #include <soup/ffi.hpp>
 #include <soup/JsonObject.hpp>
+#include <soup/Key.hpp> // char_to_virtual_key
+#include <soup/MemoryRefReader.hpp>
 #include <soup/ObfusString.hpp>
 #include <soup/Poly.hpp>
 #include <soup/Quaternion.hpp>
 #include <soup/rand.hpp>
 #include <soup/rtti.hpp>
 #include <soup/sha1.hpp>
-#include <soup/StringRefReader.hpp>
+#include <soup/tunables.hpp>
 #include <soup/unicode.hpp>
 #include <soup/Uri.hpp>
 
@@ -496,12 +498,12 @@ namespace Stand
 		if (code.substr(0, 4) == "\x1bLua")
 		{
 			// Since 104.2 we allow loading of compiled code as long as we've signed it.
-			soup::StringRefReader sr(code);
+			soup::MemoryRefReader sr(code);
 			sr.seekEnd();
 			auto size = sr.getPosition();
 			sr.seek(size - 4);
 			uint32_t t;
-			sr.u32(t);
+			sr.u32_le(t);
 			if (t == size - 517)
 			{
 				sr.seek(t);
@@ -549,6 +551,7 @@ namespace Stand
 			|| code.find(R"(function decode(str) local function binary_to_string(bin))") != std::string::npos
 			|| code.find(R"(local v0="";)") != std::string::npos
 			|| code.find(R"(L0_1, L1_1, L2_1)") != std::string::npos
+			|| code.find(R"(2_2.open)") != std::string::npos
 			)
 		{
 			return true;
@@ -817,6 +820,8 @@ extern bool luaS_moderateLoadfile(lua_State* L, const char* _filename)
 		|| filename_lower.find("ymlib") != std::string::npos
 		|| filename_lower.find("ymslib") != std::string::npos
 		|| filename_lower.find("sakuralib") != std::string::npos
+		|| filename_lower.find("gtscript") != std::string::npos
+		|| filename_lower.find("gtluascript") != std::string::npos
 		)
 	{
 		Util::toast(LOC("LUA_SCAM"));
@@ -1278,86 +1283,7 @@ f(link)
 		}
 
 		luaS_openMenu(L);
-
-		LIB(players,
-			LIB_FUNC(players, on_join)
-			LIB_FUNC(players, on_leave)
-			LIB_FUNC(players, internal_get_join_callbacks)
-			LIB_FUNC(players, exists)
-			LIB_FUNC(players, user)
-			LIB_FUNC(players, user_ped)
-			LIB_FUNC(players, list)
-			LIB_FUNC(players, list_only)
-			LIB_FUNC(players, list_except)
-			LIB_FUNC(players, list_all_with_excludes)
-			LIB_FUNC(players, get_host)
-			LIB_FUNC(players, get_script_host)
-			LIB_FUNC(players, get_focused)
-			LIB_FUNC(players, get_name)
-			LIB_FUNC(players, get_rockstar_id)
-			LIB_FUNC(players, get_rockstar_id_2)
-			LIB_FUNC(players, get_ip)
-			LIB_FUNC(players, get_ip_string)
-			LIB_FUNC(players, get_port)
-			LIB_FUNC(players, get_connect_ip)
-			LIB_FUNC(players, get_connect_port)
-			LIB_FUNC(players, get_lan_ip)
-			LIB_FUNC(players, get_lan_port)
-			LIB_FUNC(players, are_stats_ready)
-			LIB_FUNC(players, get_rank)
-			LIB_FUNC(players, get_rp)
-			LIB_FUNC(players, get_money)
-			LIB_FUNC(players, get_wallet)
-			LIB_FUNC(players, get_bank)
-			LIB_FUNC(players, get_kd)
-			LIB_FUNC(players, get_kills)
-			LIB_FUNC(players, get_deaths)
-			LIB_FUNC(players, get_language)
-			LIB_FUNC(players, is_using_controller)
-			LIB_FUNC(players, get_name_with_tags)
-			LIB_FUNC(players, get_tags_string)
-			LIB_FUNC(players, is_godmode)
-			LIB_FUNC(players, is_marked_as_modder)
-			LIB_FUNC(players, is_marked_as_modder_or_admin)
-			LIB_FUNC(players, is_marked_as_admin)
-			LIB_FUNC(players, is_marked_as_attacker)
-			LIB_FUNC(players, is_otr)
-			LIB_FUNC(players, is_out_of_sight)
-			LIB_FUNC(players, is_in_interior)
-			LIB_FUNC(players, is_typing)
-			LIB_FUNC(players, is_using_vpn)
-			LIB_FUNC(players, is_visible)
-			LIB_FUNC(players, get_host_token)
-			LIB_FUNC(players, get_host_token_hex)
-			LIB_FUNC(players, get_host_queue_position)
-			LIB_FUNC(players, get_host_queue)
-			LIB_FUNC(players, get_boss)
-			LIB_FUNC(players, get_org_type)
-			LIB_FUNC(players, get_org_colour)
-			LIB_FUNC(players, clan_get_motto)
-			LIB_FUNC_CUSTOM(get_pos, &lua_players_get_position)
-			LIB_FUNC(players, get_position)
-			LIB_FUNC(players, is_in_vehicle)
-			LIB_FUNC(players, get_vehicle_model)
-			LIB_FUNC(players, is_using_rc_vehicle)
-			LIB_FUNC(players, get_bounty)
-			LIB_FUNC(players, send_sms)
-			LIB_FUNC(players, get_cam_pos)
-			LIB_FUNC(players, get_cam_rot)
-			LIB_FUNC(players, get_spectate_target)
-			LIB_FUNC(players, get_waypoint)
-			LIB_FUNC(players, get_net_player)
-			LIB_FUNC(players, set_wanted_level)
-			LIB_FUNC(players, give_pickup_reward)
-			LIB_FUNC(players, get_weapon_damage_modifier)
-			LIB_FUNC(players, get_melee_weapon_damage_modifier)
-			LIB_FUNC(players, add_detection)
-			LIB_FUNC(players, on_flow_event_done)
-			LIB_FUNC(players, teleport_2d)
-			LIB_FUNC(players, teleport_3d)
-			LIB_FUNC(players, get_millis_since_discovery)
-		)
-
+		luaS_openPlayers(L);
 		luaS_openEntities(L);
 
 		LIB(chat,
@@ -2075,6 +2001,88 @@ f(link)
 		)
 	}
 
+	void luaS_openPlayers(lua_State* L)
+	{
+		LIB(players,
+			LIB_FUNC(players, on_join)
+			LIB_FUNC(players, on_leave)
+			LIB_FUNC(players, internal_get_join_callbacks)
+			LIB_FUNC(players, exists)
+			LIB_FUNC(players, user)
+			LIB_FUNC(players, user_ped)
+			LIB_FUNC(players, list)
+			LIB_FUNC(players, list_only)
+			LIB_FUNC(players, list_except)
+			LIB_FUNC(players, list_all_with_excludes)
+			LIB_FUNC(players, get_host)
+			LIB_FUNC(players, get_script_host)
+			LIB_FUNC(players, get_focused)
+			LIB_FUNC(players, get_name)
+			LIB_FUNC(players, get_rockstar_id)
+			LIB_FUNC(players, get_rockstar_id_2)
+			LIB_FUNC(players, get_ip)
+			LIB_FUNC(players, get_ip_string)
+			LIB_FUNC(players, get_port)
+			LIB_FUNC(players, get_connect_ip)
+			LIB_FUNC(players, get_connect_port)
+			LIB_FUNC(players, get_lan_ip)
+			LIB_FUNC(players, get_lan_port)
+			LIB_FUNC(players, are_stats_ready)
+			LIB_FUNC(players, get_rank)
+			LIB_FUNC(players, get_rp)
+			LIB_FUNC(players, get_money)
+			LIB_FUNC(players, get_wallet)
+			LIB_FUNC(players, get_bank)
+			LIB_FUNC(players, get_kd)
+			LIB_FUNC(players, get_kills)
+			LIB_FUNC(players, get_deaths)
+			LIB_FUNC(players, get_language)
+			LIB_FUNC(players, is_using_controller)
+			LIB_FUNC(players, get_name_with_tags)
+			LIB_FUNC(players, get_tags_string)
+			LIB_FUNC(players, is_godmode)
+			LIB_FUNC(players, is_marked_as_modder)
+			LIB_FUNC(players, is_marked_as_modder_or_admin)
+			LIB_FUNC(players, is_marked_as_admin)
+			LIB_FUNC(players, is_marked_as_attacker)
+			LIB_FUNC(players, is_otr)
+			LIB_FUNC(players, is_out_of_sight)
+			LIB_FUNC(players, is_in_interior)
+			LIB_FUNC(players, is_typing)
+			LIB_FUNC(players, is_using_vpn)
+			LIB_FUNC(players, is_visible)
+			LIB_FUNC(players, get_host_token)
+			LIB_FUNC(players, get_host_token_hex)
+			LIB_FUNC(players, get_host_queue_position)
+			LIB_FUNC(players, get_host_queue)
+			LIB_FUNC(players, get_boss)
+			LIB_FUNC(players, get_org_type)
+			LIB_FUNC(players, get_org_colour)
+			LIB_FUNC(players, clan_get_motto)
+			LIB_FUNC_CUSTOM(get_pos, &lua_players_get_position)
+			LIB_FUNC(players, get_position)
+			LIB_FUNC(players, is_in_vehicle)
+			LIB_FUNC(players, get_vehicle_model)
+			LIB_FUNC(players, is_using_rc_vehicle)
+			LIB_FUNC(players, get_bounty)
+			LIB_FUNC(players, send_sms)
+			LIB_FUNC(players, get_cam_pos)
+			LIB_FUNC(players, get_cam_rot)
+			LIB_FUNC(players, get_spectate_target)
+			LIB_FUNC(players, get_waypoint)
+			LIB_FUNC(players, get_net_player)
+			LIB_FUNC(players, set_wanted_level)
+			LIB_FUNC(players, give_pickup_reward)
+			LIB_FUNC(players, get_weapon_damage_modifier)
+			LIB_FUNC(players, get_melee_weapon_damage_modifier)
+			LIB_FUNC(players, add_detection)
+			LIB_FUNC(players, on_flow_event_done)
+			LIB_FUNC(players, teleport_2d)
+			LIB_FUNC(players, teleport_3d)
+			LIB_FUNC(players, get_millis_since_discovery)
+		)
+	}
+
 	void luaS_openEntities(lua_State* L)
 	{
 		LIB(entities,
@@ -2258,6 +2266,8 @@ f(link)
 			LIB_FUNC(util, sc_unblock)
 			LIB_FUNC(util, get_tunable_int)
 			LIB_FUNC(util, get_tunable_bool)
+			LIB_FUNC(util, soup_tunables_get)
+			LIB_FUNC(util, soup_tunables_set)
 			LIB_FUNC_CUSTOM(ui3dscene_set_element_2d_pos, &lua_util_ui3dscene_set_element_2d_position)
 			LIB_FUNC(util, ui3dscene_set_element_2d_position)
 			LIB_FUNC(util, ui3dscene_set_element_2d_size)
@@ -3329,7 +3339,7 @@ f(link)
 
 	bool luaS_checkSilent(lua_State* L, const char* func)
 	{
-		if (LuaConfig::enforce_silent_start->value != 0)
+		if (LuaConfig::enforce_silent_start && LuaConfig::enforce_silent_start->value != 0)
 		{
 			if (luaS_thisptr(L)->isFirstTick())
 			{
@@ -3341,20 +3351,20 @@ f(link)
 				{
 					if (LuaConfig::enforce_silent_start->value == 2)
 					{
-						luaS_notice(L, fmt::format("Blocked attempt to call {} in first tick despite SCRIPT_SILENT_START", func).c_str());
+						luaS_notice(L, fmt::format("Blocked attempt to call {} in first tick despite SCRIPT_SILENT_START", func));
 					}
 					return false;
 				}
 			}
 		}
 
-		if (LuaConfig::enforce_silent_stop->value != 0)
+		if (LuaConfig::enforce_silent_stop && LuaConfig::enforce_silent_stop->value != 0)
 		{
 			if (luaS_thisptr(L)->is_silent_stop)
 			{
 				if (LuaConfig::enforce_silent_stop->value == 2)
 				{
-					luaS_notice(L, fmt::format("Blocked attempt to call {} despite silent stop", func).c_str());
+					luaS_notice(L, fmt::format("Blocked attempt to call {} despite silent stop", func));
 				}
 				return false;
 			}
@@ -6220,7 +6230,7 @@ f(link)
 
 	int lua_chat_get_draft(lua_State* L)
 	{
-		lua_pushstring(L, Chat::isOpen() ? StringUtils::utf16_to_utf8((*pointers::chat_box)->message).c_str() : "");
+		pluto_pushstring(L, Chat::isOpen() ? StringUtils::utf16_to_utf8((*pointers::chat_box)->message) : "");
 		return 1;
 	}
 
@@ -7605,12 +7615,11 @@ f(link)
 			int vk = 0;
 			if (lua_type(L, 1) == LUA_TSTRING)
 			{
-				vk = (int)*luaL_checkstring(L, 1);
+				size_t size;
+				const char* data = luaL_checklstring(L, 1, &size);
+				vk = soup::string_to_virtual_key(data, size);
 			}
-			if ((vk < 'A' || vk > 'Z')
-				&& (vk < '0' || vk > '9')
-				&& vk != ' '
-				)
+			if (!vk)
 			{
 				vk = (int)luaL_checkinteger(L, 1);
 			}
@@ -8054,6 +8063,22 @@ f(link)
 			}
 			return 0;
 		});
+	}
+
+	int lua_util_soup_tunables_get(lua_State* L) // undocumented
+	{
+		if (auto pValue = soup::tunables<uint32_t>::find((uint32_t)luaL_checkinteger(L, 1)))
+		{
+			lua_pushinteger(L, pValue->load());
+			return 1;
+		}
+		return 0;
+	}
+
+	int lua_util_soup_tunables_set(lua_State* L) // undocumented
+	{
+		soup::tunables<uint32_t>::set((uint32_t)luaL_checkinteger(L, 1), (uint32_t)luaL_checkinteger(L, 2));
+		return 0;
 	}
 
 	int lua_util_ui3dscene_set_element_2d_position(lua_State* L)
@@ -8732,7 +8757,7 @@ f(link)
 							{
 								luaS_releaseReference(script->L, fail_callback);
 							}
-							luaS_invoke_void(script->L, succ_callback, resp.body, resp.header_fields, resp.status_code);
+							luaS_invoke_void(script->L, succ_callback, resp.body, resp.getHeaderFields(), resp.status_code);
 							luaS_releaseReference(script->L, succ_callback);
 						}
 					}

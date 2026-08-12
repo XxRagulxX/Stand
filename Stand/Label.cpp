@@ -58,7 +58,7 @@ namespace Stand
 
 	void Label::setLocalised(hash_t hash) noexcept
 	{
-		this->hash = hash ^ MAGIC_LABEL;
+		this->hash = hash;
 		this->literal_str.clear();
 	}
 
@@ -121,11 +121,6 @@ namespace Stand
 		return (1i64 << 32) | rage::atStringHash(literal_str);
 	}
 
-	hash_t Label::getLocalisationHash() const noexcept
-	{
-		return hash ^ MAGIC_LABEL;
-	}
-
 	std::string Label::getWebString() const noexcept
 	{
 		if (isLiteral())
@@ -174,7 +169,7 @@ namespace Stand
 
 	std::string Label::getEnglishUtf8() const noexcept
 	{
-		return isLiteral() ? literal_str : Lang::get_en(getLocalisationHash());
+		return isLiteral() ? literal_str : Lang::getEn(getLocalisationHash());
 	}
 
 	std::wstring Label::getEnglishUtf16() const noexcept

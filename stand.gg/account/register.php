@@ -36,7 +36,7 @@
 							<h2 class="card-title">Basic</h2>
 							<p>For about <b>12,50€</b>, you get:</p>
 							<?php require "../components/ed-basic.html"; ?>
-							<td><a href="/help/basic-edition" class="btn btn-default">WHERE TO BUY</a></td>
+							<a href="/help/basic-edition" class="btn btn-default">WHERE TO BUY</a>
 						</div>
 					</div>
 					<div class="col-md-4">
@@ -44,7 +44,7 @@
 							<h2 class="card-title">Regular</h2>
 							<p>For about <b>25€</b>, you get:</p>
 							<?php require "../components/ed-regular.html"; ?>
-							<td><a href="/help/regular-edition" class="btn btn-default">WHERE TO BUY</a></td>
+							<a href="/help/regular-edition" class="btn btn-default">WHERE TO BUY</a>
 						</div>
 					</div>
 					<div class="col-md-4">
@@ -52,7 +52,7 @@
 							<h2 class="card-title">Ultimate</h2>
 							<p>For about <b>50€</b>, you get:</p>
 							<?php require "../components/ed-ultimate.html"; ?>
-							<td><a href="/help/ultimate-edition" class="btn btn-default">WHERE TO BUY</a></td>
+							<a href="/help/ultimate-edition" class="btn btn-default">WHERE TO BUY</a>
 						</div>
 					</div>
 				</div>
@@ -63,7 +63,7 @@
 	<script>
 		if(typeof localStorage.getItem("account_id")=="string")
 		{
-			location.href=".";
+			location.href="/account/";
 		}
 
 		let register_pending = false;

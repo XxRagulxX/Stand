@@ -9,6 +9,7 @@
 
 #include "lprefix.h"
 
+
 #include <ctype.h>
 #include <errno.h>
 #include <locale.h>
@@ -23,9 +24,17 @@
 
 #include "lauxlib.h"
 #include "lualib.h"
+#include "llimits.h"
 
 #include "vendor/Soup/soup/filesystem.hpp"
 #include "vendor/Soup/soup/string.hpp"
+#include "vendor/Soup/soup/unicode.hpp"
+
+#if SOUP_WINDOWS
+#include <windows.h>
+#else
+#include <sys/stat.h>
+#endif
 
 
 // As a "last stand" measure to ensure that Pluto, when compiled as a DLL, can itself not be loaded via package.loadlib to provide functions that the integrator wanted disabled.
@@ -36,11 +45,6 @@
 #else
 #define FS_FUNCTION
 #endif
-
-
-/* Basic error handling. Exceptions have better error messages than error_codes. */
-#define Protect(...) \
-  try { __VA_ARGS__; } catch (const std::exception& err) { luaL_error(L, err.what()); } 
 
 
 /*
@@ -92,9 +96,9 @@ static int l_checkmode (const char *mode) {
 
 /* ISO C definitions */
 #define l_popen(L,c,m)  \
-      ((void)c, (void)m, \
-      luaL_error(L, "'popen' not supported"), \
-      (FILE*)0)
+	  ((void)c, (void)m, \
+	  luaL_error(L, "'popen' not supported"), \
+	  (FILE*)0)
 #define l_pclose(L,file)		((void)L, (void)file, -1)
 
 #endif				/* } */
@@ -133,7 +137,7 @@ static int l_checkmode (const char *mode) {
 
 #if !defined(l_fseek)		/* { */
 
-#if defined(LUA_USE_POSIX)	/* { */
+#if defined(LUA_USE_POSIX) || defined(LUA_USE_OFF_T)	/* { */
 
 #include <sys/types.h>
 
@@ -533,7 +537,7 @@ static int nextc (RN *rn) {
     return 0;  /* fail */
   }
   else {
-    rn->buff[rn->n++] = rn->c;  /* save current char */
+    rn->buff[rn->n++] = cast_char(rn->c);  /* save current char */
     rn->c = l_getc(rn->f);  /* read next one */
     return 1;
   }
@@ -614,15 +618,15 @@ static int read_line (lua_State *L, FILE *f, int chop) {
   luaL_buffinit(L, &b);
   do {  /* may need to read several chunks to get whole line */
     char *buff = luaL_prepbuffer(&b);  /* preallocate buffer space */
-    int i = 0;
+    unsigned i = 0;
     l_lockfile(f);  /* no memory errors can happen inside the lock */
     while (i < LUAL_BUFFERSIZE && (c = l_getc(f)) != EOF && c != '\n')
-      buff[i++] = c;  /* read up to end of line or buffer limit */
+      buff[i++] = cast_char(c);  /* read up to end of line or buffer limit */
     l_unlockfile(f);
     luaL_addsize(&b, i);
   } while (c != EOF && c != '\n');  /* repeat until end of line */
   if (!chop && c == '\n')  /* want a newline and have one? */
-    luaL_addchar(&b, c);  /* add ending newline to result */
+    luaL_addchar(&b, '\n');  /* add ending newline to result */
   luaL_pushresult(&b);  /* close buffer */
   /* return ok if read something (either a newline or something else) */
   return (c == '\n' || lua_rawlen(L, -1) > 0);
@@ -691,7 +695,7 @@ static int g_read (lua_State *L, FILE *f, int first) {
             success = 1; /* always success */
             break;
           default:
-            luaL_argerror(L, n, "invalid format");
+            return luaL_argerror(L, n, "invalid format");
         }
       }
     }
@@ -727,7 +731,7 @@ static int io_readline (lua_State *L) {
   int i;
   int n = (int)lua_tointeger(L, lua_upvalueindex(2));
   if (isclosed(p))  /* file is already closed? */
-    luaL_error(L, "file is already closed");
+    return luaL_error(L, "file is already closed");
   lua_settop(L , 1);
   luaL_checkstack(L, n, "too many arguments");
   for (i = 1; i <= n; i++)  /* push arguments to 'g_read' */
@@ -739,7 +743,7 @@ static int io_readline (lua_State *L) {
   else {  /* first result is false: EOF or error */
     if (n > 1) {  /* is there error information? */
       /* 2nd result is error message */
-      luaL_error(L, "%s", lua_tostring(L, -n + 1));
+      return luaL_error(L, "%s", lua_tostring(L, -n + 1));
     }
     if (lua_toboolean(L, lua_upvalueindex(3))) {  /* generator created file? */
       lua_settop(L, 0);  /* clear stack */
@@ -755,28 +759,28 @@ static int io_readline (lua_State *L) {
 
 static int g_write (lua_State *L, FILE *f, int arg) {
   int nargs = lua_gettop(L) - arg;
-  int status = 1;
+  size_t totalbytes = 0;  /* total number of bytes written */
   errno = 0;
-  for (; nargs--; arg++) {
-    if (lua_type(L, arg) == LUA_TNUMBER) {
-      /* optimization: could be done exactly as for strings */
-      int len = lua_isinteger(L, arg)
-                ? fprintf(f, LUA_INTEGER_FMT,
-                             (LUAI_UACINT)lua_tointeger(L, arg))
-                : fprintf(f, LUA_NUMBER_FMT,
-                             (LUAI_UACNUMBER)lua_tonumber(L, arg));
-      status = status && (len > 0);
+  for (; nargs--; arg++) {  /* for each argument */
+    char buff[LUA_N2SBUFFSZ];
+    const char *s;
+    size_t numbytes;  /* bytes written in one call to 'fwrite' */
+    size_t len = lua_numbertocstring(L, arg, buff);  /* try as a number */
+    if (len > 0) {  /* did conversion work (value was a number)? */
+      s = buff;
+      len--;
     }
-    else {
-      size_t l;
-      const char *s = luaL_checklstring(L, arg, &l);
-      status = status && (fwrite(s, sizeof(char), l, f) == l);
+    else  /* must be a string */
+      s = luaL_checklstring(L, arg, &len);
+    numbytes = fwrite(s, sizeof(char), len, f);
+    totalbytes += numbytes;
+    if (numbytes < len) {  /* write error? */
+      int n = luaL_fileresult(L, 0, NULL);
+      lua_pushinteger(L, cast_st2S(totalbytes));
+      return n + 1;  /* return fail, error msg., error code, and counter */
     }
   }
-  if (l_likely(status))
-    return 1;  /* file handle already on stack top */
-  else
-    return luaL_fileresult(L, status, NULL);
+  return 1;  /* no errors; file handle already on stack top */
 }
 
 
@@ -829,10 +833,7 @@ static int f_setvbuf (lua_State *L) {
 }
 
 
-
-static int io_flush (lua_State *L) {
-  FS_FUNCTION
-  FILE *f = getiofile(L, IO_INPUT);
+static int aux_flush (lua_State *L, FILE *f) {
   errno = 0;
   return luaL_fileresult(L, fflush(f) == 0, NULL);
 }
@@ -840,13 +841,17 @@ static int io_flush (lua_State *L) {
 
 static int f_flush (lua_State *L) {
   FS_FUNCTION
-  FILE *f = tofile(L);
-  errno = 0;
-  return luaL_fileresult(L, fflush(f) == 0, NULL);
+  return aux_flush(L, tofile(L));
 }
 
 
-[[nodiscard]] static std::filesystem::path getStringStreamPathRaw(lua_State *L, int idx) {
+static int io_flush (lua_State *L) {
+  FS_FUNCTION
+  return aux_flush(L, getiofile(L, IO_OUTPUT));
+}
+
+
+[[nodiscard]] static std::filesystem::path& getStringStreamPathRaw(lua_State *L, int idx) {
   const char* f;
 
   if (lua_isuserdata(L, idx)) {
@@ -860,15 +865,21 @@ static int f_flush (lua_State *L) {
     f = luaL_checkstring(L, idx);
   }
 
+  std::filesystem::path& p = *pluto_newclassinst(L, std::filesystem::path);
+  try {
 #if SOUP_CPP20
-  return soup::string::toUtf8Type(f);
+    p = soup::string::toUtf8Type(f);
 #else
-  return std::filesystem::u8path(f);
+    p = std::filesystem::u8path(f);
 #endif
+  }
+  catch (const std::exception& e) {
+    luaL_error(L, "%s", e.what());
+  }
+  return p;
 }
 
-[[nodiscard]] static std::filesystem::path getStringStreamPathForRead(lua_State *L, int idx) {
-  const auto path = getStringStreamPathRaw(L, idx);
+static void checkPathForRead (lua_State *L, std::filesystem::path& path) {
 #ifdef PLUTO_NO_FILESYSTEM
   luaL_error(L, "disallowed by content moderation policy");
 #endif
@@ -877,11 +888,16 @@ static int f_flush (lua_State *L) {
     luaL_error(L, "disallowed by content moderation policy");
   }
 #endif
+}
+
+[[nodiscard]] static std::filesystem::path& getStringStreamPathForRead(lua_State *L, int idx) {
+  auto& path = getStringStreamPathRaw(L, idx);
+  checkPathForRead(L, path);
   return path;
 }
 
-[[nodiscard]] static std::filesystem::path getStringStreamPathForWrite(lua_State *L, int idx) {
-  const auto path = getStringStreamPathRaw(L, idx);
+[[nodiscard]] static std::filesystem::path& getStringStreamPathForWrite(lua_State *L, int idx) {
+  auto& path = getStringStreamPathRaw(L, idx);
 #ifdef PLUTO_NO_FILESYSTEM
   luaL_error(L, "disallowed by content moderation policy");
 #endif
@@ -893,123 +909,184 @@ static int f_flush (lua_State *L) {
   return path;
 }
 
-
 static int isdir (lua_State *L) {
-  Protect(
-    const auto dir = getStringStreamPathForRead(L, 1);
-    lua_pushboolean(L, std::filesystem::is_directory(dir));
-  );
-
+  FS_FUNCTION
+  auto& path = getStringStreamPathForRead(L, 1);
+  std::error_code ec;
+  const auto ret = std::filesystem::is_directory(path, ec);
+  (void)ec;  /* if there's *nothing* at the given path, that means it's not a directory; return false, don't error. */
+  lua_pushboolean(L, ret);
   return 1;
 }
 
 
 static int isfile (lua_State *L) {
-  Protect(
-    const auto dir = getStringStreamPathForRead(L, 1);
-    lua_pushboolean(L, std::filesystem::is_regular_file(dir));
-  );
-
+  FS_FUNCTION
+  auto& path = getStringStreamPathForRead(L, 1);
+  std::error_code ec;
+  const auto ret = std::filesystem::is_regular_file(path, ec);
+  (void)ec;  /* if there's *nothing* at the given path, that means it's not a file; return false, don't error. */
+  lua_pushboolean(L, ret);
   return 1;
 }
 
 
 static int filesize (lua_State *L) {
-  Protect(
-    const auto f = getStringStreamPathForRead(L, 1);
-    const auto s = (lua_Integer)std::filesystem::file_size(f);
-    lua_pushinteger(L, s);
-  );
-
+  FS_FUNCTION
+  auto& path = getStringStreamPathForRead(L, 1);
+  std::error_code ec;
+  const auto ret = (lua_Integer)std::filesystem::file_size(path, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  lua_pushinteger(L, ret);
   return 1;
 }
 
 
 static int exists (lua_State *L) {
-  Protect(
-    const auto f = getStringStreamPathForRead(L, 1);
-    lua_pushboolean(L, std::filesystem::exists(f));
-  );
-
+  FS_FUNCTION
+  auto& path = getStringStreamPathForRead(L, 1);
+  std::error_code ec;
+  const auto ret = std::filesystem::exists(path, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  lua_pushboolean(L, ret);
   return 1;
 }
 
 
 static int io_copy (lua_State *L) {
-  Protect(
-    const auto from = getStringStreamPathForRead(L, 1);
-    const auto to = getStringStreamPathForWrite(L, 2);
+  FS_FUNCTION
+  lua_settop(L, 2);
+  /* stack: arg_from, arg_to */
+  auto& from = getStringStreamPathForRead(L, -2);
+  /* stack: arg_from, arg_to, path_from */
+  auto& to = getStringStreamPathForWrite(L, -2);
+  /* stack: arg_from, arg_to, path_from, path_to */
 
-    if (std::filesystem::is_regular_file(to)) {
-      std::filesystem::remove(to);
+  std::error_code ec;
+  if (std::filesystem::is_regular_file(to, ec)) {
+    std::filesystem::remove(to, ec);
+    if (l_unlikely(ec.operator bool())) {
+      luaL_error(L, "destination already exists, attempted to delete but failed");
     }
+  }
 
-    std::filesystem::copy_file(from, to);
-  );
+  std::filesystem::copy_file(from, to, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
 
   return 0;
 }
 
-static int io_copyto (lua_State *L) {
-  pluto_warning(L, "io.copyto is deprecated, replace the call with io.copy.");
-  return io_copy(L);
+
+static int io_symlink (lua_State *L) {
+  FS_FUNCTION
+  lua_settop(L, 2);
+  /* stack: arg_from, arg_to */
+  auto& from = getStringStreamPathForRead(L, -2);
+  /* stack: arg_from, arg_to, path_from */
+  auto& to = getStringStreamPathForWrite(L, -2);
+  /* stack: arg_from, arg_to, path_from, path_to */
+
+  std::error_code ec;
+  if (std::filesystem::exists(to, ec)) {
+    std::filesystem::remove(to, ec);
+    if (l_unlikely(ec.operator bool())) {
+      luaL_error(L, "destination already exists, attempted to delete but failed");
+    }
+  }
+
+  if (std::filesystem::is_directory(from))
+    std::filesystem::create_directory_symlink(from, to, ec);
+  else
+    std::filesystem::create_symlink(from, to, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  return 0;
 }
 
 
 static int absolute (lua_State *L) {
-  Protect(
-    const auto f = getStringStreamPathForRead(L, 1);
-    const auto r = lua_istrue(L, 2) ? std::filesystem::canonical(f) : std::filesystem::absolute(f);
-    lua_pushstring(L, (const char*)r.u8string().c_str());
-  );
-
+  FS_FUNCTION
+  const auto bCanonical = lua_istrue(L, 2);
+  auto& f = getStringStreamPathForRead(L, 1);
+  std::error_code ec;
+  const auto r = bCanonical ? std::filesystem::canonical(f, ec) : std::filesystem::absolute(f, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  lua_pushstring(L, (const char*)r.u8string().c_str());
   return 1;
 }
 
 
 static int relative (lua_State *L) {
-  Protect(
-    const auto f = getStringStreamPathForRead(L, 1);
-    const auto r = std::filesystem::relative(f);
-    lua_pushstring(L, (const char*)r.u8string().c_str());
-  );
-
+  FS_FUNCTION
+  auto& f = getStringStreamPathForRead(L, 1);
+  std::error_code ec;
+  const auto r = std::filesystem::relative(f, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  lua_pushstring(L, (const char*)r.u8string().c_str());
   return 1;
 }
 
 
 static int io_part (lua_State *L) {
-  Protect(
-    std::filesystem::path path = getStringStreamPathRaw(L, 1);
-    static const char *const parts[] = {"parent", "name"};
-    int part = luaL_checkoption(L, 2, nullptr, parts);
-    if (part == 0)
-      path = path.parent_path();
-    else
-      path = path.filename();
-    lua_pushstring(L, (const char*)path.u8string().c_str());
-  );
-
+  if (lua_gettop(L) == 1) {
+    auto& path = getStringStreamPathRaw(L, 1);
+    pluto_pushstring(L, soup::string::fixType(path.parent_path().u8string()));
+    pluto_pushstring(L, soup::string::fixType(path.filename().u8string()));
+    return 2;
+  }
+  static const char *const parts[] = {"parent", "name", nullptr};
+  int part = luaL_checkoption(L, 2, nullptr, parts);
+  auto& path = getStringStreamPathRaw(L, 1);
+  if (part == 0)
+    path = path.parent_path();
+  else
+    path = path.filename();
+  pluto_pushstring(L, soup::string::fixType(path.u8string()));
   return 1;
 }
 
 
 static int makedir (lua_State *L) {
-  Protect(
-    const auto path = getStringStreamPathForWrite(L, 1);
-    lua_pushboolean(L, std::filesystem::create_directory(path))
-  );
-
+  FS_FUNCTION
+  auto& path = getStringStreamPathForWrite(L, 1);
+  std::error_code ec;
+  const auto res = std::filesystem::create_directory(path, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  lua_pushboolean(L, res);
+#if SOUP_WINDOWS
+  if (res) {
+    if (path.filename().empty())
+      path = path.parent_path();
+    if (path.filename().c_str()[0] == '.') {
+      SetFileAttributesW(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+    }
+  }
+#endif
   return 1;
 }
 
 
 static int makedirs (lua_State *L) {
-  Protect(
-    const auto path = getStringStreamPathForWrite(L, 1);
-    lua_pushboolean(L, std::filesystem::create_directories(path))
-  );
-
+  FS_FUNCTION
+  auto& path = getStringStreamPathForWrite(L, 1);
+  std::error_code ec;
+  lua_pushboolean(L, std::filesystem::create_directories(path, ec));
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
   return 1;
 }
 
@@ -1022,7 +1099,7 @@ static int makedirs (lua_State *L) {
 static void listdir_r (lua_State* L, lua_Integer& i, const std::filesystem::path& f) {
   std::error_code ec;
   std::filesystem::directory_iterator it(f, ec);
-  if (ec) return; /* skip this directory if we failed to enter it */
+  if (l_unlikely(ec.operator bool())) return; /* skip this directory if we failed to enter it */
   for (auto const& dir_entry : it) {
     lua_pushstring(L, (const char*)dir_entry.path().u8string().c_str());
     lua_rawseti(L, -2, ++i);
@@ -1033,79 +1110,91 @@ static void listdir_r (lua_State* L, lua_Integer& i, const std::filesystem::path
 }
 
 static int listdir (lua_State *L) {
-  const auto f = getStringStreamPathForRead(L, 1);
+  FS_FUNCTION
   const auto recursive = lua_istrue(L, 2);
+  auto& f = getStringStreamPathForRead(L, 1);
   lua_newtable(L);
   lua_Integer i = 0;
-  Protect(
-    for (auto const& dir_entry : std::filesystem::directory_iterator(f)) {
-      lua_pushstring(L, (const char*)dir_entry.path().u8string().c_str());
-      lua_rawseti(L, -2, ++i);
-      if (recursive && dir_entry.is_directory()) {
-        listdir_r(L, i, dir_entry.path());
-      }
+  std::error_code ec;
+  std::filesystem::directory_iterator it(f, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
+  for (auto const& dir_entry : it) {
+    lua_pushstring(L, (const char*)dir_entry.path().u8string().c_str());
+    lua_rawseti(L, -2, ++i);
+    if (recursive && dir_entry.is_directory()) {
+      listdir_r(L, i, dir_entry.path());
     }
-  );
+  }
   return 1;
 }
 
 
 int l_os_remove (lua_State *L) {
-  const auto path = getStringStreamPathForWrite(L, 1);
-
-  try {
-    std::filesystem::remove(path);
-  }
-  catch (const std::exception& e) {
+  FS_FUNCTION
+  auto& path = getStringStreamPathForWrite(L, 1);
+  std::error_code ec;
+  std::filesystem::remove(path, ec);
+  if (l_unlikely(ec.operator bool())) {
     lua_pushboolean(L, 0);
-    lua_pushstring(L, e.what());
+    lua_pushliteral(L, "operation failed");
     return 2;
   }
-
   lua_pushboolean(L, 1);
   return 1;
 }
 
 static int l_remove (lua_State *L) {
-  const auto path = getStringStreamPathForWrite(L, 1);
+  FS_FUNCTION
   const auto recursive = lua_istrue(L, 2);
-
-  Protect(
-    if (recursive) {
-      std::filesystem::remove_all(path);
-    }
-    else {
-      std::filesystem::remove(path);
-    }
-  );
-
+  auto& path = getStringStreamPathForWrite(L, 1);
+  std::error_code ec;
+  if (recursive) {
+    std::filesystem::remove_all(path, ec);
+  }
+  else {
+    std::filesystem::remove(path, ec);
+  }
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
   return 0;
 }
 
 
 int l_os_rename (lua_State *L) {
-  const auto oldP = getStringStreamPathForRead(L, 1);
-  const auto newP = getStringStreamPathForWrite(L, 2);
-
-  try {
-    std::filesystem::rename(oldP, newP);
-  }
-  catch (const std::exception& e) {
+  FS_FUNCTION
+  lua_settop(L, 2);
+  /* stack: arg_from, arg_to */
+  auto& from = getStringStreamPathForRead(L, -2);
+  /* stack: arg_from, arg_to, path_from */
+  auto& to = getStringStreamPathForWrite(L, -2);
+  /* stack: arg_from, arg_to, path_from, path_to */
+  std::error_code ec;
+  std::filesystem::rename(from, to, ec);
+  if (l_unlikely(ec.operator bool())) {
     lua_pushboolean(L, 0);
-    lua_pushstring(L, e.what());
+    lua_pushliteral(L, "operation failed");
     return 2;
   }
-
   lua_pushboolean(L, 1);
   return 1;
 }
 
 static int l_rename (lua_State *L) {
-  const auto oldP = getStringStreamPathForRead(L, 1);
-  const auto newP = getStringStreamPathForWrite(L, 2);
-
-  Protect(std::filesystem::rename(oldP, newP));
-
+  FS_FUNCTION
+  lua_settop(L, 2);
+  /* stack: arg_from, arg_to */
+  auto& from = getStringStreamPathForRead(L, -2);
+  /* stack: arg_from, arg_to, path_from */
+  auto& to = getStringStreamPathForWrite(L, -2);
+  /* stack: arg_from, arg_to, path_from, path_to */
+  std::error_code ec;
+  std::filesystem::rename(from, to, ec);
+  if (l_unlikely(ec.operator bool())) {
+    luaL_error(L, "operation failed");
+  }
   return 0;
 }
 
@@ -1114,15 +1203,23 @@ static int currentdir (lua_State *L) {
   FS_FUNCTION
   if (lua_gettop(L) == 0) {
     /* getter */
-    std::filesystem::path cd;
-    Protect(cd = std::filesystem::current_path());
+    auto& cd = *pluto_newclassinst(L, std::filesystem::path);
+    std::error_code ec;
+    cd = std::filesystem::current_path(ec);
+    if (l_unlikely(ec.operator bool())) {
+      luaL_error(L, "operation failed");
+    }
     lua_pushstring(L, (const char*)cd.u8string().c_str());
     return 1;
   }
   else {
     /* setter */
-    std::filesystem::path cd = getStringStreamPathRaw(L, 1);
-    Protect(std::filesystem::current_path(cd));
+    auto& cd = getStringStreamPathRaw(L, 1);
+    std::error_code ec;
+    std::filesystem::current_path(cd, ec);
+    if (l_unlikely(ec.operator bool())) {
+      luaL_error(L, "operation failed");
+    }
     return 0;
   }
 }
@@ -1142,27 +1239,38 @@ static int currentdir (lua_State *L) {
 }
 
 static int writetime (lua_State *L) {
+  FS_FUNCTION
   if (lua_gettop(L) == 1) {
     /* getter */
-    std::filesystem::path file = getStringStreamPathForRead(L, 1);
+    auto& file = getStringStreamPathForRead(L, 1);
+    std::error_code ec;
     std::time_t ut;
-    Protect(ut = file_time_to_unix_time(std::filesystem::last_write_time(file)));
+    ut = file_time_to_unix_time(std::filesystem::last_write_time(file, ec));
+    if (l_unlikely(ec.operator bool())) {
+      luaL_error(L, "operation failed");
+    }
     lua_pushinteger(L, ut);
     return 1;
   }
   else {
     /* setter */
-    std::filesystem::path file = getStringStreamPathForWrite(L, 1);
-    Protect(std::filesystem::last_write_time(file, unix_time_to_file_time(luaL_checkinteger(L, 2))));
+    const auto ut = luaL_checkinteger(L, 2);
+    auto& file = getStringStreamPathForWrite(L, 1);
+    std::error_code ec;
+    std::filesystem::last_write_time(file, unix_time_to_file_time(ut), ec);
+    if (l_unlikely(ec.operator bool())) {
+      luaL_error(L, "operation failed");
+    }
     return 0;
   }
 }
 
 
 static int contents (lua_State *L) {
+  FS_FUNCTION
   if (lua_gettop(L) == 1) {
     /* getter */
-    std::filesystem::path file = getStringStreamPathForRead(L, 1);
+    auto& file = getStringStreamPathForRead(L, 1);
     size_t len;
     if (auto data = soup::filesystem::createFileMapping(file, len)) {
       lua_pushlstring(L, (const char*)data, len);
@@ -1172,13 +1280,71 @@ static int contents (lua_State *L) {
   }
   else {
     /* setter */
-    std::filesystem::path file = getStringStreamPathForWrite(L, 1);
-    std::ofstream of(file, std::ios_base::binary);
     size_t len;
-    const char* str = luaL_checklstring(L, 2, &len);
+    const char *str = luaL_checklstring(L, 2, &len);
+    auto& file = getStringStreamPathForWrite(L, 1);
+    std::ofstream of(file, std::ios_base::binary);
     of.write(str, len);
   }
   return 0;
+}
+
+
+static int io_chmod (lua_State *L) {
+  FS_FUNCTION
+  switch (lua_gettop(L)) {
+    case 0: {  /* availability check */
+      lua_pushboolean(L, !SOUP_WINDOWS);
+      return 1;
+    }
+    case 1: {  /* getter */
+#if !SOUP_WINDOWS
+      auto& file = getStringStreamPathForRead(L, 1);
+      struct stat st;
+      if (stat(file.c_str(), &st) == 0) {
+        lua_pushinteger(L, st.st_mode & 0777);
+        return 1;
+      }
+#endif
+      return 0;
+    }
+    case 2: {  /* setter */
+#if !SOUP_WINDOWS
+      const auto mode = (mode_t)luaL_checkinteger(L, 2);
+      auto& file = getStringStreamPathForWrite(L, 1);
+      chmod(file.c_str(), mode);
+#endif
+      return 0;
+    }
+    default: luaL_error(L, "wrong number of arguments");
+  }
+}
+
+
+static int io_unique (lua_State *L) {
+  const char* ext = luaL_checkstring(L, 2);
+  auto& base = getStringStreamPathRaw(L, 1);
+  auto& path = *pluto_newclassinst(L, std::filesystem::path, base);
+  path += '.';
+  path += ext;
+  checkPathForRead(L, path);
+  if (!std::filesystem::exists(path)) {
+    lua_pushstring(L, (const char*)path.u8string().c_str());
+    return 1;
+  }
+  for (int i = 2; i != 100; ++i) {
+    path = base;
+    path += " (";
+    path += std::to_string(i);
+    path += ").";
+    path += ext;
+    checkPathForRead(L, path);
+    if (!std::filesystem::exists(path)) {
+      lua_pushstring(L, (const char*)path.u8string().c_str());
+      return 1;
+    }
+  }
+  luaL_error(L, "operation failed");
 }
 
 
@@ -1186,19 +1352,26 @@ static int contents (lua_State *L) {
 ** functions for 'io' library
 */
 static const luaL_Reg iolib[] = {
+  {"unique", io_unique},
+  {"chmod", io_chmod},
   {"contents", contents},
   {"writetime", writetime},
   {"currentdir", currentdir},
+  {"chdir", currentdir},
+  {"cwd", currentdir},
   {"rename", l_rename},
   {"remove", l_remove},
   {"listdir", listdir},
+  {"scandir", listdir},
   {"makedir", makedir},
+  {"mkdir", makedir},
   {"makedirs", makedirs},
+  {"mkdirs", makedirs},
   {"absolute", absolute},
   {"relative", relative},
   {"part", io_part},
-  {"copy", io_copy}, /* added in Pluto 0.8.0 */
-  {"copyto", io_copyto}, /* deprecated as of Pluto 0.8.0 */
+  {"copy", io_copy},
+  {"symlink", io_symlink},
   {"exists", exists},
   {"filesize", filesize},
   {"isfile", isfile},
@@ -1291,3 +1464,10 @@ LUAMOD_API int luaopen_io (lua_State *L) {
   return 1;
 }
 
+
+static const luaL_Reg constexpr_iolib[] = {
+  {"contents", contents},
+  {NULL, NULL}
+};
+
+const Pluto::ConstexprLibrary Pluto::constexpr_io{ "io", constexpr_iolib };

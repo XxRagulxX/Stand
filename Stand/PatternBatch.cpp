@@ -66,7 +66,7 @@ namespace Stand
 					result = (entry.range.base.as<uintptr_t>() + cached->second);
 					mtx.unlock();
 					if (result.isInRange(entry.range)
-						&& soup::Range::pattern_matches(result.as<uint8_t*>(), entry.pattern.bytes.data(), entry.pattern.bytes.size())
+						&& entry.pattern.matches(result.as<uint8_t*>())
 						)
 					{
 						from_cache = true;

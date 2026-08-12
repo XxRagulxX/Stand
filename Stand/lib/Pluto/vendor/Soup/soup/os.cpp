@@ -5,9 +5,14 @@
 #include <fstream>
 
 #if SOUP_WINDOWS
-	#pragma comment(lib, "Gdi32.lib")
+	#pragma comment(lib, "gdi32.lib")
+	#pragma comment(lib, "user32.lib") // OpenClipboard, ..., GetDC, ReleaseDC
+	#pragma comment(lib, "winmm.lib") // timeBeginPeriod, timeEndPeriod
 
 	#include <psapi.h>
+	#if !SOUP_CROSS_COMPILE
+		#include <timeapi.h> // timeBeginPeriod, timeEndPeriod
+	#endif
 
 	#include "Exception.hpp"
 	#include "ObfusString.hpp"
@@ -42,6 +47,7 @@ NAMESPACE_SOUP
 		str.push_back('"');
 	}
 
+#if !SOUP_WASM
 	std::string os::execute(std::string program, const std::vector<std::string>& args)
 	{
 		resolveProgram(program);
@@ -124,20 +130,19 @@ NAMESPACE_SOUP
 #endif
 		return result;
 	}
+#endif
 
+#if !SOUP_WINDOWS && !SOUP_WASM
 	pid_t os::getProcessId() noexcept
 	{
-#if SOUP_WINDOWS
-		return GetCurrentProcessId();
-#else
 		return ::getpid();
-#endif
 	}
+#endif
 
 #if !SOUP_WINDOWS
 	void os::sleep(unsigned int ms) noexcept
 	{
-#if _POSIX_C_SOURCE >= 199309L
+	#if _POSIX_C_SOURCE >= 199309L
 		struct timespec ts;
 		ts.tv_sec = ms / 1000;
 		ts.tv_nsec = (ms % 1000) * 1000000;
@@ -146,13 +151,26 @@ NAMESPACE_SOUP
 		{
 			res = ::nanosleep(&ts, &ts);
 		} while (res && errno == EINTR);
-#else
+	#else
 		if (ms >= 1000)
 		{
 			::sleep(ms / 1000);
 		}
 		::usleep((ms % 1000) * 1000);
+	#endif
+	}
 #endif
+
+#if SOUP_WINDOWS
+	void os::fastSleep(unsigned int ms) noexcept
+	{
+	#if !SOUP_CROSS_COMPILE
+		timeBeginPeriod(ms);
+	#endif
+		::Sleep(ms);
+	#if !SOUP_CROSS_COMPILE
+		timeEndPeriod(ms);
+	#endif
 	}
 #endif
 
@@ -183,6 +201,31 @@ NAMESPACE_SOUP
 	bool os::copyToClipboard(const std::string& text)
 	{
 		return copy_to_clipboard_utf16(unicode::utf8_to_utf16(text));
+	}
+
+	std::string os::getClipboardTextUtf8()
+	{
+		return unicode::utf16_to_utf8(getClipboardTextUtf16());
+	}
+
+	UTF16_STRING_TYPE os::getClipboardTextUtf16()
+	{
+		std::wstring text;
+		if (OpenClipboard(nullptr))
+		{
+			HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+			if (hData != nullptr)
+			{
+				auto pszText = static_cast<wchar_t*>(GlobalLock(hData));
+				if (pszText != nullptr)
+				{
+					text = pszText;
+					GlobalUnlock(hData);
+				}
+			}
+			CloseClipboard();
+		}
+		return text;
 	}
 
 	#if !SOUP_CROSS_COMPILE

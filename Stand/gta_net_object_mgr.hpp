@@ -1211,7 +1211,7 @@ class CVehicleScriptGameStateDataNode : public CSyncDataNodeInfrequent
 {
 public:
 	/* 0xC0 */ IVehicleNodeDataAccessor::ScriptVehicleFlags m_VehicleFlags;
-	PAD(0xC0 + sizeof(IVehicleNodeDataAccessor::ScriptVehicleFlags), 0x178);
+	PAD(0xC0 + sizeof(IVehicleNodeDataAccessor::ScriptVehicleFlags), 0x168);
 };
 
 class CDoorScriptInfoDataNode : public CSyncDataNodeInfrequent
@@ -1626,10 +1626,10 @@ static_assert(offsetof(CVehicleSyncTree, appearance_data) == 0x1BE0);
 static_assert(offsetof(CVehicleSyncTree, m_damageStatusNode) == 0x1E50);
 static_assert(offsetof(CVehicleSyncTree, m_vehicleGameStateNode) == 0x1F80);
 static_assert(offsetof(CVehicleSyncTree, m_vehicleHealthNode) == 0x20C8);
-static_assert(offsetof(CVehicleSyncTree, m_vehicleScriptGameStateNode) == 0x2230); // 2944
-static_assert(offsetof(CVehicleSyncTree, m_componentReservationNode) == 0x23A8); // 2944
-static_assert(offsetof(CVehicleSyncTree, vehicle_task_data) == 0x24B0); // 2944
-static_assert(offsetof(CVehicleSyncTree, gadget_data) == 0x2680); // 2944
+static_assert(offsetof(CVehicleSyncTree, m_vehicleScriptGameStateNode) == 0x2230); // 1.70
+static_assert(offsetof(CVehicleSyncTree, m_componentReservationNode) == 0x2398); // 1.70
+static_assert(offsetof(CVehicleSyncTree, vehicle_task_data) == 0x24A0); // 1.70
+static_assert(offsetof(CVehicleSyncTree, gadget_data) == 0x2670); // 1.70
 
 #pragma pack(push, 1)
 class CAutomobileSyncTreeBase : public CVehicleSyncTree
@@ -1704,7 +1704,7 @@ class CSubmarineSyncTree : public CVehicleSyncTree
 
 class CTrainSyncTree : public CVehicleSyncTree
 {
-	INIT_PAD(CVehicleSyncTree, 0x2830) CTrainGameStateDataNode train_game_state;
+	INIT_PAD(CVehicleSyncTree, 0x2820) CTrainGameStateDataNode train_game_state;
 };
-static_assert(sizeof(CTrainSyncTree) == 0x2830 + sizeof(CTrainGameStateDataNode));
+static_assert(sizeof(CTrainSyncTree) == 0x2820 + sizeof(CTrainGameStateDataNode)); // 1.70
 #pragma pack(pop)

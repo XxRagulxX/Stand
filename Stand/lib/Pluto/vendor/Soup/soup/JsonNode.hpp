@@ -10,13 +10,7 @@ NAMESPACE_SOUP
 {
 	struct JsonNode
 	{
-		JsonNodeType type;
-
-		explicit JsonNode(JsonNodeType type) noexcept
-			: type(type)
-		{
-		}
-
+		[[nodiscard]] virtual JsonNodeType getType() const noexcept = 0;
 		virtual ~JsonNode() = default;
 
 #if SOUP_CPP20
@@ -31,9 +25,12 @@ NAMESPACE_SOUP
 		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
-		virtual bool binaryEncode(Writer& w) const = 0; // specific to soup
+		// Encodes a MessagePack (https://msgpack.org/) binary stream.
+		virtual bool msgpackEncode(Writer& w) const = 0;
 
 		[[nodiscard]] UniquePtr<JsonNode> clone() const SOUP_EXCAL;
+
+		[[nodiscard]] JsonNode* query(const char* q) noexcept;
 
 		// Type casts; will throw if node is of different type.
 		[[nodiscard]] JsonArray& asArr();
@@ -48,6 +45,8 @@ NAMESPACE_SOUP
 		[[nodiscard]] const JsonInt& asInt() const;
 		[[nodiscard]] const JsonObject& asObj() const;
 		[[nodiscard]] const JsonString& asStr() const;
+
+		[[nodiscard]] double toFloat() const; // valid for int & float
 
 		// Type checks.
 		[[nodiscard]] bool isArr() const noexcept;
@@ -73,7 +72,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] const JsonString& reinterpretAsStr() const noexcept;
 
 	protected:
-		static void throwTypeError();
+		[[noreturn]] static void throwTypeError();
 	};
 
 	inline std::string JsonNode::encode() const SOUP_EXCAL
@@ -137,7 +136,7 @@ NAMESPACE_SOUP
 
 	inline JsonString& JsonNode::asStr()
 	{
-		SOUP_IF_UNLIKELY(!isStr())
+		SOUP_IF_UNLIKELY (!isStr())
 		{
 			throwTypeError();
 		}
@@ -200,37 +199,37 @@ NAMESPACE_SOUP
 
 	inline bool JsonNode::isArr() const noexcept
 	{
-		return type == JSON_ARRAY;
+		return getType() == JSON_ARRAY;
 	}
 
 	inline bool JsonNode::isBool() const noexcept
 	{
-		return type == JSON_BOOL;
+		return getType() == JSON_BOOL;
 	}
 
 	inline bool JsonNode::isFloat() const noexcept
 	{
-		return type == JSON_FLOAT;
+		return getType() == JSON_FLOAT;
 	}
 
 	inline bool JsonNode::isInt() const noexcept
 	{
-		return type == JSON_INT;
+		return getType() == JSON_INT;
 	}
 
 	inline bool JsonNode::isNull() const noexcept
 	{
-		return type == JSON_NULL;
+		return getType() == JSON_NULL;
 	}
 
 	inline bool JsonNode::isObj() const noexcept
 	{
-		return type == JSON_OBJECT;
+		return getType() == JSON_OBJECT;
 	}
 
 	inline bool JsonNode::isStr() const noexcept
 	{
-		return type == JSON_STRING;
+		return getType() == JSON_STRING;
 	}
 
 	// Using reinterpret_cast instead of static_cast because not all of these types may be known

@@ -20,7 +20,7 @@ NAMESPACE_SOUP
 				&& s.u16_be(rtype)
 				&& s.u16_be(rclass)
 				&& s.u32_be(ttl)
-				&& s.template str_lp<u16_t>(rdata)
+				&& s.template str_lp<u16_be_t>(rdata)
 				;
 		}
 	};

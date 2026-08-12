@@ -12,6 +12,8 @@
 
 #include <locale.h>
 #include <string.h>
+#include <fstream>
+#include <iterator>
 
 #include "lua.h"
 
@@ -29,7 +31,11 @@
 #include "ltable.h"
 #include "lzio.h"
 
-// Note that this may sometimes break parsing.
+#ifdef PLUTO_LOADFILE_HOOK
+extern bool PLUTO_LOADFILE_HOOK(lua_State* L, const char* filename);
+#endif
+
+// Note that this may sometimes break parsing so should be used alongside PLUTO_DONT_LOAD_ANY_STANDARD_LIBRARY_CODE_WRITTEN_IN_PLUTO.
 #define TOKENDUMP false
 
 #if TOKENDUMP
@@ -38,41 +44,59 @@
 
 
 
+struct LoadS {
+  const char *s;
+  size_t size;
+};
+
+static const char *getS (lua_State *L, void *ud, size_t *size) {
+  LoadS *ls = (LoadS *)ud;
+  (void)L;
+  if (ls->size == 0)
+    return NULL;
+  *size = ls->size;
+  ls->size = 0;
+  return ls->s;
+}
+
+
 #define next(ls)	(ls->current = zgetc(ls->z))
 
 
-#define check_condition(ls,c,msg)	{ if (!(c)) luaX_syntaxerror(ls, msg); }
+/* minimum size for string buffer */
+#if !defined(LUA_MINBUFFER)
+#define LUA_MINBUFFER   32
+#endif
 
 
 #define currIsNewline(ls)	(ls->current == '\n' || ls->current == '\r')
 
-
 /* ORDER RESERVED */
 static const char *const luaX_tokens [] = {
     "and", "break", "do", "else", "elseif",
-    "end", "false", "for", "function", "goto", "if",
-    "in", "local", "nil", "not", "or", "repeat",
+    "end", "false", "for", "function", "global", "goto", "if",
+    "in", "local", "nil", "not", "or",
     "case", "default", "as", "begin", "extends", "instanceof",
     "pluto_use",
-    "pluto_switch", "pluto_continue", "pluto_enum", "pluto_new", "pluto_class", "pluto_parent", "pluto_export", "pluto_try", "pluto_catch",
-          "switch",       "continue",       "enum",       "new",       "class",       "parent",       "export",       "try",       "catch",
-    "let", "const", "global",
+    "pluto_switch", "pluto_continue", "pluto_enum", "pluto_new", "pluto_class", "pluto_parent", "pluto_export",
+          "switch",       "continue",       "enum",       "new",       "class",       "parent",       "export",
 #ifdef PLUTO_PARSER_SUGGESTIONS
     "pluto_suggest_0", "pluto_suggest_1",
 #endif
-    "return", "then", "true", "until", "while",
+    "repeat", "return", "then", "true", "until", "while",
     "//", "..", "...", "==", ">=", "<=", "~=", "!=", "<=>",
     "<<", ">>", "::", "<eof>",
     "<number>", "<integer>", "<name>", "<string>",
     "**", "??", ":=", "->", "|>",
     "<fallthrough annotation>", "<pluto_use annotation>",
+    "++",
 };
 
 
 #define save_and_next(ls) (save(ls, ls->current), next(ls))
 
 
-static l_noret lexerror (LexState *ls, const char *msg, int token);
+static l_noret lexerror (LexState *ls, const char *msg, const Token& t);
 
 
 void LexState::popContext(ParserContext ctx) {
@@ -86,10 +110,10 @@ void LexState::popContext(ParserContext ctx) {
 static void save (LexState *ls, int c) {
   Mbuffer *b = ls->buff;
   if (luaZ_bufflen(b) + 1 > luaZ_sizebuffer(b)) {
-    size_t newsize;
-    if (luaZ_sizebuffer(b) >= MAX_SIZE/2)
+    size_t newsize = luaZ_sizebuffer(b);  /* get old size */;
+    if (newsize >= (MAX_SIZE/3 * 2))  /* larger than MAX_SIZE/1.5 ? */
       lexerror(ls, "lexical element too long", 0);
-    newsize = luaZ_sizebuffer(b) * 2;
+    newsize += (newsize >> 1);  /* new size is 1.5 times the old one */
     luaZ_resizebuffer(ls->L, b, newsize);
   }
   b->buffer[luaZ_bufflen(b)++] = cast_char(c);
@@ -108,40 +132,55 @@ void luaX_init (lua_State *L) {
 }
 
 
-const char *luaX_token2str (LexState *ls, int token) {
-  const char *ret = luaO_pushfstring(ls->L, "'%s'", luaX_token2str_noq(ls, token));
+const char *luaX_token2str (LexState *ls, const Token& t) {
+  const char *ret = luaO_pushfstring(ls->L, "'%s'", luaX_token2str_noq(ls, t));
   ls->L->top.p--;
   return ret;
 }
 
 
-/* Converts a token into a string, same as luaX_token2str (but it doesn't quote the token). */
-const char *luaX_token2str_noq (LexState *ls, int token) {
+/* Converts a token into a string, same as luaX_token2str, but doesn't quote the token. */
+const char *luaX_token2str_noq (LexState *ls, const Token& t) {
   const char *ret;
-  if (token < FIRST_RESERVED) {  /* single-byte symbols? */
-    if (lisprint(token)) {
-      ret = luaO_pushfstring(ls->L, "%c", token);
+  if (t.token < FIRST_RESERVED) {  /* single-byte symbols? */
+    if (lisprint(t.token)) {
+      ret = luaO_pushfstring(ls->L, "%c", t.token);
       ls->L->top.p--;
     } else { /* control character */
-      ret = luaO_pushfstring(ls->L, "'<\\%d>'", token);
+      ret = luaO_pushfstring(ls->L, "'<\\%d>'", t.token);
       ls->L->top.p--;
     }
   }
-  else switch (token) {
+  else switch (t.token) {
     case TK_NAME: case TK_STRING:
-      if (!ls->hasDoneLexerPass() || ls->t.token != token)
-        return luaX_tokens[token - FIRST_RESERVED];
-      ret = luaO_pushfstring(ls->L, "%s", getstr(ls->t.seminfo.ts));
+      if (!ls->hasDoneLexerPass() || !t.seminfo.ts)
+        return luaX_tokens[t.token - FIRST_RESERVED];
+      ret = luaO_pushfstring(ls->L, "%s", getstr(t.seminfo.ts));
       ls->L->top.p--;
       break;
-    case TK_FLT: case TK_INT:
-      save(ls, '\0');
-      ret = luaO_pushfstring(ls->L, "%s", luaZ_buffer(ls->buff));
+    case TK_FLT:
+      if (!ls->hasDoneLexerPass()) {
+        save(ls, '\0');
+        ret = luaO_pushfstring(ls->L, "%s", luaZ_buffer(ls->buff));
+      }
+      else {
+        ret = luaO_pushfstring(ls->L, "%f", t.seminfo.r);
+      }
+      ls->L->top.p--;
+      break;
+    case TK_INT:
+      if (!ls->hasDoneLexerPass()) {
+        save(ls, '\0');
+        ret = luaO_pushfstring(ls->L, "%s", luaZ_buffer(ls->buff));
+      }
+      else {
+        ret = luaO_pushfstring(ls->L, "%I", t.seminfo.i);
+      }
       ls->L->top.p--;
       break;
     default:
-      const char *s = luaX_tokens[token - FIRST_RESERVED];
-      if (token < TK_EOS) { /* fixed format (symbols and reserved words)? */
+      const char *s = luaX_tokens[t.token - FIRST_RESERVED];
+      if (t.token < TK_EOS) { /* fixed format (symbols and reserved words)? */
           ret = luaO_pushfstring(ls->L, "%s", s);
           ls->L->top.p--;
       } else  /* names, strings, and numerals */
@@ -156,13 +195,13 @@ const char* luaX_reserved2str (int token) {
 }
 
 
-static l_noret lexerror (LexState *ls, const char *msg, int token) {
+static l_noret lexerror (LexState *ls, const char *msg, const Token& t) {
   msg = luaG_addinfo(ls->L, msg, ls->source, ls->getLineNumber());
   auto err = new Pluto::ErrorMessage{ ls, HRED "syntax error: " BWHT };
   err->addMsg(msg);
-  if (token) {
+  if (t.token) {
     err->addMsg(" near ")
-       .addMsg(luaX_token2str(ls, token))
+       .addMsg(luaX_token2str(ls, t))
        .addSrcLine(ls->getLineNumber())
        .addGenericHere()
        .finalize();
@@ -178,40 +217,44 @@ static l_noret lexerror (LexState *ls, const char *msg, int token) {
 
 
 l_noret luaX_syntaxerror (LexState *ls, const char *msg) {
-  lexerror(ls, msg, ls->t.token);
+  lexerror(ls, msg, ls->t);
 }
 
 
 /*
-** Creates a new string and anchors it in scanner's table so that it
-** will not be collected until the end of the compilation; by that time
-** it should be anchored somewhere. It also internalizes long strings,
-** ensuring there is only one copy of each unique string.  The table
-** here is used as a set: the string enters as the key, while its value
-** is irrelevant. We use the string itself as the value only because it
-** is a TValue readily available. Later, the code generation can change
-** this value.
+** Anchors a string in scanner's table so that it will not be collected
+** until the end of the compilation; by that time it should be anchored
+** somewhere. It also internalizes long strings, ensuring there is only
+** one copy of each unique string.
 */
-TString *luaX_newstring (LexState *ls, const char *str, size_t l) {
+static TString *anchorstr (LexState *ls, TString *ts) {
   lua_State *L = ls->L;
-  TString *ts = luaS_newlstr(L, str, l);  /* create new string */
-  const TValue *o = luaH_getstr(ls->h, ts);
-  if (!ttisnil(o))  /* string already present? */
-    ts = keystrval(nodefromval(o));  /* get saved copy */
-  else {  /* not in use yet */
+  TValue oldts;
+  int tag = luaH_getstr(ls->h, ts, &oldts);
+  if (!tagisempty(tag))  /* string already present? */
+    return tsvalue(&oldts);  /* use stored value */
+  else {  /* create a new entry */
     TValue *stv = s2v(L->top.p++);  /* reserve stack space for string */
-    setsvalue(L, stv, ts);  /* temporarily anchor the string */
-    luaH_finishset(L, ls->h, stv, o, stv);  /* t[string] = string */
+    setsvalue(L, stv, ts);  /* push (anchor) the string on the stack */
+    luaH_set(L, ls->h, stv, stv);  /* t[string] = string */
     /* table is not a metatable, so it does not need to invalidate cache */
     luaC_checkGC(L);
     L->top.p--;  /* remove string from stack */
+    return ts;
   }
-  return ts;
 }
 
 
 LUAI_FUNC TString* luaX_newstring (LexState *ls, const char *str) {
   return luaX_newstring(ls, str, strlen(str));
+}
+
+
+/*
+** Creates a new string and anchors it in scanner's table.
+*/
+TString *luaX_newstring (LexState *ls, const char *str, size_t l) {
+  return anchorstr(ls, luaS_newlstr(ls->L, str, l));
 }
 
 
@@ -226,10 +269,6 @@ static void inclinenumber (LexState *ls) {
   if (currIsNewline(ls) && ls->current != old)
     next(ls);  /* skip '\n\r' or '\r\n' */
 
-  const std::string& buff = ls->getLineBuff();
-  if (buff.find("@pluto_warnings") != std::string::npos)
-    ls->lexPushWarningOverride().processComment(buff);
-
   ls->lines.emplace_back(std::string{});
 }
 
@@ -243,8 +282,15 @@ void luaX_setinput (lua_State *L, LexState *ls, ZIO *z, TString *source,
   ls->z = z;
   ls->fs = NULL;
   ls->source = source;
-  ls->envn = luaS_newliteral(L, LUA_ENV);  /* get env name */
+  ls->envn = luaS_newliteral(L, LUA_ENV);  /* get env string */
+#if defined(LUA_COMPAT_GLOBAL)
+  /* compatibility mode: "global" is not a reserved word */
+  ls->glbn = luaS_newliteral(L, "global");  /* get "global" string */
+  ls->glbn->extra = 0;  /* mark it as not reserved */
+#endif
   luaZ_resizebuffer(ls->L, ls->buff, LUA_MINBUFFER);  /* initialize buffer */
+
+  ls->warnconfs.emplace_back(WarningConfig(G(L)));
 
   while (true) {  /* perform lexer pass */
     Token t;
@@ -255,6 +301,176 @@ void luaX_setinput (lua_State *L, LexState *ls, ZIO *z, TString *source,
     if (t.token == TK_EOS) break;
   }
 
+  /* preprocessor */
+  for (auto i = ls->tokens.begin(); i != ls->tokens.end(); ) {
+    if (i->token == '$' && (i + 1)->token == TK_NAME) {
+      const char *directive = getstr((i + 1)->seminfo.ts);
+      if (strcmp(directive, "alias") == 0) {
+        const auto directive_begin = i;
+        i += 2;  /* skip '$alias' */
+        if (l_unlikely(i->token != TK_NAME)) {
+          ls->tidx = std::distance(ls->tokens.begin(), i);
+          luaX_syntaxerror(ls, "expected name after $alias");
+        }
+        Macro& macro = ls->macros.emplace(i->seminfo.ts, Macro{}).first->second;
+        ++i;  /* skip name */
+        if (i->token == '(') {
+          macro.functionlike = true;
+          do {
+            ++i;  /* skip '(' or ',' */
+            if (l_unlikely(i->token != TK_NAME)) {
+              ls->tidx = std::distance(ls->tokens.begin(), i);
+              luaX_syntaxerror(ls, "expected parameter name for function-like alias");
+            }
+            macro.params.emplace_back(i->seminfo.ts);
+            ++i;  /* skip name */
+          } while (i->token == ',');
+          if (l_unlikely(i->token != ')')) {
+            ls->tidx = std::distance(ls->tokens.begin(), i);
+            luaX_syntaxerror(ls, "expected ')' after parameter list for function-like alias");
+          }
+          ++i;  /* skip ')' */
+        }
+        if (l_unlikely(i->token != '=')) {
+          ls->tidx = std::distance(ls->tokens.begin(), i);
+          luaX_syntaxerror(ls, "expected '=' after $alias <name>");
+        }
+        ++i;  /* skip '=' */
+        while (i->line == (i - 1)->line || (i - 1)->token == '\\') {
+          if (i->token == TK_EOS)
+            break;
+          if (i->token == '\\' && (i + 1)->line != i->line) {
+            ++i;
+            continue;
+          }
+          macro.sub.emplace_back(*i);
+          ++i;
+        }
+        i = ls->tokens.erase(directive_begin, i);  /* erase directive */
+        continue;
+      }
+      else if (strcmp(directive, "include") == 0) {
+        const auto directive_begin = i;
+        i += 2;  /* skip '$include' */
+        if (l_unlikely(i->token != TK_STRING)) {
+          ls->tidx = std::distance(ls->tokens.begin(), i);
+          luaX_syntaxerror(ls, "expected string after $include");
+        }
+        const char *fname = getstr(i->seminfo.ts);
+#ifdef PLUTO_NO_FILESYSTEM
+        ls->tidx = std::distance(ls->tokens.begin(), i);
+        luaX_syntaxerror(ls, "disallowed by content moderation policy");
+#endif
+#ifdef PLUTO_LOADFILE_HOOK
+        if (!PLUTO_LOADFILE_HOOK(ls->L, fname)) {
+          ls->tidx = std::distance(ls->tokens.begin(), i);
+          luaX_syntaxerror(ls, "disallowed by content moderation policy");
+        }
+#endif
+        std::ifstream file(fname, std::ios::binary);
+        if (l_unlikely(!file.is_open())) {
+          ls->tidx = std::distance(ls->tokens.begin(), i);
+          luaX_syntaxerror(ls, "cannot open file for $include");
+        }
+        std::string code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        LoadS lsdata{code.c_str(), code.size()};
+        ZIO z2;
+        luaZ_init(ls->L, &z2, getS, &lsdata);
+        int firstchar = zgetc(&z2);
+        Mbuffer buff2;
+        luaZ_initbuffer(ls->L, &buff2);
+        LexState ls2;
+        ls2.buff = &buff2;
+        ls2.h = ls->h;
+        ls2.dyd = ls->dyd;
+        luaX_setinput(ls->L, &ls2, &z2, luaX_newstring(ls, fname), firstchar);
+        luaZ_freebuffer(ls->L, &buff2);
+        size_t count = ls2.tokens.size();
+        if (count > 0 && ls2.tokens.back().token == TK_EOS)
+          --count;
+        i = ls->tokens.erase(directive_begin, i + 1);  /* remove directive */
+        auto insert_pos = ls->tokens.insert(i, ls2.tokens.begin(), ls2.tokens.begin() + count);
+        for (auto pos = insert_pos; pos != insert_pos + count; ++pos)
+          pos->line = Token::LINE_INJECTED;
+        i = insert_pos + count;
+        for (auto &m : ls2.macros)
+          ls->macros.insert(m);
+        continue;
+      }
+    }
+    ++i;
+  }
+  if (!ls->macros.empty()) {  /* need second preprocessor pass to expand macros? */
+    for (auto i = ls->tokens.begin(); i != ls->tokens.end(); ) {
+      if (i->token == TK_NAME) {
+        if (auto e = ls->macros.find(i->seminfo.ts); e != ls->macros.end()) {
+          i = ls->tokens.erase(i);
+          for (auto& t : e->second.sub) {
+            t.line = i->line;
+          }
+          if (e->second.functionlike) {
+            ls->macro_args.clear();
+            if (l_unlikely(i->token != '(')) {
+              ls->tidx = std::distance(ls->tokens.begin(), i);
+              luaX_syntaxerror(ls, "expected '(' to invoke function-like alias");
+            }
+            for (auto& param : e->second.params) {
+              i = ls->tokens.erase(i);  /* remove '(' or ',' */
+              auto& argtks = ls->macro_args.emplace(param, std::vector<Token>{}).first->second;
+              int parens = 0;
+              int curlys = 0;
+              while (i != ls->tokens.end() && (parens != 0 || curlys != 0 || (i->token != ',' && i->token != ')'))) {
+                if (i->token == '(')
+                  parens++;
+                else if (i->token == ')')
+                  parens--;
+                else if (i->token == '{')
+                  curlys++;
+                else if (i->token == '}')
+                  curlys--;
+                argtks.emplace_back(*i);
+                i = ls->tokens.erase(i);  /* remove argument */
+              }
+            }
+            if (l_unlikely(i->token != ')')) {
+              ls->tidx = std::distance(ls->tokens.begin(), i);
+              luaX_syntaxerror(ls, "expected ')' after argument list for function-like alias");
+            }
+            i = ls->tokens.erase(i);  /* remove ')' */
+            for (auto& t : e->second.sub) {
+              if (t.token == TK_NAME) {
+                if (auto arg = ls->macro_args.find(t.seminfo.ts); arg != ls->macro_args.end()) {
+                  for (auto& argtk : arg->second) {
+                    i = ls->tokens.insert(i, argtk);
+                    ++i;
+                  }
+                  continue;
+                }
+              }
+              i = ls->tokens.insert(i, t);
+              ++i;
+            }
+          }
+          else {
+            bool selfref = false;
+            for (auto& t : e->second.sub) {
+              if (t.token == TK_NAME && t.seminfo.ts == e->first) {
+                selfref = true;
+                break;
+              }
+            }
+            i = ls->tokens.insert(i, e->second.sub.begin(), e->second.sub.end());
+            if (selfref) {
+              i += e->second.sub.size();
+            }
+          }
+          continue;
+        }
+      }
+      ++i;
+    }
+  }
+
 #if TOKENDUMP
   luaX_setpos(ls, 0);
   int line = 0;
@@ -263,13 +479,33 @@ void luaX_setinput (lua_State *L, LexState *ls, ZIO *z, TString *source,
       line = ls->t.line;
       std::cout << "\nLine " << line << ":";
     }
-    std::cout << " " << luaX_token2str_noq(ls, ls->t.token);
+    std::cout << " " << luaX_token2str_noq(ls, ls->t);
     luaX_next(ls);
   }
   std::cout << "\n";
   lua_assert(ls->tidx + 1 == ls->tokens.size());
   luaX_setpos(ls, 0);
 #endif
+}
+
+
+WarningConfig::WarningConfig(global_State* g) noexcept : begins_at(0) {
+  states[WT_VAR_SHADOW] = g->warn_var_shadow ? WS_ON : WS_OFF;
+  states[WT_GLOBAL_SHADOW] = g->warn_global_shadow ? WS_ON : WS_OFF;
+  states[WT_TYPE_MISMATCH] = g->warn_type_mismatch ? WS_ON : WS_OFF;
+  states[WT_UNREACHABLE_CODE] = g->warn_unreachable_code ? WS_ON : WS_OFF;
+  states[WT_EXCESSIVE_ARGUMENTS] = g->warn_excessive_arguments ? WS_ON : WS_OFF;
+  states[WT_DEPRECATED] = g->warn_deprecated ? WS_ON : WS_OFF;
+  states[WT_BAD_PRACTICE] = g->warn_bad_practice ? WS_ON : WS_OFF;
+  states[WT_POSSIBLE_TYPO] = g->warn_possible_typo ? WS_ON : WS_OFF;
+  states[WT_NON_PORTABLE_CODE] = g->warn_non_portable_code ? WS_ON : WS_OFF;
+  states[WT_NON_PORTABLE_BYTECODE] = g->warn_non_portable_bytecode ? WS_ON : WS_OFF;
+  states[WT_NON_PORTABLE_NAME] = g->warn_non_portable_name ? WS_ON : WS_OFF;
+  states[WT_IMPLICIT_GLOBAL] = g->warn_implicit_global ? WS_ON : WS_OFF;
+  states[WT_UNANNOTATED_FALLTHROUGH] = g->warn_unannotated_fallthrough ? WS_ON : WS_OFF;
+  states[WT_DISCARDED_RETURN] = g->warn_discarded_return ? WS_ON : WS_OFF;
+  states[WT_FIELD_SHADOW] = g->warn_field_shadow ? WS_ON : WS_OFF;
+  states[WT_UNUSED] = g->warn_unused ? WS_ON : WS_OFF;
 }
 
 
@@ -317,27 +553,43 @@ static int check_next2 (LexState *ls, const char *set) {
 **
 ** The caller might have already read an initial dot.
 */
+static void save_numeral_and_next (LexState *ls) {
+  ls->appendLineBuff(cast_char(ls->current));
+  save_and_next(ls);
+}
+
+
+static int check_next2_numeral (LexState *ls, const char *set) {
+  lua_assert(set[2] == '\0');
+  if (ls->current == set[0] || ls->current == set[1]) {
+    save_numeral_and_next(ls);
+    return 1;
+  }
+  else return 0;
+}
+
+
 static int read_numeral (LexState *ls, SemInfo *seminfo) {
   TValue obj;
   const char *expo = "Ee";
   int first = ls->current;
   lua_assert(lisdigit(ls->current));
-  save_and_next(ls);
-  if (first == '0' && check_next2(ls, "xX"))  /* hexadecimal? */
+  save_numeral_and_next(ls);
+  if (first == '0' && check_next2_numeral(ls, "xX"))  /* hexadecimal? */
     expo = "Pp";
   for (;;) {
-    if (check_next2(ls, expo))  /* exponent mark? */
-      check_next2(ls, "-+");  /* optional exponent sign */
-    else if (lisxdigit(ls->current) || ls->current == '.' || ls->current == '_') { /* '%x|%.' */
-      if (ls->current != '_')
-        save_and_next(ls);
-      else
-        next(ls);
+    if (check_next2_numeral(ls, expo))  /* exponent mark? */
+      check_next2_numeral(ls, "-+");  /* optional exponent sign */
+    else if (lisxdigit(ls->current) || ls->current == '.' || ls->current == 'o')  /* '%x|%.' */
+      save_numeral_and_next(ls);
+    else if (ls->current == '_') {
+      ls->appendLineBuff('_');
+      next(ls);
     }
     else break;
   }
   if (lislalpha(ls->current))  /* is numeral touching a letter? */
-    save_and_next(ls);  /* force an error */
+    save_numeral_and_next(ls);  /* force an error */
   save(ls, '\0');
   if (luaO_str2num(luaZ_buffer(ls->buff), &obj) == 0)  /* format error? */
     lexerror(ls, "malformed number", TK_FLT);
@@ -408,9 +660,8 @@ static void read_long_string (LexState *ls, SemInfo *seminfo, size_t sep) {
       }
     }
   } endloop:
-  if (seminfo)
-    seminfo->ts = luaX_newstring(ls, luaZ_buffer(ls->buff) + 1,
-                                     luaZ_bufflen(ls->buff) - sep - 1);
+  seminfo->ts = luaX_newstring(ls, luaZ_buffer(ls->buff) + 1,
+                                   luaZ_bufflen(ls->buff) - sep - 1);
 }
 
 
@@ -438,12 +689,17 @@ static int readhexaesc (LexState *ls) {
 }
 
 
-static unsigned long readutf8esc (LexState *ls) {
-  unsigned long r;
-  int i = 4;  /* chars to be removed: '\', 'u', '{', and first digit */
+/*
+** When reading a UTF-8 escape sequence, save everything to the buffer
+** for error reporting in case of errors; 'i' counts the number of
+** saved characters, so that they can be removed if case of success.
+*/
+static l_uint32 readutf8esc (LexState *ls) {
+  l_uint32 r;
+  int i = 4;  /* number of chars to be removed: start with #"\u{X" */
   save_and_next(ls);  /* skip 'u' */
   esccheck(ls, ls->current == '{', "missing '{'");
-  r = gethexa(ls);  /* must have at least one digit */
+  r = cast_uint(gethexa(ls));  /* must have at least one digit */
   while (cast_void(save_and_next(ls)), lisxdigit(ls->current)) {
     i++;
     esccheck(ls, r <= (0x7FFFFFFFu >> 4), "UTF-8 value too large");
@@ -549,7 +805,9 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
   luaZ_resetbuffer(ls->buff);
   for (;;) {
     switch (ls->current) {
-      case '\n': case '\r': {  /* Line breaks. */
+      case '\n': case '\r': {  /* line breaks */
+        if (column)
+          *column = 0;
         inclinenumber(ls);
         break;
       }
@@ -588,8 +846,12 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
             if (sep >= 2) {
               ls->appendLineBuff(sep - 2, '=');
               ls->appendLineBuff('[');
-              read_long_string(ls, nullptr, sep);  /* skip long comment */
+              SemInfo si;
+              read_long_string(ls, &si, sep);  /* skip long comment */
               luaZ_resetbuffer(ls->buff);  /* 'read_long_string' may dirty the buffer */
+              std::string_view si_view(getstr(si.ts), tsslen(si.ts));
+              if (si_view.find("@pluto_warnings") != std::string_view::npos)
+                ls->lexPushWarningOverride().processComment(si_view);
               ls->appendLineBuff(']');
               ls->appendLineBuff(sep - 2, '=');
               ls->appendLineBuff(']');
@@ -605,19 +867,22 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
           }
           if (ls->current == '@') {  /* attribute? */
             ls->appendLineBuff('@');
-            next(ls);
+            save_and_next(ls);
             while (lislalnum(ls->current))
               save_and_next(ls);
             ls->appendLineBuff(luaZ_buffer(ls->buff), luaZ_bufflen(ls->buff));
             if (strncmp(luaZ_buffer(ls->buff), "pluto_use", luaZ_bufflen(ls->buff)) == 0) {
               return TK_USEANN;
             }
-            luaZ_resetbuffer(ls->buff);
           }
           while (!currIsNewline(ls) && ls->current != EOZ) {
             ls->appendLineBuff(ls->current);
-            next(ls);  /* skip until end of line (or end of file) */
+            save_and_next(ls);  /* skip until end of line (or end of file) */
           }
+          std::string_view buff(luaZ_buffer(ls->buff), luaZ_bufflen(ls->buff));
+          if (buff.find("@pluto_warnings") != std::string_view::npos)
+            ls->lexPushWarningOverride().processComment(buff);
+          luaZ_resetbuffer(ls->buff);
           if (ls->getLineBuff().find("@fallthrough") != std::string::npos)
             return TK_FALLTHROUGH;
           break;
@@ -783,6 +1048,12 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
                 t.token = TK_CONCAT;
                 t.line = (int)ls->lines.size();
                 t.column = (int)ls->getLineBuff().size(); }
+
+                { Token& t = ls->tokens.emplace_back(Token{});
+                t.token = TK_NAME;
+                t.line = (int)ls->lines.size();
+                t.column = (int)ls->getLineBuff().size();
+                t.seminfo.ts = luaX_newliteral(ls, "tostring"); }
               }
               next(ls);  /* skip '{' */
               ls->appendLineBuff('{');
@@ -828,13 +1099,13 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
         if (luaZ_bufflen(ls->buff) != 0) {
           if (need_concat) {
             need_concat = false;
-          
+
             Token& t = ls->tokens.emplace_back(Token{});
             t.token = TK_CONCAT;
             t.line = (int)ls->lines.size();
             t.column = (int)ls->getLineBuff().size();
           }
-          
+
           Token& t = ls->tokens.emplace_back(Token{});
           t.token = TK_STRING;
           t.line = (int)ls->lines.size();
@@ -875,22 +1146,13 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
           return '.';
         }
         else {
-          int ret = read_numeral(ls, seminfo);
-          if (ret == TK_INT)
-            ls->appendLineBuff(std::to_string(seminfo->i));
-          else
-            ls->appendLineBuff(std::to_string(seminfo->r));
-          return ret;
+          ls->appendLineBuff('.');
+          return read_numeral(ls, seminfo);
         }
       }
       case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9': {
-        int ret = read_numeral(ls, seminfo);
-        if (ret == TK_INT)
-          ls->appendLineBuff(std::to_string(seminfo->i));
-        else
-          ls->appendLineBuff(std::to_string(seminfo->r));
-        return ret;
+        return read_numeral(ls, seminfo);
       }
       case '_': {  /* arbitrary underscores for more readable long numbers */
         if (lislalpha(ls->current)) {
@@ -898,24 +1160,21 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
           do {
             save_and_next(ls);
           } while (lislalnum(ls->current));
-          ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
-                                  luaZ_bufflen(ls->buff));
-          seminfo->ts = ts;
+          /* find or create string */
+          ts = luaS_newlstr(ls->L, luaZ_buffer(ls->buff),
+                                   luaZ_bufflen(ls->buff));
           ls->appendLineBuff(getstr(ts));
-          if (isreserved(ts))
+          if (isreserved(ts))   /* reserved word? */
             return ts->extra - 1 + FIRST_RESERVED;
           else {
+            seminfo->ts = anchorstr(ls, ts);
             return TK_NAME;
           }
         } else {  /* needed to emulate default check because _ is fairly multi-purpose. */
           next(ls);
           if (lisdigit(ls->current)) {
-            int ret = read_numeral(ls, seminfo);
-            if (ret == TK_INT)
-              ls->appendLineBuff(std::to_string(seminfo->i));
-            else
-              ls->appendLineBuff(std::to_string(seminfo->r));
-            return ret;  /* arbitrary character detected in numeral */
+            ls->appendLineBuff('_');
+            return read_numeral(ls, seminfo);  /* arbitrary character detected in numeral */
           } else {
             ls->appendLineBuff('_');
             return '_';  /* this is a normal underscore */
@@ -966,16 +1225,15 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
           seminfo->i = '*';
           return '=';  /* '*=' */
         }
-        else if (check_next1(ls, '*')) { /*  got '**' */  
-          if (check_next1(ls, '=')) {  /* compound support; **= */
-            ls->appendLineBuff("**=");
-            seminfo->i = TK_POW;
+        else if (check_next1(ls, '*')) { /* got '**' */
+          ls->appendLineBuff("**");
+          ls->uses_ipow = true;
+          if (check_next1(ls, '=')) {  /* '**=' */
+            ls->appendLineBuff('=');
+            seminfo->i = TK_IPOW;
             return '=';
           }
-          else {
-            ls->appendLineBuff("**");
-            return TK_POW;  /* '**' */
-          }
+          return TK_IPOW;  /* '**' */
         }
         else {
           ls->appendLineBuff('*');
@@ -997,20 +1255,33 @@ static int llex (LexState *ls, SemInfo *seminfo, int *column) {
         }
         return c;
       }
+      case '+': {
+        int c = ls->current;
+        next(ls);
+        ls->appendLineBuff(c);
+        if (check_next1(ls, '=')) {
+          seminfo->i = c;
+          ls->appendLineBuff('=');
+          return '=';
+        }
+        if (check_next1(ls, '+')) {
+          ls->appendLineBuff('+');
+          return TK_PLUSPLUS;
+        }
+        return c;
+      }
       /* compound support */
-      case '+': case '^':
+      case '^':
       case '%': case '&': {
         int c = ls->current;
         next(ls);
+        ls->appendLineBuff(c);
         if (check_next1(ls, '=')) {
           seminfo->i = c;
-          ls->appendLineBuff(c);
           ls->appendLineBuff('=');
           return '=';
-        } else {
-          ls->appendLineBuff(c);
-          return c;
         }
+        return c;
       }
       /* end of compound support */
       case EOZ: {

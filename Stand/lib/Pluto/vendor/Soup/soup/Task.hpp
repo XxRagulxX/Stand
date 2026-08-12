@@ -27,15 +27,19 @@ NAMESPACE_SOUP
 		[[nodiscard]] const Capture& taskCapture() const noexcept { return holdup_callback.cap; }
 
 	public:
+		enum SchedulingDisposition : int
+		{
+			HIGH_FREQUENCY = (1 << 1) | (1 << 0),
+			NEUTRAL = 1 << 0,
+			LOW_FREQUENCY = 0,
+		};
+
 		[[nodiscard]] virtual int getSchedulingDisposition() const noexcept
 		{
 			return NEUTRAL;
 		}
 
-		[[nodiscard]] virtual std::string toString() const SOUP_EXCAL
-		{
-			return "Task";
-		}
+		[[nodiscard]] virtual std::string toString() const SOUP_EXCAL;
 	};
 
 	template <typename T>

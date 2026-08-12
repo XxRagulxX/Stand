@@ -470,7 +470,7 @@ namespace Stand
 			ctx.setReturnValue<int>(0);
 		});
 
-		SharedNativeHooks::enable([](XoredNativeHash target, rage::scrNativeHandler detour, rage::scrNativeHandler* pOriginal)
+		SharedNativeHooks::enable([](rage::scrNativeHash target, rage::scrNativeHandler detour, rage::scrNativeHandler* pOriginal)
 		{
 			NativeTableHooks::createNativeEntrypointOverride(target, detour);
 		});
@@ -498,7 +498,7 @@ namespace Stand
 		NativeTableHooks::removeNativeEntrypointOverride(0xFAEE099C6F890BB8);
 		NativeTableHooks::removeNativeEntrypointOverride(0x7F7E8401F81CB65B);
 
-		SharedNativeHooks::disable([](XoredNativeHash target, rage::scrNativeHandler original)
+		SharedNativeHooks::disable([](rage::scrNativeHash target, rage::scrNativeHandler original)
 		{
 			NativeTableHooks::removeNativeEntrypointOverride(target, original);
 		});

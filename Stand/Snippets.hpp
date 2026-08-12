@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CNetworkSession.hpp"
+#include "ColoadMgr.hpp"
 #include "netEvent.hpp"
 
 namespace Stand
@@ -16,7 +17,11 @@ namespace Stand
 
 		static void onTick()
 		{
-
+			//ColoadMgr::check();
+			if (ColoadMgr::coloading_with_any_menu)
+			{
+				drawDebugText("Co-loading detected");
+			}
 		}
 
 		// Snippets
@@ -83,7 +88,7 @@ namespace Stand
 			g_logger.log(fmt::format("That was {} messages", count));
 		}
 
-		static void findGamerInSolo() // for onInit
+		/*static void findGamerInSolo() // for onInit
 		{
 			size_t hp_i = PlayerHistory::player_history.size() - 1;
 
@@ -115,7 +120,7 @@ namespace Stand
 
 				Script::current()->yield();
 			}
-		}
+		}*/
 
 		static void findGamerInSolo_fillSlot(size_t& hp_i, RemoteGamer*& out_g)
 		{

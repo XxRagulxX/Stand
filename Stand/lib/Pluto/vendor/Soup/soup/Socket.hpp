@@ -37,8 +37,8 @@ NAMESPACE_SOUP
 		using fd_t = int;
 #endif
 		PrimitiveRaii<fd_t, (fd_t)-1> fd{};
-		SocketAddr peer;
 		StructMap custom_data;
+		SocketAddr peer;
 		bool remote_closed = false;
 		bool dispatched_connection_lost = false;
 		bool callback_recv_on_close = false;
@@ -76,10 +76,17 @@ NAMESPACE_SOUP
 
 		bool init(int af, int type);
 
-		bool connect(const char* host, uint16_t port) noexcept; // blocking
-		bool connect(const std::string& host, uint16_t port) noexcept; // blocking
-		bool connect(const SocketAddr& addr) noexcept; // blocking
-		bool connect(const IpAddr& ip, uint16_t port) noexcept; // blocking
+		// Resolves the hostname and tries to connect per IPv4, falling back to IPv6 if that fails.
+		// 'timeout_ms' defines how long each connection attempt can maximally take and does not include DNS lookup time.
+		bool connect(const std::string& host, uint16_t port, unsigned int timeout_ms = 3000) noexcept; // blocking
+		bool connect(const dnsResolver& resolver, const std::string& host, uint16_t port, unsigned int timeout_ms = 3000) noexcept; // blocking
+
+		bool connect(const SocketAddr& addr, unsigned int timeout_ms = 3000) noexcept; // blocking
+		bool connect(const IpAddr& ip, uint16_t port, unsigned int timeout_ms = 3000) noexcept // blocking
+		{
+			return connect(SocketAddr(ip, native_u16_t(port)), timeout_ms);
+		}
+
 		bool kickOffConnect(const SocketAddr& addr) noexcept;
 		bool kickOffConnect(const IpAddr& ip, uint16_t port) noexcept;
 
@@ -95,16 +102,17 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static bool isPortLocallyBound(uint16_t port);
 
+		// Binding with port = 0 will obtain an ephemeral port; getBoundAddress() will tell you what that port is.
 		bool bind6(uint16_t port) noexcept;
 		bool bind4(uint16_t port) noexcept;
 		bool udpBind6(uint16_t port) noexcept;
 		bool udpBind4(uint16_t port) noexcept;
 		bool udpBind(const IpAddr& addr, uint16_t port) noexcept;
-	protected:
 		bool bind6(int type, uint16_t port, const IpAddr& addr = {}) noexcept;
 		bool bind4(int type, uint16_t port, const IpAddr& addr = {}) noexcept;
 
-	public:
+		[[nodiscard]] SocketAddr getBoundAddress() const noexcept;
+
 		[[nodiscard]] Socket accept6() noexcept;
 		[[nodiscard]] Socket accept4() noexcept;
 
@@ -114,14 +122,22 @@ NAMESPACE_SOUP
 		static bool certchain_validator_none(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // Accepts everything.
 		static bool certchain_validator_default(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL;
 
-		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap = {}, std::string&& initial_application_data = {}) SOUP_EXCAL;
+		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol), Capture&& cap = {}, std::string&& initial_application_data = {}, certchain_validator_t certchain_validator = &Socket::certchain_validator_default, std::vector<std::string>&& alpn_protocols = {}, bool require_ecdhe = false);
 	protected:
-		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL;
-		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL;
+		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
+		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 
 	public:
-		void enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr) SOUP_EXCAL;
+		static TlsCipherSuite_t default_select_ciphersuite(Socket&, const TlsClientHello& hello);
 
+		void enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_select_ciphersuite_t select_ciphersuite = &default_select_ciphersuite, tls_server_alpn_select_protocol_t alpn_select_protocol = nullptr);
+	protected:
+		void enableCryptoServerRecvTlsClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker);
+		void enableCryptoServerAfterClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker, const CertStoreEntry* rsa_data, std::string&& alpn_selection, bool client_supports_secure_renegotiation);
+		void enableCryptoServerRecvClientKeyExchangeRsa(UniquePtr<SocketTlsHandshaker>&& handshaker);
+		void enableCryptoServerRecvClientKeyExchangeEcdhe(UniquePtr<SocketTlsHandshaker>&& handshaker);
+
+	public:
 		// Application Layer
 
 		[[nodiscard]] bool isEncrypted() const noexcept;
@@ -130,16 +146,20 @@ NAMESPACE_SOUP
 		bool send(const void* data, size_t size) SOUP_EXCAL;
 
 		bool initUdpBroadcast4();
+		bool setSource(native_u32_t ip_addr, native_u16_t port);
+		bool setSourcePort4(native_u16_t port) { return setSource((native_u32_t)0, port); }
 
-		bool setSourcePort4(uint16_t port);
+		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept { return udpClientSend(addr, data.data(), data.size()); }
+		bool udpClientSend(const SocketAddr& addr, const void* data, size_t size) noexcept;
+		bool udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept { return udpClientSend(ip, port, data.data(), data.size()); }
+		bool udpClientSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept;
 
-		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept;
-		bool udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
+		bool udpServerSend(const SocketAddr& addr, const std::string& data) noexcept { return udpServerSend(addr, data.data(), data.size()); }
+		bool udpServerSend(const SocketAddr& addr, const void* data, size_t size) noexcept;
+		bool udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept { return udpServerSend(ip, port, data.data(), data.size()); }
+		bool udpServerSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept;
 
-		bool udpServerSend(const SocketAddr& addr, const std::string& data) noexcept;
-		bool udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
-
-		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {}); // 'excal' as long as callback is
+		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {}); // noexcept but may rethrow callback's exceptions
 
 		void udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap = {}) noexcept;
 
@@ -169,9 +189,9 @@ NAMESPACE_SOUP
 		bool tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL;
 		bool tls_sendRecordEncrypted(TlsContentType_t content_type, const void* data, size_t size) SOUP_EXCAL;
 
-		void tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&) SOUP_EXCAL, std::string&& pre = {}) SOUP_EXCAL;
-		void tls_recvRecord(TlsContentType_t expected_content_type, void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {}); // 'excal' as long as callback is
-		void tls_recvRecord(void(*callback)(Socket&, TlsContentType_t, std::string&&, Capture&&), Capture&& cap = {}); // 'excal' as long as callback is
+		void tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&), std::string&& pre = {});
+		void tls_recvRecord(TlsContentType_t expected_content_type, void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {}); // noexcept but may rethrow callback's exceptions
+		void tls_recvRecord(void(*callback)(Socket&, TlsContentType_t, std::string&&, Capture&&), Capture&& cap = {}); // noexcept but may rethrow callback's exceptions
 
 		void tls_close(TlsAlertDescription_t desc) SOUP_EXCAL;
 
@@ -179,7 +199,7 @@ NAMESPACE_SOUP
 
 		// Transport Layer
 
-		bool transport_send(const Buffer& buf) const noexcept;
+		bool transport_send(const Buffer<>& buf) const noexcept;
 		bool transport_send(const std::string& data) const noexcept;
 		bool transport_send(const void* data, int size) const noexcept;
 
@@ -190,8 +210,9 @@ NAMESPACE_SOUP
 	protected:
 		[[nodiscard]] std::string transport_recvCommon(int max_bytes) SOUP_EXCAL;
 	public:
-		void transport_recv(int max_bytes, transport_recv_callback_t callback, Capture&& cap = {}); // 'excal' as long as callback is
-		void transport_recvExact(int bytes, transport_recv_callback_t callback, Capture&& cap = {}, std::string&& pre = {}); // 'excal' as long as callback is
+		void transport_recv(transport_recv_callback_t callback, Capture&& cap = {}); // noexcept but may rethrow callback's exceptions
+		void transport_recv(int max_bytes, transport_recv_callback_t callback, Capture&& cap = {}); // noexcept but may rethrow callback's exceptions
+		void transport_recvExact(int bytes, transport_recv_callback_t callback, Capture&& cap = {}, std::string&& pre = {}); // noexcept but may rethrow callback's exceptions
 
 		void transport_unrecv(const std::string& data) SOUP_EXCAL;
 

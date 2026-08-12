@@ -846,14 +846,14 @@ namespace Stand
 		}
 		for (const auto& entry : CommandLockOutfit::ped_component_commands)
 		{
-			outfit.emplace(Lang::get_en(is_online_character ? entry.second.first->data->online_menu_name : entry.second.first->data->menu_name), fmt::to_string(compact_outfit.at((size_t)entry.first * 2ULL)));
-			outfit.emplace(Lang::get_en(is_online_character ? entry.second.first->data->online_variation_menu_name : entry.second.first->data->variation_menu_name), fmt::to_string(compact_outfit.at(((size_t)entry.first * 2ULL) + 1ULL)));
+			outfit.emplace(Lang::getEn(is_online_character ? entry.second.first->data->online_menu_name : entry.second.first->data->menu_name), fmt::to_string(compact_outfit.at((size_t)entry.first * 2ULL)));
+			outfit.emplace(Lang::getEn(is_online_character ? entry.second.first->data->online_variation_menu_name : entry.second.first->data->variation_menu_name), fmt::to_string(compact_outfit.at(((size_t)entry.first * 2ULL) + 1ULL)));
 		}
 		size_t i = (NUM_PED_COMPONENTS * 2ULL);
 		for (const auto& entry : CommandLockOutfit::ped_prop_commands)
 		{
-			outfit.emplace(Lang::get_en(entry.second.first->data->menu_name), fmt::to_string(compact_outfit.at(i++)));
-			outfit.emplace(Lang::get_en(entry.second.first->data->variation_menu_name), fmt::to_string(compact_outfit.at(i++)));
+			outfit.emplace(Lang::getEn(entry.second.first->data->menu_name), fmt::to_string(compact_outfit.at(i++)));
+			outfit.emplace(Lang::getEn(entry.second.first->data->variation_menu_name), fmt::to_string(compact_outfit.at(i++)));
 		}
 		outfit.emplace(LANG_GET_EN("HAIRHI"), fmt::to_string(compact_outfit.at(i++)));
 		SOUP_ASSERT(i == COMPACT_OUTFIT_SIZE);
@@ -920,7 +920,7 @@ namespace Stand
 		const bool is_online_character = ped.getModel().isOnlineCharacter();
 		for (const auto& entry : CommandLockOutfit::ped_component_commands)
 		{
-			std::string menu_name = Lang::get_en(is_online_character ? entry.second.first->data->online_menu_name : entry.second.first->data->menu_name);
+			std::string menu_name = Lang::getEn(is_online_character ? entry.second.first->data->online_menu_name : entry.second.first->data->menu_name);
 			if (outfit.find(menu_name) == outfit.end())
 			{
 				if (!convertOutfitKey(menu_name))
@@ -934,7 +934,7 @@ namespace Stand
 			}
 			int comp = std::stoi(outfit.at(menu_name));
 			int var = -1;
-			std::string variation_menu_name = Lang::get_en(is_online_character ? entry.second.first->data->online_variation_menu_name : entry.second.first->data->variation_menu_name);
+			std::string variation_menu_name = Lang::getEn(is_online_character ? entry.second.first->data->online_variation_menu_name : entry.second.first->data->variation_menu_name);
 			if (outfit.find(variation_menu_name) != outfit.end())
 			{
 				var = std::stoi(outfit.at(variation_menu_name));
@@ -956,7 +956,7 @@ namespace Stand
 		}
 		for (const auto& entry : CommandLockOutfit::ped_prop_commands)
 		{
-			std::string menu_name = Lang::get_en(entry.second.first->data->menu_name);
+			std::string menu_name = Lang::getEn(entry.second.first->data->menu_name);
 			if (outfit.find(menu_name) != outfit.end())
 			{
 				int comp = std::stoi(outfit.at(menu_name));
@@ -967,7 +967,7 @@ namespace Stand
 				else
 				{
 					int var = -1;
-					std::string variation_menu_name = Lang::get_en(entry.second.first->data->variation_menu_name);
+					std::string variation_menu_name = Lang::getEn(entry.second.first->data->variation_menu_name);
 					if (outfit.find(variation_menu_name) != outfit.end())
 					{
 						var = std::stoi(outfit.at(variation_menu_name));
@@ -983,7 +983,7 @@ namespace Stand
 		const bool is_online_character = model.isOnlineCharacter();
 		for (const auto& entry : CommandLockOutfit::ped_component_commands)
 		{
-			std::string menu_name = Lang::get_en(is_online_character ? entry.second.first->data->online_menu_name : entry.second.first->data->menu_name);
+			std::string menu_name = Lang::getEn(is_online_character ? entry.second.first->data->online_menu_name : entry.second.first->data->menu_name);
 			if (outfit.find(menu_name) == outfit.end())
 			{
 				if (!convertOutfitKey(menu_name))
@@ -996,7 +996,7 @@ namespace Stand
 				}
 			}
 			entry.second.first->value = std::stoi(outfit.at(menu_name));
-			std::string variation_menu_name = Lang::get_en(is_online_character ? entry.second.first->data->online_variation_menu_name : entry.second.first->data->variation_menu_name);
+			std::string variation_menu_name = Lang::getEn(is_online_character ? entry.second.first->data->online_variation_menu_name : entry.second.first->data->variation_menu_name);
 			if (outfit.find(variation_menu_name) != outfit.end())
 			{
 				entry.second.second->value = std::stoi(outfit.at(variation_menu_name));
@@ -1006,7 +1006,7 @@ namespace Stand
 		}
 		for (const auto& entry : CommandLockOutfit::ped_prop_commands)
 		{
-			std::string menu_name = Lang::get_en(entry.second.first->data->menu_name);
+			std::string menu_name = Lang::getEn(entry.second.first->data->menu_name);
 			if (outfit.find(menu_name) != outfit.end())
 			{
 				entry.second.first->value = std::stoi(outfit.at(menu_name));
@@ -1017,7 +1017,7 @@ namespace Stand
 				}
 				else
 				{
-					std::string variation_menu_name = Lang::get_en(entry.second.first->data->variation_menu_name);
+					std::string variation_menu_name = Lang::getEn(entry.second.first->data->variation_menu_name);
 					if (outfit.find(variation_menu_name) != outfit.end())
 					{
 						entry.second.second->value = std::stoi(outfit.at(variation_menu_name));
@@ -1072,341 +1072,341 @@ namespace Stand
 		{
 			// -> 0.76
 			prefix_conversion_table = {
-				{"Online>Session>Log Leaving Players", "Online>Session>Player Leave Notifications>Write To Log"},
+				{soup::ObfusString("Online>Session>Log Leaving Players").str(), soup::ObfusString("Online>Session>Player Leave Notifications>Write To Log").str()},
 			};
 		}
 		else if (version == 30)
 		{
 			// -> 0.77
 			prefix_conversion_table = {
-				{"Online>Restrictions>", "Online>Enhancements>"},
-				{"Online>Freemode Banners To Notifications", "Online>Enhancements>Freemode Banners To Notifications"},
-				{"Online>Disable Daily Expenses", "Online>Enhancements>Disable Daily Expenses"},
-				{"Online>Notify On Commendation", "Online>Enhancements>Notify On Commendation"},
-				{"Online>Protections>Lessen Host Kicks", "Online>Protections>Host Kicks>Lessen Host Kicks"},
-				{"Online>Session>Block Joins", "Online>Session>Block Joins>From Anyone"},
+				{soup::ObfusString("Online>Restrictions>").str(), soup::ObfusString("Online>Enhancements>").str()},
+				{soup::ObfusString("Online>Freemode Banners To Notifications").str(), soup::ObfusString("Online>Enhancements>Freemode Banners To Notifications").str()},
+				{soup::ObfusString("Online>Disable Daily Expenses").str(), soup::ObfusString("Online>Enhancements>Disable Daily Expenses").str()},
+				{soup::ObfusString("Online>Notify On Commendation").str(), soup::ObfusString("Online>Enhancements>Notify On Commendation").str()},
+				{soup::ObfusString("Online>Protections>Lessen Host Kicks").str(), soup::ObfusString("Online>Protections>Host Kicks>Lessen Host Kicks").str()},
+				{soup::ObfusString("Online>Session>Block Joins").str(), soup::ObfusString("Online>Session>Block Joins>From Anyone").str()},
 			};
 		}
 		else if (version == 31)
 		{
 			// -> 0.78
 			prefix_conversion_table = {
-				{"Game>Disables>Disable New Invites Indicator", "Game>Minimap>Disable New Invites Indicator"},
+				{soup::ObfusString("Game>Disables>Disable New Invites Indicator").str(), soup::ObfusString("Game>Minimap>Disable New Invites Indicator").str()},
 			};
 		}
 		else if (version == 32) // Streaming profile uses this version!
 		{
 			// -> 0.79
 			prefix_conversion_table = {
-				{"World>Water>Behaviour", "World>Water>Wave Behaviour"},
+				{soup::ObfusString("World>Water>Behaviour").str(), soup::ObfusString("World>Water>Wave Behaviour").str()},
 			};
 		}
 		else if (version == 33)
 		{
 			// -> 0.80
 			prefix_conversion_table = {
-				{"Self>Movement>Super Flight", "Self>Movement>Super Flight>Super Flight"},
-				{"Online>Player History>Settings>Write Tracking Updates To Log", "Online>Player History>Settings>On Tracking Update...>Write To Log"},
-				{"Game>Info Overlay>Friends", "Game>Info Overlay>Player Tags>Friends"},
-				{"Game>Info Overlay>Crew Members", "Game>Info Overlay>Player Tags>Crew Members"},
-				{"Game>Info Overlay>Modders", "Game>Info Overlay>Player Tags>Modders"},
-				{"Game>Info Overlay>Attacked You", "Game>Info Overlay>Player Tags>Attacked You"},
-				{"Game>Info Overlay>Host", "Game>Info Overlay>Player Tags>Host"},
-				{"Game>Info Overlay>Next Host", "Game>Info Overlay>Player Tags>Next Host"},
-				{"Game>Info Overlay>Script Host", "Game>Info Overlay>Player Tags>Script Host"},
-				{"Game>Info Overlay>Spectating", "Game>Info Overlay>Player Tags>Spectating"},
-				{"Game>Info Overlay>RC Vehicle", "Game>Info Overlay>Player Tags>RC Vehicle"},
-				{"Game>Info Overlay>Invulnerable", "Game>Info Overlay>Player Tags>Invulnerable"},
-				{"Game>Info Overlay>Off The Radar", "Game>Info Overlay>Player Tags>Off The Radar"},
-				{"Game>Info Overlay>In An Interior", "Game>Info Overlay>Player Tags>In An Interior"},
-				{"Game>Info Overlay>Typing", "Game>Info Overlay>Player Tags>Typing"},
+				{soup::ObfusString("Self>Movement>Super Flight").str(), soup::ObfusString("Self>Movement>Super Flight>Super Flight").str()},
+				{soup::ObfusString("Online>Player History>Settings>Write Tracking Updates To Log").str(), soup::ObfusString("Online>Player History>Settings>On Tracking Update...>Write To Log").str()},
+				{soup::ObfusString("Game>Info Overlay>Friends").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Friends").str()},
+				{soup::ObfusString("Game>Info Overlay>Crew Members").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Crew Members").str()},
+				{soup::ObfusString("Game>Info Overlay>Modders").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Modders").str()},
+				{soup::ObfusString("Game>Info Overlay>Attacked You").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Attacked You").str()},
+				{soup::ObfusString("Game>Info Overlay>Host").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Host").str()},
+				{soup::ObfusString("Game>Info Overlay>Next Host").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Next Host").str()},
+				{soup::ObfusString("Game>Info Overlay>Script Host").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Script Host").str()},
+				{soup::ObfusString("Game>Info Overlay>Spectating").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Spectating").str()},
+				{soup::ObfusString("Game>Info Overlay>RC Vehicle").str(), soup::ObfusString("Game>Info Overlay>Player Tags>RC Vehicle").str()},
+				{soup::ObfusString("Game>Info Overlay>Invulnerable").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Invulnerable").str()},
+				{soup::ObfusString("Game>Info Overlay>Off The Radar").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Off The Radar").str()},
+				{soup::ObfusString("Game>Info Overlay>In An Interior").str(), soup::ObfusString("Game>Info Overlay>Player Tags>In An Interior").str()},
+				{soup::ObfusString("Game>Info Overlay>Typing").str(), soup::ObfusString("Game>Info Overlay>Player Tags>Typing").str()},
 			};
 		}
 		else if (version == 34)
 		{
 			// -> 0.81.7
 			prefix_conversion_table = {
-				{"Online>Protections>Events>Kick From Personal Vehicle", "Online>Protections>Events>Kick From Vehicle"}
+				{soup::ObfusString("Online>Protections>Events>Kick From Personal Vehicle").str(), soup::ObfusString("Online>Protections>Events>Kick From Vehicle").str()}
 			};
 		}
 		else if (version == 35)
 		{
 			// -> 0.83
 			prefix_conversion_table = {
-				{"Online>Quick Progress>Rig Slot Machines", "Online>Quick Progress>Casino>Slot Machines Outcome"},
-				{"Online>Quick Progress>Lucky Wheel Reward", "Online>Quick Progress>Casino>Rig Slot Machines"},
-				{"Online>Protections>Detections>Invalid Rank/RP", "Online>Protections>Detections>Invalid RP"},
-				{"Stand>Lua Scripts>Settings>Offline Mode", "Stand>Lua Scripts>Settings>Disable Internet Access"},
+				{soup::ObfusString("Online>Quick Progress>Rig Slot Machines").str(), soup::ObfusString("Online>Quick Progress>Casino>Slot Machines Outcome").str()},
+				{soup::ObfusString("Online>Quick Progress>Lucky Wheel Reward").str(), soup::ObfusString("Online>Quick Progress>Casino>Rig Slot Machines").str()},
+				{soup::ObfusString("Online>Protections>Detections>Invalid Rank/RP").str(), soup::ObfusString("Online>Protections>Detections>Invalid RP").str()},
+				{soup::ObfusString("Stand>Lua Scripts>Settings>Offline Mode").str(), soup::ObfusString("Stand>Lua Scripts>Settings>Disable Internet Access").str()},
 			};
 		}
 		else if (version == 36)
 		{
 			// -> 0.84
 			prefix_conversion_table = {
-				{"Self>Weapons>Aimbot>Exclude Friends", "Self>Weapons>Aimbot>Target Selection>Exclude Friends"},
-				{"Self>Weapons>Aimbot>Players", "Self>Weapons>Aimbot>Target Selection>Players"},
-				{"Self>Weapons>Aimbot>Pedestrians", "Self>Weapons>Aimbot>Target Selection>Pedestrians"},
-				{"Self>Weapons>Aimbot>Vehicles", "Self>Weapons>Aimbot>Target Selection>Vehicles"},
-				{"Stand>Settings>Set High Priority If Injected Early", "Game>Early Inject Enhancements>Set Game To High Priority"},
-				{"Stand>Settings>Skip Intro & License If Injected Early", "Game>Early Inject Enhancements>Skip Intro & License"},
+				{soup::ObfusString("Self>Weapons>Aimbot>Exclude Friends").str(), soup::ObfusString("Self>Weapons>Aimbot>Target Selection>Exclude Friends").str()},
+				{soup::ObfusString("Self>Weapons>Aimbot>Players").str(), soup::ObfusString("Self>Weapons>Aimbot>Target Selection>Players").str()},
+				{soup::ObfusString("Self>Weapons>Aimbot>Pedestrians").str(), soup::ObfusString("Self>Weapons>Aimbot>Target Selection>Pedestrians").str()},
+				{soup::ObfusString("Self>Weapons>Aimbot>Vehicles").str(), soup::ObfusString("Self>Weapons>Aimbot>Target Selection>Vehicles").str()},
+				{soup::ObfusString("Stand>Settings>Set High Priority If Injected Early").str(), soup::ObfusString("Game>Early Inject Enhancements>Set Game To High Priority").str()},
+				{soup::ObfusString("Stand>Settings>Skip Intro & License If Injected Early").str(), soup::ObfusString("Game>Early Inject Enhancements>Skip Intro & License").str()},
 			};
 		}
 		else if (version == 37)
 		{
 			// -> 0.85
 			prefix_conversion_table = {
-				{"Online>Player History>Settings", "Online>Player History>Meta"},
+				{soup::ObfusString("Online>Player History>Settings").str(), soup::ObfusString("Online>Player History>Meta").str()},
 			};
 			suffix_conversion_table = {
-				{">GIVE_WEAPON_EVENT", ">Give Weapon Event"},
-				{">REMOVE_WEAPON_EVENT", ">Remove Weapon Event"},
-				{">REMOVE_ALL_WEAPONS_EVENT", ">Remove All Weapons Event"},
-				{">FIRE_EVENT", ">Fire"},
-				{">NETWORK_PTFX_EVENT", ">PTFX"},
+				{soup::ObfusString(">GIVE_WEAPON_EVENT").str(), soup::ObfusString(">Give Weapon Event").str()},
+				{soup::ObfusString(">REMOVE_WEAPON_EVENT").str(), soup::ObfusString(">Remove Weapon Event").str()},
+				{soup::ObfusString(">REMOVE_ALL_WEAPONS_EVENT").str(), soup::ObfusString(">Remove All Weapons Event").str()},
+				{soup::ObfusString(">FIRE_EVENT").str(), soup::ObfusString(">Fire").str()},
+				{soup::ObfusString(">NETWORK_PTFX_EVENT").str(), soup::ObfusString(">PTFX").str()},
 			};
 		}
 		else if (version == 38)
 		{
 			// -> 0.88
 			prefix_conversion_table = {
-				{"Online>Protections>Knockoff Breakup Kick Reactions", "Online>Protections>Knockoff Breakup Kick Reactions>Myself"},
+				{soup::ObfusString("Online>Protections>Knockoff Breakup Kick Reactions").str(), soup::ObfusString("Online>Protections>Knockoff Breakup Kick Reactions>Myself").str()},
 			};
 		}
 		else if (version == 39)
 		{
 			// -> 0.90
 			prefix_conversion_table = {
-				{"Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue", "Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue>Kick Host When Joining As Next In Queue"},
-				{"Online>Transitions>Break Sessions But Join Fast", "Online>Transitions>Speed Up>Become Script Host"},
-				{"Stand>Settings>Speculative Connections", "Stand>Settings>Session Joining>Speculative Connections"},
-				{"Online>Protections>Block Entity Spam", "Online>Protections>Block Entity Spam>Block Entity Spam"},
+				{soup::ObfusString("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue").str(), soup::ObfusString("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue>Kick Host When Joining As Next In Queue").str()},
+				{soup::ObfusString("Online>Transitions>Break Sessions But Join Fast").str(), soup::ObfusString("Online>Transitions>Speed Up>Become Script Host").str()},
+				{soup::ObfusString("Stand>Settings>Speculative Connections").str(), soup::ObfusString("Stand>Settings>Session Joining>Speculative Connections").str()},
+				{soup::ObfusString("Online>Protections>Block Entity Spam").str(), soup::ObfusString("Online>Protections>Block Entity Spam>Block Entity Spam").str()},
 			};
 		}
 		else if (version == 40)
 		{
 			// -> 0.90 (Logger Rewrite)
 			suffix_conversion_table = {
-				{">Write To Log", ">Write To Log File"},
+				{soup::ObfusString(">Write To Log").str(), soup::ObfusString(">Write To Log File").str()},
 			};
 		}
 		else if (version == 41)
 		{
 			// -> 0.91
 			prefix_conversion_table = {
-				{"Stand>Lua Scripts>Settings>Force Silent Stop", "Stand>Lua Scripts>Settings>Enforce Silent Stop"},
+				{soup::ObfusString("Stand>Lua Scripts>Settings>Force Silent Stop").str(), soup::ObfusString("Stand>Lua Scripts>Settings>Enforce Silent Stop").str()},
 			};
 		}
 		else if (version == 42)
 		{
 			// -> 95
 			suffix_conversion_table = {
-				{">Bypassed Profanity Filter", ">Bypassed Message Filter"},
+				{soup::ObfusString(">Bypassed Profanity Filter").str(), soup::ObfusString(">Bypassed Message Filter").str()},
 			};
 		}
 		else if (version == 43)
 		{
 			// -> 100
 			prefix_conversion_table = {
-				{"Self>Bodyguards>Formation", "Self>Bodyguards>Behaviour>Formation"},
-				{"Self>Bodyguards>Aggression", "Self>Bodyguards>Behaviour>Aggression"},
-				{"Self>Bodyguards>Spawn>Weapon", "Self>Bodyguards>Spawn>Primary Weapon"},
+				{soup::ObfusString("Self>Bodyguards>Formation").str(), soup::ObfusString("Self>Bodyguards>Behaviour>Formation").str()},
+				{soup::ObfusString("Self>Bodyguards>Aggression").str(), soup::ObfusString("Self>Bodyguards>Behaviour>Aggression").str()},
+				{soup::ObfusString("Self>Bodyguards>Spawn>Weapon").str(), soup::ObfusString("Self>Bodyguards>Spawn>Primary Weapon").str()},
 			};
 		}
 		else if (version == 44)
 		{
 			// -> 101
 			prefix_conversion_table = {
-				{"Online>Protections>Delete Stale Objects", "Online>Protections>Delete Stale Objects>Delete Stale Objects"},
-				{"Online>Set Mental State", "Online>Mental State>Set Mental State"},
-				{"Online>Pulsating Mental State", "Online>Mental State>Pulsating Mental State"},
+				{soup::ObfusString("Online>Protections>Delete Stale Objects").str(), soup::ObfusString("Online>Protections>Delete Stale Objects>Delete Stale Objects").str()},
+				{soup::ObfusString("Online>Set Mental State").str(), soup::ObfusString("Online>Mental State>Set Mental State").str()},
+				{soup::ObfusString("Online>Pulsating Mental State").str(), soup::ObfusString("Online>Mental State>Pulsating Mental State").str()},
 			};
 		}
 		else if (version == 45)
 		{
 			// -> 102
 			prefix_conversion_table = {
-				{"Online>Protections>Block Join Karma", "Online>Protections>Block Join Karma>Block Join Karma"},
-				{"Online>Session>Block Joins>From Kicked Players", "Online>Session>Block Joins>From Removed Players"},
-				{"Online>Session>Block Joins>Kicked Players", "Online>Session>Block Joins>Removed Players"},
+				{soup::ObfusString("Online>Protections>Block Join Karma").str(), soup::ObfusString("Online>Protections>Block Join Karma>Block Join Karma").str()},
+				{soup::ObfusString("Online>Session>Block Joins>From Kicked Players").str(), soup::ObfusString("Online>Session>Block Joins>From Removed Players").str()},
+				{soup::ObfusString("Online>Session>Block Joins>Kicked Players").str(), soup::ObfusString("Online>Session>Block Joins>Removed Players").str()},
 			};
 		}
 		else if (version == 46)
 		{
 			// -> 105
 			prefix_conversion_table = {
-				{"Vehicle>Movement>Gravity Multiplier", "Vehicle>Movement>Gravity Multiplier>Gravity Multiplier"}
+				{soup::ObfusString("Vehicle>Movement>Gravity Multiplier").str(), soup::ObfusString("Vehicle>Movement>Gravity Multiplier>Gravity Multiplier").str()}
 			};
 		}
 		else if (version == 47)
 		{
 			// -> 107
 			prefix_conversion_table = {
-				{"Vehicle>Auto Transform Amphibious Cars>Auto Transform Amphibious Cars", "Vehicle>Auto Transform Submarine Cars>Auto Transform Submarine Cars"},
-				{"Vehicle>Auto Transform Amphibious Cars", "Vehicle>Auto Transform Submarine Cars"},
-				{"Online>Protections>Block Player Model Swaps", "Online>Protections>Block Player Model Swaps>Block Player Model Swaps"}
+				{soup::ObfusString("Vehicle>Auto Transform Amphibious Cars>Auto Transform Amphibious Cars").str(), soup::ObfusString("Vehicle>Auto Transform Submarine Cars>Auto Transform Submarine Cars").str()},
+				{soup::ObfusString("Vehicle>Auto Transform Amphibious Cars").str(), soup::ObfusString("Vehicle>Auto Transform Submarine Cars").str()},
+				{soup::ObfusString("Online>Protections>Block Player Model Swaps").str(), soup::ObfusString("Online>Protections>Block Player Model Swaps>Block Player Model Swaps").str()}
 			};
 		}
 		else if (version == 48)
 		{
 			// -> 108
 			prefix_conversion_table = {
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Knife", "Self>Weapons>Lock Weapons>Melee Weapons>Knife>Knife"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Knuckle Duster", "Self>Weapons>Lock Weapons>Melee Weapons>Knuckle Duster>Knuckle Duster"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Nightstick", "Self>Weapons>Lock Weapons>Melee Weapons>Nightstick>Nightstick"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Hammer", "Self>Weapons>Lock Weapons>Melee Weapons>Hammer>Hammer"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Baseball Bat", "Self>Weapons>Lock Weapons>Melee Weapons>Baseball Bat>Baseball Bat"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Golf Club", "Self>Weapons>Lock Weapons>Melee Weapons>Golf Club>Golf Club"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Crowbar", "Self>Weapons>Lock Weapons>Melee Weapons>Crowbar>Crowbar"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Bottle", "Self>Weapons>Lock Weapons>Melee Weapons>Bottle>Bottle"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Antique Cavalry Dagger", "Self>Weapons>Lock Weapons>Melee Weapons>Antique Cavalry Dagger>Antique Cavalry Dagger"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Hatchet", "Self>Weapons>Lock Weapons>Melee Weapons>Hatchet>Hatchet"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Machete", "Self>Weapons>Lock Weapons>Melee Weapons>Machete>Machete"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Flashlight", "Self>Weapons>Lock Weapons>Melee Weapons>Flashlight>Flashlight"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Switchblade", "Self>Weapons>Lock Weapons>Melee Weapons>Switchblade>Switchblade"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Pool Cue", "Self>Weapons>Lock Weapons>Melee Weapons>Pool Cue>Pool Cue"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Pipe Wrench", "Self>Weapons>Lock Weapons>Melee Weapons>Pipe Wrench>Pipe Wrench"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Battle Axe", "Self>Weapons>Lock Weapons>Melee Weapons>Battle Axe>Battle Axe"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Stone Hatchet", "Self>Weapons>Lock Weapons>Melee Weapons>Stone Hatchet>Stone Hatchet"},
-				{"Self>Weapons>Lock Weapons>Melee Weapons>Candy Cane", "Self>Weapons>Lock Weapons>Melee Weapons>Candy Cane>Candy Cane"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Knife").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Knife>Knife").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Knuckle Duster").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Knuckle Duster>Knuckle Duster").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Nightstick").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Nightstick>Nightstick").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Hammer").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Hammer>Hammer").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Baseball Bat").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Baseball Bat>Baseball Bat").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Golf Club").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Golf Club>Golf Club").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Crowbar").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Crowbar>Crowbar").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Bottle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Bottle>Bottle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Antique Cavalry Dagger").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Antique Cavalry Dagger>Antique Cavalry Dagger").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Hatchet").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Hatchet>Hatchet").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Machete").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Machete>Machete").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Flashlight").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Flashlight>Flashlight").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Switchblade").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Switchblade>Switchblade").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Pool Cue").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Pool Cue>Pool Cue").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Pipe Wrench").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Pipe Wrench>Pipe Wrench").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Battle Axe").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Battle Axe>Battle Axe").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Stone Hatchet").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Stone Hatchet>Stone Hatchet").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Candy Cane").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Melee Weapons>Candy Cane>Candy Cane").str()},
 
-				{"Self>Weapons>Lock Weapons>Throwables>Grenade", "Self>Weapons>Lock Weapons>Throwables>Grenade>Grenade"},
-				{"Self>Weapons>Lock Weapons>Throwables>Sticky Bomb", "Self>Weapons>Lock Weapons>Throwables>Sticky Bomb>Sticky Bomb"},
-				{"Self>Weapons>Lock Weapons>Throwables>Proximity Mine", "Self>Weapons>Lock Weapons>Throwables>Proximity Mine>Proximity Mine"},
-				{"Self>Weapons>Lock Weapons>Throwables>BZ Gas", "Self>Weapons>Lock Weapons>Throwables>BZ Gas>BZ Gas"},
-				{"Self>Weapons>Lock Weapons>Throwables>Tear Gas", "Self>Weapons>Lock Weapons>Throwables>Tear Gas>Tear Gas"},
-				{"Self>Weapons>Lock Weapons>Throwables>Molotov", "Self>Weapons>Lock Weapons>Throwables>Molotov>Molotov"},
-				{"Self>Weapons>Lock Weapons>Throwables>Fire Extinguisher", "Self>Weapons>Lock Weapons>Throwables>Fire Extinguisher>Fire Extinguisher"},
-				{"Self>Weapons>Lock Weapons>Throwables>Jerry Can", "Self>Weapons>Lock Weapons>Throwables>Jerry Can>Jerry Can"},
-				{"Self>Weapons>Lock Weapons>Throwables>Snowball", "Self>Weapons>Lock Weapons>Throwables>Snowball>Snowball"},
-				{"Self>Weapons>Lock Weapons>Throwables>Flare", "Self>Weapons>Lock Weapons>Throwables>Flare>Flare"},
-				{"Self>Weapons>Lock Weapons>Throwables>Ball", "Self>Weapons>Lock Weapons>Throwables>Ball>Ball"},
-				{"Self>Weapons>Lock Weapons>Throwables>Pipe Bomb", "Self>Weapons>Lock Weapons>Throwables>Pipe Bomb>Pipe Bomb"},
-				{"Self>Weapons>Lock Weapons>Throwables>Hazardous Jerry Can", "Self>Weapons>Lock Weapons>Throwables>Hazardous Jerry Can>Hazardous Jerry Can"},
-				{"Self>Weapons>Lock Weapons>Throwables>Fertilizer Can", "Self>Weapons>Lock Weapons>Throwables>Fertilizer Can>Fertilizer Can"},
-				{"Self>Weapons>Lock Weapons>Throwables>Acid Package", "Self>Weapons>Lock Weapons>Throwables>Acid Package>Acid Package"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Grenade").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Grenade>Grenade").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Sticky Bomb").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Sticky Bomb>Sticky Bomb").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Proximity Mine").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Proximity Mine>Proximity Mine").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>BZ Gas").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>BZ Gas>BZ Gas").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Tear Gas").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Tear Gas>Tear Gas").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Molotov").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Molotov>Molotov").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Fire Extinguisher").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Fire Extinguisher>Fire Extinguisher").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Jerry Can").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Jerry Can>Jerry Can").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Snowball").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Snowball>Snowball").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Flare").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Flare>Flare").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Ball").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Ball>Ball").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Pipe Bomb").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Pipe Bomb>Pipe Bomb").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Hazardous Jerry Can").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Hazardous Jerry Can>Hazardous Jerry Can").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Fertilizer Can").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Fertilizer Can>Fertilizer Can").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Acid Package").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Throwables>Acid Package>Acid Package").str()},
 
-				{"Self>Weapons>Lock Weapons>Pistols>Heavy Revolver", "Self>Weapons>Lock Weapons>Pistols>Heavy Revolver>Heavy Revolver"},
-				{"Self>Weapons>Lock Weapons>Pistols>Pistol", "Self>Weapons>Lock Weapons>Pistols>Pistol>Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>Pistol Mk II", "Self>Weapons>Lock Weapons>Pistols>Pistol Mk II>Pistol Mk II"},
-				{"Self>Weapons>Lock Weapons>Pistols>Combat Pistol", "Self>Weapons>Lock Weapons>Pistols>Combat Pistol>Combat Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>AP Pistol", "Self>Weapons>Lock Weapons>Pistols>AP Pistol>AP Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>Pistol .50", "Self>Weapons>Lock Weapons>Pistols>Pistol .50>Pistol .50"},
-				{"Self>Weapons>Lock Weapons>Pistols>SNS Pistol", "Self>Weapons>Lock Weapons>Pistols>SNS Pistol>SNS Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>Heavy Pistol", "Self>Weapons>Lock Weapons>Pistols>Heavy Pistol>Heavy Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>Vintage Pistol", "Self>Weapons>Lock Weapons>Pistols>Vintage Pistol>Vintage Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>Stun Gun (SP)", "Self>Weapons>Lock Weapons>Pistols>Stun Gun (SP)>Stun Gun (SP)"},
-				{"Self>Weapons>Lock Weapons>Pistols>Stun Gun (MP)", "Self>Weapons>Lock Weapons>Pistols>Stun Gun (MP)>Stun Gun (MP)"},
-				{"Self>Weapons>Lock Weapons>Pistols>Flare Gun", "Self>Weapons>Lock Weapons>Pistols>Flare Gun>Flare Gun"},
-				{"Self>Weapons>Lock Weapons>Pistols>Marksman Pistol", "Self>Weapons>Lock Weapons>Pistols>Marksman Pistol>Marksman Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>SNS Pistol Mk II", "Self>Weapons>Lock Weapons>Pistols>SNS Pistol Mk II>SNS Pistol Mk II"},
-				{"Self>Weapons>Lock Weapons>Pistols>Heavy Revolver Mk II", "Self>Weapons>Lock Weapons>Pistols>Heavy Revolver Mk II>Heavy Revolver Mk II"},
-				{"Self>Weapons>Lock Weapons>Pistols>Double-Action Revolver", "Self>Weapons>Lock Weapons>Pistols>Double-Action Revolver>Double-Action Revolver"},
-				{"Self>Weapons>Lock Weapons>Pistols>Up-n-Atomizer", "Self>Weapons>Lock Weapons>Pistols>Up-n-Atomizer>Up-n-Atomizer"},
-				{"Self>Weapons>Lock Weapons>Pistols>Ceramic Pistol", "Self>Weapons>Lock Weapons>Pistols>Ceramic Pistol>Ceramic Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>Navy Revolver", "Self>Weapons>Lock Weapons>Pistols>Navy Revolver>Navy Revolver"},
-				{"Self>Weapons>Lock Weapons>Pistols>Perico Pistol", "Self>Weapons>Lock Weapons>Pistols>Perico Pistol>Perico Pistol"},
-				{"Self>Weapons>Lock Weapons>Pistols>WM 29 Pistol", "Self>Weapons>Lock Weapons>Pistols>WM 29 Pistol>WM 29 Pistol"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Heavy Revolver").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Heavy Revolver>Heavy Revolver").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Pistol>Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Pistol Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Pistol Mk II>Pistol Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Combat Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Combat Pistol>Combat Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>AP Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>AP Pistol>AP Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Pistol .50").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Pistol .50>Pistol .50").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>SNS Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>SNS Pistol>SNS Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Heavy Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Heavy Pistol>Heavy Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Vintage Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Vintage Pistol>Vintage Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Stun Gun (SP)").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Stun Gun (SP)>Stun Gun (SP)").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Stun Gun (MP)").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Stun Gun (MP)>Stun Gun (MP)").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Flare Gun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Flare Gun>Flare Gun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Marksman Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Marksman Pistol>Marksman Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>SNS Pistol Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>SNS Pistol Mk II>SNS Pistol Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Heavy Revolver Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Heavy Revolver Mk II>Heavy Revolver Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Double-Action Revolver").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Double-Action Revolver>Double-Action Revolver").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Up-n-Atomizer").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Up-n-Atomizer>Up-n-Atomizer").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Ceramic Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Ceramic Pistol>Ceramic Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Navy Revolver").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Navy Revolver>Navy Revolver").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Perico Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>Perico Pistol>Perico Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>WM 29 Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Pistols>WM 29 Pistol>WM 29 Pistol").str()},
 
-				{"Self>Weapons>Lock Weapons>Machine Guns>Micro SMG", "Self>Weapons>Lock Weapons>Machine Guns>Micro SMG>Micro SMG"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Machine Pistol", "Self>Weapons>Lock Weapons>Machine Guns>Machine Pistol>Machine Pistol"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Mini SMG", "Self>Weapons>Lock Weapons>Machine Guns>Mini SMG>Mini SMG"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>SMG", "Self>Weapons>Lock Weapons>Machine Guns>SMG>SMG"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>SMG Mk II", "Self>Weapons>Lock Weapons>Machine Guns>SMG Mk II>SMG Mk II"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Assault SMG", "Self>Weapons>Lock Weapons>Machine Guns>Assault SMG>Assault SMG"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>MG", "Self>Weapons>Lock Weapons>Machine Guns>MG>MG"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Combat MG", "Self>Weapons>Lock Weapons>Machine Guns>Combat MG>Combat MG"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Combat MG Mk II", "Self>Weapons>Lock Weapons>Machine Guns>Combat MG Mk II>Combat MG Mk II"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Unholy Hellbringer", "Self>Weapons>Lock Weapons>Machine Guns>Unholy Hellbringer>Unholy Hellbringer"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Combat PDW", "Self>Weapons>Lock Weapons>Machine Guns>Combat PDW>Combat PDW"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Gusenberg Sweeper", "Self>Weapons>Lock Weapons>Machine Guns>Gusenberg Sweeper>Gusenberg Sweeper"},
-				{"Self>Weapons>Lock Weapons>Machine Guns>Tactical SMG", "Self>Weapons>Lock Weapons>Machine Guns>Tactical SMG>Tactical SMG"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Micro SMG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Micro SMG>Micro SMG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Machine Pistol").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Machine Pistol>Machine Pistol").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Mini SMG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Mini SMG>Mini SMG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>SMG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>SMG>SMG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>SMG Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>SMG Mk II>SMG Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Assault SMG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Assault SMG>Assault SMG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>MG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>MG>MG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Combat MG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Combat MG>Combat MG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Combat MG Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Combat MG Mk II>Combat MG Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Unholy Hellbringer").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Unholy Hellbringer>Unholy Hellbringer").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Combat PDW").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Combat PDW>Combat PDW").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Gusenberg Sweeper").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Gusenberg Sweeper>Gusenberg Sweeper").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Tactical SMG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Machine Guns>Tactical SMG>Tactical SMG").str()},
 
-				{"Self>Weapons>Lock Weapons>Rifles>Assault Rifle", "Self>Weapons>Lock Weapons>Rifles>Assault Rifle>Assault Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Assault Rifle Mk II", "Self>Weapons>Lock Weapons>Rifles>Assault Rifle Mk II>Assault Rifle Mk II"},
-				{"Self>Weapons>Lock Weapons>Rifles>Carbine Rifle", "Self>Weapons>Lock Weapons>Rifles>Carbine Rifle>Carbine Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Carbine Rifle Mk II", "Self>Weapons>Lock Weapons>Rifles>Carbine Rifle Mk II>Carbine Rifle Mk II"},
-				{"Self>Weapons>Lock Weapons>Rifles>Advanced Rifle", "Self>Weapons>Lock Weapons>Rifles>Advanced Rifle>Advanced Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Special Carbine", "Self>Weapons>Lock Weapons>Rifles>Special Carbine>Special Carbine"},
-				{"Self>Weapons>Lock Weapons>Rifles>Special Carbine Mk II", "Self>Weapons>Lock Weapons>Rifles>Special Carbine Mk II>Special Carbine Mk II"},
-				{"Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle", "Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle>Bullpup Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle Mk II", "Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle Mk II>Bullpup Rifle Mk II"},
-				{"Self>Weapons>Lock Weapons>Rifles>Compact Rifle", "Self>Weapons>Lock Weapons>Rifles>Compact Rifle>Compact Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Military Rifle", "Self>Weapons>Lock Weapons>Rifles>Military Rifle>Military Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Heavy Rifle", "Self>Weapons>Lock Weapons>Rifles>Heavy Rifle>Heavy Rifle"},
-				{"Self>Weapons>Lock Weapons>Rifles>Service Carbine", "Self>Weapons>Lock Weapons>Rifles>Service Carbine>Service Carbine"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Assault Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Assault Rifle>Assault Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Assault Rifle Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Assault Rifle Mk II>Assault Rifle Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Carbine Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Carbine Rifle>Carbine Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Carbine Rifle Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Carbine Rifle Mk II>Carbine Rifle Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Advanced Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Advanced Rifle>Advanced Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Special Carbine").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Special Carbine>Special Carbine").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Special Carbine Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Special Carbine Mk II>Special Carbine Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle>Bullpup Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Bullpup Rifle Mk II>Bullpup Rifle Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Compact Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Compact Rifle>Compact Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Military Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Military Rifle>Military Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Heavy Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Heavy Rifle>Heavy Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Service Carbine").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Rifles>Service Carbine>Service Carbine").str()},
 
-				{"Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun>Pump Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun Mk II", "Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun Mk II>Pump Shotgun Mk II"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Sweeper Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Sweeper Shotgun>Sweeper Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Sawed-Off Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Sawed-Off Shotgun>Sawed-Off Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Bullpup Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Bullpup Shotgun>Bullpup Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Assault Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Assault Shotgun>Assault Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Musket", "Self>Weapons>Lock Weapons>Shotguns>Musket>Musket"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Heavy Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Heavy Shotgun>Heavy Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Double Barrel Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Double Barrel Shotgun>Double Barrel Shotgun"},
-				{"Self>Weapons>Lock Weapons>Shotguns>Combat Shotgun", "Self>Weapons>Lock Weapons>Shotguns>Combat Shotgun>Combat Shotgun"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun>Pump Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Pump Shotgun Mk II>Pump Shotgun Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Sweeper Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Sweeper Shotgun>Sweeper Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Sawed-Off Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Sawed-Off Shotgun>Sawed-Off Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Bullpup Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Bullpup Shotgun>Bullpup Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Assault Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Assault Shotgun>Assault Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Musket").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Musket>Musket").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Heavy Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Heavy Shotgun>Heavy Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Double Barrel Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Double Barrel Shotgun>Double Barrel Shotgun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Combat Shotgun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Shotguns>Combat Shotgun>Combat Shotgun").str()},
 
-				{"Self>Weapons>Lock Weapons>Sniper Rifles>Sniper Rifle", "Self>Weapons>Lock Weapons>Sniper Rifles>Sniper Rifle>Sniper Rifle"},
-				{"Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper", "Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper>Heavy Sniper"},
-				{"Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper Mk II", "Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper Mk II>Heavy Sniper Mk II"},
-				{"Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle", "Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle>Marksman Rifle"},
-				{"Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle Mk II", "Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle Mk II>Marksman Rifle Mk II"},
-				{"Self>Weapons>Lock Weapons>Sniper Rifles>Precision Rifle", "Self>Weapons>Lock Weapons>Sniper Rifles>Precision Rifle>Precision Rifle"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Sniper Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Sniper Rifle>Sniper Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper>Heavy Sniper").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Heavy Sniper Mk II>Heavy Sniper Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle>Marksman Rifle").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle Mk II").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Marksman Rifle Mk II>Marksman Rifle Mk II").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Precision Rifle").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Sniper Rifles>Precision Rifle>Precision Rifle").str()},
 
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Grenade Launcher", "Self>Weapons>Lock Weapons>Heavy Weapons>Grenade Launcher>Grenade Launcher"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>RPG", "Self>Weapons>Lock Weapons>Heavy Weapons>RPG>RPG"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Minigun", "Self>Weapons>Lock Weapons>Heavy Weapons>Minigun>Minigun"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Firework Launcher", "Self>Weapons>Lock Weapons>Heavy Weapons>Firework Launcher>Firework Launcher"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (SP)", "Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (SP)>Railgun (SP)"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (MP)", "Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (MP)>Railgun (MP)"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Widowmaker", "Self>Weapons>Lock Weapons>Heavy Weapons>Widowmaker>Widowmaker"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Homing Launcher", "Self>Weapons>Lock Weapons>Heavy Weapons>Homing Launcher>Homing Launcher"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Compact Grenade Launcher", "Self>Weapons>Lock Weapons>Heavy Weapons>Compact Grenade Launcher>Compact Grenade Launcher"},
-				{"Self>Weapons>Lock Weapons>Heavy Weapons>Compact EMP Launcher", "Self>Weapons>Lock Weapons>Heavy Weapons>Compact EMP Launcher>Compact EMP Launcher"},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Grenade Launcher").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Grenade Launcher>Grenade Launcher").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>RPG").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>RPG>RPG").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Minigun").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Minigun>Minigun").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Firework Launcher").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Firework Launcher>Firework Launcher").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (SP)").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (SP)>Railgun (SP)").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (MP)").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Railgun (MP)>Railgun (MP)").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Widowmaker").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Widowmaker>Widowmaker").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Homing Launcher").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Homing Launcher>Homing Launcher").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Compact Grenade Launcher").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Compact Grenade Launcher>Compact Grenade Launcher").str()},
+				{soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Compact EMP Launcher").str(), soup::ObfusString("Self>Weapons>Lock Weapons>Heavy Weapons>Compact EMP Launcher>Compact EMP Launcher").str()},
 			};
 		}
 		else if (version == 49)
 		{
 			// -> 108.11
 			prefix_conversion_table = {
-				{"Self>Movement>Floppy Mode>Prioritise Synching", "Self>Movement>Floppy Mode>Prioritise Syncing"},
-				{"Online>Transitions>Show Array Synch Progress", "Online>Transitions>Show Array Sync Progress"},
+				{soup::ObfusString("Self>Movement>Floppy Mode>Prioritise Synching").str(), soup::ObfusString("Self>Movement>Floppy Mode>Prioritise Syncing").str()},
+				{soup::ObfusString("Online>Transitions>Show Array Synch Progress").str(), soup::ObfusString("Online>Transitions>Show Array Sync Progress").str()},
 			};
 		}
 		else if (version == 50)
 		{
 			// -> 112
 			prefix_conversion_table = {
-				{"Online>Protections>Host Kicks", "Online>Protections>Host-Controlled Kicks"},
-				{"Online>Protections>Love Letter & Desync Kicks", "Online>Protections>Host-Controlled Kicks"},
+				{soup::ObfusString("Online>Protections>Host Kicks").str(), soup::ObfusString("Online>Protections>Host-Controlled Kicks").str()},
+				{soup::ObfusString("Online>Protections>Love Letter & Desync Kicks").str(), soup::ObfusString("Online>Protections>Host-Controlled Kicks").str()},
 			};
 		}
 		else if (version == 51)
 		{
 			// -> 114
 			prefix_conversion_table = {
-				{"Online>Protections>Detections>Stand User Identification", "Online>Session>Stand User Identification>Stand User Identification (SUI)"},
+				{soup::ObfusString("Online>Protections>Detections>Stand User Identification").str(), soup::ObfusString("Online>Session>Stand User Identification>Stand User Identification (SUI)").str()},
 			};
 		}
 		else if (version == 52)
 		{
 			// -> 115
 			prefix_conversion_table = {
-				{"Settings>Appearance>Disable Entity Previews", "Stand>Settings>Appearance>Entity Previews>Disable Entity Previews"}
+				{soup::ObfusString("Settings>Appearance>Disable Entity Previews").str(), soup::ObfusString("Stand>Settings>Appearance>Entity Previews>Disable Entity Previews").str()}
 			};
 		}
 		else if (version == 53)
 		{
 			// -> 116
 			prefix_conversion_table = {
-				{"Game>Custom DLCs>Spoof Models", "Game>Custom DLCs>Spoof Models>Spoof Models"}
+				{soup::ObfusString("Game>Custom DLCs>Spoof Models").str(), soup::ObfusString("Game>Custom DLCs>Spoof Models>Spoof Models").str()}
 			};
 		}
 		else if (version == 54)
 		{
 			// -> 24.8.1 (117)
 			prefix_conversion_table = {
-				{"Game>Wooting Analog Support", "Game>Analogue Keyboard Support>Analogue Keyboard Support"}
+				{soup::ObfusString("Game>Wooting Analog Support").str(), soup::ObfusString("Game>Analogue Keyboard Support>Analogue Keyboard Support").str()}
 			};
 		}
 
@@ -2151,7 +2151,7 @@ namespace Stand
 			return model != ATSTRINGHASH("p_poly_bag_01_s");
 
 		case ATSTRINGHASH("pickup_money_med_bag"): // seen with model=prop_cash_pile_01
-			return value < 100;
+			return value <= 100;
 
 		case ATSTRINGHASH("pickup_gang_attack_money"): // seen with model=0x00000000
 			return value == 500;

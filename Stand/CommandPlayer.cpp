@@ -1574,7 +1574,7 @@ if (flags & (1 << id)) \
 						help_text.append(location->state);
 						help_text.append(", ");
 					}
-					if (auto cn = soup::getCountryName(location->country_code.data(), Lang::activeToCodeUpperForGeoip()))
+					if (auto cn = soup::getCountryName(location->country_code.data(), Lang::activeToCodeUpperForGeoip()); !cn.empty())
 					{
 						help_text.append(cn);
 					}

@@ -58,7 +58,7 @@ namespace rage
 
 	uint32_t rlGamerId::hashMacAddress(uint64_t mac_address) noexcept
 	{
-		auto hash = soup::joaat::partial((const char*)&mac_address, 6, 0);
+		auto hash = soup::joaat::partialRange((const char*)&mac_address, 6, 0);
 		soup::joaat::finalise(hash);
 		return hash;
 	}

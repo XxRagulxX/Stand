@@ -80,7 +80,7 @@ namespace rage
 		return soup::rand.t<uint32_t>(0, 0xFFFFFFFF);
 	}
 
-	const char* netIpAddress::getGeoIpField(Stand::GeoIpField field)
+	std::string netIpAddress::getGeoIpField(Stand::GeoIpField field)
 	{
 		if (g_gui.inited_netIntel)
 		{
@@ -97,7 +97,7 @@ namespace rage
 				{
 					if (field == GEOIP_COUNTRY)
 					{
-						if (auto cn = soup::getCountryName(location->country_code.data(), Lang::activeToCodeUpperForGeoip()))
+						if (auto cn = soup::getCountryName(location->country_code.data(), Lang::activeToCodeUpperForGeoip()); !cn.empty())
 						{
 							return cn;
 						}

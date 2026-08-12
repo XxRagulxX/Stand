@@ -30,6 +30,7 @@ namespace Stand
 		script_data.nilptr = true;
 
 		luaS_openMenu(L); // since 110
+		luaS_openPlayers(L); // since 24.12.4
 		luaS_openEntities(L); // since 24.8.6
 		luaS_openUtil(L); // since 113.3
 		luaS_openFilesystem(L); // since 24.8.5

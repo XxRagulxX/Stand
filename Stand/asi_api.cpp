@@ -106,7 +106,7 @@ namespace Stand
 		g_script_mgr.removeScript(LP_SCRIPT_MAIN);
 	}
 
-	inline static XoredNativeHash current_call_native_hash;
+	inline static rage::scrNativeHash current_call_native_hash;
 	inline static NativeCallContext native_call_ctx = NativeCallContext();
 
 	void nativeInit(UINT64 hash)
@@ -114,7 +114,7 @@ namespace Stand
 #if LOG_SH
 		g_logger.log("nativeInit");
 #endif
-		current_call_native_hash = XoredNativeHash(hash);
+		current_call_native_hash = rage::scrNativeHash(hash);
 		native_call_ctx.reset();
 	}
 
@@ -131,7 +131,7 @@ namespace Stand
 #if LOG_SH
 		g_logger.log("nativeCall");
 #endif
-		if (current_call_native_hash == XoredNativeHash(0x9DE624D2FC4B603F))
+		if (current_call_native_hash == rage::scrNativeHash(0x9DE624D2FC4B603F))
 		{
 			// NETWORK_IS_SESSION_STARTED
 			if (AsiSettings::deceive_online_checks)

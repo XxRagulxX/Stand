@@ -41,7 +41,7 @@ namespace Stand
 				{
 					if (!((CommandListSave*)parent)->shouldOmitEntry(key_raw))
 					{
-						data_order_en.emplace_back(Lang::get_en(key_raw));
+						data_order_en.emplace_back(Lang::getEn(key_raw));
 					}
 				}
 			}

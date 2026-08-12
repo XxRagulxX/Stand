@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "base.hpp"
 #include "dnsLookupTask.hpp"
 #include "dns_records.hpp"
 #include "TransientToken.hpp"
@@ -14,6 +15,10 @@ NAMESPACE_SOUP
 		TransientToken transient_token;
 
 		virtual ~dnsResolver() noexcept = default;
+
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
+		[[nodiscard]] static SharedPtr<dnsResolver> makeDefault();
+#endif
 
 		[[nodiscard]] std::vector<IpAddr> lookupIPv4(const std::string& name) const;
 		[[nodiscard]] std::vector<IpAddr> lookupIPv6(const std::string& name) const;

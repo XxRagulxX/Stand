@@ -24,7 +24,9 @@ namespace Stand
 
 		void onCommand(Click& click, std::wstring& args) final
 		{
-			if (ScAccount::name2rid(click, StringUtils::utf16_to_utf8(get_next_arg(args)), &PlayerHistory::manual_add_complete))
+			auto name = StringUtils::utf16_to_utf8(args);
+			args.clear();
+			if (ScAccount::name2rid(click, std::move(name), &PlayerHistory::manual_add_complete))
 			{
 				return onClick(click);
 			}

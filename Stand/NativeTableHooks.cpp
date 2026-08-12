@@ -26,7 +26,7 @@ namespace Stand
 {
 	struct EntrypointOverride
 	{
-		XoredNativeHash native;
+		rage::scrNativeHash native;
 		rage::scrNativeHandler detour;
 
 		[[nodiscard]] uint32_t getNativeTableIndex(rage::scrProgram* prgm) const
@@ -47,7 +47,7 @@ namespace Stand
 	{
 		bool unseen = false;
 		bool up_to_date = false;
-		std::unordered_map<XoredNativeHash, uint16_t> detoured_natives{};
+		std::unordered_map<rage::scrNativeHash, uint16_t> detoured_natives{};
 
 		void apply(rage::scrProgram* prgm, const EntrypointOverride& eo)
 		{
@@ -62,7 +62,7 @@ namespace Stand
 			}
 		}
 
-		void restore(rage::scrProgram* prgm, XoredNativeHash hash, rage::scrNativeHandler handler)
+		void restore(rage::scrProgram* prgm, rage::scrNativeHash hash, rage::scrNativeHandler handler)
 		{
 			if (auto e = detoured_natives.find(hash); e != detoured_natives.end())
 			{
@@ -164,12 +164,12 @@ namespace Stand
 		}
 	}
 
-	rage::scrNativeHandler NativeTableHooks::og(XoredNativeHash native)
+	rage::scrNativeHandler NativeTableHooks::og(rage::scrNativeHash native)
 	{
 		return g_script_mgr.handler_map.at(native);
 	}
 
-	void NativeTableHooks::createNativeEntrypointOverride(XoredNativeHash native, rage::scrNativeHandler entrypoint_override)
+	void NativeTableHooks::createNativeEntrypointOverride(rage::scrNativeHash native, rage::scrNativeHandler entrypoint_override)
 	{
 		if (!NativeCallContext::canInvoke(native))
 		{
@@ -185,7 +185,7 @@ namespace Stand
 			}
 		}
 
-		g_script_mgr.mapEntrypointReverse(entrypoint_override, native.getHash());
+		g_script_mgr.mapEntrypointReverse(entrypoint_override, native);
 		
 		// Add override
 		global_overrides.emplace_back(EntrypointOverride{ native, entrypoint_override });
@@ -197,14 +197,14 @@ namespace Stand
 		}
 	}
 
-	void NativeTableHooks::createNativeEntrypointOverride(hash_t script, XoredNativeHash native, rage::scrNativeHandler entrypoint_override)
+	void NativeTableHooks::createNativeEntrypointOverride(hash_t script, rage::scrNativeHash native, rage::scrNativeHandler entrypoint_override)
 	{
 		if (!NativeCallContext::canInvoke(native))
 		{
 			return;
 		}
 
-		g_script_mgr.mapEntrypointReverse(entrypoint_override, native.getHash());
+		g_script_mgr.mapEntrypointReverse(entrypoint_override, native);
 
 		// Add override
 		if (auto e = local_overrides.find(script); e != local_overrides.end())
@@ -223,7 +223,7 @@ namespace Stand
 		}
 	}
 
-	void NativeTableHooks::removeNativeEntrypointOverride(XoredNativeHash native)
+	void NativeTableHooks::removeNativeEntrypointOverride(rage::scrNativeHash native)
 	{
 		if (NativeCallContext::canInvoke(native))
 		{
@@ -233,7 +233,7 @@ namespace Stand
 		}
 	}
 
-	void NativeTableHooks::removeNativeEntrypointOverride(XoredNativeHash native, rage::scrNativeHandler og_entrypoint)
+	void NativeTableHooks::removeNativeEntrypointOverride(rage::scrNativeHash native, rage::scrNativeHandler og_entrypoint)
 	{
 		// Restore native table entries
 #if NTH_GC_NOTIFY
@@ -275,7 +275,7 @@ namespace Stand
 		}
 	}
 
-	void NativeTableHooks::removeNativeEntrypointOverride(hash_t script, XoredNativeHash native)
+	void NativeTableHooks::removeNativeEntrypointOverride(hash_t script, rage::scrNativeHash native)
 	{
 		if (!NativeCallContext::canInvoke(native))
 		{

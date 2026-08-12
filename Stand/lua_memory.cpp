@@ -173,6 +173,11 @@ namespace Stand
 			const char* s = luaL_checklstring(L, 1, &l);
 			p = soup::Pattern(s, l);
 		}
+		// Historically, `memory.scan("")` has worked to get the base address.
+		if (p.bytes.empty())
+		{
+			return luaS_returnPtrNilable(L, r.base.as<void*>());
+		}
 		return luaS_returnPtrNilable(L, r.scan(p).as<void*>());
 	}
 

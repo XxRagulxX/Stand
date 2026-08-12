@@ -90,30 +90,15 @@ namespace Stand
 		return active_data->get(key);
 	}
 
-	std::string Lang::getXor(const hash_t key) noexcept
-	{
-		return get(key ^ MAGIC_LANG_GET);
-	}
-
 	std::wstring Lang::getW(const hash_t key) noexcept
 	{
 		return active_data->getW(key);
 	}
 
-	std::wstring Lang::getXorW(const hash_t key) noexcept
-	{
-		return getW(key ^ MAGIC_LANG_GET_W);
-	}
-
-	std::string Lang::get_en(const hash_t key) noexcept
+	std::string Lang::getEn(const hash_t key) noexcept
 	{
 		LangDataMap data(&LangBuiltins::en);
 		return data.get(key);
-	}
-
-	std::string Lang::getXorEn(const hash_t key) noexcept
-	{
-		return get_en(key ^ MAGIC_LANG_GET_EN);
 	}
 
 	bool Lang::isEnabled(const lang_t lang_id) noexcept

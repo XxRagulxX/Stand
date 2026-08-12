@@ -7,6 +7,7 @@
 #include "CommandReadonlyLink.hpp"
 #include "CommandReadonlyValueLambda.hpp"
 #include "CommandSlider.hpp"
+#include "StringUtils.hpp"
 
 #include "CommandAnalogueInput.hpp"
 

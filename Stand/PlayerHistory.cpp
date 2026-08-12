@@ -324,7 +324,7 @@ namespace Stand
 				file_out.write(history_bin.data(), history_bin.size());
 			}
 
-			soup::filesystem::replace(bin, bin_tmp);
+			std::filesystem::rename(bin_tmp, bin);
 
 			save_ongoing = false;
 		});

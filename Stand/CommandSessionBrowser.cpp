@@ -13,6 +13,7 @@
 #include "pointers.hpp"
 #include "Session.hpp"
 #include "StringUtils.hpp"
+#include "Tunables.hpp"
 
 #ifdef STAND_DEBUG
 #include "drawDebugText.hpp"
@@ -88,6 +89,11 @@ namespace Stand
 
 	void CommandSessionBrowser::onClick(Click& click)
 	{
+		if (g_tunables.getBool(TUNAHASH("DISABLE_SESSION_BROWSER")))
+		{
+			click.setResponse(LOC("CMDDISA"));
+			return;
+		}
 		if (!click.isRegularEdition())
 		{
 			return;

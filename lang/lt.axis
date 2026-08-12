@@ -1590,6 +1590,10 @@ DLC_640=Drug Wars
 DLC_670=San Andreas Mercenaries
 DLC_680=The Chop Shop
 DLC_690="Bottom Dollar" Premijos
+DLC_700=Agents of Sabotage
+# DLC_710=Money Fronts
+# DLC_720=A Safehouse in the Hills
+# DLC_730=The Kortz Center Heist
 
 MANUFNS=Gamintojų Pavadinimai
 
@@ -3347,9 +3351,6 @@ PTX_SI=Išeinančios Sinchronizacijos
 PTX_SO=Išeinančios Sinchronizacijos
 PTX_SI_ANY=Bet koks gaunamas Sinchronizavimas
 
-OUTSBH=Blokuoti Išeinančias Sinchronizacijas Hostui
-OUTSBH_H=Tai padeda išvengti „BattlEye“ kickų nebūnant hostu, bet taip pat reiškia, kad hostass negalės su jumis sąveikauti.
-
 PTX_CSB=Custom Modelių Sinchronizavimo Reakcijos
 ADDMDL=Pridėti Modelį
 PTX_CSB_T=Modelis, kurį sinchronizavo {player} su {hash}
@@ -3446,7 +3447,6 @@ PTX_HK_H=Sumažina host kick'us taip, kad gaunate tik pranešimą, kad įvyko ho
 PTX_HK_T=Kažkas panaudojo host kick'ą prieš jus ({method}), greičiausiai {player}.
 
 HKI=Hostas netrukus jus išmes.
-HKI_BS=Patariama blokuoti sinchronizacijas su jais.
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=Balsavimo Kick'as
@@ -3743,6 +3743,7 @@ GIVECOLL_16=Sniego Seniai
 GIVECOLL_17=G Lobis
 ! Tags as in graffiti
 GIVECOLL_19=Los Santos Žymos
+# GIVECOLL_21=Yuanbao
 
 GIVECOLLE=Duoti Kolekcionuojamus Daiktus
 GIVECOLLE_NCEO=Duoti Kolekcionuojamą Daiktą (Ne Mano Bosas)
@@ -4825,6 +4826,9 @@ SGMELNG_H=Kai kurios kalbos turi skirtingą šriftą, kuris veiks tik paleidus �
 
 STUTFIX=Ištaisyti strigimą esant dideliem FPS
 STUTFIX_H=Ištaisyto strigimus, atsirandančius žaidimui artėjant prie 188 FPS.
+
+UNCAPFPS=Pašalinti FPS Limitą
+UNCAPFPS_H=Leidžia žaidimui viršyti 188 FPS.
 
 NKBDHK=Išjungti Klaviatūros hook'ą
 NKBDHK_H=Leidžia paspausti „Windows“ klavišą, kai sufokusuotas GTA langas, ir sustabdyti žaidimo lag'ą, dėl kurio atsiranda klavišo paspaudimo delay'us.

@@ -54,7 +54,6 @@
 <h5>Language</h5>
 <p>Stand uses <a href="https://plutolang.github.io/docs/Introduction" target="_blank">Pluto</a> which adds new features, improvements, and optimisations while being compatible with existing Lua code.</p>
 <p>If nothing else, you should at least get <a href="https://github.com/PlutoLang/Syntax-Highlighting" target="_blank">Pluto Syntax Highlighting</a> so you can properly view .pluto files.</p>
-<p>Note that for .lua files, Stand disables the 'new' and 'class' keywords from Pluto.</p>
 <h5>Bindings</h5>
 <p>Stand also provides <a href="https://github.com/calamity-inc/Soup-Lua-Bindings/blob/main/LUA_API.md#soup-lua-bindings">Soup Lua Bindings</a>.</p>
 <h5>Examples</h5>
@@ -1303,7 +1302,7 @@ HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(message)</code></pre>
 <!-- util.is_key_down -->
 <h5><i class="text-success">bool</i> util.<span class="text-primary">is_key_down</span>(<i class="text-success">int|string</i> <i class="text-warning">vk</i>)</h5>
 <p><code>vk</code> int values can be found at <a href="https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes" target="_blank" rel="noreferrer noopener">https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes</a></p>
-<p><code>vk</code> may also be a string, if it contains a single character and that character is A-Z, 0-9, or a space.</p>
+<p><code>vk</code> may also be a string (A-Z, 0-9, a space, or F1-F24).</p>
 <!-- util.call_foreign_function -->
 <h5><i class="text-success">int</i> util.<span class="text-primary">call_foreign_function</span>(<i class="text-success">int</i> <i class="text-warning">addr</i>, <i class="text-success">int|userdata|string</i> <i class="text-danger">...</i>)</h5>
 <!-- util.get_rtti_name -->

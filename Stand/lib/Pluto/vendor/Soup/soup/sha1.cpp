@@ -2,27 +2,22 @@
 
 #include "base.hpp"
 
-#if defined(SOUP_USE_INTRIN) && SOUP_BITS == 64 && (SOUP_X86 || SOUP_ARM)
-#define SHA1_USE_INTRIN true
+#if SOUP_BITS == 64 && (SOUP_X86 || SOUP_ARM)
+	#define SHA1_USE_INTRIN true
 #else
-#define SHA1_USE_INTRIN false
+	#define SHA1_USE_INTRIN false
 #endif
 
+#include "MemoryRefReader.hpp"
+
 #if SHA1_USE_INTRIN
-#include "CpuInfo.hpp"
-#include "Endian.hpp"
+	#include "CpuInfo.hpp"
+	#include "Endian.hpp"
+	#include "sha1_intrin.hpp"
 #endif
-#include "StringRefReader.hpp"
 
 NAMESPACE_SOUP
 {
-#if SHA1_USE_INTRIN
-	namespace intrin
-	{
-		extern void sha1_transform(uint32_t state[5], const uint8_t data[64]) noexcept;
-	}
-#endif
-
 	// Original source: https://github.com/vog/sha1
 	// Original licence: Dedicated to the public domain.
 
@@ -224,11 +219,11 @@ NAMESPACE_SOUP
 	}
 
 #if SHA1_USE_INTRIN
-	[[nodiscard]] static bool sha1_can_use_intrin() noexcept
+	[[nodiscard]] static SOUP_FORCEINLINE bool sha1_can_use_intrin() noexcept
 	{
 	#if SOUP_X86
 		const CpuInfo& cpu_info = CpuInfo::get();
-		return cpu_info.supportsSSSE3()
+		return cpu_info.supportsSSE4_1() // _mm_extract_epi32
 			&& cpu_info.supportsSHA()
 			;
 	#elif SOUP_ARM
@@ -244,15 +239,13 @@ NAMESPACE_SOUP
 		state[2] = 0x98badcfe;
 		state[3] = 0x10325476;
 		state[4] = 0xc3d2e1f0;
-		buffer_counter = 0;
-		n_bits = 0;
+		n_bytes = 0;
 	}
 
 	void sha1::State::transform() noexcept
 	{
 #if SHA1_USE_INTRIN
-		static bool good_cpu = sha1_can_use_intrin();
-		if (good_cpu)
+		if (sha1_can_use_intrin())
 		{
 	#if SOUP_X86
 			intrin::sha1_transform(state, buffer);
@@ -271,11 +264,11 @@ NAMESPACE_SOUP
 
 	void sha1::State::finalise() noexcept
 	{
-		uint64_t n_bits = this->n_bits;
+		uint64_t n_bits = this->n_bytes * 8;
 
 		appendByte(0x80);
 
-		while (buffer_counter != 56)
+		while ((this->n_bytes % BLOCK_BYTES) != 56)
 		{
 			appendByte(0);
 		}

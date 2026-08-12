@@ -133,9 +133,9 @@ NAMESPACE_SOUP
 		SharedPtr(const SharedPtr<T2>& b) noexcept
 			: data(reinterpret_cast<Data*>(b.data.load()))
 		{
-			if (data != nullptr)
+			if (Data* d = data.load(); d != nullptr)
 			{
-				data.load()->incref();
+				d->incref();
 			}
 		}
 
@@ -148,8 +148,8 @@ NAMESPACE_SOUP
 
 		void operator=(const SharedPtr<T>& b) noexcept
 		{
-			Data* const prev_data = this->data;
-			Data* const new_data = b.data;
+			Data* const prev_data = this->data.load();
+			Data* const new_data = b.data.load();
 			this->data = new_data;
 			if (new_data != nullptr)
 			{
@@ -166,7 +166,7 @@ NAMESPACE_SOUP
 
 		void operator=(SharedPtr<T>&& b) noexcept
 		{
-			Data* const prev_data = this->data;
+			Data* const prev_data = this->data.load();
 			this->data = b.data.load();
 			b.data = nullptr;
 			if (prev_data != nullptr)
@@ -188,7 +188,7 @@ NAMESPACE_SOUP
 
 		void reset() noexcept
 		{
-			Data* const data = this->data;
+			Data* const data = this->data.load();
 			if (data != nullptr)
 			{
 				this->data = nullptr;
@@ -208,7 +208,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] T* get() const noexcept
 		{
-			Data* const data = this->data;
+			Data* const data = this->data.load();
 			if (data)
 			{
 				return data->inst;
@@ -228,12 +228,12 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] size_t getRefCount() const noexcept
 		{
-			return data->refcount.load();
+			return data.load()->refcount.load();
 		}
 
 		[[nodiscard]] T* release()
 		{
-			Data* const data = this->data;
+			Data* const data = this->data.load();
 			this->data = nullptr;
 			if (data->refcount.load() != 1)
 			{
@@ -253,6 +253,21 @@ NAMESPACE_SOUP
 			}
 			return inst;
 		}
+
+		[[nodiscard]] void* toDumb() const noexcept
+		{
+			Data* d = data.load();
+			if (d != nullptr)
+			{
+				d->incref();
+			}
+			return reinterpret_cast<void*>(d);
+		}
+
+		[[nodiscard]] static SharedPtr<T> fromDumb(void* ptr) noexcept
+		{
+			return SharedPtr<T>(reinterpret_cast<Data*>(ptr));
+		}
 	};
 
 	template <typename T, typename...Args, SOUP_RESTRICT(!std::is_array_v<T>)>
@@ -266,20 +281,16 @@ NAMESPACE_SOUP
 
 		void* const b = ::operator new(sizeof(Combined));
 		typename SharedPtr<T>::Data* data;
-#if SOUP_EXCEPTIONS
-		try
-#endif
+		SOUP_TRY
 		{
 			auto inst = soup::construct_at<>(reinterpret_cast<T*>(b), std::forward<Args>(args)...);
 			data = soup::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(reinterpret_cast<uintptr_t>(b) + offsetof(Combined, data)), inst);
 		}
-#if SOUP_EXCEPTIONS
-		catch (...)
+		SOUP_CATCH_ANY
 		{
 			::operator delete(b);
 			std::rethrow_exception(std::current_exception());
 		}
-#endif
 		data->was_created_with_make_shared = true;
 		return SharedPtr<T>(data);
 	}

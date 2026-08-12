@@ -15,6 +15,7 @@ stand.gg/src/vendor/
 *.recipe
 *.tlog
 *.exe
+!bgscript/*.exe
 *.map
 composer.lock
 .apm_cache/
@@ -25,7 +26,6 @@ lang/translations.json
 Stand/bin.*pp
 Stand/font_*
 Stand/lang_*.cpp
-Stand/xormagics.hpp
 stand.gg/lang/
 vehicle_items generator/vehicles.json
 

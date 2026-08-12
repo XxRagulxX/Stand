@@ -45,7 +45,7 @@ namespace Stand
 			if (arg.substr(0, 2) == "0x")
 			{
 				arg.erase(0, 2);
-				if (auto res = soup::string::hexToInt<uhash_t>(arg); res.has_value())
+				if (auto res = soup::string::hexToIntOpt<uhash_t>(arg); res.has_value())
 				{
 					model = res.value();
 					if (spawnIfValid(model, click, name))
@@ -56,7 +56,7 @@ namespace Stand
 			}
 			else
 			{
-				if (auto res = soup::string::toInt<hash_t>(arg); res.has_value())
+				if (auto res = soup::string::toIntOpt<hash_t>(arg); res.has_value())
 				{
 					model = res.value();
 					if (spawnIfValid(model, click, name))

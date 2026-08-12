@@ -7,7 +7,9 @@ namespace Stand
 		std::string filtered_name;
 		for (const char& c : name)
 		{
-			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.')
+			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.'
+				|| c == ' ' // https://socialclub.rockstargames.com/member/ad%20hocboot
+				)
 			{
 				filtered_name.push_back(c);
 			}

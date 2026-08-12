@@ -6,9 +6,14 @@ NAMESPACE_SOUP
 {
 	struct JsonNull : public JsonNode
 	{
-		explicit JsonNull() noexcept;
+		explicit JsonNull() noexcept
+			: JsonNode()
+		{
+		}
+
+		[[nodiscard]] JsonNodeType getType() const noexcept final { return JSON_NULL; }
 
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
-		bool binaryEncode(Writer& w) const final;
+		bool msgpackEncode(Writer& w) const final;
 	};
 }

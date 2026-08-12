@@ -1590,6 +1590,10 @@ DLC_640=Drug Wars
 DLC_670=Mercenarios de San Andreas
 DLC_680=The Chop Shop
 DLC_690=Bottom Dollar Bounties
+DLC_700=Agentes de sabotaje
+DLC_710=Fachadas de dinero
+# DLC_720=A Safehouse in the Hills
+# DLC_730=The Kortz Center Heist
 
 MANUFNS=Nombres de marcas
 
@@ -3347,9 +3351,6 @@ PTX_SI=Sincronizaciones entrantes
 PTX_SO=Sincronizaciones salientes
 PTX_SI_ANY=Cualquier sincronización entrante
 
-OUTSBH=Bloquear sincronizaciones salientes al anfitrión
-OUTSBH_H=Esto ayuda a evitar expulsiones de BattlEye al no ser el anfitrión, pero esto también significa que el anfitrión no podrá interactuar contigo.
-
 PTX_CSB=Reacciones a modelo personalizado
 ADDMDL=Añadir modelo
 PTX_CSB_T=Sincronización de modelo de {player} con {hash}
@@ -3446,7 +3447,6 @@ PTX_HK_H=Hace que cuando el anfitrión te expulse de la sesión, no pases por la
 PTX_HK_T=Alguien utilizó una expulsión de anfitrión en tí ({method}), probablemente {player}.
 
 HKI=El anfitrión te expulsará pronto.
-HKI_BS=Sugiero bloquear sincronizaciones con él.
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=Votar expulsión
@@ -3743,6 +3743,7 @@ GIVECOLL_16=Muñecos de nieve
 GIVECOLL_17=Caché de G's
 ! Tags as in graffiti
 GIVECOLL_19=Tags de Los Santos
+GIVECOLL_21=Yuanbao
 
 GIVECOLLE=Dar coleccionable
 GIVECOLLE_NCEO=Dar coleccionable (No es mi jefe)
@@ -4825,6 +4826,9 @@ SGMELNG_H=Algunos idiomas tienen otros alfabetos que sólo cargarán correctamen
 
 STUTFIX=Arreglar tartamudeo de FPS
 STUTFIX_H=Arregla el tartamudeo que ocurre cuando el juego alcanza 188 FPS.
+
+UNCAPFPS=Quitar límite de FPS
+UNCAPFPS_H=Permite que el juego corra a más de 188 FPS.
 
 NKBDHK=Desactivar enganche de teclado
 NKBDHK_H=Permite presionar la tecla Windows al tener GTA concentrado y evita la latencia al escribir.

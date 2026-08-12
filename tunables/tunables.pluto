@@ -1,11 +1,13 @@
 local { base64, crypto } = require "*"; dofile("u64_dyn.lua");
-local ints = {}; local bools = {};
+local ints = {}; local bools = {}; --local strings = {};
 local function decl_int(name, value) ints:insert({ hash = crypto.joaat(name), value = value }) end
 local function decl_bool(name, value) bools:insert({ hash = crypto.joaat(name), value = (value ? 1 : 0) }) end
+--local function decl_str(name, value) strings:insert({ hash = crypto.joaat(name), value = value }) end
 
 decl_int("slots threshold help text", 10_000_000) -- 50_000_000
 decl_int("slots threshold", 10_000_000) -- 50_000_000 - 2_500_000
-decl_int("MAX_INTERIOR_ID", 171)
+decl_int("MAX_INTERIOR_ID", 173)
+decl_int("MAX_MISSION_ID", 236)
 --decl_bool("DISABLE_LUAS", false)
 --decl_bool("DISABLE_ASIS", false)
 --decl_bool("DISABLE_SESSION_SPOOFING", false)
@@ -15,6 +17,7 @@ decl_int("MAX_INTERIOR_ID", 171)
 --decl_bool("ALLOW_OBF_COMMA_NUMBERS", false)
 --decl_bool("ALLOW_OOB_WHEELS", false)
 --decl_bool("DISABLE_SLOTS", false)
+decl_bool("DISABLE_SESSION_BROWSER", true)
 decl_bool("spawn.try_same_thread", true)
 --decl_bool("spawn.randomise_order", false)
 decl_bool("ffi_warning_required.gta5.special", true)
@@ -26,7 +29,7 @@ decl_bool("gh-via-jsdelivr", true)
 --decl_bool("block CROAMING_JOIN_BUBBLE_ACK_MSG outright", false)
 decl_bool("ignore_stand_for_classification", false)
 decl_bool("scripts can pop all detections", true)
-decl_bool("handshake can be pending for aggressive action", true) -- disable faulty logic in 24.8.6
+decl_bool("disable pinkeye flag", false)
 
 local data = "\x00" -- ints are stored here for 24.8.1 and below
 --[[local data = pack_u64_dyn(#ints)
@@ -53,6 +56,12 @@ for ints as int do
 	data ..= string.pack("I4", int.hash)
 	data ..= pack_i64_dyn(int.value)
 end
+--[[data ..= pack_u64_dyn(#strings)
+for strings as str do
+	data ..= string.pack("I4", str.hash)
+	data ..= pack_u64_dyn(#str.value)
+	data ..= str.value
+end]]
 
 data = base64.encode(data, false)
 io.contents("../stand.gg/api/blobfish.txt", data)

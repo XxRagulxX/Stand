@@ -118,7 +118,7 @@ namespace Stand
 		static inline uint8_t* CPlayerListMenu_handler_jz{};
 		static inline rage::rlGamerHandle* rlGamerHandle_buffer{};
 
-		static inline send_session_info_request_t send_session_info_request{};
+		//static inline send_session_info_request_t send_session_info_request{};
 		//static inline EventDispatcher* rl_presence_event_dispatcher{};
 		//static inline dispatch_event_t dispatch_event{};
 		static inline InviteMgr* invite_mgr{};
@@ -155,6 +155,7 @@ namespace Stand
 		static inline soup::Bytepatch model_blacklist_patch{};
 
 		static inline bool* rage__audRequestedSettings__sm_IgnoreBlockedAudioThread{};
+		static inline bool* audNorthAudioEngine__sm_RunUpdateInSeperateThread{};
 
 		static inline uint8_t* hide_cursor_jnz{};
 
@@ -215,9 +216,6 @@ namespace Stand
 
 		static inline CVehicleMetadataMgr* vehicle_metadata{};
 
-		static inline void_func_no_args_t add_keyboard_hook{};
-		static inline void_func_no_args_t remove_keyboard_hook{};
-
 		static inline rage_rlScPresence_GetAttributesForGamer_t rage_rlScPresence_GetAttributesForGamer{};
 
 		static inline CRagdollRequestEvent_Trigger_t CRagdollRequestEvent_Trigger{};
@@ -276,8 +274,8 @@ namespace Stand
 		inline static soup::Bytepatch grcdevice_crash_patch{};
 #endif
 
-		inline static uint8_t* custombjmsg_nop2bytes{};
-		inline static int32_t* custombjmsg_responsecode{};
+		/*inline static uint8_t* custombjmsg_nop2bytes{};
+		inline static int32_t* custombjmsg_responsecode{};*/
 
 		static inline CPauseMenu_SetMenuPreference_t CPauseMenu_SetMenuPreference{};
 		static inline CProfileSettings** profile_settings{}; // pointer to CProfileSettings::sm_Instance
@@ -323,7 +321,7 @@ namespace Stand
 
 		inline static PopMultiplierArea* pop_multiplier_areas{};
 
-		inline static CNetworkAssetVerifier_RefreshEnvironmentCRC_t CNetworkAssetVerifier_RefreshEnvironmentCRC{};
+		//inline static CNetworkAssetVerifier_RefreshEnvironmentCRC_t CNetworkAssetVerifier_RefreshEnvironmentCRC{};
 
 		inline static AcThingData** ac_thing_data{};
 #if false

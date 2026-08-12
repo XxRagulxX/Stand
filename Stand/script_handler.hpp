@@ -9,6 +9,8 @@
 #include "gta_node_list.hpp"
 #include "script_id.hpp"
 
+#define CAN_GIVE_SH false
+
 #pragma pack(push, 1)
 namespace rage
 {
@@ -71,7 +73,7 @@ namespace rage
 		PAD(0x60 + 4, 0x68) participantData* participants[32];
 		uint32_t participants_size;
 		PAD(0x68 + (32 * 8) + 4, 0x170) uint32_t migration_timer;
-		PAD(0x174, 0x18C) uint8_t num_participants;
+		PAD(0x174, 0x194) uint8_t num_participants;
 		PAD(0x18D, 0x18F) uint8_t m_NumHostBroadcastData;
 
 		[[nodiscard]] uint32_t GetNumParticipants() const noexcept
@@ -92,7 +94,7 @@ namespace rage
 
 		[[nodiscard]] rage::netHostBroadcastDataHandlerBase* GetHostBroadcastDataHandler(unsigned int handlerNum);
 	};
-	static_assert(offsetof(scriptHandlerNetComponent, m_NumHostBroadcastData) == 0x18F);
+	static_assert(offsetof(scriptHandlerNetComponent, num_participants) == 0x194); // b3411
 
 	class scriptHandler
 	{

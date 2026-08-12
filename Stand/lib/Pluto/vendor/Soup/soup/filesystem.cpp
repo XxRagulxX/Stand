@@ -3,16 +3,17 @@
 #include <fstream>
 
 #if SOUP_WINDOWS
-#include <windows.h>
-#include <shlobj.h> // CSIDL_COMMON_APPDATA
+	#include <windows.h>
+	#include <shlobj.h> // CSIDL_COMMON_APPDATA
 
-#pragma comment(lib, "Shell32.lib") // SHGetFolderPathW
-#pragma comment(lib, "User32.lib") // SendInput
+	#pragma comment(lib, "shell32.lib") // SHGetFolderPathW
 #else
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+	#if !SOUP_WASM || SOUP_EMSCRIPTEN
+		#include <sys/mman.h>
+	#endif
+	#include <sys/stat.h>
+	#include <fcntl.h>
+	#include <unistd.h>
 #endif
 
 #include "rand.hpp"
@@ -45,19 +46,6 @@ NAMESPACE_SOUP
 		// This is not guaranteed to work, but works on UNIX, and on Windows in binary mode.
 		std::ifstream in(path, std::ifstream::ate | std::ifstream::binary);
 		return static_cast<intptr_t>(in.tellg());
-	}
-
-	bool filesystem::replace(const std::filesystem::path& replaced, const std::filesystem::path& replacement)
-	{
-#if SOUP_WINDOWS
-		SOUP_IF_UNLIKELY (!std::filesystem::exists(replaced))
-		{
-			return MoveFileW(replacement.c_str(), replaced.c_str()) != 0;
-		}
-		return ReplaceFileW(replaced.c_str(), replacement.c_str(), nullptr, 0, 0, 0) != 0;
-#else
-		return ::rename(replacement.c_str(), replaced.c_str()) == 0;
-#endif
 	}
 
 	std::filesystem::path filesystem::tempfile(const std::string& ext)
@@ -94,13 +82,12 @@ NAMESPACE_SOUP
 #endif
 	}
 
-#if SOUP_WINDOWS
-	static char empty_file_data = 0;
-#endif
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
+	static const char empty_file_data = 0;
 
-	void* filesystem::createFileMapping(const std::filesystem::path& path, size_t& out_len)
+	const void* filesystem::createFileMapping(const std::filesystem::path& path, size_t& out_len) noexcept
 	{
-		void* addr = nullptr;
+		const void* addr = nullptr;
 #if SOUP_WINDOWS
 		HANDLE f = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 		SOUP_IF_LIKELY (f != INVALID_HANDLE_VALUE)
@@ -116,7 +103,7 @@ NAMESPACE_SOUP
 				else
 				{
 					HANDLE m = CreateFileMappingA(f, nullptr, PAGE_READONLY, liSize.HighPart, liSize.LowPart, NULL);
-					SOUP_IF_LIKELY(m != NULL)
+					SOUP_IF_LIKELY (m != NULL)
 					{
 						addr = MapViewOfFile(m, FILE_MAP_READ, 0, 0, out_len);
 						CloseHandle(m);
@@ -133,7 +120,18 @@ NAMESPACE_SOUP
 			SOUP_IF_LIKELY (fstat(f, &st) != -1)
 			{
 				out_len = st.st_size;
-				addr = mmap(nullptr, st.st_size, PROT_READ, MAP_SHARED, f, 0);
+				if (out_len == 0)
+				{
+					addr = &empty_file_data;
+				}
+				else
+				{
+					addr = mmap(nullptr, st.st_size, PROT_READ, MAP_SHARED, f, 0);
+					SOUP_IF_UNLIKELY (addr == MAP_FAILED)
+					{
+						addr = nullptr;
+					}
+				}
 			}
 			::close(f);
 		}
@@ -141,15 +139,16 @@ NAMESPACE_SOUP
 		return addr;
 	}
 
-	void filesystem::destroyFileMapping(void* addr, size_t len)
+	void filesystem::destroyFileMapping(const void* addr, size_t len) noexcept
 	{
-#if SOUP_WINDOWS
 		if (addr != &empty_file_data)
 		{
+#if SOUP_WINDOWS
 			UnmapViewOfFile(addr);
-		}
 #else
-		munmap(addr, len);
+			munmap(const_cast<void*>(addr), len);
 #endif
+		}
 	}
+#endif
 }

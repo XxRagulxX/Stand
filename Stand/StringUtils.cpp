@@ -326,7 +326,6 @@ namespace Stand
 				break;
 
 			case 'o':
-			case 'O':
 				switch (prev_char)
 				{
 				case 'n':
@@ -339,6 +338,21 @@ namespace Stand
 					result.push_back(*c);
 				}
 				break;
+
+			case 'O':
+				switch (prev_char)
+				{
+				case 'n':
+				case 'N':
+				case 'm':
+				case 'M':
+					result.append(L"YO");
+					break;
+				default:
+					result.push_back(*c);
+				}
+				break;
+
 			default:
 				result.push_back(*c);
 			}

@@ -25,22 +25,22 @@ After that, you can compile the Stand project to your heart's content.
 
 Every once in a while, Rockstar will actually bother to change this game, which will make all mod menus unusable until they are updated. In order to update Stand to a new GTA version, the following changes must be made:
 
-- [x] **Sigs.**
-- [x] **ASI Game Version.**
+- [x] **Sigs**
+- [x] **ASI Game Version**
+- [x] **Homepage**
 
 And for major updates:
 
-- [x] **Crossmap.**
-- [x] **Peds.**
-- [x] **Vehicles.**
-- [x] **Weapons.**
-- [x] **Native Tables.** From decompiled scripts with up-to-date crossmap.
-- [x] **Script Funcs.**
-- [x] **Script Locals.**
-- [x] **Script Globals.**
-- [x] **Script Globals in MusinessBanager.**
-- [x] **Script Events.**
-- [x] **Session Scripts.**
-- [x] **Asset Hashes.**
+- [x] **Vehicles**
+- [x] **Weapons**
+- [x] **Peds**
+- [x] **Native Tables**
+- [x] **Joaat Hash DB**
+- [x] **Script Funcs**
+- [x] **Script Locals**
+- [x] **Script Globals**
+- [x] **Session Scripts** via am_launcher
+- [x] **GlobalsWatcher** by joining a solo session and seeing what pops up lol
+- [x] **Asset Hashes**
 
-Additionally, structs may be off; [ReClassEx64](https://github.com/ajkhoury/ReClassEx) and Cheat Engine will help update them.
+Additionally, structs may be off; IDA, [ReClassEx64](https://github.com/ajkhoury/ReClassEx) and Cheat Engine can help update them.

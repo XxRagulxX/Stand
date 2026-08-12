@@ -8,13 +8,14 @@
 #include "fwd.hpp"
 
 #if SOUP_WINDOWS
-#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "ws2_32.lib")
 #include <ws2tcpip.h>
 #else
 #include <arpa/inet.h>
 #endif
 
 #include "Endian.hpp"
+#include "stringifyable.hpp"
 
 #define SOUP_IPV4(a, b, c, d) ::soup::native_u32_t((a << 24) | (b << 16) | (c << 8) | d)
 #define SOUP_IPV4_NWE(a, b, c, d) ((soup::ENDIAN_NATIVE == soup::ENDIAN_NETWORK) ? ::soup::network_u32_t((a << 24) | (b << 16) | (c << 8) | d) : ::soup::network_u32_t((d << 24) | (c << 16) | (b << 8) | a))
@@ -27,11 +28,12 @@ NAMESPACE_SOUP
 		union
 		{
 			in6_addr data;
-			uint64_t longs[2];
-			uint32_t ints[4];
 			uint16_t shorts[8]; // <- constexpr
 			uint8_t bytes[16];
 		};
+
+		[[nodiscard]] SOUP_PURE uint64_t* /*[2]*/ longs() noexcept { return reinterpret_cast<uint64_t*>(this); }
+		[[nodiscard]] SOUP_PURE uint32_t* /*[4]*/ ints() noexcept { return reinterpret_cast<uint32_t*>(this); }
 
 		constexpr IpAddr() noexcept
 			: shorts{ 0, 0, 0, 0, 0, 0, 0, 0 }
@@ -47,7 +49,7 @@ NAMESPACE_SOUP
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				this->ints[i] = ints[i];
+				this->ints()[i] = ints[i];
 			}
 		}
 
@@ -121,8 +123,8 @@ NAMESPACE_SOUP
 			operator =(ipv4);
 		}
 
-		bool fromString(const char* str) noexcept;
-		bool fromString(const std::string& str) noexcept;
+		bool fromString(const char* str) SOUP_EXCAL;
+		bool fromString(const std::string& str) SOUP_EXCAL;
 
 		constexpr void operator = (const network_u32_t ipv4) noexcept
 		{
@@ -172,8 +174,13 @@ NAMESPACE_SOUP
 			memset(&data, 0, sizeof(data));
 		}
 
-		[[nodiscard]] constexpr bool isZero() const noexcept
+		// Checks for [::] and 0.0.0.0
+		[[nodiscard]] bool isZero() const noexcept
 		{
+			if (isV4())
+			{
+				return getV4() == 0;
+			}
 			for (const auto& s : shorts)
 			{
 				if (s != 0)
@@ -198,7 +205,10 @@ NAMESPACE_SOUP
 			return *reinterpret_cast<const network_u32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
 
-		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept;
+		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept
+		{
+			return Endianness::toNative(getV4());
+		}
 
 	private:
 		constexpr void maskToV4() noexcept
@@ -212,6 +222,8 @@ NAMESPACE_SOUP
 		}
 
 	public:
+		SOUP_STRINGIFYABLE(IpAddr)
+
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			if (isV4())
@@ -219,6 +231,18 @@ NAMESPACE_SOUP
 				return toString4();
 			}
 			return toString6();
+		}
+
+		[[nodiscard]] std::string toStringForAddr() const noexcept
+		{
+			if (isV4())
+			{
+				return toString4();
+			}
+			std::string str(1, '[');
+			str.append(toString6());
+			str.push_back(']');
+			return str;
 		}
 
 		[[nodiscard]] std::string toString4() const noexcept

@@ -7,45 +7,12 @@
 #include "JsonInt.hpp"
 #include "JsonString.hpp"
 #include "string.hpp"
+#include "StringWriter.hpp"
 #include "Writer.hpp"
 
 NAMESPACE_SOUP
 {
 	using Container = JsonObject::Container;
-
-	JsonObject::JsonObject() noexcept
-		: JsonNode(JSON_OBJECT)
-	{
-	}
-
-	JsonObject::JsonObject(const char*& c) noexcept
-		: JsonObject()
-	{
-		while (true)
-		{
-			json::handleLeadingSpace(c);
-			if (*c == '}' || *c == 0)
-			{
-				break;
-			}
-			auto key = json::decode(c);
-			while (string::isSpace(*c) || *c == ':')
-			{
-				++c;
-			}
-			auto val = json::decode(c);
-			if (!key || !val)
-			{
-				break;
-			}
-			children.emplace_back(std::move(key), std::move(val));
-			while (*c == ',' || string::isSpace(*c))
-			{
-				++c;
-			}
-		}
-		++c;
-	}
 
 	void JsonObject::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
@@ -90,35 +57,127 @@ NAMESPACE_SOUP
 		}
 	}
 
-	bool JsonObject::binaryEncode(Writer& w) const
+	bool JsonObject::msgpackEncode(Writer& w) const
 	{
+		if (children.size() <= 0b1111)
 		{
-			uint8_t b = JSON_OBJECT;
-			if (!w.u8(b))
-			{
-				return false;
-			}
+			uint8_t b = 0b1000'0000 | (uint8_t)children.size();
+			SOUP_RETHROW_FALSE(w.u8(b));
+		}
+		else if (children.size() <= 0xffff)
+		{
+			uint8_t b = 0xde;
+			SOUP_RETHROW_FALSE(w.u8(b));
+			auto len = (uint16_t)children.size();
+			SOUP_RETHROW_FALSE(w.u16_be(len));
+		}
+		else if (children.size() <= 0xffff'ffff)
+		{
+			uint8_t b = 0xdf;
+			SOUP_RETHROW_FALSE(w.u8(b));
+			auto len = (uint32_t)children.size();
+			SOUP_RETHROW_FALSE(w.u32_be(len));
+		}
+		else
+		{
+			SOUP_ASSERT_UNREACHABLE;
 		}
 
 		for (const auto& child : children)
 		{
-			if (!child.first->binaryEncode(w)
-				|| !child.second->binaryEncode(w)
-				)
-			{
-				return false;
-			}
-		}
-
-		{
-			uint8_t b = 0b111;
-			if (!w.u8(b))
-			{
-				return false;
-			}
+			SOUP_RETHROW_FALSE(child.first->msgpackEncode(w));
+			SOUP_RETHROW_FALSE(child.second->msgpackEncode(w));
 		}
 
 		return true;
+	}
+
+	bool JsonObject::bsonEncode(Writer& w) const
+	{
+		StringWriter sw;
+		for (const auto& child : children)
+		{
+			SOUP_RETHROW_FALSE(child.first->isStr());
+			switch (child.second->getType())
+			{
+			case JSON_INT:
+				if (child.second->reinterpretAsInt().value <= 0xFFFF'FFFF)
+				{
+					uint8_t k = 16; sw.u8(k);
+					sw.str_nt(child.first->reinterpretAsStr().value);
+					int32_t v = child.second->reinterpretAsInt().value; sw.i32_le(v);
+				}
+				else
+				{
+					uint8_t k = 18; sw.u8(k);
+					sw.str_nt(child.first->reinterpretAsStr().value);
+					sw.i64_le(const_cast<int64_t&>(child.second->reinterpretAsInt().value));
+				}
+				break;
+
+			case JSON_FLOAT:
+				{ uint8_t k = 1; sw.u8(k); }
+				sw.str_nt(child.first->reinterpretAsStr().value);
+				sw.f64(const_cast<double&>(child.second->reinterpretAsFloat().value));
+				break;
+
+			case JSON_STRING:
+				{ uint8_t k = 2; sw.u8(k); }
+				sw.str_nt(child.first->reinterpretAsStr().value);
+				{
+					uint32_t len = child.second->reinterpretAsStr().value.size() + 1; // including the null terminator
+					sw.u32_le(len);
+					sw.raw(const_cast<char*>(child.second->reinterpretAsStr().value.c_str()), len);
+				}
+				break;
+
+			case JSON_BOOL:
+				{ uint8_t k = 8; sw.u8(k); }
+				sw.str_nt(child.first->reinterpretAsStr().value);
+				{ uint8_t v = child.second->reinterpretAsBool().value ? 1 : 0; sw.u8(v); }
+				break;
+
+			case JSON_NULL:
+				{ uint8_t k = 10; sw.u8(k); }
+				sw.str_nt(child.first->reinterpretAsStr().value);
+				break;
+
+			case JSON_ARRAY:
+				//{ uint8_t k = 4; sw.u8(k); }
+				//sw.str_nt(child.first->reinterpretAsStr().value);
+				return false; // TODO: Encode like an object with incrementing string keys, e.g. {'0': 'red', '1': 'blue'}
+
+			case JSON_OBJECT:
+				if (child.second->reinterpretAsObj().children.size() == 1
+					&& child.second->reinterpretAsObj().children[0].first->isStr()
+					&& child.second->reinterpretAsObj().children[0].first->reinterpretAsStr().value == "$oid"
+					&& child.second->reinterpretAsObj().children[0].second->isStr()
+					)
+				{
+					{ uint8_t k = 7; sw.u8(k); }
+					sw.str_nt(child.first->reinterpretAsStr().value);
+					std::string oid = string::hex2bin(child.second->reinterpretAsObj().children[0].second->reinterpretAsStr());
+					sw.str(12, oid);
+				}
+				else
+				{
+					{ uint8_t k = 3; sw.u8(k); }
+					sw.str_nt(child.first->reinterpretAsStr().value);
+					SOUP_RETHROW_FALSE(child.second->reinterpretAsObj().bsonEncode(sw));
+				}
+				break;
+			}
+		}
+		uint32_t len = sw.data.size() + 5; // including the length field and the terminating null
+		w.u32_le(len);
+		w.raw(sw.data.data(), sw.data.size());
+		{ uint8_t k = 0; w.u8(k); }
+		return true;
+	}
+
+	JsonNode* JsonObject::find(const char* data, size_t size) const noexcept
+	{
+		return find(JsonString(data, size));
 	}
 
 	JsonNode* JsonObject::find(std::string k) const noexcept
@@ -274,5 +333,23 @@ NAMESPACE_SOUP
 	void JsonObject::add(std::string k, double v)
 	{
 		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonFloat>(v));
+	}
+
+	JsonNode* JsonObject::query(const char* q) noexcept
+	{
+		size_t l = 0;
+		if (*q == '.')
+		{
+			++q;
+		}
+		while (q[l] && q[l] != '.')
+		{
+			++l;
+		}
+		if (auto n = find(q, l))
+		{
+			return n->query(&q[l]);
+		}
+		return nullptr;
 	}
 }

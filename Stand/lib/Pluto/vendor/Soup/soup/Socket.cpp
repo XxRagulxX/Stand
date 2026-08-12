@@ -22,6 +22,7 @@
 #include "netConfig.hpp"
 #include "ObfusString.hpp"
 #include "rand.hpp"
+#include "Rc4State.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
 #include "SocketTlsHandshaker.hpp"
@@ -33,12 +34,14 @@
 #include "TlsClientHelloExtServerName.hpp"
 #include "TlsContentType.hpp"
 #include "TlsEncryptedPreMasterSecret.hpp"
+#include "TlsExtAlpn.hpp"
 #include "TlsExtensionType.hpp"
 #include "TlsHandshake.hpp"
 #include "TlsRecord.hpp"
 #include "TlsServerHello.hpp"
 #include "TlsServerKeyExchange.hpp"
 #include "TlsSignatureScheme.hpp"
+#include "TlsSsl2CompatibleClientHello.hpp"
 #include "TrustStore.hpp"
 
 #define LOGGING false
@@ -107,56 +110,49 @@ NAMESPACE_SOUP
 		return fd != -1;
 	}
 
-	bool Socket::connect(const char* host, uint16_t port) noexcept
+	bool Socket::connect(const std::string& host, uint16_t port, unsigned int timeout_ms) noexcept
 	{
-		return connect(std::string(host), port);
+		auto resolver = netConfig::get().getDnsResolver();
+		return connect(*resolver, host, port, timeout_ms);
 	}
 
-	bool Socket::connect(const std::string& host, uint16_t port) noexcept
+	bool Socket::connect(const dnsResolver& resolver, const std::string& host, uint16_t port, unsigned int timeout_ms) noexcept
 	{
 		if (IpAddr hostaddr; hostaddr.fromString(host))
 		{
-			return connect(hostaddr, port);
+			return connect(hostaddr, port, timeout_ms);
 		}
-		auto res = netConfig::get().getDnsResolver().lookupIPv4(host);
-		if (!res.empty() && connect(rand(res), port))
+		auto res = resolver.lookupIPv4(host);
+		if (!res.empty() && connect(rand(res), port, timeout_ms))
 		{
 			return true;
 		}
-		res = netConfig::get().getDnsResolver().lookupIPv6(host);
-		if (!res.empty() && connect(rand(res), port))
+		res = resolver.lookupIPv6(host);
+		if (!res.empty() && connect(rand(res), port, timeout_ms))
 		{
 			return true;
 		}
 		return false;
 	}
 
-	bool Socket::connect(const SocketAddr& addr) noexcept
+	bool Socket::connect(const SocketAddr& addr, unsigned int timeout_ms) noexcept
 	{
-		SOUP_IF_UNLIKELY (!kickOffConnect(addr))
-		{
-			return false;
-		}
+		SOUP_RETHROW_FALSE(kickOffConnect(addr));
 		pollfd pfd;
 		pfd.fd = fd;
 		pfd.events = POLLOUT;
 		pfd.revents = 0;
 #if SOUP_WINDOWS
-		int res = ::WSAPoll(&pfd, 1, netConfig::get().connect_timeout_ms);
+		int res = ::WSAPoll(&pfd, 1, timeout_ms);
 #else
-		int res = ::poll(&pfd, 1, netConfig::get().connect_timeout_ms);
+		int res = ::poll(&pfd, 1, timeout_ms);
 #endif
-		SOUP_IF_UNLIKELY (res != 1)
+		SOUP_IF_UNLIKELY (res != 1 || (pfd.revents & ~POLLOUT))
 		{
 			transport_close();
 			return false;
 		}
 		return true;
-	}
-
-	bool Socket::connect(const IpAddr& ip, uint16_t port) noexcept
-	{
-		return connect(SocketAddr(ip, native_u16_t(port)));
 	}
 
 	bool Socket::kickOffConnect(const SocketAddr& addr) noexcept
@@ -200,12 +196,8 @@ NAMESPACE_SOUP
 
 	bool Socket::isPortLocallyBound(uint16_t port)
 	{
-		auto og = netConfig::get().connect_timeout_ms;
-		netConfig::get().connect_timeout_ms = 20;
 		Socket sock;
-		const bool ret = sock.connect(SOUP_IPV4_NWE(127, 0, 0, 1), port);
-		netConfig::get().connect_timeout_ms = og;
-		return ret;
+		return sock.connect(SOUP_IPV4_NWE(127, 0, 0, 1), port, 20);
 	}
 
 	bool Socket::bind6(uint16_t port) noexcept
@@ -243,7 +235,7 @@ NAMESPACE_SOUP
 			return false;
 		}
 
-		const auto port_ne = Endianness::toNetwork(native_u16_t(port));
+		const auto port_ne = Endianness::toNetwork(port);
 
 		peer.ip.reset();
 		peer.port = port_ne;
@@ -252,7 +244,12 @@ NAMESPACE_SOUP
 		sa.sin6_family = AF_INET6;
 		sa.sin6_port = port_ne;
 		memcpy(&sa.sin6_addr, &addr.data, sizeof(in6_addr));
-		return setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+		return
+#if SOUP_WINDOWS
+			(type != SOCK_STREAM || setOpt<int>(SOL_SOCKET, SO_LINGER, 0))
+#else
+			setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+#endif
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
 			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
@@ -266,7 +263,7 @@ NAMESPACE_SOUP
 			return false;
 		}
 
-		const auto port_ne = Endianness::toNetwork(native_u16_t(port));
+		const auto port_ne = Endianness::toNetwork(port);
 
 		peer.ip.reset();
 		peer.port = port_ne;
@@ -275,7 +272,12 @@ NAMESPACE_SOUP
 		sa.sin_family = AF_INET;
 		sa.sin_port = port_ne;
 		sa.sin_addr.s_addr = addr.getV4();
-		return setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+		return
+#if SOUP_WINDOWS
+			(type != SOCK_STREAM || setOpt<int>(SOL_SOCKET, SO_LINGER, 0))
+#else
+			setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+#endif
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
 			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
@@ -286,6 +288,25 @@ NAMESPACE_SOUP
 	using socklen_t = int;
 #endif
 
+	SocketAddr Socket::getBoundAddress() const noexcept
+	{
+		SocketAddr addr;
+		sockaddr_in6 sa{};
+		socklen_t addrlen = sizeof(sa);
+		::getsockname(fd, (sockaddr*)&sa, &addrlen);
+		if (sa.sin6_family == AF_INET6)
+		{
+			memcpy(&addr.ip.data, &sa.sin6_addr, sizeof(in6_addr));
+			addr.port = sa.sin6_port;
+		}
+		else if (sa.sin6_family == AF_INET)
+		{
+			addr.ip = network_u32_t(reinterpret_cast<sockaddr_in*>(&sa)->sin_addr.s_addr);
+			addr.port = reinterpret_cast<sockaddr_in*>(&sa)->sin_port;
+		}
+		return addr;
+	}
+
 	Socket Socket::accept6() noexcept
 	{
 		Socket res{};
@@ -294,7 +315,7 @@ NAMESPACE_SOUP
 		res.fd = ::accept(fd, (sockaddr*)&addr, &addrlen);
 		if (res.hasConnection())
 		{
-			memcpy(&res.peer.ip, &addr.sin6_addr, sizeof(addr.sin6_addr));
+			memcpy(&res.peer.ip.data, &addr.sin6_addr, sizeof(addr.sin6_addr));
 			res.peer.port = addr.sin6_port;
 		}
 		return res;
@@ -380,37 +401,40 @@ NAMESPACE_SOUP
 	struct CaptureValidateCertchain
 	{
 		Socket& s;
-		SocketTlsHandshaker* handshaker;
-		certchain_validator_t certchain_validator;
+		SocketTlsHandshakerClient* handshaker;
 	};
 
 	struct CaptureValidateSke
 	{
 		Socket& s;
-		SocketTlsHandshaker* handshaker;
+		SocketTlsHandshakerClient* handshaker;
 		std::string signature;
 		bool sha256;
 	};
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data) SOUP_EXCAL
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol), Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator, std::vector<std::string>&& alpn_protocols, bool require_ecdhe)
 	{
-		auto handshaker = make_unique<SocketTlsHandshaker>(
+		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerClient>(
 			callback,
-			std::move(cap)
+			std::move(cap),
+			certchain_validator
 		);
-		handshaker->server_name = std::move(server_name);
-		handshaker->initial_application_data = std::move(initial_application_data);
+		static_cast<SocketTlsHandshakerClient*>(handshaker.get())->server_name = std::move(server_name);
+		static_cast<SocketTlsHandshakerClient*>(handshaker.get())->initial_application_data = std::move(initial_application_data);
 
 		TlsClientHello hello;
 		hello.random.time = static_cast<uint32_t>(time::unixSeconds());
 		rand.fill(hello.random.random);
 		handshaker->client_random = hello.random.toBinaryString();
-		vector_emplace_back_randomised(hello.cipher_suites, {
-			TLS_RSA_WITH_AES_256_CBC_SHA256,
-			TLS_RSA_WITH_AES_128_CBC_SHA256,
-			TLS_RSA_WITH_AES_256_CBC_SHA,
-			TLS_RSA_WITH_AES_128_CBC_SHA,
-		});
+		if (!require_ecdhe)
+		{
+			vector_emplace_back_randomised(hello.cipher_suites, {
+				TLS_RSA_WITH_AES_256_CBC_SHA256,
+				TLS_RSA_WITH_AES_128_CBC_SHA256,
+				TLS_RSA_WITH_AES_256_CBC_SHA,
+				TLS_RSA_WITH_AES_128_CBC_SHA,
+			});
+		}
 		vector_emplace_back_randomised(hello.cipher_suites, {
 			TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
 			TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, // Cloudfront
@@ -435,10 +459,10 @@ NAMESPACE_SOUP
 		);
 		hello.compression_methods = { 0 };
 
-		if (!handshaker->server_name.empty())
+		if (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->server_name.empty())
 		{
 			TlsClientHelloExtServerName ext_server_name{};
-			ext_server_name.host_name = handshaker->server_name;
+			ext_server_name.host_name = static_cast<SocketTlsHandshakerClient*>(handshaker.get())->server_name;
 
 			hello.extensions.add(TlsExtensionType::server_name, ext_server_name);
 		}
@@ -471,8 +495,8 @@ NAMESPACE_SOUP
 				//TlsSignatureScheme::ecdsa_secp384r1_sha384,
 			};
 
-			StringWriter sw(ENDIAN_BIG);
-			sw.vec_u16_bl_u16(supported_signature_schemes);
+			StringWriter sw;
+			sw.vec_u16_bl_u16_be(supported_signature_schemes);
 
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::move(sw.data));
 		}
@@ -485,6 +509,13 @@ NAMESPACE_SOUP
 		if (soup::rand.coinflip())
 		{
 			hello.extensions.add(TlsExtensionType::supported_versions, "\x02\x03\x03");
+		}
+
+		if (!alpn_protocols.empty())
+		{
+			TlsExtAlpn ext_alpn;
+			ext_alpn.protocol_names = std::move(alpn_protocols);
+			hello.extensions.add(TlsExtensionType::application_layer_protocol_negotiation, ext_alpn);
 		}
 
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinaryString()))
@@ -504,7 +535,21 @@ NAMESPACE_SOUP
 				}
 				handshaker->cipher_suite = shello.cipher_suite;
 				handshaker->server_random = shello.random.toBinaryString();
-				handshaker->extended_master_secret = shello.extensions.contains(TlsExtensionType::extended_master_secret);
+				for (const auto& ext : shello.extensions.extensions)
+				{
+					if (ext.id == TlsExtensionType::application_layer_protocol_negotiation)
+					{
+						TlsExtAlpn ext_alpn;
+						if (ext_alpn.fromBinary(ext.data) && ext_alpn.protocol_names.size() == 1)
+						{
+							static_cast<SocketTlsHandshakerClient*>(handshaker.get())->alpn_protocol = ext_alpn.protocol_names[0];
+						}
+					}
+					else if (ext.id == TlsExtensionType::extended_master_secret)
+					{
+						handshaker->extended_master_secret = true;
+					}
+				}
 
 				s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
 				{
@@ -519,38 +564,45 @@ NAMESPACE_SOUP
 						s.tls_close(TlsAlertDescription::decode_error);
 						return;
 					}
-					if (!handshaker->certchain.fromDer(cert.asn1_certs))
+					if (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.fromDer(cert.asn1_certs))
 					{
 						s.tls_close(TlsAlertDescription::bad_certificate);
 						return;
 					}
-					handshaker->certchain.cleanup();
+					static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.cleanup();
 
-#if SOUP_EXCEPTIONS
-					try
-#endif
+					SOUP_TRY
 					{
 						// Validating an ECC cert on my i9-13900K takes around 61 ms, which is time the scheduler could be spending doing more useful things.
 						handshaker->promise.fulfilOffThread([](Capture&& _cap)
 						{
 							auto& cap = _cap.get<CaptureValidateCertchain>();
-							if (!cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data))
+							bool res;
+							SOUP_TRY
 							{
+								res = cap.handshaker->certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data);
+							}
+							SOUP_CATCH (std::bad_alloc, _)
+							{
+								cap.s.transport_close(); // If we're out of memory, we might not even be able to allocate a TLS alert, so just drop it.
+								SOUP_UNUSED(_); // keep the compiler happy
+								return;
+							}
+							if (!res)
+							{
+								// Validation failed without running out of memory.
 								cap.s.tls_close(TlsAlertDescription::bad_certificate);
 							}
 						}, CaptureValidateCertchain{
 							s,
-							handshaker.get(),
-							netConfig::get().certchain_validator
+							static_cast<SocketTlsHandshakerClient*>(handshaker.get())
 						});
 					}
-#if SOUP_EXCEPTIONS
-					catch (...)
+					SOUP_CATCH_ANY
 					{
 						s.tls_close(TlsAlertDescription::internal_error);
 						return;
 					}
-#endif
 
 					auto* p = &handshaker->promise;
 					s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap) SOUP_EXCAL
@@ -560,22 +612,12 @@ NAMESPACE_SOUP
 						auto& s = static_cast<Socket&>(w);
 						UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-						switch (handshaker->cipher_suite)
+						if (!tls_isEcdheCiphersuite(handshaker->cipher_suite))
 						{
-						default:
 							s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
-							break;
-
-						case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
-						case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256:
-						case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
-						case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
-						case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
-						case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
-						case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
-						case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
-						case TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:
-						case TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:
+						}
+						else
+						{
 							s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
 							{
 								if (handshake_type != TlsHandshake::server_key_exchange)
@@ -593,7 +635,7 @@ NAMESPACE_SOUP
 									|| ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256
 									)
 								{
-									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+									SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isRsa())
 									{
 										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
@@ -601,7 +643,7 @@ NAMESPACE_SOUP
 								}
 								else if (ske.signature_scheme == TlsSignatureScheme::ecdsa_sha1)
 								{
-									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isEc())
+									SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isEc())
 									{
 										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
@@ -609,7 +651,9 @@ NAMESPACE_SOUP
 								}
 								else if (ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256)
 								{
-									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isEc() || handshaker->certchain.certs.at(0).curve != &EccCurve::secp256r1())
+									SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isEc()
+										|| static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).curve != &EccCurve::secp256r1()
+										)
 									{
 										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
@@ -655,7 +699,7 @@ NAMESPACE_SOUP
 									return;
 								}
 								handshaker->ecdhe_curve = ske.params.named_curve;
-								handshaker->ecdhe_public_key = std::move(ske.params.point);
+								static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key = std::move(ske.params.point);
 
 #if SOUP_EXCEPTIONS
 								try
@@ -690,7 +734,7 @@ NAMESPACE_SOUP
 										}
 									}, CaptureValidateSke{
 										s,
-										handshaker.get(),
+										static_cast<SocketTlsHandshakerClient*>(handshaker.get()),
 										std::move(ske.signature),
 										ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256 || ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256
 									});
@@ -714,7 +758,6 @@ NAMESPACE_SOUP
 									s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
 								}, std::move(handshaker));
 							});
-							break;
 						}
 					}, std::move(handshaker));
 				});
@@ -722,9 +765,9 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void Socket::enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL
+	void Socket::enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
 	{
-		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
+		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 		{
 			if (handshake_type == TlsHandshake::server_hello_done)
 			{
@@ -754,12 +797,10 @@ NAMESPACE_SOUP
 		});
 	}
 
-	void Socket::enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL
+	void Socket::enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
 	{
 		std::string cke{};
-#if SOUP_EXCEPTIONS
-		try
-#endif
+		SOUP_TRY
 		{
 			if (handshaker->ecdhe_curve == 0)
 			{
@@ -773,13 +814,13 @@ NAMESPACE_SOUP
 				}
 
 				TlsEncryptedPreMasterSecret epms{};
-				SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+				SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isRsa())
 				{
 					// Server picked an RSA ciphersuite but did not provide an appropriate certificate
 					tls_close(TlsAlertDescription::illegal_parameter);
 					return;
 				}
-				epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
+				epms.data = static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
 				cke = epms.toBinaryString();
 
 				handshaker->pre_master_secret = std::move(pms);
@@ -790,7 +831,7 @@ NAMESPACE_SOUP
 				Curve25519::generatePrivate(my_priv);
 
 				uint8_t their_pub[Curve25519::KEY_SIZE];
-				memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
+				memcpy(their_pub, static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key.data(), sizeof(their_pub));
 
 				uint8_t shared_secret[Curve25519::SHARED_SIZE];
 				Curve25519::x25519(shared_secret, my_priv, their_pub);
@@ -820,8 +861,8 @@ NAMESPACE_SOUP
 				auto my_priv = curve->generatePrivate();
 
 				EccPoint their_pub{
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(1, csize)),
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(1 + csize, csize))
+					Bigint::fromBinary(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key.substr(1, csize)),
+					Bigint::fromBinary(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key.substr(1 + csize, csize))
 				};
 				SOUP_IF_UNLIKELY (!curve->validate(their_pub))
 				{
@@ -844,37 +885,28 @@ NAMESPACE_SOUP
 				SOUP_DEBUG_ASSERT_UNREACHABLE; // This would be a logic error on our end since we (should) reject other curves earlier
 			}
 		}
-#if SOUP_EXCEPTIONS
-		catch (...)
+		SOUP_CATCH_ANY
 		{
 			tls_close(TlsAlertDescription::internal_error);
 			return;
 		}
-#endif
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
 			&& tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
 			)
 		{
-			handshaker->getKeys(
-				tls_encrypter_send.mac_key,
-				handshaker->pending_recv_encrypter.mac_key,
-				tls_encrypter_send.cipher_key,
-				handshaker->pending_recv_encrypter.cipher_key,
-				tls_encrypter_send.implicit_iv,
-				handshaker->pending_recv_encrypter.implicit_iv
-			);
+			handshaker->getKeys(tls_encrypter_send, static_cast<SocketTlsHandshakerClient*>(handshaker.get())->pending_recv_encrypter);
 			if (tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getClientFinishVerifyData()))
 			{
-				if (!handshaker->initial_application_data.empty())
+				if (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->initial_application_data.empty())
 				{
-					tls_sendRecordEncrypted(TlsContentType::application_data, handshaker->initial_application_data);
+					tls_sendRecordEncrypted(TlsContentType::application_data, static_cast<SocketTlsHandshakerClient*>(handshaker.get())->initial_application_data);
 				}
 
 				tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 				{
 					UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-					s.tls_encrypter_recv = std::move(handshaker->pending_recv_encrypter);
+					s.tls_encrypter_recv = std::move(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->pending_recv_encrypter);
 
 					handshaker->expected_finished_verify_data = handshaker->getServerFinishVerifyData();
 
@@ -890,41 +922,95 @@ NAMESPACE_SOUP
 							s.tls_close(TlsAlertDescription::decrypt_error);
 							return;
 						}
-						handshaker->callback(s, std::move(handshaker->callback_capture));
+						static_cast<SocketTlsHandshakerClient*>(handshaker.get())->callback(s, std::move(handshaker->callback_capture), std::move(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->alpn_protocol));
 					});
 				}, std::move(handshaker));
 			}
 		}
 	}
 
-	[[nodiscard]] static bool tls_serverSupportsCipherSuite(uint16_t cs) noexcept
+	TlsCipherSuite_t Socket::default_select_ciphersuite(Socket&, const TlsClientHello& hello)
 	{
-		switch (cs)
+		for (const auto& cs : hello.cipher_suites)
 		{
-		case TLS_RSA_WITH_AES_128_CBC_SHA:
-		case TLS_RSA_WITH_AES_256_CBC_SHA:
-		case TLS_RSA_WITH_AES_128_CBC_SHA256:
-		case TLS_RSA_WITH_AES_256_CBC_SHA256:
-			return true;
+			if (tls_serverSupportsCipherSuite(cs))
+			{
+				return cs;
+			}
 		}
-		return false;
+		return TLS_RSA_WITH_AES_128_CBC_SHA; // The TLS 1.2 spec says this one has to be supported, so surely everyone using TLS 1.2 supports it :derp:
 	}
 
 	struct CaptureDecryptPreMasterSecret
 	{
-		SocketTlsHandshaker* handshaker;
+		SocketTlsHandshakerServer* handshaker;
 		Bigint data;
 	};
 
-	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, tls_server_on_client_hello_t on_client_hello) SOUP_EXCAL
+	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_select_ciphersuite_t select_ciphersuite, tls_server_alpn_select_protocol_t alpn_select_protocol)
 	{
-		auto handshaker = make_unique<SocketTlsHandshaker>(
+		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerServer>(
 			callback,
-			std::move(cap)
+			std::move(cap),
+			std::move(certstore),
+			select_ciphersuite ? select_ciphersuite : &default_select_ciphersuite,
+			alpn_select_protocol
 		);
-		handshaker->certstore = std::move(certstore);
-		handshaker->on_client_hello = on_client_hello;
-		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
+
+		transport_recv([](Socket& s, std::string&& data, Capture&& cap)
+		{
+			auto& handshaker = cap.get<UniquePtr<SocketTlsHandshaker>>();
+			SOUP_IF_LIKELY(data.size() > 2 && data[0] == 22 && data[1] == 3) // TLS?
+			{
+				s.transport_unrecv(std::move(data));
+				s.enableCryptoServerRecvTlsClientHello(std::move(handshaker));
+			}
+			else
+			{
+				// RFC 5246 Appendix E.2
+
+				MemoryRefReader r(data);
+				TlsSsl2CompatibleClientHello hello;
+				if (!hello.read(r)
+					|| (hello.msg_length & 0x8000) == 0
+					|| hello.msg_type != 1
+					|| hello.session_id_length != 0
+					)
+				{
+					s.tls_close(TlsAlertDescription::decode_error);
+					return;
+				}
+
+				handshaker->layer_bytes.append(data.substr(2)); // "For the purposes of calculating Finished and CertificateVerify, the msg_length field is not considered to be a part of the handshake message."
+
+				TlsClientHello converted_hello;
+				converted_hello.cipher_suites.reserve(hello.cipher_suites.size());
+				for (const auto& val : hello.cipher_suites)
+				{
+					if (val <= 0xffff)
+					{
+						converted_hello.cipher_suites.emplace_back(static_cast<TlsCipherSuite_t>(val));
+					}
+				}
+				handshaker->cipher_suite = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->select_ciphersuite(s, converted_hello);
+
+				const CertStoreEntry* rsa_data = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->certstore->findEntryForDomain({});
+				if (!rsa_data)
+				{
+					s.tls_close(TlsAlertDescription::unrecognized_name);
+					return;
+				}
+
+				handshaker->client_random = std::move(hello.challenge);
+
+				s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, {}, false);
+			}
+		}, std::move(handshaker));
+	}
+
+	void Socket::enableCryptoServerRecvTlsClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker)
+	{
+		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 		{
 			if (handshake_type != TlsHandshake::client_hello)
 			{
@@ -932,7 +1018,9 @@ NAMESPACE_SOUP
 				return;
 			}
 
-			const CertStore::Entry* rsa_data;
+			const CertStoreEntry* rsa_data;
+			std::string alpn_selection;
+			bool client_supports_secure_renegotiation = false;
 
 			{
 				TlsClientHello hello;
@@ -941,14 +1029,7 @@ NAMESPACE_SOUP
 					s.tls_close(TlsAlertDescription::decode_error);
 					return;
 				}
-				for (const auto& cs : hello.cipher_suites)
-				{
-					if (tls_serverSupportsCipherSuite(cs))
-					{
-						handshaker->cipher_suite = cs;
-						break;
-					}
-				}
+				handshaker->cipher_suite = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->select_ciphersuite(s, hello);
 
 				std::string server_name{};
 				for (const auto& ext : hello.extensions.extensions)
@@ -961,12 +1042,56 @@ NAMESPACE_SOUP
 							server_name = std::move(ext_server_name.host_name);
 						}
 					}
+					else if (ext.id == TlsExtensionType::application_layer_protocol_negotiation)
+					{
+						if (static_cast<SocketTlsHandshakerServer*>(handshaker.get())->alpn_select_protocol)
+						{
+							TlsExtAlpn ext_alpn;
+							if (ext_alpn.fromBinary(ext.data))
+							{
+								alpn_selection = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->alpn_select_protocol(s, ext_alpn, handshaker->cipher_suite);
+								SOUP_IF_UNLIKELY (alpn_selection.empty())
+								{
+									s.tls_close(TlsAlertDescription::no_application_protocol);
+									return;
+								}
+							}
+						}
+					}
+					else if (ext.id == TlsExtensionType::elliptic_curves)
+					{
+						if (tls_isEcdheCiphersuite(handshaker->cipher_suite))
+						{
+							TlsClientHelloExtEllipticCurves ext_curves;
+							if (ext_curves.fromBinary(ext.data))
+							{
+								for (auto nc : ext_curves.named_curves)
+								{
+									if (nc == NamedCurves::x25519 || nc == NamedCurves::secp256r1 || nc == NamedCurves::secp384r1)
+									{
+										handshaker->ecdhe_curve = nc;
+										break;
+									}
+								}
+							}
+						}
+					}
 					else if (ext.id == TlsExtensionType::extended_master_secret)
 					{
 						handshaker->extended_master_secret = true;
 					}
+					else if (ext.id == TlsExtensionType::renegotiation_info)
+					{
+						client_supports_secure_renegotiation = true;
+					}
 				}
-				rsa_data = handshaker->certstore->findEntryForDomain(server_name);
+
+				if (tls_isEcdheCiphersuite(handshaker->cipher_suite) && handshaker->ecdhe_curve == 0)
+				{
+					s.tls_close(TlsAlertDescription::handshake_failure);
+					return;
+				}
+				rsa_data = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->certstore->findEntryForDomain(server_name);
 				if (!rsa_data)
 				{
 					s.tls_close(TlsAlertDescription::unrecognized_name);
@@ -974,126 +1099,291 @@ NAMESPACE_SOUP
 				}
 
 				handshaker->client_random = hello.random.toBinaryString();
-
-				if (handshaker->on_client_hello)
-				{
-					handshaker->on_client_hello(s, std::move(hello));
-				}
 			}
 
+			s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, std::move(alpn_selection), client_supports_secure_renegotiation);
+		});
+	}
+
+	void Socket::enableCryptoServerAfterClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker, const CertStoreEntry* rsa_data, std::string&& alpn_selection, bool client_supports_secure_renegotiation)
+	{
+		{
+			TlsServerHello shello{};
+			shello.random.time = static_cast<uint32_t>(time::unixSeconds());
+			rand.fill(shello.random.random);
+			handshaker->server_random = shello.random.toBinaryString();
+			shello.cipher_suite = handshaker->cipher_suite;
+			shello.compression_method = 0;
+
+			if (handshaker->extended_master_secret)
 			{
-				TlsServerHello shello{};
-				shello.random.time = static_cast<uint32_t>(time::unixSeconds());
-				rand.fill(shello.random.random);
-				handshaker->server_random = shello.random.toBinaryString();
-				shello.cipher_suite = handshaker->cipher_suite;
-				shello.compression_method = 0;
-
-				if (handshaker->extended_master_secret)
-				{
-					shello.extensions.add(TlsExtensionType::extended_master_secret, {});
-				}
-
-				if (!s.tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinaryString()))
-				{
-					return;
-				}
+				shello.extensions.add(TlsExtensionType::extended_master_secret, {});
 			}
 
+			if (!alpn_selection.empty())
 			{
-				TlsCertificate tcert;
-				tcert.asn1_certs.reserve(rsa_data->chain.certs.size());
-				for (const auto& cert : rsa_data->chain.certs)
-				{
-					tcert.asn1_certs.emplace_back(cert.toDer());
-				}
-				if (!s.tls_sendHandshake(handshaker, TlsHandshake::certificate, tcert.toBinaryString()))
-				{
-					return;
-				}
+				TlsExtAlpn ext_alpn;
+				ext_alpn.protocol_names.emplace_back(std::move(alpn_selection));
+				shello.extensions.add(TlsExtensionType::application_layer_protocol_negotiation, ext_alpn);
 			}
 
-			if (!s.tls_sendHandshake(handshaker, TlsHandshake::server_hello_done, {}))
+			if (client_supports_secure_renegotiation)
+			{
+				// OpenSSL might feel left out and drop the connection if we don't play along with this little signalling game.
+				// Of course, Soup doesn't support renegotiation, so all abuse of this mechanism is precluded. :')
+				shello.extensions.add(TlsExtensionType::renegotiation_info, std::string(1, '\0'));
+			}
+
+			if (!tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinaryString()))
 			{
 				return;
 			}
+		}
 
-			handshaker->private_key = &rsa_data->private_key;
-
-			s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
+		{
+			TlsCertificate tcert;
+			tcert.asn1_certs.reserve(rsa_data->chain.certs.size());
+			for (const auto& cert : rsa_data->chain.certs)
 			{
-				if (handshake_type != TlsHandshake::client_key_exchange)
+				tcert.asn1_certs.emplace_back(cert.toDer());
+			}
+			if (!tls_sendHandshake(handshaker, TlsHandshake::certificate, tcert.toBinaryString()))
+			{
+				return;
+			}
+		}
+
+		static_cast<SocketTlsHandshakerServer*>(handshaker.get())->private_key = &rsa_data->private_key;
+
+		if (tls_isEcdheCiphersuite(handshaker->cipher_suite))
+		{
+			std::string pub{};
+			if (handshaker->ecdhe_curve == NamedCurves::x25519)
+			{
+				uint8_t priv[Curve25519::KEY_SIZE];
+				Curve25519::generatePrivate(priv);
+				uint8_t my_pub[Curve25519::KEY_SIZE];
+				Curve25519::derivePublic(my_pub, priv);
+				static_cast<SocketTlsHandshakerServer*>(handshaker.get())->ecdhe_private_key.assign((char*)priv, Curve25519::KEY_SIZE);
+				pub.assign((char*)my_pub, Curve25519::KEY_SIZE);
+			}
+			else
+			{
+				const EccCurve* curve;
+				if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
 				{
-					s.tls_close(TlsAlertDescription::unexpected_message);
+					curve = &EccCurve::secp256r1();
+				}
+				else
+				{
+					curve = &EccCurve::secp384r1();
+				}
+				auto priv = curve->generatePrivate();
+				static_cast<SocketTlsHandshakerServer*>(handshaker.get())->ecdhe_private_key = priv.toBinary();
+				auto pub_point = curve->derivePublic(priv);
+				pub = curve->encodePointUncompressed(pub_point);
+			}
+
+			TlsServerKeyExchange ske{};
+			ske.params.curve_type = 3;
+			ske.params.named_curve = handshaker->ecdhe_curve;
+			ske.params.point = pub;
+			ske.signature_scheme = TlsSignatureScheme::rsa_pkcs1_sha256;
+			std::string msg = handshaker->client_random + handshaker->server_random + ske.params.toBinaryString();
+			ske.signature = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->private_key->sign<sha256>(msg).toBinary();
+			if (!tls_sendHandshake(handshaker, TlsHandshake::server_key_exchange, ske.toBinaryString()))
+			{
+				return;
+			}
+		}
+
+		if (!tls_sendHandshake(handshaker, TlsHandshake::server_hello_done, {}))
+		{
+			return;
+		}
+
+		if (tls_isEcdheCiphersuite(handshaker->cipher_suite))
+		{
+			enableCryptoServerRecvClientKeyExchangeEcdhe(std::move(handshaker));
+		}
+		else
+		{
+			enableCryptoServerRecvClientKeyExchangeRsa(std::move(handshaker));
+		}
+	}
+
+	void Socket::enableCryptoServerRecvClientKeyExchangeRsa(UniquePtr<SocketTlsHandshaker>&& handshaker)
+	{
+		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
+		{
+			if (handshake_type != TlsHandshake::client_key_exchange)
+			{
+				s.tls_close(TlsAlertDescription::unexpected_message);
+				return;
+			}
+
+			if (data.size() <= 2)
+			{
+				s.tls_close(TlsAlertDescription::decode_error);
+				return;
+			}
+			data.erase(0, 2);
+
+			handshaker->promise.fulfilOffThread([](Capture&& _cap)
+			{
+				auto& cap = _cap.get<CaptureDecryptPreMasterSecret>();
+				cap.handshaker->pre_master_secret = cap.handshaker->private_key->decryptPkcs1(cap.data);
+			}, CaptureDecryptPreMasterSecret{
+				static_cast<SocketTlsHandshakerServer*>(handshaker.get()),
+				Bigint::fromBinary(data)
+			});
+
+			s.tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap)
+			{
+				if (!s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1"))
+				{
 					return;
 				}
 
-				if (data.size() <= 2)
-				{
-					s.tls_close(TlsAlertDescription::decode_error);
-					return;
-				}
-				data.erase(0, 2); // length prefix
+				UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-				handshaker->promise.fulfilOffThread([](Capture&& _cap)
+				auto* p = &handshaker->promise;
+				s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap)
 				{
-					auto& cap = _cap.get<CaptureDecryptPreMasterSecret>();
-					cap.handshaker->pre_master_secret = cap.handshaker->private_key->decryptPkcs1(cap.data);
-				}, CaptureDecryptPreMasterSecret{
-					handshaker.get(),
-					Bigint::fromBinary(data)
-				});
+					w.holdup_type = Worker::NONE;
 
-				s.tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
-				{
-					if (!s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1"))
-					{
-						return;
-					}
-
+					auto& s = static_cast<Socket&>(w);
 					UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-					auto* p = &handshaker->promise;
-					s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap) SOUP_EXCAL
+					handshaker->getKeys(s.tls_encrypter_recv, s.tls_encrypter_send);
+
+					handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
+
+					s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 					{
-						w.holdup_type = Worker::NONE;
-
-						auto& s = static_cast<Socket&>(w);
-						UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
-
-						handshaker->getKeys(
-							s.tls_encrypter_recv.mac_key,
-							s.tls_encrypter_send.mac_key,
-							s.tls_encrypter_recv.cipher_key,
-							s.tls_encrypter_send.cipher_key,
-							s.tls_encrypter_recv.implicit_iv,
-							s.tls_encrypter_send.implicit_iv
-						);
-
-						handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
-
-						s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
+						if (handshake_type != TlsHandshake::finished)
 						{
-							if (handshake_type != TlsHandshake::finished)
-							{
-								s.tls_close(TlsAlertDescription::unexpected_message);
-								return;
-							}
+							s.tls_close(TlsAlertDescription::unexpected_message);
+							return;
+						}
 
-							if (data != handshaker->expected_finished_verify_data)
-							{
-								s.tls_close(TlsAlertDescription::decrypt_error);
-								return;
-							}
+						if (data != handshaker->expected_finished_verify_data)
+						{
+							s.tls_close(TlsAlertDescription::decrypt_error);
+							return;
+						}
 
-							if (s.tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getServerFinishVerifyData()))
-							{
-								handshaker->callback(s, std::move(handshaker->callback_capture));
-							}
-						});
-					}, std::move(handshaker));
+						if (s.tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getServerFinishVerifyData()))
+						{
+							static_cast<SocketTlsHandshakerServer*>(handshaker.get())->callback(s, std::move(handshaker->callback_capture));
+						}
+					});
 				}, std::move(handshaker));
-			});
+			}, std::move(handshaker));
+		});
+	}
+
+	void Socket::enableCryptoServerRecvClientKeyExchangeEcdhe(UniquePtr<SocketTlsHandshaker>&& handshaker)
+	{
+		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
+		{
+			if (handshake_type != TlsHandshake::client_key_exchange)
+			{
+				s.tls_close(TlsAlertDescription::unexpected_message);
+				return;
+			}
+
+			if (data.empty())
+			{
+				s.tls_close(TlsAlertDescription::decode_error);
+				return;
+			}
+			uint8_t len = static_cast<uint8_t>(data[0]);
+			if (data.size() != static_cast<size_t>(len) + 1)
+			{
+				s.tls_close(TlsAlertDescription::decode_error);
+				return;
+			}
+			std::string point = data.substr(1);
+
+			if (handshaker->ecdhe_curve == NamedCurves::x25519)
+			{
+				if (point.size() != Curve25519::KEY_SIZE)
+				{
+					s.tls_close(TlsAlertDescription::illegal_parameter);
+					return;
+				}
+				uint8_t shared[Curve25519::SHARED_SIZE];
+				Curve25519::x25519(shared, (const uint8_t*)static_cast<SocketTlsHandshakerServer*>(handshaker.get())->ecdhe_private_key.data(), (const uint8_t*)point.data());
+				handshaker->pre_master_secret.assign((char*)shared, Curve25519::SHARED_SIZE);
+			}
+			else if (handshaker->ecdhe_curve == NamedCurves::secp256r1 || handshaker->ecdhe_curve == NamedCurves::secp384r1)
+			{
+				const EccCurve* curve;
+				if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
+				{
+					curve = &EccCurve::secp256r1();
+				}
+				else
+				{
+					curve = &EccCurve::secp384r1();
+				}
+				size_t csize = curve->getBytesPerAxis();
+				if (point.size() != 1 + csize + csize || point[0] != 4)
+				{
+					s.tls_close(TlsAlertDescription::illegal_parameter);
+					return;
+				}
+				EccPoint their_pub{
+					Bigint::fromBinary(point.substr(1, csize)),
+					Bigint::fromBinary(point.substr(1 + csize, csize))
+				};
+				if (!curve->validate(their_pub))
+				{
+					s.tls_close(TlsAlertDescription::illegal_parameter);
+					return;
+				}
+				Bigint my_priv = Bigint::fromBinary(static_cast<SocketTlsHandshakerServer*>(handshaker.get())->ecdhe_private_key);
+				auto shared_point = curve->multiply(their_pub, my_priv);
+				handshaker->pre_master_secret = shared_point.x.toBinary(csize);
+			}
+			else
+			{
+				s.tls_close(TlsAlertDescription::internal_error);
+				return;
+			}
+
+			s.tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap)
+			{
+				if (!s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1"))
+				{
+					return;
+				}
+
+				UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
+
+				handshaker->getKeys(s.tls_encrypter_recv, s.tls_encrypter_send);
+
+				handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
+
+				s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
+				{
+					if (handshake_type != TlsHandshake::finished)
+					{
+						s.tls_close(TlsAlertDescription::unexpected_message);
+						return;
+					}
+					if (data != handshaker->expected_finished_verify_data)
+					{
+						s.tls_close(TlsAlertDescription::decrypt_error);
+						return;
+					}
+					if (s.tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getServerFinishVerifyData()))
+					{
+						static_cast<SocketTlsHandshakerServer*>(handshaker.get())->callback(s, std::move(handshaker->callback_capture));
+					}
+				});
+			}, std::move(handshaker));
 		});
 	}
 
@@ -1118,48 +1408,56 @@ NAMESPACE_SOUP
 			;
 	}
 
-	bool Socket::setSourcePort4(uint16_t port)
+	bool Socket::setSource(native_u32_t ip_addr, native_u16_t port)
 	{
 		sockaddr_in bindto{};
 		bindto.sin_family = AF_INET;
-		bindto.sin_addr.s_addr = INADDR_ANY;
-		bindto.sin_port = Endianness::toNetwork(native_u16_t(port));
-		return ::bind(fd, (sockaddr*)&bindto, sizeof(bindto)) != -1;
-	}
-
-	bool Socket::udpClientSend(const SocketAddr& addr, const std::string& data) noexcept
-	{
-		peer = addr;
-		return init(addr.ip.isV4() ? AF_INET : AF_INET6, SOCK_DGRAM)
-			&& udpServerSend(addr, data)
+		bindto.sin_addr.s_addr = Endianness::toNetwork(ip_addr);
+		bindto.sin_port = Endianness::toNetwork(port);
+		return (ip_addr == 0 || setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1))
+			&& ::bind(fd, (sockaddr*)&bindto, sizeof(bindto)) != -1
 			;
 	}
 
-	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
+	bool Socket::udpClientSend(const SocketAddr& addr, const void* data, size_t size) noexcept
 	{
-		return udpClientSend(SocketAddr(ip, native_u16_t(port)), data);
+		peer = addr;
+#if SOUP_WINDOWS
+		return init(addr.ip.isV4() ? AF_INET : AF_INET6, SOCK_DGRAM)
+#else
+		return init(AF_INET6, SOCK_DGRAM)
+#endif
+			&& udpServerSend(addr, data, size)
+			;
 	}
 
-	bool Socket::udpServerSend(const SocketAddr& addr, const std::string& data) noexcept
+	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept
 	{
+		return udpClientSend(SocketAddr(ip, native_u16_t(port)), data, size);
+	}
+
+	bool Socket::udpServerSend(const SocketAddr& addr, const void* data, size_t size) noexcept
+	{
+#if !SOUP_MACOS
 		if (addr.ip.isV4())
 		{
 			sockaddr_in sa{};
 			sa.sin_family = AF_INET;
 			sa.sin_port = addr.port;
 			sa.sin_addr.s_addr = addr.ip.getV4();
-			if (::sendto(fd, data.data(), static_cast<int>(data.size()), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
+			if (::sendto(fd, (const char*)data, static_cast<int>(size), 0, (sockaddr*)&sa, sizeof(sa)) != size)
 			{
 				return false;
 			}
 		}
 		else
+#endif
 		{
 			sockaddr_in6 sa{};
 			sa.sin6_family = AF_INET6;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
 			sa.sin6_port = addr.port;
-			if (::sendto(fd, data.data(), static_cast<int>(data.size()), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
+			if (::sendto(fd, (const char*)data, static_cast<int>(size), 0, (sockaddr*)&sa, sizeof(sa)) != size)
 			{
 				return false;
 			}
@@ -1167,9 +1465,9 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Socket::udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
+	bool Socket::udpServerSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept
 	{
-		return udpServerSend(SocketAddr(ip, native_u16_t(port)), data);
+		return udpServerSend(SocketAddr(ip, native_u16_t(port)), data, size);
 	}
 
 	struct CaptureSocketRecv
@@ -1195,7 +1493,7 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			transport_recv(0x1000, callback, std::move(cap));
+			transport_recv(callback, std::move(cap));
 		}
 	}
 
@@ -1210,15 +1508,18 @@ NAMESPACE_SOUP
 		holdup_type = SOCKET;
 		holdup_callback.set([](Worker& w, Capture&& _cap) SOUP_EXCAL
 		{
-			w.holdup_type = Worker::NONE;
-
 			auto& cap = _cap.get<CaptureSocketUdpRecv>();
 
 			std::string data(0x1000, '\0');
 
 			sockaddr_in6 sa;
 			socklen_t sal = sizeof(sa);
-			data.resize(::recvfrom(static_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal));
+			int res = ::recvfrom(static_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal);
+			SOUP_IF_UNLIKELY (res < 0 || res > data.size())
+			{
+				return;
+			}
+			data.resize(res);
 
 			SocketAddr sender;
 			if (sal == sizeof(sa))
@@ -1232,6 +1533,7 @@ NAMESPACE_SOUP
 				sender.port = network_u16_t(reinterpret_cast<sockaddr_in*>(&sa)->sin_port);
 			}
 
+			w.holdup_type = Worker::NONE;
 			cap.callback(static_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));
 		}, CaptureSocketUdpRecv{ callback, std::move(cap) });
 	}
@@ -1277,28 +1579,38 @@ NAMESPACE_SOUP
 
 	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const void* data, size_t size) SOUP_EXCAL
 	{
-		auto body = tls_encrypter_send.encrypt(content_type, data, size);
+		size_t chunk_size;
+		do
+		{
+			chunk_size = size > 16384 ? 16384 : size;
+			auto body = tls_encrypter_send.encrypt(content_type, data, chunk_size);
 
-		TlsRecord record{};
-		record.content_type = content_type;
-		record.length = static_cast<uint16_t>(body.size());
+			TlsRecord record{};
+			record.content_type = content_type;
+			record.length = static_cast<uint16_t>(body.size());
 
-		Buffer header(5);
-		BufferRefWriter bw(header, ENDIAN_BIG);
-		record.write(bw);
+			Buffer header;
+			header.reserve(5);
+			BufferRefWriter bw(header);
+			record.write(bw);
 
-		body.prepend(header.data(), header.size());
-		return transport_send(body);
+			body.prepend(header.data(), header.size());
+			SOUP_RETHROW_FALSE(transport_send(body));
+
+			data = (const uint8_t*)data + chunk_size;
+			size -= chunk_size;
+		} while (size != 0);
+		return true;
 	}
 
 	struct CaptureSocketTlsRecvHandshake
 	{
 		UniquePtr<SocketTlsHandshaker> handshaker;
-		void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&) SOUP_EXCAL;
+		void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&);
 		std::string pre;
 	};
 
-	void Socket::tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&) SOUP_EXCAL, std::string&& pre) SOUP_EXCAL
+	void Socket::tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&), std::string&& pre) // 'excal' if callback is
 	{
 		CaptureSocketTlsRecvHandshake cap{
 			std::move(handshaker),
@@ -1306,7 +1618,7 @@ NAMESPACE_SOUP
 			std::move(pre)
 		};
 
-		auto record_callback = [](Socket& s, TlsContentType_t content_type, std::string&& data, Capture&& _cap) SOUP_EXCAL
+		auto record_callback = [](Socket& s, TlsContentType_t content_type, std::string&& data, Capture&& _cap) // 'excal' if callback is
 		{
 			if (content_type != TlsContentType::handshake)
 			{
@@ -1449,6 +1761,13 @@ NAMESPACE_SOUP
 	{
 		transport_recvExact(5, [](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
+			SOUP_IF_UNLIKELY (data.empty())
+			{
+				SOUP_ASSUME(s.remote_closed && s.callback_recv_on_close);
+				cap.get<CaptureSocketTlsRecvRecord1>().callback(s, TlsContentType::application_data, {}, std::move(cap.get<CaptureSocketTlsRecvRecord1>().cap));
+				return;
+			}
+
 			TlsRecord record{};
 			if (!record.fromBinary(data)
 				|| record.version.major != 3
@@ -1462,49 +1781,60 @@ NAMESPACE_SOUP
 				auto& cap = _cap.get<CaptureSocketTlsRecvRecord2>();
 				if (s.tls_encrypter_recv.isActive())
 				{
-					constexpr auto cipher_bytes = 16;
+					constexpr auto cipher_bytes = 16; // AES = 16, RC4 = 1
+					constexpr auto record_iv_length = 16; // AES = 16, RC4 = 0
+					const auto mac_length = s.tls_encrypter_recv.mac_key_len;
 
 					if (!s.tls_encrypter_recv.isAead())
 					{
-						constexpr auto record_iv_length = 16;
-						const auto mac_length = s.tls_encrypter_recv.mac_key.size();
+						uint8_t pad_len = 0;
+						bool pad_mismatch = false;
 
-						if ((data.size() % cipher_bytes) != 0
-							|| data.size() < (cipher_bytes + mac_length)
-							)
+						SOUP_IF_UNLIKELY (s.tls_encrypter_recv.isRc4())
 						{
-							s.tls_close(TlsAlertDescription::bad_record_mac);
-							return;
+							if (!s.tls_encrypter_recv.state)
+							{
+								s.tls_encrypter_recv.state = new Rc4State(s.tls_encrypter_recv.cipher_key, s.tls_encrypter_recv.cipher_key_len);
+							}
+							reinterpret_cast<Rc4State*>(s.tls_encrypter_recv.state)->transform(reinterpret_cast<uint8_t*>(data.data()), data.size());
 						}
+						else // AES-CBC
+						{
+							if ((data.size() % cipher_bytes) != 0
+								|| data.size() < (cipher_bytes + mac_length)
+								)
+							{
+								s.tls_close(TlsAlertDescription::bad_record_mac);
+								return;
+							}
 
-						auto iv = data.substr(0, record_iv_length);
-						data.erase(0, record_iv_length);
-						aes::cbcDecrypt(
-							reinterpret_cast<uint8_t*>(data.data()), data.size(),
-							reinterpret_cast<const uint8_t*>(s.tls_encrypter_recv.cipher_key.data()), s.tls_encrypter_recv.cipher_key.size(),
-							reinterpret_cast<const uint8_t*>(iv.data())
-						);
+							auto iv = data.substr(0, record_iv_length);
+							data.erase(0, record_iv_length);
+							aes::cbcDecrypt(
+								reinterpret_cast<uint8_t*>(data.data()), data.size(),
+								s.tls_encrypter_recv.cipher_key, s.tls_encrypter_recv.cipher_key_len,
+								reinterpret_cast<const uint8_t*>(iv.data())
+							);
+
+							pad_len = data.back();
+							for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
+							{
+								if (*it != pad_len)
+								{
+									pad_mismatch = true;
+								}
+							}
+							if (data.size() >= pad_len)
+							{
+								data.erase(data.size() - (pad_len + 1));
+							}
+						}
 
 						std::string mac{};
-
-						bool pad_mismatch = false;
-						uint8_t pad_len = data.back();
-						for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
+						if (data.size() > mac_length)
 						{
-							if (*it != pad_len)
-							{
-								pad_mismatch = true;
-							}
-						}
-						if (data.size() >= pad_len)
-						{
-							data.erase(data.size() - (pad_len + 1));
-
-							if (data.size() > mac_length)
-							{
-								mac = data.substr(data.size() - mac_length);
-								data.erase(data.size() - mac_length);
-							}
+							mac = data.substr(data.size() - mac_length);
+							data.erase(data.size() - mac_length);
 						}
 
 						if (s.tls_encrypter_recv.calculateMac(cap.content_type, data) != mac
@@ -1515,11 +1845,12 @@ NAMESPACE_SOUP
 							return;
 						}
 					}
-					else
+					else // AES-GCM
 					{
-						constexpr auto record_iv_length = 8;
+						constexpr auto implicit_iv_len = 4;
+						constexpr auto explicit_iv_len = 8;
 
-						if (data.size() < (record_iv_length + cipher_bytes))
+						if (data.size() < (explicit_iv_len + cipher_bytes))
 						{
 							s.tls_close(TlsAlertDescription::bad_record_mac);
 							return;
@@ -1535,18 +1866,19 @@ NAMESPACE_SOUP
 
 						data.erase(data.length() - cipher_bytes);
 
-						auto iv = s.tls_encrypter_recv.implicit_iv;
-						auto nonce_explicit = data.substr(0, record_iv_length);
-						iv.insert(iv.end(), nonce_explicit.begin(), nonce_explicit.end());
-						data.erase(0, record_iv_length);
+						uint8_t iv[implicit_iv_len + explicit_iv_len];
+						memcpy(iv, s.tls_encrypter_recv.implicit_iv, implicit_iv_len);
+						auto nonce_explicit = data.substr(0, explicit_iv_len);
+						memcpy(&iv[implicit_iv_len], nonce_explicit.data(), nonce_explicit.size());
+						data.erase(0, explicit_iv_len);
 
 						auto ad = s.tls_encrypter_recv.calculateMacBytes(cap.content_type, data.size());
 
 						if (aes::gcmDecrypt(
 							(uint8_t*)data.data(), data.size(),
 							(const uint8_t*)ad.data(), ad.size(),
-							s.tls_encrypter_recv.cipher_key.data(), s.tls_encrypter_recv.cipher_key.size(),
-							iv.data(), iv.size(),
+							s.tls_encrypter_recv.cipher_key, s.tls_encrypter_recv.cipher_key_len,
+							iv, sizeof(iv),
 							(const uint8_t*)tag.data()
 						) != true)
 						{
@@ -1606,7 +1938,7 @@ NAMESPACE_SOUP
 		return ::recv(fd, &buf, 1, MSG_PEEK) == 1;
 	}
 
-	bool Socket::transport_send(const Buffer& buf) const noexcept
+	bool Socket::transport_send(const Buffer<>& buf) const noexcept
 	{
 		return transport_send(buf.data(), static_cast<int>(buf.size()));
 	}
@@ -1651,6 +1983,11 @@ NAMESPACE_SOUP
 		}
 #endif
 		return {};
+	}
+
+	void Socket::transport_recv(transport_recv_callback_t callback, Capture&& cap)
+	{
+		return transport_recv(0x1000, callback, std::move(cap));
 	}
 
 	struct CaptureSocketTransportRecv
@@ -1706,6 +2043,10 @@ NAMESPACE_SOUP
 			}
 			if (remote_closed)
 			{
+				if (callback_recv_on_close)
+				{
+					callback(*this, {}, std::move(cap));
+				}
 				return;
 			}
 		}

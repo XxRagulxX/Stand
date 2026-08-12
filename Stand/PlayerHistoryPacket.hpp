@@ -25,7 +25,7 @@ namespace Stand
 				&& s.u64_dyn(last_seen)
 				&& s.str_nt(note)
 				&& s.u8(flags)
-				&& s.u64(scrambled_gamer_id)
+				&& s.u64_be(scrambled_gamer_id)
 				&& s.u64_dyn(join_reactions)
 				;
 		}
@@ -39,7 +39,7 @@ namespace Stand
 		SOUP_PACKET_IO(s)
 		{
 			return v6.io(s)
-				&& s.u32(mac_id)
+				&& s.u32_be(mac_id)
 				;
 		}
 	};
@@ -52,7 +52,7 @@ namespace Stand
 		SOUP_PACKET_IO(s)
 		{
 			return v7.io(s)
-				&& s.u64(account_id)
+				&& s.u64_be(account_id)
 				;
 		}
 	};
@@ -78,7 +78,7 @@ namespace Stand
 				&& s.str_nt(note)
 				&& s.u8(flags)
 				&& s.u64_dyn(join_reactions)
-				&& s.u32(mac_id)
+				&& s.u32_be(mac_id)
 				&& s.u64_dyn(account_id)
 				;
 		}

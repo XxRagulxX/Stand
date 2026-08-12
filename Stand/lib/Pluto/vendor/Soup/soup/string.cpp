@@ -7,13 +7,14 @@
 
 NAMESPACE_SOUP
 {
-	std::string string::hex2bin(const std::string& hex) SOUP_EXCAL
+	std::string string::hex2bin(const char* data, size_t size) SOUP_EXCAL
 	{
 		std::string bin;
 		uint8_t val = 0;
 		bool first_nibble = true;
-		for (const auto& c : hex)
+		for (; size; ++data, --size)
 		{
+			const auto& c = *data;
 			if (isNumberChar(c))
 			{
 				val |= (c - '0');
@@ -43,6 +44,16 @@ NAMESPACE_SOUP
 			}
 		}
 		return bin;
+	}
+
+	void string::replaceAll(std::string& str, char from, char to) SOUP_EXCAL
+	{
+		size_t pos = 0;
+		while ((pos = str.find(from, pos)) != std::string::npos)
+		{
+			str.data()[pos] = to;
+			pos += 1;
+		}
 	}
 
 	std::string string::escape(const std::string& str)
@@ -92,7 +103,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	void string::listAppend(std::string& str, std::string&& add)
+	void string::listAppend(std::string& str, std::string add)
 	{
 		if (str.empty())
 		{
@@ -157,11 +168,13 @@ NAMESPACE_SOUP
 				std::ifstream t(file, std::ios::binary);
 
 				t.seekg(0, std::ios::end);
-				const auto s = static_cast<size_t>(t.tellg());
-				t.seekg(0, std::ios::beg);
+				if (const auto s = static_cast<size_t>(t.tellg()); s != -1)
+				{
+					t.seekg(0, std::ios::beg);
 
-				ret.reserve(s);
-				ret.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+					ret.reserve(s);
+					ret.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+				}
 			}
 		}
 		return ret;
@@ -177,9 +190,9 @@ NAMESPACE_SOUP
 		return toFile(soup::filesystem::u8path(file), contents);
 	}
 
-	void string::toFile(const std::filesystem::path& file, const std::string& contents)
+	void string::toFile(const std::filesystem::path& file, const char* data, size_t size)
 	{
 		std::ofstream of(file, std::ios_base::binary);
-		of << contents;
+		of.write(data, size);
 	}
 }

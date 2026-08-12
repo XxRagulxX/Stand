@@ -3,29 +3,15 @@
 #include <cstring> // memcmp
 #include <istream>
 
-#include "StringRefReader.hpp"
-#include "StringRefWriter.hpp"
+#include "MemoryRefReader.hpp"
+#include "StringWriter.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 NAMESPACE_SOUP
 {
-	Oid Oid::COMMON_NAME = { 2, 5, 4, 3 };
-	Oid Oid::RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 1 };
-	Oid Oid::SHA1_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 5 };
-	Oid Oid::SHA256_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 11 };
-	Oid Oid::SHA384_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 12 };
-	Oid Oid::SHA512_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 13 };
-	Oid Oid::ECDSA_WITH_SHA256 = { 1, 2, 840, 10045, 4, 3, 2 };
-	Oid Oid::ECDSA_WITH_SHA384 = { 1, 2, 840, 10045, 4, 3, 3 };
-	Oid Oid::CE_KEYUSAGE = { 2, 5, 29, 15 };
-	Oid Oid::CE_SUBJECTALTNAME = { 2, 5, 29, 17 };
-	Oid Oid::CE_BASICCONSTRAINTS = { 2, 5, 29, 19 };
-	Oid Oid::EC_PUBLIC_KEY = { 1, 2, 840, 10045, 2, 1 };
-	Oid Oid::PRIME256V1 = { 1, 2, 840, 10045, 3, 1, 7 };
-	Oid Oid::ANSIP384R1 = { 1, 3, 132, 0, 34 };
-
 	Oid Oid::fromBinary(const std::string& str)
 	{
-		StringRefReader s{ str };
+		MemoryRefReader s{ str };
 		return fromBinary(s);
 	}
 
@@ -34,14 +20,18 @@ NAMESPACE_SOUP
 		Oid ret{};
 		if (uint8_t first; r.u8(first))
 		{
-			ret.path.reserve(2);
-			ret.path.push_back(first / 40);
-			ret.path.push_back(first % 40);
+			ret.len = 2;
+			ret.first = first / 40;
+			ret.second = first % 40;
 			while (r.hasMore())
 			{
 				uint32_t comp;
-				r.om<uint32_t>(comp);
-				ret.path.emplace_back(comp);
+				r.omb<uint32_t>(comp);
+				if (ret.len < MAX_SIZE)
+				{
+					ret.rest[ret.len - 2] = comp;
+					ret.len++;
+				}
 			}
 		}
 		return ret;
@@ -49,11 +39,11 @@ NAMESPACE_SOUP
 
 	bool Oid::operator==(const Oid& b) const noexcept
 	{
-		if (path.size() != b.path.size())
-		{
-			return false;
-		}
-		return memcmp(path.data(), b.path.data(), path.size() * sizeof(*path.data())) == 0;
+		return len == b.len
+			&& first == b.first
+			&& second == b.second
+			&& memcmp(rest, b.rest, (len - 2) * sizeof(uint32_t)) == 0
+			;
 	}
 
 	bool Oid::operator!=(const Oid& b) const noexcept
@@ -63,30 +53,25 @@ NAMESPACE_SOUP
 
 	std::string Oid::toDer() const
 	{
-		std::string res;
-		res.push_back((char)((path.at(0) * 40) | path.at(1)));
-		StringRefWriter w(res);
-		for (auto i = path.begin() + 2; i != path.end(); ++i)
+		StringWriter sw;
+		sw.data.push_back((char)((first * 40) | second));
+		for (uint32_t i = 2; i < len; ++i)
 		{
-			w.om<uint32_t>(*i);
+			sw.omb<uint32_t>(rest[i - 2]);
 		}
-		return res;
+		SOUP_MOVE_RETURN(sw.data);
 	}
 
 	std::string Oid::toString() const
 	{
 		std::string str{};
-		if (auto i = path.begin(); i != path.end())
+		str.append(std::to_string((uint32_t)first));
+		str.push_back('.');
+		str.append(std::to_string((uint32_t)second));
+		for (uint32_t i = 2; i < len; ++i)
 		{
-			while (true)
-			{
-				str.append(std::to_string(*i));
-				if (++i == path.end())
-				{
-					break;
-				}
-				str.push_back('.');
-			}
+			str.push_back('.');
+			str.append(std::to_string(rest[i - 2]));
 		}
 		return str;
 	}

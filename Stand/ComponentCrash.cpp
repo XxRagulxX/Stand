@@ -55,7 +55,7 @@ namespace Stand
 
 	void ComponentCrash::addPatterns(PatternBatch& batch)
 	{
-		BATCH_ADD_OPTIONAL_HOOK(CNetObjTrain_GetTrainGameState, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 20 48 8B B9 30 F7 FF FF");
+		BATCH_ADD_OPTIONAL_HOOK(CNetObjTrain_GetTrainGameState, "48 89 5C 24 08", "48 89 74 24 10 48 89 7C 24 18 41 56 48 83 EC ? 48 8B B9 ? ? ? ? 45 33 F6 48 8B DA");
 	}
 
 	std::vector<DetourHook*> ComponentCrash::getHooks()

@@ -54,7 +54,7 @@
 #include "CommandRewind.hpp"
 #include "CommandSetGameLanguage.hpp"
 #include "CommandStutterFix.hpp"
-#include "CommandKeyboardHook.hpp"
+#include "CommandUncapFps.hpp"
 #include "CommandDebugNatives.hpp"
 #include "CommandListPatches.hpp"
 #include "CommandListAnalogue.hpp"
@@ -246,7 +246,7 @@ namespace Stand
 			this->createChild<CommandRewind>();
 			this->createChild<CommandSetGameLanguage>();
 			this->createChild<CommandStutterFix>();
-			this->createChild<CommandKeyboardHook>();
+			this->createChild<CommandUncapFps>();
 			this->createChild<CommandDebugNatives>();
 		}
 

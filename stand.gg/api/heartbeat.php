@@ -3,7 +3,7 @@ $data = json_decode(file_get_contents("php://input"),true);
 
 if(empty($data)
 	||empty($data["v"])
-	||(version_compare($data["v"], "95") >= 0 || version_compare($data["v"], "24.8.12") < 0)
+	||(version_compare($data["v"], "95") >= 0 || version_compare($data["v"], "25.12.1") < 0)
 	)
 {
 	die(json_encode([
@@ -21,13 +21,6 @@ if(!isset($data["a"])
 {
 	die(json_encode([
 		"m"=>"Bad request"
-	]));
-}
-
-if ($data["v"] == "24.9.2-b3323" && !empty($data["s"]))
-{
-	die(json_encode([
-		"m"=>"This version was not made for online usage."
 	]));
 }
 
@@ -83,6 +76,17 @@ if($account_res[0]["suspended_for"])
 
 // Extract provided identity information
 $identity = $data["i"];
+if (substr($identity, 0, 1) == "H")
+{
+	$rid = giv4_decode(substr($identity, 1));
+	if ($rid >= 10000 && $rid <= 3000000000)
+	{
+		if (!$db->query("SELECT `id` FROM `scaccounts` WHERE `id`=?", "i", $rid))
+		{
+			$db->query("INSERT IGNORE INTO `rid_queue` (`rid`) VALUES (?)", "i", $rid);
+		}
+	}
+}
 if (!$is_stable_build && $ver_arr[1] == "devdbg")
 {
 	$identity .= "#";
@@ -193,7 +197,7 @@ if(empty($data["p"])||$data["p"]!=$account_res[0]["privilege"])
 	$json["r"] = str_replace("{v}", join("-", $ver_arr), $json["r"]);
 	$json["r"] = str_replace("{e}", $ed_name, $json["r"]);
 }
-if(version_compare($data["v"], "24.9.2") < 0)
+if(version_compare($data["v"], "26.6.1") < 0)
 {
 	$json["t"] = "VER_UNSUPP_AUTHONLY";
 }
@@ -228,6 +232,15 @@ if(!empty($data["s"])) // User switched session?
 		}
 	}
 }
+else
+{
+	// Pick a random RID that we know is valid but don't know a name for
+	$rid_res = $db->query("SELECT `rid` FROM `rid_queue` ORDER BY RAND() LIMIT 1");
+	if ($rid_res)
+	{
+		$json["c"] = (int)$rid_res[0]["rid"];
+	}
+}
 if(array_key_exists("r", $json)) // Initial heartbeat (with this edition)?
 {
 	/*if (!array_key_exists("m", $json))
@@ -237,6 +250,6 @@ if(array_key_exists("r", $json)) // Initial heartbeat (with this edition)?
 }
 //if(!empty($data["p"])) // Subsequent heartbeat?
 {
-	$json["a"] = ((filemtime(__DIR__."/bgscript.txt") << 32) ^ filemtime(__DIR__."/blobfish.txt") ^ filemtime(__DIR__."/tuna.json.php"));
+	$json["a"] = ((filemtime(__DIR__."/bgscript-5.4.txt") << 32) ^ filemtime(__DIR__."/blobfish.txt") ^ filemtime(__DIR__."/tuna.json.php"));
 }
 die(json_encode($json));

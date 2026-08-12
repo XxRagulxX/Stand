@@ -75,15 +75,24 @@ function internal_menu_toggle_loop_sgmayqvfwr(parent,menu_name,command_names,hel
 
 	local r, ref
 	local cmd=menu.toggle(parent,menu_name,command_names,help_text,function(s)
-		if s and not (r and util.is_scheduled_in(r)) then
-			r=coroutine.running()
-			repeat
-				f()
-				util.yield_once()
-			until not ref.value
-			r=nil
-			if on_stop ~= nil then
-				on_stop()
+		if s then
+			if not (r and util.is_scheduled_in(r)) then
+				r=coroutine.running()
+				repeat
+					f()
+					util.yield_once()
+				until not ref.value
+				r=nil
+				if on_stop ~= nil then
+					on_stop()
+				end
+			end
+		else
+			if not util.can_continue() then
+				-- The runtime scheduler is already dead but still need to dispatch on_stop because toggle changed state.
+				if on_stop ~= nil then
+					on_stop()
+				end
 			end
 		end
 	end,false,perm)
@@ -452,6 +461,9 @@ end
 
 print=util.log
 os.sleep=util.yield
+
+-- Compatibility shim for pre-Pluto 0.11.0 scripts
+table.freeze=|t|->t
 
 -- soup.json redirects to pluto:json since May 23, 2024; emits deprecation warning since July 18, 2024.
 soup.json={

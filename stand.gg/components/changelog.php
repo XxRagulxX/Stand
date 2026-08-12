@@ -1,4 +1,188 @@
 <p>Time is provided as observed in Central Europe.</p>
+<?php printHeader('Stand 26.7.2', '22/07/2026 07:13'); ?>
+<ul>
+	<li>Removed Herobrine</li>
+</ul>
+<?php printHeader('Stand 26.7.1', '14/07/2026 16:02'); ?>
+<ul>
+	<li>Updated for 1.73-3889.0</li>
+	<li>Fixed a rare crash on connection failure</li>
+</ul>
+<?php printHeader('Stand 26.6.1', '11/06/2026 18:37'); ?>
+<ul>
+	<li>Lua API: Updated Pluto to 0.13.0 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+</ul>
+<?php printHeader('Stand 26.3.1', '17/03/2026 12:47'); ?>
+<ul>
+	<li>Updated for 1.72-3788.0</li>
+</ul>
+<?php printHeader('Stand 26.1.1', '27/01/2026 16:36'); ?>
+<ul>
+	<li>Updated for 1.72-3751.0</li>
+	<li>Lua API: Updated Pluto to 0.12.2 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+</ul>
+<?php printHeader('Stand 25.12.2', '17/12/2025 13:01'); ?>
+<ul>
+	<li>Updated for 1.72-3725.0</li>
+</ul>
+<?php printHeader('Stand 25.12.1', '10/12/2025 13:52'); ?>
+<ul>
+	<li>Updated for 1.72-3717.0</li>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.10.2', '26/10/2025 18:22'); ?>
+<ul>
+	<li>Fixed ILLEGAL_INSTRUCTION on CPUs that don't support BMI2</li>
+</ul>
+<?php printHeader('Stand 25.10.1', '26/10/2025 14:02'); ?>
+<ul>
+	<li>
+		Changed the default DNS strategy to respecting your Windows settings
+		<ul>
+			<li>Previously, it would use Cloudflare's Public Encrypted DNS Server for more security. If you want to stay on this mode, you can add "DNS Conduit: Smart" to your Meta State.txt.</li>
+		</ul>
+	</li>
+	<li>Made PI and PJ patterns and hooks optional</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.9.1', '26/09/2025 14:38'); ?>
+<ul>
+	<li>Fixed "Disable Mechanic Cooldown" not working</li>
+	<li>Lua API: Updated Pluto to 0.12.1 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.8.1', '18/08/2025 22:44'); ?>
+<ul>
+	<li>Updated translations</li>
+	<li>Some fixes for the web interface</li>
+	<li>Lua API: Updated Pluto to 0.11.3 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+</ul>
+<?php printHeader('Stand 25.6.4', '17/06/2025 14:05'); ?>
+<ul>
+	<li>Updated for game version 1.71-3570.0</li>
+	<li>Lua API: Updated Pluto to 0.11.1 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+</ul>
+<?php printHeader('Stand 25.6.3', '10/06/2025 16:49'); ?>
+<ul>
+	<li>Fixed sometimes causing frame pacing issues</li>
+	<li>Reduced memory usage</li>
+</ul>
+<?php printHeader('Stand 25.6.2', '09/06/2025 18:01'); ?>
+<ul>
+	<li>Fixed ISP name showing as ???</li>
+</ul>
+<?php printHeader('Stand 25.6.1', '03/06/2025 20:37'); ?>
+<ul>
+	<li>
+		Lua API: Updated Pluto to 0.11.0 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)
+		<ul>
+			<li>Note that table freezing is now no longer available but <code>table.freeze = |t| -> t</code> was added to the runtime to avoid breakage</li>
+			<li>util.is_key_down now also accepts F1-F24 for a string argument</li>
+		</ul>
+	</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.5.1', '11/05/2025 11:47'); ?>
+<ul>
+	<li>Lua API: Updated Pluto to 0.10.5 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.4.2', '12/04/2025 16:01'); ?>
+<ul>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.4.1', '10/04/2025 15:36'); ?>
+<ul>
+	<li>Updated for game version 1.70-3504</li>
+</ul>
+<?php printHeader('Stand 25.3.1', '04/03/2025 16:04'); ?>
+<ul>
+	<li>Fixed crashing on injection with a new Windows 11 24H2 update</li>
+	<li>Lua API: Updated Pluto to 0.10.4 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 25.2.1', '05/02/2025 14:17'); ?>
+<ul>
+	<li>Updated translations</li>
+	<li>Fixed no turbulence</li>
+	<li>Fixed some unusual event false-positives</li>
+</ul>
+<?php printHeader('Stand 25.1.1', '23/01/2025 05:13'); ?>
+<ul>
+	<li>Fixed some kick event false-positives</li>
+</ul>
+<?php printHeader('Stand 24.12.6', '19/12/2024 11:11'); ?>
+<ul>
+	<li>Improved protections</li>
+	<li>Lua API: Fixed toggle_loop's on_stop not being called when stopping script</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.12.5', '16/12/2024 11:17'); ?>
+<ul>
+	<li>Fixed session script operations</li>
+	<li>Fixed some personal vehicle operations</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.12.4', '13/12/2024 12:34'); ?>
+<ul>
+	<li>Added Player(s) > Friendly > Give Collectibles > Yuanbao</li>
+	<li>Improved protections</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.12.3', '10/12/2024 17:17'); ?>
+<ul>
+	<li>Improved Los Santos Customs for Banshee GTS & Firebolt ASP</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.12.2', '10/12/2024 15:35'); ?>
+<ul>
+	<li>Updated for game version 1.70-3407</li>
+</ul>
+<?php printHeader('Stand 24.12.1', '03/12/2024 05:40'); ?>
+<ul>
+	<li>Lua API: Updated Pluto to 0.10.3 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.11.3', '22/11/2024 10:48'); ?>
+<ul>
+	<li>Lua API: Updated Pluto to 0.10.2 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.11.2', '04/11/2024 22:17'); ?>
+<ul>
+	<li>
+		Lua API
+		<ul>
+			<li>Updated Pluto to 0.10.1 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+			<li>Disabled compatibility mode for 'new' and 'class' in .lua files</li>
+		</ul>
+	</li>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.11.1', '03/11/2024 01:20'); ?>
+<ul>
+	<li>Fixed co-load detection false-positives</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.10.8', '31/10/2024 02:43'); ?>
+<ul>
+	<li>Lua API: Updated Pluto to 0.10.0 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+	<li>Some improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.10.7', '27/10/2024 16:37'); ?>
+<ul>
+	<li>Added Game > Remove FPS Limit</li>
+	<li>Fixed crashing when getting near a player as host</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand 24.10.6', '26/10/2024 15:25'); ?>
+<ul>
+	<li>Re-added "find public session" etc (intended for usage with FSL)</li>
+	<li>Removed "Block Outgoing Syncs To Host" since that's now been patched</li>
+	<li>Fixed join & spectate by code not respecting selected join method</li>
+	<li>Fixed automatically rejoin desynced sessions</li>
+	<li>Some other improvements and bugfixes</li>
+</ul>
 <?php printHeader('Stand 24.10.5', '15/10/2024 13:25'); ?>
 <ul>
 	<li>

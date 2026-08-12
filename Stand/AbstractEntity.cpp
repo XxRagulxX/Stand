@@ -277,10 +277,11 @@ namespace Stand
 	{
 		if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 		{
-			if (auto* const ped_interface = replay->ped_interface)
+			if (auto* const iface = replay->ped_interface)
 			{
-				for (const auto& ent : ped_interface->list->entities)
+				for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 				{
+					const auto& ent = iface->m_entityRegistry.entities[i];
 					if (ent.ptr != nullptr)
 					{
 						if (!collector(AbstractEntity(ent.ptr)))
@@ -298,10 +299,11 @@ namespace Stand
 	{
 		if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 		{
-			if (auto* const veh_interface = replay->veh_interface)
+			if (auto* const iface = replay->veh_interface)
 			{
-				for (const auto& ent : veh_interface->list->entities)
+				for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 				{
+					const auto& ent = iface->m_entityRegistry.entities[i];
 					if (ent.ptr != nullptr)
 					{
 						if (!collector(AbstractEntity(ent.ptr)))
@@ -319,10 +321,11 @@ namespace Stand
 	{
 		if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 		{
-			if (auto* const object_interface = replay->object_interface)
+			if (auto* const iface = replay->object_interface)
 			{
-				for (const auto& ent : object_interface->list->entities)
+				for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 				{
+					const auto& ent = iface->m_entityRegistry.entities[i];
 					if (ent.ptr != nullptr)
 					{
 						if (!collector(AbstractEntity(ent.ptr)))
@@ -340,10 +343,11 @@ namespace Stand
 	{
 		if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 		{
-			if (auto* const pickup_interface = replay->pickup_interface)
+			if (auto* const iface = replay->pickup_interface)
 			{
-				for (const auto& ent : pickup_interface->list->entities)
+				for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 				{
+					const auto& ent = iface->m_entityRegistry.entities[i];
 					if (ent.ptr != nullptr)
 					{
 						if (!collector(AbstractEntity(ent.ptr)))
@@ -2849,6 +2853,33 @@ namespace Stand
 			}
 			break;
 
+		case ATSTRINGHASH("banshee3"):
+			switch (modType)
+			{
+			case VehicleMods::livery: return std::vector<uint8_t>{ 0, 1, 2, 4, 5, 6, 7, 8 };
+			case VehicleMods::suspension: return std::vector<uint8_t>{ 0, 1, 2, 3 };
+			case VehicleMods::hood: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+			case VehicleMods::shifter_leavers: return std::vector<uint8_t>{};
+			case VehicleMods::speakers: return std::vector<uint8_t>{};
+			}
+			break;
+
+		case ATSTRINGHASH("firebolt"):
+			switch (modType)
+			{
+			case VehicleMods::livery: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+			case VehicleMods::suspension: return std::vector<uint8_t>{ 0, 1, 2, 3 };
+			case VehicleMods::front_bumper: return std::vector<uint8_t>{ 0, 1 };
+			case VehicleMods::rear_bumper: return std::vector<uint8_t>{ 0, 1 };
+			case VehicleMods::hood: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+			case VehicleMods::roof: return std::vector<uint8_t>{ 0, 1, 2 };
+			case VehicleMods::fender: return std::vector<uint8_t>{ 0, 1 };
+			case VehicleMods::grille: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+			case VehicleMods::shifter_leavers: return std::vector<uint8_t>{};
+			case VehicleMods::speakers: return std::vector<uint8_t>{};
+			}
+			break;
+
 #if false
 		case ATSTRINGHASH("deez"):
 			switch (modType)
@@ -3079,5 +3110,20 @@ namespace Stand
 			return { vB3, vB4 };
 		}
 		return { {}, {} };
+	}
+
+	Hash AbstractEntity::getEquippedVehicleWeapon()
+	{
+		if (const auto cped = getCPed())
+		{
+			if (const auto mgr = cped->weapon_manager;
+				mgr && mgr->equippedWeapon.equippedVehicleWeaponInfo
+				)
+			{
+				return mgr->equippedWeapon.equippedVehicleWeaponInfo->name_hash;
+			}
+		}
+
+		return 0;
 	}
 }

@@ -10,7 +10,6 @@
 
 #include "scrValue.hpp"
 #include "vector.hpp"
-#include "XoredNativeHash.hpp"
 
 #define EXPECT_INVOKE_WONT_FAIL true
 
@@ -81,16 +80,16 @@ namespace rage
 		}
 
 #if EXPECT_INVOKE_WONT_FAIL
-		[[nodiscard]] static constexpr bool canInvoke(::Stand::XoredNativeHash hash)
+		[[nodiscard]] static constexpr bool canInvoke(rage::scrNativeHash hash)
 		{
 			return true;
 		}
 #else
-		[[nodiscard]] static bool canInvoke(::Stand::XoredNativeHash hash);
+		[[nodiscard]] static bool canInvoke(rage::scrNativeHash hash);
 #endif
 
-		void invoke(::Stand::XoredNativeHash x);
-		void invokePassthrough(::Stand::XoredNativeHash x);
+		void invoke(rage::scrNativeHash x);
+		void invokePassthrough(rage::scrNativeHash x);
 		void CopyReferencedParametersOut();
 	};
 	static_assert(sizeof(scrNativeCallContext) == 0x80);

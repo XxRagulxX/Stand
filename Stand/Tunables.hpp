@@ -23,7 +23,7 @@ namespace Stand
 		bool downloading = false;
 		int64_t version = 0;
 		mutable Spinlock mtx;
-		std::string latest_natives_version = "3274a";
+		std::string latest_natives_version = "3407a";
 
 		std::vector<std::string> c_module_whitelist{};
 		bool c_module_whitelist_enabled = false;
@@ -46,6 +46,9 @@ namespace Stand
 		std::unordered_map<uint32_t, bool> bools{};
 		[[nodiscard]] soup::Optional<bool> getOptionalBool(uint32_t hash) const noexcept;
 		[[nodiscard]] bool getBool(uint32_t hash) const noexcept;
+
+		//std::unordered_map<uint32_t, std::string> strings{};
+		//[[nodiscard]] soup::Optional<std::string> getStr(uint32_t hash) const noexcept;
 
 		std::unordered_map<uint32_t, std::vector<void*>> addresslists{};
 		[[nodiscard]] bool isOnAddressList(uint32_t hash, void* addr) const noexcept

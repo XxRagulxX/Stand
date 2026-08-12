@@ -30,10 +30,19 @@ function report_invalid($data)
 function process_scaccount($rid, $name)
 {
 	global $db;
-	$res = $db->query("SELECT `name`,`time` FROM `scaccounts` WHERE `id`=?", "i", $rid);
-	if(empty($res)
-		|| $res[0]["name"] != $name
-		)
+	$known_name = false;
+	if ($res = $db->query("SELECT `name`,`time` FROM `scaccounts` WHERE `id`=?", "i", $rid))
+	{
+		foreach ($res as $row)
+		{
+			if ($row["name"] == $name)
+			{
+				$known_name = true;
+				break;
+			}
+		}
+	}
+	if (!$known_name)
 	{
 		$db->query("INSERT INTO `scaccounts` (`id`, `name`, `time`) VALUES (?, ?, ?)", "isi", $rid, $name, time());
 	}
@@ -41,6 +50,7 @@ function process_scaccount($rid, $name)
 	{
 		$db->query("UPDATE `scaccounts` SET `time`=? WHERE `id`=? AND `time`=?", "iii", time(), $rid, $res[0]["time"]);
 	}
+	$db->query("DELETE FROM `rid_queue` WHERE `rid`=?", "i", $rid);
 }
 
 if($data["t"] == "B3")
@@ -117,11 +127,11 @@ else if($data["t"] == "SA")
 }
 else if($data["t"] == "AZ")
 {
-	if ($data["d"] != "2") // ignore PEB::BeingDebugged for the time being
+	/*if ($data["d"] != "2") // ignore PEB::BeingDebugged for the time being
 	{
 		report_event($data["t"], $data["d"]);
 		$db->query("UPDATE `accounts` SET `suspended_for`='debugger detected' WHERE `id`=?", "s", $account_res[0]["id"]);
-	}
+	}*/
 }
 else if($data["t"] == "T0")
 {

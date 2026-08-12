@@ -452,21 +452,13 @@ namespace Stand
 
 	bool Input::isPressingAttack()
 	{
-		if (g_player_veh.isValid())
+		if (g_player_veh.isValid() && g_player_veh.getEquippedVehicleWeapon() != 0)
 		{
-			if (VEHICLE::DOES_VEHICLE_HAVE_WEAPONS(g_player_veh))
+			if (VEHICLE::IS_THIS_MODEL_A_PLANE(g_player_veh.getModel()))
 			{
-				if (PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_VEH_ATTACK2))
-				{
-					return true;
-				}
-				if (VEHICLE::IS_THIS_MODEL_A_PLANE(g_player_veh.getModel()))
-				{
-					return PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_VEH_FLY_ATTACK);
-				}
-				return false;
+				return PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_VEH_FLY_ATTACK);
 			}
-			return PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_VEH_ATTACK);
+			return PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_VEH_ATTACK) || PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_VEH_ATTACK2);
 		}
 		return PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_ATTACK);
 	}

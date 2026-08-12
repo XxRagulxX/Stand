@@ -1,11 +1,13 @@
 #include "HttpRequestTask.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 #if !SOUP_WASM
 #include "format.hpp"
 #include "log.hpp"
+#include "netConfig.hpp"
 #include "netStatus.hpp"
 #include "ObfusString.hpp"
-#include "ReuseTag.hpp"
+#include "netReuseTag.hpp"
 #include "Scheduler.hpp"
 #include "time.hpp"
 #else
@@ -24,9 +26,24 @@ NAMESPACE_SOUP
 	{
 	}
 
-#if !SOUP_WASM
-	HttpRequestTask::HttpRequestTask(HttpRequest&& _hr)
-		: hr(std::move(_hr))
+#if !SOUP_EMSCRIPTEN
+	HttpRequestTask::HttpRequestTask(HttpRequest&& hr)
+		: HttpRequestTask(std::move(hr), &Socket::certchain_validator_default)
+	{
+	}
+
+	HttpRequestTask::HttpRequestTask(HttpRequest&& hr, SharedPtr<dnsResolver> resolver)
+		: HttpRequestTask(std::move(hr), resolver, &Socket::certchain_validator_default)
+	{
+	}
+
+	HttpRequestTask::HttpRequestTask(HttpRequest&& hr, certchain_validator_t certchain_validator)
+		: HttpRequestTask(std::move(hr), netConfig::get().getDnsResolver(), certchain_validator)
+	{
+	}
+
+	HttpRequestTask::HttpRequestTask(HttpRequest&& hr, SharedPtr<dnsResolver> resolver, certchain_validator_t certchain_validator)
+		: hr(std::move(hr)), resolver(resolver), certchain_validator(certchain_validator)
 	{
 	}
 
@@ -37,10 +54,11 @@ NAMESPACE_SOUP
 		case START:
 			if (!dont_use_reusable_sockets)
 			{
-				sock = Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls);
+				const auto [host, port] = hr.getHostAndPort();
+				sock = Scheduler::get()->findReusableSocket(host, port, hr.use_tls ? (require_ecdhe ? SOCKET_TLS_ECDHE : SOCKET_TLS) : SOCKET_INSECURE);
 				if (sock)
 				{
-					if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
+					if (sock->custom_data.getStructFromMap(netReuseTag).is_busy)
 					{
 						state = WAIT_TO_REUSE;
 					}
@@ -62,7 +80,7 @@ NAMESPACE_SOUP
 				sock.reset();
 				cannotRecycle();
 			}
-			else if (!sock->custom_data.getStructFromMap(ReuseTag).is_busy)
+			else if (!sock->custom_data.getStructFromMap(netReuseTag).is_busy)
 			{
 				sendRequestOnReusedSocket();
 			}
@@ -77,26 +95,27 @@ NAMESPACE_SOUP
 					return;
 				}
 				sock = connector->getSocket();
-				connector.destroy();
+				connector.reset();
 				if (dont_make_reusable_sockets == false
 					&& Scheduler::get()->dont_make_reusable_sockets == false
 					)
 				{
 					// Tag socket we just created for reuse, if it's not a one-off.
-					SOUP_IF_LIKELY (!Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls))
+					const auto [host, port] = hr.getHostAndPort();
+					SOUP_IF_LIKELY (!Scheduler::get()->findReusableSocket(host, port, hr.use_tls ? (require_ecdhe ? SOCKET_TLS_ECDHE : SOCKET_TLS) : SOCKET_INSECURE))
 					{
 						hr.setKeepAlive();
-						sock->custom_data.getStructFromMap(ReuseTag).init(hr.getHost(), hr.port, hr.use_tls);
+						sock->custom_data.getStructFromMap(netReuseTag).init(host, port, hr.use_tls ? (require_ecdhe ? SOCKET_TLS_ECDHE : SOCKET_TLS) : SOCKET_INSECURE);
 					}
 				}
 				state = AWAIT_RESPONSE;
 				awaiting_response_since = time::unixSeconds();
 				if (hr.use_tls)
 				{
-					sock->enableCryptoClient(hr.getHost(), [](Socket&, Capture&& cap) SOUP_EXCAL
+					sock->enableCryptoClient(std::get<0>(hr.getHostAndPort()), [](Socket&, Capture&& cap, std::string&&) SOUP_EXCAL
 					{
 						cap.get<HttpRequestTask*>()->recvResponse();
-					}, this, hr.getDataToSend());
+					}, this, hr.getDataToSend(), certchain_validator, {}, require_ecdhe);
 				}
 				else
 				{
@@ -147,7 +166,7 @@ NAMESPACE_SOUP
 	{
 		state = AWAIT_RESPONSE;
 		retry_on_broken_pipe = true;
-		sock->custom_data.getStructFromMapConst(ReuseTag).is_busy = true;
+		sock->custom_data.getStructFromMapConst(netReuseTag).is_busy = true;
 		awaiting_response_since = time::unixSeconds();
 		hr.setKeepAlive();
 		hr.send(*sock);
@@ -157,21 +176,35 @@ NAMESPACE_SOUP
 	void HttpRequestTask::cannotRecycle()
 	{
 		state = CONNECTING;
-		connector.construct(hr.getHost(), hr.port, prefer_ipv6);
+
+		const auto [host, port] = hr.getHostAndPort();
+		connector.emplace(resolver, host, port, prefer_ipv6);
 	}
 
 	void HttpRequestTask::recvResponse() SOUP_EXCAL
 	{
 		HttpRequest::recvResponse(*sock, [](Socket& s, Optional<HttpResponse>&& res, Capture&& cap) SOUP_EXCAL
 		{
-			cap.get<HttpRequestTask*>()->await_response_finish_reason = res.has_value()
-				? std::string(netStatusToString(NET_OK))
-				: soup::ObfusString("Protocol Error Or Blocked By Security Solution").str() // could be better if HttpRequest::recvResponse provided a status, but whatever
-				;
-			cap.get<HttpRequestTask*>()->fulfil(std::move(res));
-			if (s.custom_data.isStructInMap(ReuseTag))
+			if (res.has_value())
 			{
-				s.custom_data.getStructFromMap(ReuseTag).is_busy = false;
+				if (!HttpRequest::isChallengeResponse(*res))
+				{
+					cap.get<HttpRequestTask*>()->await_response_finish_reason = std::string(netStatusToString(NET_OK));
+				}
+				else
+				{
+					cap.get<HttpRequestTask*>()->await_response_finish_reason = soup::ObfusString("Blocked By Security Solution").str();
+					res.reset();
+				}
+			}
+			else
+			{
+				cap.get<HttpRequestTask*>()->await_response_finish_reason = soup::ObfusString("Protocol Error").str();
+			}
+			cap.get<HttpRequestTask*>()->fulfil(std::move(res));
+			if (s.custom_data.isStructInMap(netReuseTag))
+			{
+				s.custom_data.getStructFromMap(netReuseTag).is_busy = false;
 				if (Scheduler::get()->dont_make_reusable_sockets == false)
 				{
 					s.keepAlive();
@@ -247,7 +280,8 @@ NAMESPACE_SOUP
 			((HttpRequestTask*)fetch->userData)->setWorkDone();
 			emscripten_fetch_close(fetch);
 		};
-		for (const auto& field : hr.header_fields)
+		header_fields = hr.getHeaderFields();
+		for (const auto& field : header_fields)
 		{
 			if (field.first != "Host"
 				&& field.first != "User-Agent"
@@ -283,3 +317,5 @@ NAMESPACE_SOUP
 	}
 #endif
 }
+
+#endif

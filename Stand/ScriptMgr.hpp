@@ -6,7 +6,6 @@
 
 #include "Script.hpp"
 #include "VectorMap.hpp"
-#include "XoredNativeHash.hpp"
 
 #define USE_ENTRYPOINT_DETOURS true
 
@@ -17,8 +16,8 @@ namespace Stand
 	{
 	public:
 		uint32_t script_thread = 0;
-		std::unordered_map<XoredNativeHash, rage::scrNativeHandler> handler_map{};
-		std::unordered_map<XoredNativeHash, rage::scrNativeHandler> call_map{};
+		std::unordered_map<rage::scrNativeHash, rage::scrNativeHandler> handler_map{};
+		std::unordered_map<rage::scrNativeHash, rage::scrNativeHandler> call_map{};
 		VectorMap<rage::scrNativeHandler, rage::scrNativeHash> reverse_entrypoint_map{};
 	private:
 		VectorMap<HMODULE, std::unique_ptr<Script>> scripts{};

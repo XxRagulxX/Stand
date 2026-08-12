@@ -2,13 +2,14 @@
 
 #include "HttpRequestTask.hpp"
 #include "joaat.hpp"
+#include "netConfig.hpp"
 #include "ObfusString.hpp"
-#include "os.hpp"
 #include "Scheduler.hpp"
 #include "Socket.hpp"
 #include "UniquePtr.hpp"
 #include "Uri.hpp"
 #include "urlenc.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 #define LOGGING false
 
@@ -18,42 +19,44 @@
 
 NAMESPACE_SOUP
 {
-	HttpRequest::HttpRequest(std::string method, std::string host, std::string path)
+	HttpRequest::HttpRequest(std::string method, const std::string& host, std::string path)
 		: MimeMessage({
-			{ObfusString("Host"), std::move(host)},
-			{ObfusString("User-Agent"), ObfusString("Mozilla/5.0 (compatible; calamity-inc/Soup)")},
-			{ObfusString("Connection"), ObfusString("close")},
-			{ObfusString("Accept-Encoding"), ObfusString("deflate, gzip")},
+			{ObfusString("Host: ").str() + host},
+			{ObfusString("User-Agent: Mozilla/5.0 (compatible; calamity-inc/Soup)").str()},
+			{ObfusString("Connection: close").str()},
+			{ObfusString("Accept-Encoding: deflate, gzip").str()},
 		}), method(std::move(method)), path(std::move(path))
 	{
 		fixPath();
 	}
 
-	HttpRequest::HttpRequest(std::string host, std::string path)
-		: HttpRequest(ObfusString("GET"), std::move(host), std::move(path))
+	HttpRequest::HttpRequest(const std::string& host, std::string path)
+		: HttpRequest(ObfusString("GET"), host, std::move(path))
 	{
 	}
 
 	HttpRequest::HttpRequest(const Uri& uri)
-		: HttpRequest(uri.host, uri.getRequestPath())
+		: HttpRequest(uri.getHost(), uri.getRequestPath())
 	{
+		use_tls = (joaat::hash(uri.scheme) != joaat::compileTimeHash("http"));
 		path_is_encoded = true;
-
-		if (joaat::hash(uri.scheme) == joaat::hash("http"))
-		{
-			use_tls = false;
-			port = 80;
-		}
-
-		if (uri.port != 0)
-		{
-			port = uri.port;
-		}
 	}
 
-	const std::string& HttpRequest::getHost() const
+	std::string HttpRequest::getHost() const
 	{
-		return header_fields.at(ObfusString("Host"));
+		return findHeader(ObfusString("Host")).value();
+	}
+
+	std::tuple<std::string, uint16_t> HttpRequest::getHostAndPort() const
+	{
+		std::string host = getHost();
+		uint16_t port = (use_tls ? 443 : 80);
+		if (auto sep = host.find_last_of(':'); sep != std::string::npos)
+		{
+			port = string::toInt<uint16_t>(host.c_str() + sep + 1, port, string::TI_FULL);
+			host.erase(sep);
+		}
+		return { std::move(host), port };
 	}
 
 	std::string HttpRequest::getUrl() const
@@ -68,18 +71,13 @@ NAMESPACE_SOUP
 			str = "http://";
 		}
 		str.append(getHost());
-		if (port != (use_tls ? 443 : 80))
-		{
-			str.push_back(':');
-			str.append(std::to_string(port));
-		}
 		if (path_is_encoded)
 		{
 			str.append(path);
 		}
 		else
 		{
-			str.append(urlenc::encode(path));
+			str.append(urlenc::encodePathWithQuery(path));
 		}
 		return str;
 	}
@@ -115,32 +113,38 @@ NAMESPACE_SOUP
 		Optional<HttpResponse> resp;
 	};
 
-	Optional<HttpResponse> HttpRequest::execute(Scheduler* keep_alive_sched) const
+	Optional<HttpResponse> HttpRequest::execute() const
 	{
-		if (keep_alive_sched)
-		{
-			auto task = keep_alive_sched->add<HttpRequestTask>(HttpRequest(*this));
-			do
-			{
-				os::sleep(1);
-			} while (!task->isWorkDone());
-			SOUP_MOVE_RETURN(task->result);
-		}
+		return execute(&Socket::certchain_validator_default);
+	}
 
+	Optional<HttpResponse> HttpRequest::execute(certchain_validator_t certchain_validator) const
+	{
+		auto resolver = netConfig::get().getDnsResolver();
+		return execute(*resolver, certchain_validator);
+	}
+
+	Optional<HttpResponse> HttpRequest::execute(const dnsResolver& resolver) const
+	{
+		return execute(resolver, &Socket::certchain_validator_default);
+	}
+
+	Optional<HttpResponse> HttpRequest::execute(const dnsResolver& resolver, certchain_validator_t certchain_validator) const
+	{
 		HttpRequestExecuteData data{ this };
-		auto sock = make_shared<Socket>();
-		const auto& host = getHost();
-		if (sock->connect(host, port))
+		auto sock = soup::make_shared<Socket>();
+		const auto [host, port] = getHostAndPort();
+		if (sock->connect(resolver, host, port))
 		{
 			Scheduler sched{};
 			sched.addSocket(sock);
 			if (use_tls)
 			{
-				sock->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
+				sock->enableCryptoClient(host, [](Socket& s, Capture&& cap, std::string&& alpn_protocol) SOUP_EXCAL
 				{
 					auto& data = *cap.get<HttpRequestExecuteData*>();
 					execute_recvResponse(s, &data.resp);
-				}, &data, getDataToSend());
+				}, &data, getDataToSend(), certchain_validator);
 			}
 			else
 			{
@@ -162,16 +166,22 @@ NAMESPACE_SOUP
 
 	void HttpRequest::executeEventStream(void on_event(std::unordered_map<std::string, std::string>&&, const Capture&) SOUP_EXCAL, Capture&& cap) const
 	{
+		auto resolver = netConfig::get().getDnsResolver();
+		return executeEventStream(*resolver, on_event, std::move(cap));
+	}
+
+	void HttpRequest::executeEventStream(const dnsResolver& resolver, void on_event(std::unordered_map<std::string, std::string>&&, const Capture&) SOUP_EXCAL, Capture&& cap) const
+	{
 		HttpRequestExecuteEventStreamData data{ this, on_event, std::move(cap) };
 		auto sock = make_shared<Socket>();
-		const auto& host = getHost();
-		if (sock->connect(host, port))
+		const auto [host, port] = getHostAndPort();
+		if (sock->connect(resolver, host, port))
 		{
 			Scheduler sched{};
 			sched.addSocket(sock);
 			if (use_tls)
 			{
-				sock->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
+				sock->enableCryptoClient(host, [](Socket& s, Capture&& cap, std::string&&) SOUP_EXCAL
 				{
 					auto* data = cap.get<HttpRequestExecuteEventStreamData*>();
 					executeEventStream_recv(s, data);
@@ -207,7 +217,10 @@ NAMESPACE_SOUP
 	{
 		recvResponse(s, [](Socket& s, Optional<HttpResponse>&& resp, Capture&& cap) noexcept
 		{
-			*cap.get<Optional<HttpResponse>*>() = std::move(resp);
+			SOUP_IF_LIKELY (resp.has_value() && !HttpRequest::isChallengeResponse(*resp))
+			{
+				*cap.get<Optional<HttpResponse>*>() = std::move(resp);
+			}
 		}, resp);
 	}
 
@@ -229,12 +242,12 @@ NAMESPACE_SOUP
 
 	void HttpRequest::setClose() noexcept
 	{
-		header_fields.at(ObfusString("Connection")) = ObfusString("close").str();
+		setHeader(ObfusString("Connection"), ObfusString("close"));
 	}
 
 	void HttpRequest::setKeepAlive() noexcept
 	{
-		header_fields.at(ObfusString("Connection")) = ObfusString("keep-alive").str();
+		setHeader(ObfusString("Connection"), ObfusString("keep-alive"));
 	}
 
 	struct HttpResponseReceiver
@@ -336,19 +349,21 @@ NAMESPACE_SOUP
 						}
 						else
 						{
-							if (auto enc = self.resp.header_fields.find(ObfusString("Transfer-Encoding")); enc != self.resp.header_fields.end())
+							ObfusString str_transfer_encoding("Transfer-Encoding");
+							if (auto enc = self.resp.findHeader(str_transfer_encoding))
 							{
-								if (joaat::hash(enc->second) == joaat::hash("chunked"))
+								if (joaat::hash(*enc) == joaat::hash("chunked"))
 								{
+									self.resp.removeHeader(str_transfer_encoding); // we don't wanna keep this header around, e.g. in case we're playing reverse-proxy.
 									self.status = BODY_CHUNKED;
 								}
 							}
 							if (self.status == HEADER)
 							{
-								if (auto len = self.resp.header_fields.find(ObfusString("Content-Length")); len != self.resp.header_fields.end())
+								if (auto len = self.resp.findHeader(ObfusString("Content-Length")))
 								{
 									self.status = BODY_LEN;
-									if (auto opt = string::toInt<uint64_t, string::TI_FULL>(len->second); opt.has_value())
+									if (auto opt = string::toIntOpt<uint64_t>(*len, string::TI_FULL); opt.has_value())
 									{
 										self.bytes_remain = opt.value();
 									}
@@ -366,9 +381,9 @@ NAMESPACE_SOUP
 								}
 								else
 								{
-									if (auto con = self.resp.header_fields.find(ObfusString("Connection")); con != self.resp.header_fields.end())
+									if (auto con = self.resp.findHeader(ObfusString("Connection")))
 									{
-										if (joaat::hash(con->second) == joaat::hash("close"))
+										if (joaat::hash(*con) == joaat::hash("close"))
 										{
 											self.status = BODY_CLOSE;
 											s.callback_recv_on_close = true;
@@ -393,7 +408,7 @@ NAMESPACE_SOUP
 							{
 								break;
 							}
-							if (auto opt = string::hexToInt<uint64_t>(self.buf.substr(0, i)); opt.has_value())
+							if (auto opt = string::hexToIntOpt<uint64_t>(self.buf.substr(0, i)); opt.has_value())
 							{
 								self.bytes_remain = opt.value();
 							}
@@ -468,17 +483,7 @@ NAMESPACE_SOUP
 				return;
 			}
 			resp.decode();
-			SOUP_IF_LIKELY (!HttpRequest::isChallengeResponse(resp))
-			{
-				callback(s, std::move(resp), std::move(cap));
-			}
-			else
-			{
-#if LOGGING
-				logWriteLine("Challenge response");
-#endif
-				callback(s, std::nullopt, std::move(cap));
-			}
+			callback(s, std::move(resp), std::move(cap));
 		}
 	};
 
@@ -530,4 +535,11 @@ NAMESPACE_SOUP
 		receiver_cap.get<HttpResponseReceiver>().tick(s, std::move(receiver_cap));
 	}
 #endif
+
+	void HttpRequest::clear() noexcept
+	{
+		MimeMessage::clear();
+		method.clear();
+		path.clear();
+	}
 }

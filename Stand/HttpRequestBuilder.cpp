@@ -82,6 +82,23 @@ namespace Stand
 			: subtask(std::move(static_cast<soup::HttpRequest&>(b))), response_callback(std::move(b.response_callback)), fail_callback(std::move(b.fail_callback))
 		{
 			subtask.prefer_ipv6 = b.prefer_ipv6;
+			subtask.certchain_validator = [](const soup::X509Certchain& chain, const std::string& name, soup::StructMap& custom_data) SOUP_EXCAL
+			{
+				if (soup::Socket::certchain_validator_default(chain, name, custom_data))
+				{
+					if (rage::atStringHash(name) != ATSTRINGHASH("stand.sh"))
+					{
+						return true;
+					}
+					if (chain.certs.size() >= 2
+						&& chain.certs.at(0).isEc())
+					{
+						return true;
+					}
+				}
+				Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Connection Error: Certificate for {} failed validation. (Chain: {})").str()), name, chain.toString()), TOAST_ALL);
+				return false;
+			};
 		}
 
 		void onTick() final
@@ -118,45 +135,27 @@ namespace Stand
 
 	void HttpRequestBuilder::updateNetConfig(soup::netConfig& conf) SOUP_EXCAL
 	{
-		soup::UniquePtr<soup::dnsResolver> resolver;
+		soup::SharedPtr<soup::dnsResolver> resolver;
 		switch (dns_conduit)
 		{
 		default:
 		case Stand::DNS_CONDUIT_OS:
-			resolver = soup::make_unique<soup::dnsOsResolver>();
+			resolver = soup::make_shared<soup::dnsOsResolver>();
 			break;
 		case Stand::DNS_CONDUIT_SMART:
-			resolver = soup::make_unique<soup::dnsSmartResolver>();
+			resolver = soup::make_shared<soup::dnsSmartResolver>();
 			break;
 		case Stand::DNS_CONDUIT_HTTP:
-			resolver = soup::make_unique<soup::dnsHttpResolver>();
+			resolver = soup::make_shared<soup::dnsHttpResolver>();
 			break;
 		case Stand::DNS_CONDUIT_UDP:
-			resolver = soup::make_unique<soup::dnsUdpResolver>();
+			resolver = soup::make_shared<soup::dnsUdpResolver>();
 			break;
 		}
 #if USE_DNS_CACHE
-		conf.dns_resolver = soup::make_unique<soup::dnsCacheResolver>(std::move(resolver));
+		conf.dns_resolver = soup::make_shared<soup::dnsCacheResolver>(std::move(resolver));
 #else
 		conf.dns_resolver = std::move(resolver);
 #endif
-
-		conf.certchain_validator = [](const soup::X509Certchain& chain, const std::string& name, soup::StructMap& custom_data) SOUP_EXCAL
-		{
-			if (soup::Socket::certchain_validator_default(chain, name, custom_data))
-			{
-				if (rage::atStringHash(name) != ATSTRINGHASH("stand.sh"))
-				{
-					return true;
-				}
-				if (chain.certs.size() >= 2
-					&& chain.certs.at(0).isEc())
-				{
-					return true;
-				}
-			}
-			Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Connection Error: Certificate for {} failed validation. (Chain: {})").str()), name, chain.toString()), TOAST_ALL);
-			return false;
-		};
 	}
 }

@@ -327,7 +327,6 @@
     <ClInclude Include="AllEntitiesEveryTick.hpp" />
     <ClInclude Include="alphanum.hpp" />
     <ClInclude Include="AntiAntiCheat.hpp" />
-    <ClInclude Include="AntiDbg.hpp" />
     <ClInclude Include="apply_spoofed_name.hpp" />
     <ClInclude Include="AptHelper.hpp" />
     <ClInclude Include="tbArSpinner.hpp" />
@@ -1193,7 +1192,6 @@
     <ClInclude Include="CommandDisablePassiveCooldown.hpp" />
     <ClInclude Include="GlobalsWatcher.hpp" />
     <ClInclude Include="CommandSessionThunder.hpp" />
-    <ClInclude Include="CommandKeyboardHook.hpp" />
     <ClInclude Include="CommandSelfFreeze.hpp" />
     <ClInclude Include="ComponentNetcode.hpp" />
     <ClInclude Include="Component.hpp" />
@@ -1583,9 +1581,6 @@
     <ClInclude Include="conf_antianticheat.hpp">
       <Filter>config</Filter>
     </ClInclude>
-    <ClInclude Include="xormagics.hpp">
-      <Filter>config</Filter>
-    </ClInclude>
     <ClInclude Include="scrOpcodes.hpp">
       <Filter>rage</Filter>
     </ClInclude>
@@ -1746,7 +1741,6 @@
     </ClInclude>
     <ClInclude Include="CommandVehicleSeat.hpp" />
     <ClInclude Include="WeaponLoadoutTree.hpp" />
-    <ClInclude Include="XoredNativeHash.hpp" />
     <ClInclude Include="CommandPlayerSetWantedLevel.hpp" />
     <ClInclude Include="CommandToggleEngine.hpp" />
     <ClInclude Include="NetworkSessionMessages.hpp">
@@ -2252,7 +2246,6 @@
     <ClInclude Include="CommandStandardGameVehicleColour.hpp" />
     <ClInclude Include="CommandStandardGameVehicleColourItem.hpp" />
     <ClInclude Include="CommandNoBeast.hpp" />
-    <ClInclude Include="GarbageCollector.hpp" />
     <ClInclude Include="CommandLoveLetterLube.hpp" />
     <ClInclude Include="CommandInfoDropShadow.hpp" />
     <ClInclude Include="CommandBombTrajectory.hpp" />
@@ -2320,6 +2313,7 @@
     <ClInclude Include="be_delegate.hpp" />
     <ClInclude Include="be_packet.hpp" />
     <ClInclude Include="BattlEyeServer.hpp" />
+    <ClInclude Include="CommandUncapFps.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
@@ -2521,7 +2515,6 @@
     <ClCompile Include="AbstractPlayer.cpp" />
     <ClCompile Include="AllEntitiesEveryTick.cpp" />
     <ClCompile Include="AntiAntiCheat.cpp" />
-    <ClCompile Include="AntiDbg.cpp" />
     <ClCompile Include="apply_spoofed_name.cpp" />
     <ClCompile Include="AptHelper.cpp" />
     <ClCompile Include="tbArSpinner.cpp" />
@@ -3058,7 +3051,6 @@
     <ClCompile Include="vehicle_colours.cpp" />
     <ClCompile Include="CommandNoBeast.cpp" />
     <ClCompile Include="CommandStandardGameVehicleColour.cpp" />
-    <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="CommandBombTrajectory.cpp" />
     <ClCompile Include="CodeIntegrity.cpp" />
     <ClCompile Include="lang_it.cpp" />
@@ -3084,6 +3076,5 @@
     <MASM Include="data_node_helper.asm" />
     <MASM Include="rage_input_helper.asm" />
     <MASM Include="aes_helper.asm" />
-    <MASM Include="overrun_helper.asm" />
   </ItemGroup>
 </Project>

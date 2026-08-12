@@ -235,13 +235,10 @@ namespace Stand
 		// aes_helper.asm
 		void aes_initfile_detour();
 		void aes_decrypt_callsite_detour();
-
-		// overrun_helper.asm
-		void net_event_error_pre_memmove_detour();
 	}
 
 #define FOR_EACH_TRIVIAL_HOOK(f) \
-f("B9", rage_scrThread_UpdateAll, DH_MANDATORY) /* critical for menu functionality */ \
+f("B8", rage_scrThread_UpdateAll, DH_MANDATORY) /* critical for menu functionality */ \
 f("C0", send_CMsgTextMessage, DH_MANDATORY) \
 f("C1", received_chat_message, DH_MANDATORY) \
 f("C3", CMultiplayerChat_UpdateInputWhenTyping, DH_MANDATORY) \
@@ -255,12 +252,12 @@ f("Q4", CNetworkSession_OnSessionEvent, DH_MANDATORY) \
 f("R0", rlGamerHandle_from_friend_index, 0) \
 f("R4", get_matchmaking_pool, 0) \
 f("R3", CExtraContentManager_GetCRC, 0) \
-f("RO", rage_rlGetGamerStateTask_ParseResults, DH_MANDATORY) \
+/*f("RO", rage_rlGetGamerStateTask_ParseResults, DH_MANDATORY)*/ \
 f("S7", get_player_card_stat, 0) \
 f("S8", CPlayerGamerDataNode_Serialise, 0) \
 f("SA", CNetObjVehicle_GetVehicleMigrationData, 0) \
-f("PI", received_clone_create, DH_MANDATORY) \
-f("PJ", received_clone_sync, DH_MANDATORY) \
+f("PI", received_clone_create, 0) \
+f("PJ", received_clone_sync, 0) \
 f("PP", sync_can_apply, DH_MANDATORY) \
 f("N2", rage_netEventMgr_SendEvent, DH_MANDATORY) \
 f("NF", network_can_access_multiplayer, 0) \
@@ -274,7 +271,7 @@ f("PG", received_clone_sync_ack, 0) \
 f("PH", received_clone_remove_ack, 0) \
 f("PK", clone_pack, 0) \
 /*f("PL", send_clone_create, 0)*/ \
-f("PM", send_clone_sync, 0) \
+/*f("PM", send_clone_sync, 0)*/ \
 /*f("PN", send_clone_remove, 0)*/ \
 f("PO", rage_netSyncTree_Read, 0) \
 f("PV", CNetObjVehicle_SetVehicleControlData, 0) \
@@ -282,13 +279,13 @@ f("Q1", InviteMgr_AcceptInvite, 0) \
 /*f("RJ", CNetworkSession_JoinSession, 0)*/ \
 f("RK", rage_playerDataMsg_SerMsgPayload_datExportBuffer, 0) \
 f("RL", rage_netArrayHandlerBase_WriteUpdate, 0) \
-f("Q7", CNetworkSession_OnHandleJoinRequest, 0) \
+/*f("Q7", CNetworkSession_OnHandleJoinRequest, 0)*/ \
 f("QR", rage_netIceSession_GetAdditionalLocalCandidates, 0) \
 f("D2", swapchain_present_streamproof, DH_NOFOLLOWJUMPS) \
-f("L0", CTextFile_Get, 0) /* critical for OG call */ \
+f("L0", CTextFile_Get, DH_MANDATORY) /* critical for OG call */ \
 f("L1", CTextFile_GetInternal, DH_MANDATORY) /* critical for OG call */ \
 f("P5", rage_netPlayerMgrBase_SendBuffer, 0) \
-f("P7", rage_fwArchetypeManager_GetArchetypeFromHashKey, 0) /* critical for OG call */ \
+f("P7", rage_fwArchetypeManager_GetArchetypeFromHashKey, DH_MANDATORY) /* critical for OG call */ \
 f("BY", camFrame_copy, 0) \
 f("FK", CPhysical_TestNoCollision, 0) \
 f("G0", CProjectileManager_CreateProjectile, 0) \
@@ -299,7 +296,7 @@ f("V2", get_visual_config_float, 0) \
 f("V3", get_visual_config_float_with_directory, 0) \
 f("V1", get_visual_config_colour, 0) \
 f("V4", camFactory_CreateObject, 0) \
-f("X0", some_player_sync, 0) \
+/*f("X0", some_player_sync, 0)*/ \
 f("X1", rage_aiTaskTree_UpdateTask, 0) \
 f("F2", CControl_StartPlayerPadShake, 0) \
 f("F5", rage_FriendsReaderTask_Complete, 0) \
@@ -591,9 +588,7 @@ f("OA", CNetObjVehicle_GetVehicleCreateData, 0) \
 		send_net_info_to_lobby_wrap_hook("S0", &hooks::send_net_info_to_lobby_wrap, DH_MANDATORY),
 		CNetGamePlayer_GetGamerInfo_hook("S3", &hooks::CNetGamePlayer_GetGamerInfo, DH_NOFOLLOWJUMPS),
 		get_active_clan_data_hook("S4", &hooks::get_active_clan_data, DH_MANDATORY),
-		data_node_write_hook("S9", &data_node_write_detour, DH_NOFOLLOWJUMPS),
-
-		net_event_error_pre_memmove_hook("P9", &net_event_error_pre_memmove_detour, DH_NOFOLLOWJUMPS)
+		data_node_write_hook("S9", &data_node_write_detour, DH_NOFOLLOWJUMPS)
 	{
 		initSpoofedClan();
 		spoofed_clan_membership.clan.id = 133742069;
@@ -618,7 +613,7 @@ f(send_net_info_to_lobby_wrap_hook) \
 f(rage_gameSkeleton_updateGroup_Update_hook) \
 f(network_bail_hook) \
 f(rage_sysDependencyScheduler_InsertInternal_hook) \
-f(rage_rlGetGamerStateTask_ParseResults_hook) \
+/*f(rage_rlGetGamerStateTask_ParseResults_hook)*/ \
 /*f(rage_rlScMatchmaking_Find_hook)*/ \
 /*f(rage_rlScMatchmakingFindTask_ReadSession_hook)*/ \
 /*f(rage_rlScMatchmakingFindTask_ProcessSuccess_hook)*/ \
@@ -685,6 +680,7 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 			&get_active_clan_data_hook,
 
 			&rage_rlTelemetry_Export_hook,
+
 			&rage_gameSkeleton_updateGroup_Update_hook,
 			&network_bail_hook,
 			&rage_sysDependencyScheduler_InsertInternal_hook,
@@ -714,8 +710,6 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 			&set_value_from_keyboard_hook,
 			&set_value_from_mkb_axis_hook,
 
-			&net_event_error_pre_memmove_hook,
-
 			&aes_initfile_hook,
 			&aes_decrypt_callsite_hook,
 
@@ -738,34 +732,6 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 		return main_hooks;
 	}
 
-	static void removeNonHookedHooks(std::vector<DetourHook*>& hooks)
-	{
-		for (auto i = hooks.begin(); i != hooks.end(); )
-		{
-			if ((*i)->isHooked())
-			{
-				++i;
-			}
-			else
-			{
-				i = hooks.erase(i);
-			}
-		}
-	}
-
-	std::vector<DetourHook*> Hooking::getAllHooks()
-	{
-		std::vector<DetourHook*> hooks = {
-			&g_hooking.rage_fwConfigManager_GetSizeOfPool_hook
-		};
-		mergeHooks(hooks, getMinimalHooks());
-#if ENABLE_PASSIVE_DLL
-		mergeHooks(hooks, getPassiveHooks());
-#endif
-		mergeHooks(hooks, getMainHooks());
-		return hooks;
-	}
-
 #if ENABLE_PASSIVE_DLL
 	std::vector<DetourHook*> Hooking::getNonPassiveHooks()
 	{
@@ -777,13 +743,6 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 		return hooks;
 	}
 #endif
-
-	std::vector<DetourHook*> Hooking::getHookedHooks()
-	{
-		std::vector<DetourHook*> hooks = getAllHooks();
-		removeNonHookedHooks(hooks);
-		return hooks;
-	}
 
 	void Hooking::batchCreateHooks(const std::vector<DetourHook*>& hooks)
 	{
@@ -3099,6 +3058,7 @@ namespace Stand::hooks
 					if (data.m_weaponType == ATSTRINGHASH("weapon_tranquilizer") // This is what 0xcheat's "make him cry" sends, apparently it's supposed to kill you repeatly, even if you quit to SP: 11001100101010100010001000101111011001000010000100000000010000000000000000000000010000000000000000000000000000000000000000000000000000000000101011010100101001000100010001010100000010 (m_damageType: 3, m_weaponType: weapon_tranquilizer, m_bOverride: true, m_hitEntityWeapon: false, m_hitWeaponAmmoAttachment: false, m_silenced: true, m_damageFlags: 540688, bMeleeDamage: false, m_actionResultId: 0, m_meleeId: 0, m_meleeResultId: 0, m_weaponDamage: 0, m_bIsAggregated: false, m_weaponDamageAggregationCount: 0, m_bVictimPlayer: true, m_hitPosition_x: 0, m_hitPosition_y: 0, m_hitPosition_z: 0, m_damageTime: 2839185, m_willKillPlayer: false, m_hitObjectId: 0, m_playerDistance: 554, m_parentID: 0, m_tyreIndex: 0, m_suspensionIndex: 0, m_component: 0, m_firstBullet: true, hasVehicleData: false, useLargeDistance: false)
 						|| data.m_weaponType == ATSTRINGHASH("weapon_fire") // This can be used to ragdoll us, don't think it's used legit.
 						|| data.m_weaponType == ATSTRINGHASH("weapon_molotov") // Can be used to ragdoll us.
+						|| data.m_weaponType == ATSTRINGHASH("WEAPON_STRICKLER") // This weapon is only half implemented because it's a next gen exclusive... classic L*
 						)
 					{
 						tally.add(FlowEvent::SE_INVALID, "NB");
@@ -4392,6 +4352,7 @@ namespace Stand::hooks
 		return gamerHandle;
 	}
 
+#if RG_HAS_BULK
 	bool rage_rlGetGamerStateTask_ParseResults(rage::rlGetGamerStateTask* task)
 	{
 		__try
@@ -4458,6 +4419,7 @@ namespace Stand::hooks
 		}
 		return false;
 	}
+#endif
 
 #if false
 	static uint32_t og_maxResults;
@@ -5189,21 +5151,9 @@ namespace Stand::hooks
 		}
 	}
 
-#if false
+#if HAVE_SEND_CLONE_CREATE_HOOK
 	static bool process_clone_create(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer)
 	{
-		if (g_hooking.nextgen_target != nullptr)
-		{
-			if (obj->object_type == NET_OBJ_TYPE_AUTOMOBILE)
-			{
-				auto ent = obj->GetEntity();
-				if (ent->archetype->hash == ATSTRINGHASH("sentinel"))
-				{
-					return g_hooking.nextgen_target == player;
-				}
-			}
-		}
-
 		if (g_hooking.footlettuce_target != nullptr)
 		{
 			if (obj->object_type == NET_OBJ_TYPE_OBJECT)
@@ -5285,6 +5235,7 @@ namespace Stand::hooks
 	}
 #endif
 
+#if HAVE_SEND_CLONE_SYNC_HOOK
 	// rage::netObjectMgrMessageHandler::SendCloneSync
 	void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6)
 	{
@@ -5330,6 +5281,7 @@ namespace Stand::hooks
 		{
 		}
 	}
+#endif
 
 #if false
 	// rage::netObjectMgrBase::RemoveClone
@@ -6123,31 +6075,40 @@ namespace Stand::hooks
 					}
 				}
 
-				// If this ped has a weapon equipped, it should have the proper bones.
-				// I've decided to exclude players from this because they can transform to animals and use guns.
-				// While it is technically correct to call it a modded event, it is very annoying and not very useful.
-				// Stand should hopefully fix the related crashes anyway.
-				// As a bonus, this also blocks "Send Cris Formage" from 2T1.
-				if (object_type != NET_OBJ_TYPE_PLAYER)
 				{
 					const auto weapon_hash = ped_base_tree->ped_game_state.m_weapon;
-					if (weapon_hash != 0
-						&& weapon_hash != ATSTRINGHASH("WEAPON_UNARMED")
-						&& Weapon::isValidHash(weapon_hash) // Animals seem to have weird weapons like weapon_animal_retriever, weapon_rabbit, etc. when they should be unarmed.
-						)
+
+					if (weapon_hash == ATSTRINGHASH("WEAPON_STRICKLER"))
 					{
-						if (!AbstractModel(model).canUseProjectiles()
-							|| AbstractModel(model).isCsPed()
-							|| !AbstractModel(model).canUseWeapons()
+						goto _invalid_ped_weapon;
+					}
+
+					// If this ped has a weapon equipped, it should have the proper bones.
+					// I've decided to exclude players from this because they can transform to animals and use guns.
+					// While it is technically correct to call it a modded event, it is very annoying and not very useful.
+					// Stand should hopefully fix the related crashes anyway.
+					// As a bonus, this also blocks "Send Cris Formage" from 2T1.
+					if (object_type != NET_OBJ_TYPE_PLAYER)
+					{
+						if (weapon_hash != 0
+							&& weapon_hash != ATSTRINGHASH("WEAPON_UNARMED")
+							&& Weapon::isValidHash(weapon_hash) // Animals seem to have weird weapons like weapon_animal_retriever, weapon_rabbit, etc. when they should be unarmed.
 							)
 						{
-							//Util::toast(fmt::format("{} has weapon ({}) without weapon bones", joaatToString(model), joaatToString(ped_base_tree->ped_game_state.m_weapon)));
-							if (ret) // avoid shadowing crash event, e.g. T8
+							if (!AbstractModel(model).canUseProjectiles()
+								|| AbstractModel(model).isCsPed()
+								|| !AbstractModel(model).canUseWeapons()
+								)
 							{
-								sync_tally.add(FlowEvent::SE_INVALID, "T6");
-								if (sync_tally.reactions & REACTION_BLOCK)
+							_invalid_ped_weapon:
+								//Util::toast(fmt::format("{} has weapon ({}) without weapon bones", joaatToString(model), joaatToString(ped_base_tree->ped_game_state.m_weapon)));
+								if (ret) // avoid shadowing crash event, e.g. T8
 								{
-									ret = false;
+									sync_tally.add(FlowEvent::SE_INVALID, "T6");
+									if (sync_tally.reactions & REACTION_BLOCK)
+									{
+										ret = false;
+									}
 								}
 							}
 						}
@@ -6538,15 +6499,16 @@ namespace Stand::hooks
 					}
 
 					// Again signed values where the game handles underflow but not overflow.
-					if (train_tree->train_game_state.m_TrainConfigIndex >= 28
-						|| train_tree->train_game_state.m_CarriageConfigIndex >= 28
+					if (train_tree->train_game_state.m_TrainConfigIndex > 28
+						|| train_tree->train_game_state.m_CarriageConfigIndex > 28
 						)
 					{
 						sync_tally.add(FlowEvent::SE_CRASH, "TD");
 						if (sync_tally.reactions & REACTION_BLOCK)
 						{
-							train_tree->train_game_state.m_TrainConfigIndex = -1;
-							train_tree->train_game_state.m_CarriageConfigIndex = -1;
+							/*train_tree->train_game_state.m_TrainConfigIndex = -1;
+							train_tree->train_game_state.m_CarriageConfigIndex = -1;*/
+							ret = false;
 						}
 					}
 				}
@@ -7063,7 +7025,7 @@ to_recover.emplace_back(addr, *addr); \
 	}
 #endif
 
-	bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, const char* name, uint64_t metricTime, rage::rlMetric* metric)
+	bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, void* a2, void* a3, uint64_t metricTime, rage::rlMetric* metric)
 	{
 		bool allow = true;
 		__try
@@ -7239,7 +7201,7 @@ to_recover.emplace_back(addr, *addr); \
 		{
 			__try
 			{
-				return OG(rage_rlTelemetry_Export)(rw, name, metricTime, metric);
+				return OG(rage_rlTelemetry_Export)(rw, a2, a3, metricTime, metric);
 			}
 			__EXCEPTIONAL()
 			{
@@ -7866,7 +7828,7 @@ to_recover.emplace_back(addr, *addr); \
 		return 0;
 	}
 
-	bool __fastcall CNetworkSession_OnHandleJoinRequest(CNetworkSession* _this, rage::snSession* pSession, rage::rlGamerInfo* gamerInfo, void* snJoinRequest, const unsigned int sessionType)
+	/*bool __fastcall CNetworkSession_OnHandleJoinRequest(CNetworkSession* _this, rage::snSession* pSession, rage::rlGamerInfo* gamerInfo, void* snJoinRequest, const unsigned int sessionType)
 	{
 		soup::Bytepatch patch;
 		__try
@@ -7883,7 +7845,7 @@ to_recover.emplace_back(addr, *addr); \
 		bool ret = OG(CNetworkSession_OnHandleJoinRequest)(_this, pSession, gamerInfo, snJoinRequest, sessionType);
 		*pointers::custombjmsg_responsecode = 0x18;
 		return ret;
-	}
+	}*/
 
 	unsigned int __fastcall rage_netIceSession_GetAdditionalLocalCandidates(void* _this, rage::netSocketAddress* addrs, unsigned int maxAddrs)
 	{
@@ -7969,7 +7931,7 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 	// void __fastcall CNetworkObjectMgr::UpdateAllObjectsForRemotePlayers(CNetworkObjectMgr* this, const rage::netPlayer* sourcePlayer)
-	static char __fastcall some_player_sync(CNetworkObjectMgr* mgr, CNetGamePlayer* player)
+	/*static char __fastcall some_player_sync(CNetworkObjectMgr* mgr, CNetGamePlayer* player)
 	{
 		sync_src = player->player_id;
 
@@ -7985,7 +7947,7 @@ to_recover.emplace_back(addr, *addr); \
 			}
 		}
 		return 0;
-	}
+	}*/
 
 	unsigned int __fastcall rage_aiTaskTree_UpdateTask(rage::aiTaskTree* tree, rage::aiTask* task, float timeStep)
 	{

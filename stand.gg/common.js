@@ -35,11 +35,11 @@ function store_account_data(data)
 	if("account_id" in data)
 	{
 		localStorage.setItem("account_id", data.account_id);
-		localStorage.setItem("last_account_data_update", time()); // Only update timer on a full update
 	}
 	if("activation_key" in data)
 	{
 		update_activation_key(data.activation_key);
+		localStorage.setItem("last_account_data_update", time()); // Only update timer on a full update
 	}
 	if("privilege" in data)
 	{
@@ -61,6 +61,10 @@ function store_account_data(data)
 	{
 		localStorage.setItem("account_interested", data.interested);
 	}
+	if("pinkeyed" in data)
+	{
+		localStorage.setItem("account_pinkeyed", data.pinkeyed);
+	}
 }
 
 function forget_account_data()
@@ -69,8 +73,9 @@ function forget_account_data()
 	localStorage.removeItem("account_privilege");
 	localStorage.removeItem("account_suspended_for");
 	localStorage.removeItem("account_coins");
-	localStorage.removeItem("account_vpn_expiry");
-	localStorage.removeItem("account_shared");
+	localStorage.removeItem("account_created_quiz_success");
+	localStorage.removeItem("account_interested");
+	localStorage.removeItem("account_pinkeyed");
 	localStorage.removeItem("last_account_data_update");
 }
 
@@ -87,4 +92,37 @@ function copy_to_clipboard(text)
 	input.select();
 	document.execCommand("copy");
 	document.body.removeChild(input);
+}
+
+function ensure_account_info_is_up_to_date(logged_in_cb, logged_out_cb)
+{
+	if(typeof localStorage.getItem("account_id")!="string")
+	{
+		logged_out_cb();
+		return;
+	}
+	if ((time() - localStorage.getItem("last_account_data_update")) > (60 * 60))
+	{
+		$.post("/api/basic_account_info", {
+			account_id: localStorage.getItem("account_id")
+		}).done(function(data)
+		{
+			if (data != "bad")
+			{
+				store_account_data(data);
+				logged_in_cb();
+			}
+			else
+			{
+				logged_out_cb();
+			}
+		}).fail(function()
+		{
+			logged_out_cb();
+		});
+	}
+	else
+	{
+		logged_in_cb();
+	}
 }

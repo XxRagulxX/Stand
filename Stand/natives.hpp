@@ -5,7 +5,6 @@
 #include "NativeCallContext.hpp"
 #include "natives_decl.hpp"
 #include "vector.hpp"
-#include "XoredNativeHash.hpp"
 
 template <typename Ret, typename... Args>
 Ret invoke(rage::scrNativeHandler func, Args&&...args)
@@ -22,7 +21,7 @@ Ret invoke(rage::scrNativeHandler func, Args&&...args)
 }
 
 template <typename Ret, typename... Args>
-Ret invoke(Stand::XoredNativeHash hash, Args&&...args)
+Ret invoke(rage::scrNativeHash hash, Args&&...args)
 {
 	using namespace Stand;
 

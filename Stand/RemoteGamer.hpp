@@ -6,11 +6,13 @@
 #include "fwddecl.hpp"
 #include "typedecl.hpp"
 
-#include "GarbageCollector.hpp"
+#include <soup/GarbageCollector.hpp>
+
 #include "rlSessionInfo.hpp"
 #include "ToastConfig.hpp"
 
 #define RG_PEERADDR false
+#define RG_HAS_BULK false
 
 namespace Stand
 {
@@ -22,7 +24,7 @@ namespace Stand
 	};
 
 #pragma pack(push, 1)
-	class RemoteGamer : public GarbageCollected
+	class RemoteGamer : public soup::GarbageCollected
 	{
 	public:
 		enum OnlineStatus : uint8_t
@@ -40,9 +42,11 @@ namespace Stand
 		};
 
 		static constexpr time_t transition_millis = 90000;
+#if RG_HAS_BULK
 		static constexpr auto MAX_BULK_REQUESTS = 32;
+#endif
 
-		inline static GarbageCollector gc{};
+		inline static soup::GarbageCollector gc{};
 		inline static std::vector<RemoteGamer*> tracked{};
 		inline static ToastConfig tracking_update_toast_config{ true };
 		inline static bool inject_tracked_info = true;

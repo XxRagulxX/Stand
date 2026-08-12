@@ -5,9 +5,9 @@
 #include "Asn1Type.hpp"
 #include "Bigint.hpp"
 //#include "Exception.hpp"
+#include "MemoryRefReader.hpp"
 #include "Oid.hpp"
 #include "string.hpp"
-#include "StringRefReader.hpp"
 #include "time.hpp"
 
 NAMESPACE_SOUP
@@ -20,7 +20,7 @@ NAMESPACE_SOUP
 	Asn1Sequence::Asn1Sequence(const std::string& data) SOUP_EXCAL
 		: Asn1Sequence()
 	{
-		StringRefReader r{ data };
+		MemoryRefReader r{ data };
 		while (r.hasMore())
 		{
 			auto id = readIdentifier(r);
@@ -37,7 +37,13 @@ NAMESPACE_SOUP
 
 	Asn1Sequence Asn1Sequence::fromDer(const std::string& str) SOUP_EXCAL
 	{
-		StringRefReader r{ str };
+		MemoryRefReader r{ str };
+		return fromDer(r);
+	}
+
+	Asn1Sequence Asn1Sequence::fromDer(const char* data, size_t size) SOUP_EXCAL
+	{
+		MemoryRefReader r(data, size);
 		return fromDer(r);
 	}
 
@@ -384,7 +390,7 @@ NAMESPACE_SOUP
 		ret.type = (first & 0b11111);
 		if (ret.type > 30)
 		{
-			r.om<uint32_t>(ret.type);
+			r.omb<uint32_t>(ret.type);
 		}
 		return ret;
 	}

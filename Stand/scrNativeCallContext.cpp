@@ -27,20 +27,20 @@ namespace rage
 	}
 
 #if !EXPECT_INVOKE_WONT_FAIL
-	bool scrNativeCallContext::canInvoke(::Stand::XoredNativeHash hash)
+	bool scrNativeCallContext::canInvoke(rage::scrNativeHash hash)
 	{
-		return g_script_mgr.entrypoint_map.contains(hash);
+		return g_script_mgr.call_map.contains(hash);
 	}
 #endif
 
-	void scrNativeCallContext::invoke(::Stand::XoredNativeHash x)
+	void scrNativeCallContext::invoke(rage::scrNativeHash x)
 	{
 		invokePassthrough(x);
 		CopyReferencedParametersOut();
 		++Metrics::natives_stand_invoked_this_tick;
 	}
 
-	void scrNativeCallContext::invokePassthrough(::Stand::XoredNativeHash x)
+	void scrNativeCallContext::invokePassthrough(rage::scrNativeHash x)
 	{
 #if EXPECT_INVOKE_WONT_FAIL
 		g_script_mgr.call_map.at(x)(*this);

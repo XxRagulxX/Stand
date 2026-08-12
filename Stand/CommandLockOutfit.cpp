@@ -118,6 +118,7 @@ namespace Stand
 			{
 				if (PED::GET_PED_DRAWABLE_VARIATION(g_player_ped, entry.first) != entry.second.first->value || g_player_ped.getComponentTexture(entry.first) != entry.second.second->value)
 				{
+					//Util::toast(fmt::format("Updating ped component {}", entry.first));
 					Click click(CLICK_AUTO, TC_SCRIPT_NOYIELD);
 					entry.second.second->onChange(click, 0);
 				}
@@ -152,8 +153,11 @@ namespace Stand
 		{
 			if (instance->m_on)
 			{
-				if (PED::GET_PED_PROP_INDEX(g_player_ped, entry.first, 1) != entry.second.first->value || PED::GET_PED_PROP_TEXTURE_INDEX(g_player_ped, entry.first) != entry.second.second->value)
+				if (PED::GET_PED_PROP_INDEX(g_player_ped, entry.first, 1) != entry.second.first->value
+					|| (entry.second.first->value != -1 && PED::GET_PED_PROP_TEXTURE_INDEX(g_player_ped, entry.first) != entry.second.second->value)
+					)
 				{
+					//Util::toast(fmt::format("Updating ped prop {} to {}, {}", entry.first, PED::GET_PED_PROP_INDEX(g_player_ped, entry.first, 1), PED::GET_PED_PROP_TEXTURE_INDEX(g_player_ped, entry.first)));
 					Click click(CLICK_AUTO, TC_SCRIPT_NOYIELD);
 					if (entry.second.first->value == -1)
 					{

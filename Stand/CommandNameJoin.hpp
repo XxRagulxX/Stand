@@ -32,7 +32,9 @@ namespace Stand
 
 		void onCommand(Click& click, std::wstring& args) final
 		{
-			if (click.isBasicEdition() && ScAccount::name2rid(click, StringUtils::utf16_to_utf8(get_next_arg(args)), [this](const ScAccount& a)
+			auto name = StringUtils::utf16_to_utf8(args);
+			args.clear();
+			if (click.isBasicEdition() && ScAccount::name2rid(click, std::move(name), [this](const ScAccount& a)
 			{
 				JoinUtil::join(a.rid, value);
 			}))

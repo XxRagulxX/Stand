@@ -254,10 +254,11 @@ namespace Stand
 			uint64_t count = 0;
 			if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 			{
-				if (auto* const ped_interface = replay->ped_interface)
+				if (auto* const iface = replay->ped_interface)
 				{
-					for (const auto& ent : ped_interface->list->entities)
+					for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 					{
+						const auto& ent = iface->m_entityRegistry.entities[i];
 						if (ent.ptr != nullptr)
 						{
 							count++;
@@ -272,10 +273,11 @@ namespace Stand
 			uint64_t count = 0;
 			if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 			{
-				if (auto* const veh_interface = replay->veh_interface)
+				if (auto* const iface = replay->veh_interface)
 				{
-					for (const auto& ent : veh_interface->list->entities)
+					for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 					{
+						const auto& ent = iface->m_entityRegistry.entities[i];
 						if (ent.ptr != nullptr)
 						{
 							count++;
@@ -290,10 +292,11 @@ namespace Stand
 			uint64_t count = 0;
 			if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 			{
-				if (auto* const object_interface = replay->object_interface)
+				if (auto* const iface = replay->object_interface)
 				{
-					for (const auto& ent : object_interface->list->entities)
+					for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 					{
+						const auto& ent = iface->m_entityRegistry.entities[i];
 						if (ent.ptr != nullptr)
 						{
 							count++;
@@ -308,10 +311,11 @@ namespace Stand
 			uint64_t count = 0;
 			if (CReplayInterfaceGame* const replay = *pointers::replay_interface)
 			{
-				if (auto* const pickup_interface = replay->pickup_interface)
+				if (auto* const iface = replay->pickup_interface)
 				{
-					for (const auto& ent : pickup_interface->list->entities)
+					for (size_t i = 0; i != iface->m_entityRegistry.m_count; ++i)
 					{
+						const auto& ent = iface->m_entityRegistry.entities[i];
 						if (ent.ptr != nullptr)
 						{
 							count++;

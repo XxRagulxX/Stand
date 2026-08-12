@@ -66,7 +66,7 @@ NAMESPACE_SOUP
 			host = uri.substr(0, port_sep);
 			const char* pPort = &uri.at(port_sep + 1);
 			const char* i = pPort;
-			port = string::toIntImpl<uint16_t>(i);
+			port = string::toIntEx<uint16_t>(i, 0, &i).value_or(0);
 			++i;
 
 			uri.erase(0, port_sep + (i - pPort));
@@ -187,6 +187,17 @@ NAMESPACE_SOUP
 	bool Uri::isHttp() const noexcept
 	{
 		return scheme == "http" || scheme == "https";
+	}
+
+	std::string Uri::getHost() const noexcept
+	{
+		std::string ret = host;
+		if (port != 0)
+		{
+			ret.push_back(':');
+			ret.append(std::to_string(port));
+		}
+		return ret;
 	}
 
 	uint16_t Uri::getPort() const noexcept

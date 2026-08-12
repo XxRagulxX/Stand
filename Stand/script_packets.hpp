@@ -43,5 +43,24 @@ namespace rage
 	struct msgScriptHostRequest : public msgScript
 	{
 	};
+
+	struct msgScriptVerifyHostAck : public msgScript
+	{
+		AUTOID_MSG(MSG_SCRIPT_VERIFY_HOST_ACK);
+
+		bool m_Rejected;
+		uint16_t m_HostToken;
+		bool m_ValidHost;
+
+		template <typename T>
+		bool ser(T& bb)
+		{
+			return script_id->ser(bb)
+				&& bb.serBool(m_Rejected)
+				&& (!m_Rejected || bb.serBool(m_ValidHost))
+				&& bb.serU16(m_HostToken)
+				;
+		}
+	};
 }
 #pragma pack(pop)

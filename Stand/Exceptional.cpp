@@ -27,7 +27,7 @@ namespace Stand
 {
 	void Exceptional::hideThread(HANDLE hThread) noexcept
 	{
-#ifndef STAND_DEBUG
+#if false
 		using pNtSetInformationThread = NTSTATUS(NTAPI*)(HANDLE, UINT, PVOID, ULONG);
 		auto NtSIT = (pNtSetInformationThread)GetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), "NtSetInformationThread");
 		if (NtSIT != nullptr)

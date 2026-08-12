@@ -22,27 +22,10 @@ foreach(scandir(__DIR__."/soup") as $file)
 	if(substr($file, -4) == ".cpp")
 	{
 		$file = substr($file, 0, -4);
-		run_command_async("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o");
-		array_push($objects, escapeshellarg("bin/int/$file.o"));
-	}
-}
-if(is_dir(__DIR__."/Intrin"))
-{
-	if (php_uname("m") == "aarch64")
-	{
-		$clang .= " -march=armv8+crypto+crc";
-	}
-	else
-	{
-		$clang .= " -maes -mpclmul -mrdrnd -mrdseed -msha -msse4.1";
-	}
-	foreach(scandir(__DIR__."/Intrin") as $file)
-	{
-		if(substr($file, -4) == ".cpp")
+		run_command_async("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o -DSOUP_STANDALONE");
+		if ($file != "soup")
 		{
-			$file = substr($file, 0, -4);
-			run_command_async("$clang -c ".__DIR__."/Intrin/$file.cpp -o ".__DIR__."/bin/int/$file.o");
-			array_push($objects, escapeshellarg("bin/int/$file.o"));
+			array_push($objects, "bin/int/$file.o");
 		}
 	}
 }
@@ -51,11 +34,40 @@ await_commands();
 echo "Bundling static lib...\n";
 $archiver = "ar";
 $libname = "libsoup.a";
+$dllname = "libsoupbindings.so";
 if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 {
 	$archiver = "llvm-ar";
 	$libname = "soup.lib";
+	$dllname = "soupbindings.dll";
 }
-passthru("$archiver rc $libname ".join(" ", $objects));
+else if (PHP_OS_FAMILY == "Darwin")
+{
+	$dllname = "libsoupbindings.dylib";
+}
+passthru("$archiver rc $libname ".join(" ", array_map("escapeshellarg", $objects)));
+
+if (file_exists("bin/int/soup.o"))
+{
+	echo "Linking shared lib...\n";
+	if (PHP_OS_FAMILY == "Darwin")
+	{
+		passthru("$clanglink -o $dllname -dynamiclib bin/int/soup.o ".join(" ", array_map("escapeshellarg", $objects)));
+	}
+	else
+	{
+		passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", array_map("escapeshellarg", $objects)));
+	}
+}
+
+// We don't reuse these objects if run again, so might as well clean up.
+foreach ($objects as $object)
+{
+	unlink($object);
+}
+if (file_exists("bin/int/soup.o"))
+{
+	unlink("bin/int/soup.o");
+}
 
 chdir($cd);

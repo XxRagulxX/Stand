@@ -1,9 +1,12 @@
-#pragma once
 /*
 ** $Id: lvm.h $
 ** Lua virtual machine
 ** See Copyright Notice in lua.h
 */
+
+#ifndef lvm_h
+#define lvm_h
+
 
 #include "ldo.h"
 #include "lobject.h"
@@ -11,7 +14,7 @@
 
 
 #if !defined(LUA_NOCVTN2S)
-#define cvt2str(o)	(ttisnumber(o) || ttisboolean(o))
+#define cvt2str(o)	ttisnumber(o)
 #else
 #define cvt2str(o)	0	/* no conversion from numbers to strings */
 #endif
@@ -40,19 +43,19 @@
 typedef enum {
   F2Ieq,     /* no rounding; accepts only integral values */
   F2Ifloor,  /* takes the floor of the number */
-  F2Iceil    /* takes the ceil of the number */
+  F2Iceil    /* takes the ceiling of the number */
 } F2Imod;
 
 
 /* convert an object to a float (including string coercion) */
 #define tonumber(o,n) \
-    (ttisfloat(o) ? (*(n) = fltvalue(o), 1) : luaV_tonumber_(o,n))
+	(ttisfloat(o) ? (*(n) = fltvalue(o), 1) : luaV_tonumber_(o,n))
 
 
 /* convert an object to a float (without string coercion) */
 #define tonumberns(o,n) \
-    (ttisfloat(o) ? ((n) = fltvalue(o), 1) : \
-    (ttisinteger(o) ? ((n) = cast_num(ivalue(o)), 1) : 0))
+	(ttisfloat(o) ? ((n) = fltvalue(o), 1) : \
+	(ttisinteger(o) ? ((n) = cast_num(ivalue(o)), 1) : 0))
 
 
 /* convert an object to an integer (including string coercion) */
@@ -73,38 +76,33 @@ typedef enum {
 
 
 /*
-** fast track for 'gettable': if 't' is a table and 't[k]' is present,
-** return 1 with 'slot' pointing to 't[k]' (position of final result).
-** Otherwise, return 0 (meaning it will have to check metamethod)
-** with 'slot' pointing to an empty 't[k]' (if 't' is a table) or NULL
-** (otherwise). 'f' is the raw get function to use.
+** fast track for 'gettable'
 */
-#define luaV_fastget(L,t,k,slot,f) \
-  (!ttistable(t)  \
-   ? (slot = NULL, 0)  /* not a table; 'slot' is NULL and result is 0 */  \
-   : (slot = f(hvalue(t), k),  /* else, do raw access */  \
-      !isempty(slot)))  /* result not empty? */
+#define luaV_fastget(t,k,res,f, tag) \
+  (tag = (!ttistable(t) ? LUA_VNOTABLE : f(hvalue(t), k, res)))
 
 
 /*
 ** Special case of 'luaV_fastget' for integers, inlining the fast case
 ** of 'luaH_getint'.
 */
-#define luaV_fastgeti(L,t,k,slot) \
-  (!ttistable(t)  \
-   ? (slot = NULL, 0)  /* not a table; 'slot' is NULL and result is 0 */  \
-   : (slot = (l_castS2U(k) - 1u < hvalue(t)->alimit) \
-              ? &hvalue(t)->array[k - 1] : luaH_getint(hvalue(t), k), \
-      !isempty(slot)))  /* result not empty? */
+#define luaV_fastgeti(t,k,res,tag) \
+  if (!ttistable(t)) tag = LUA_VNOTABLE; \
+  else { luaH_fastgeti(hvalue(t), k, res, tag); }
+
+
+#define luaV_fastset(t,k,val,hres,f) \
+  (hres = (!ttistable(t) ? HNOTATABLE : f(hvalue(t), k, val)))
+
+#define luaV_fastseti(t,k,val,hres) \
+  if (!ttistable(t)) hres = HNOTATABLE; \
+  else { luaH_fastseti(hvalue(t), k, val, hres); }
 
 
 /*
-** Finish a fast set operation (when fast get succeeds). In that case,
-** 'slot' points to the place to put the value.
+** Finish a fast set operation (when fast set succeeds).
 */
-#define luaV_finishfastset(L,t,slot,v) \
-    { setobj2t(L, cast(TValue *,slot), v); \
-      luaC_barrierback(L, gcvalue(t), v); }
+#define luaV_finishfastset(L,t,v)	luaC_barrierback(L, gcvalue(t), v)
 
 
 /*
@@ -122,10 +120,10 @@ LUAI_FUNC int luaV_tointeger (const TValue *obj, lua_Integer *p, F2Imod mode);
 LUAI_FUNC int luaV_tointegerns (const TValue *obj, lua_Integer *p,
                                 F2Imod mode);
 LUAI_FUNC int luaV_flttointeger (lua_Number n, lua_Integer *p, F2Imod mode);
-LUAI_FUNC void luaV_finishget (lua_State *L, const TValue *t, TValue *key,
-                               StkId val, const TValue *slot);
+LUAI_FUNC lu_byte luaV_finishget (lua_State *L, const TValue *t, TValue *key,
+                                                StkId val, lu_byte tag, bool mindex = false);
 LUAI_FUNC void luaV_finishset (lua_State *L, const TValue *t, TValue *key,
-                               TValue *val, const TValue *slot);
+                                             TValue *val, int aux);
 LUAI_FUNC void luaV_finishOp (lua_State *L);
 LUAI_FUNC void luaV_execute (lua_State *L, CallInfo *ci);
 LUAI_FUNC void luaV_concat (lua_State *L, int total);
@@ -133,5 +131,8 @@ LUAI_FUNC lua_Integer luaV_idiv (lua_State *L, lua_Integer x, lua_Integer y);
 LUAI_FUNC lua_Integer luaV_mod (lua_State *L, lua_Integer x, lua_Integer y);
 LUAI_FUNC lua_Number luaV_modf (lua_State *L, lua_Number x, lua_Number y);
 LUAI_FUNC lua_Integer luaV_shiftl (lua_Integer x, lua_Integer y);
+#ifndef PLUTO_LUA_LINKABLE
 LUAI_FUNC void luaV_objlen (lua_State *L, StkId ra, const TValue *rb);
-LUAI_FUNC bool luaV_searchelement(lua_State* L, const Table* t, const TValue* element);
+#endif
+
+#endif

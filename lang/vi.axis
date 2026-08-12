@@ -13,7 +13,7 @@
 !! General !!
 !!!!!!!!!!!!!
 
-HI=Bây giờ bạn là [Người dùng Stand]!
+HI=Bây giờ bạn là [Người dùng Stand]! :D
 HI_TRCK=Chào mừng trở lại với Stand!
 HI_TRCK_0=Không có người chơi nào bạn theo dõi đang trực tuyến.
 HI_TRCK_1={} hiện đang trực tuyến.
@@ -1506,15 +1506,15 @@ REQNDRV=Yêu Cầu & Lái Đến Điểm Gần Nhất
 REQNCALL=Yêu Cầu & Lái Đến Chỗ Tôi
 
 PVRPLC=Thay Thế Bằng Xe Hiện Tại
-PVRPLC_H=Lưu dữ liệu chiếc xe bạn đang lái thay cho chiếc xe cá nhân này.
+PVRPLC_H=Lưu dữ liệu phương tiện bạn đang lái thay cho phương tiện cá nhân này.
 
 PVSVE_H=Lưu dữ liệu của phương tiện cá nhân này trong gara của Stand.
 PVSVEA=Lưu Tất Cả Vào Gara
 PVSVEA_H=Lưu dữ liệu của tất cả các phương tiện cá nhân của bạn vào gara của Stand.
 ! "Garage" must use same translation as GRG. "Personal Vehicles" must stay as-is.
-PVSVEA_S=Xe cá nhân của bạn đã được lưu vào Gara > Phương Tiện Cá Nhân. :D
+PVSVEA_S=Phương tiện cá nhân của bạn đã được lưu vào Gara > Phương Tiện Cá Nhân. :D
 
-CURPV=Xe Cá Nhân Hiện Tại
+CURPV=Phương Tiện Cá Nhân Hiện Tại
 PVEHNTFND=Tôi không thể tìm thấy phương tiện cá nhân của bạn. :/
 
 LSTVEH=Phương Tiện Trước Đó
@@ -1590,6 +1590,10 @@ DLC_640=Drug Wars
 DLC_670=San Andreas Mercenaries
 DLC_680=The Chop Shop
 DLC_690=Bottom Dollar Bounties
+DLC_700=Agents of Sabotage
+DLC_710=Money Fronts
+# DLC_720=A Safehouse in the Hills
+# DLC_730=The Kortz Center Heist
 
 MANUFNS=Tên Nhà Sản Xuất
 
@@ -1722,7 +1726,7 @@ SPWNAIR=Spawn Máy Bay Trên Không
 SPWNFRNT=Spawn Phía Trước
 SPWNFRNT_H=Spawn phương tiện ngay phía trước cách bạn vài mét bằng Stand.
 
-SPWLIKEPV=Spawn Giống Như Xe Cá Nhân
+SPWLIKEPV=Spawn Giống Như Phương Tiện Cá Nhân
 
 SPWNDEL=Xoá Phương Tiện Trước Đó
 
@@ -1834,7 +1838,7 @@ LOCKD_O=Chỉ Khi Trống
 XCLUDEPVS=Loại Trừ Phương Tiện Của Người Khác
 
 ENGTGL=Bật/Tắt Động Cơ
-ENGTGL_H=Lưu ý rằng việc nhấn về phía trước hoặc phía sau sẽ khiến nhân vật của bạn bật lại động cơ trên hầu hết các loại xe.
+ENGTGL_H=Lưu ý rằng việc nhấn về phía trước hoặc phía sau sẽ khiến nhân vật của bạn bật lại động cơ trên hầu hết các loại phương tiện.
 
 FLIPVEH=Quay Thẳng Xe
 FLIPVEH_H=Quay chiếc xe hiện tại hoặc trước đó của bạn thẳng theo góc đang nhìn.
@@ -3347,9 +3351,6 @@ PTX_SI=Đồng Bộ Đến
 PTX_SO=Đồng Bộ Đi
 PTX_SI_ANY=Bất Kì Đồng Bộ Đến
 
-OUTSBH=Chặn Đồng Bộ Đi Tới Chủ Phiên
-OUTSBH_H=Điều này giúp bạn tránh bị đá khỏi trò chơi bởi BattlEye khi không phải là chủ phiên, nhưng đồng thời chủ phiên cũng sẽ không thể tương tác với bạn.
-
 PTX_CSB=Phản Ứng Đồng Bộ Hoá Mô Hình Tuỳ Chỉnh
 ADDMDL=Thêm Mô Hình
 PTX_CSB_T=Đồng bộ mô hình bởi {player} với {hash}
@@ -3446,7 +3447,6 @@ PTX_HK_H=Giảm bớt các cú đá của chủ phiên cái mà bạn chỉ nh�
 PTX_HK_T=Ai đó đã dùng cú đá chủ phiên vào bạn {method}, có thể là {player}.
 
 HKI=Chủ phiên sắp đá bạn ra.
-HKI_BS=Tôi đề nghị chặn đồng bộ với họ.
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=Bỏ Phiếu Đá
@@ -3743,6 +3743,7 @@ GIVECOLL_16=Snowmen
 GIVECOLL_17=G's Cache
 ! Tags as in graffiti
 GIVECOLL_19=Los Santos Tags
+GIVECOLL_21=Yuanbao
 
 GIVECOLLE=Tặng Collectibles
 GIVECOLLE_NCEO=Tặng Collectible (Không Phải Sếp)
@@ -4825,6 +4826,9 @@ SGMELNG_H=Một số ngôn ngữ có phông chữ khác, phông chữ này chỉ
 
 STUTFIX=Sửa Lỗi Giật Hình Ở FPS Cao
 STUTFIX_H=Sửa lỗi giật hình xảy ra khi trò chơi đạt tới 188 FPS.
+
+UNCAPFPS=Bỏ Giới Hạn FPS
+UNCAPFPS_H=Cho phép trò chơi vượt quá 188 FPS.
 
 NKBDHK=Tắt Kiểm Soát Phím
 NKBDHK_H=Cho phép bạn nhấn phím Windows khi tập trung vào GTA và dừng độ trễ của trò chơi dẫn đến độ trễ khi nhấn phím.

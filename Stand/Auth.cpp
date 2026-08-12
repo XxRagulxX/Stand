@@ -12,6 +12,7 @@
 #include <soup/JsonObject.hpp>
 #include <soup/ObfusString.hpp>
 #include <soup/sha1.hpp>
+#include <soup/sha256.hpp>
 
 #include "Codename.hpp"
 #include "CommandDiscord.hpp"
@@ -27,12 +28,14 @@
 #include "is_session.hpp"
 #include "main.hpp"
 #include "PointerCache.hpp"
+#include "pointers.hpp"
 #include "PubSubClient.hpp"
 #include "RelayCon.hpp"
 #include "reversible_scramble.hpp"
 #include "rlGamerInfo.hpp"
 #include "RootMgr.hpp"
 #include "RootNameMgr.hpp"
+#include "ScAccount.hpp"
 #include "Script.hpp"
 #include "SessionSpoofing.hpp"
 #include "str2int.hpp"
@@ -335,6 +338,18 @@ namespace Stand
 					}
 				}
 
+				auto mem_c = document.FindMember("c");
+				if (mem_c != document.MemberEnd())
+				{
+					const int64_t rid = mem_c->value.GetInt64();
+#ifdef STAND_DEBUG
+					g_logger.log(fmt::format("Auth would like us to clear {} from rid2name backlog", rid));
+#endif
+					auto a = ScAccount::fromRID(rid);
+					a->cache_status = ScAccount::CACHE_STATUS_MISS;
+					a->requestCompletion();
+				}
+
 				auto mem_s = document.FindMember("s");
 				if (mem_s != document.MemberEnd())
 				{
@@ -367,12 +382,6 @@ namespace Stand
 						}
 						activation_key_was_valid = true;
 					}
-					if (auto e = PointerCache::cache.find(Codename("AZ").toString()); e != PointerCache::cache.end())
-					{
-						uintptr_t data = e->second ^ PointerCache::xor_magic;
-						//PointerCache::cache.erase(e);
-						g_auth.reportEvent(Codename("AZ"), fmt::to_string(data));
-					}
 					if (g_gui.unlock_recover_state == 0)
 					{
 						g_gui.unlock_recover_state = 1;
@@ -383,7 +392,10 @@ namespace Stand
 						job_queued = true;
 						FiberPool::queueJob(&gotPermSigJob);
 					}
-					PubSubClient::subscribe(activation_key_to_try, &onPubSubMessage);
+					if (g_running)
+					{
+						PubSubClient::subscribe(soup::string::bin2hexLower(soup::sha256::hash(activation_key_to_try)), &onPubSubMessage);
+					}
 
 					return true;
 				}

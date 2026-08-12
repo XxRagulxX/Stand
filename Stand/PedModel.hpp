@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Label.hpp"
@@ -21,7 +19,7 @@ namespace Stand
 		{
 		}
 
-		static std::vector<PedModel> all;
+		static PedModel all[1122];
 
 		[[nodiscard]] static const PedModel* fromHash(hash_t hash) noexcept;
 	};

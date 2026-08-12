@@ -11,6 +11,6 @@ namespace Stand
 
 		JM_NUTS_REJOIN,
 
-		JM_DEFAULT = JM_NUTS
+		JM_DEFAULT = JM_NINJA
 	};
 }

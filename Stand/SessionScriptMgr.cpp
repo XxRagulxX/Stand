@@ -386,6 +386,37 @@ namespace Stand
 		case fm_content_daily_bounty: return ATSTRINGHASH("fm_content_daily_bounty");
 		case fm_content_dispatch_work: return ATSTRINGHASH("fm_content_dispatch_work");
 		case fm_content_pizza_delivery: return ATSTRINGHASH("fm_content_pizza_delivery");
+		case fm_content_hacker_cargo_finale: return ATSTRINGHASH("fm_content_hacker_cargo_finale");
+		case fm_content_hacker_zancudo_fin: return ATSTRINGHASH("fm_content_hacker_zancudo_fin");
+		case fm_content_hacker_house_finale: return ATSTRINGHASH("fm_content_hacker_house_finale");
+		case fm_content_hacker_whistle_fin: return ATSTRINGHASH("fm_content_hacker_whistle_fin");
+		case fm_content_hacker_cargo_prep: return ATSTRINGHASH("fm_content_hacker_cargo_prep");
+		case fm_content_hacker_zancudo_prep: return ATSTRINGHASH("fm_content_hacker_zancudo_prep");
+		case fm_content_hacker_house_prep: return ATSTRINGHASH("fm_content_hacker_house_prep");
+		case fm_content_hacker_whistle_prep: return ATSTRINGHASH("fm_content_hacker_whistle_prep");
+		case fm_content_arms_trafficking: return ATSTRINGHASH("fm_content_arms_trafficking");
+		case AM_MP_HOTWIRE: return ATSTRINGHASH("AM_MP_HOTWIRE");
+		case fm_content_community_outreach: return ATSTRINGHASH("fm_content_community_outreach");
+		case fm_content_car_wash_work: return ATSTRINGHASH("fm_content_car_wash_work");
+		case fm_content_car_wash_detailing: return ATSTRINGHASH("fm_content_car_wash_detailing");
+		case fm_content_helitours_work: return ATSTRINGHASH("fm_content_helitours_work");
+		case fm_content_helitours_tour: return ATSTRINGHASH("fm_content_helitours_tour");
+		case fm_content_weed_shop_work: return ATSTRINGHASH("fm_content_weed_shop_work");
+		case fm_content_weed_shop_delivery: return ATSTRINGHASH("fm_content_weed_shop_delivery");
+		case fm_content_tycoon_odd_jobs: return ATSTRINGHASH("fm_content_tycoon_odd_jobs");
+		case fm_content_cutscene: return ATSTRINGHASH("fm_content_cutscene");
+		case fm_content_firefighter: return ATSTRINGHASH("fm_content_firefighter");
+		case fm_content_forklift_operator: return ATSTRINGHASH("fm_content_forklift_operator");
+		case fm_content_postal_worker: return ATSTRINGHASH("fm_content_postal_worker");
+		case fm_content_getaway_driver: return ATSTRINGHASH("fm_content_getaway_driver");
+		case fm_content_survival_grouping: return ATSTRINGHASH("fm_content_survival_grouping");
+		case fm_content_valentine_cheater: return ATSTRINGHASH("fm_content_valentine_cheater");
+		case fm_content_survival: return ATSTRINGHASH("fm_content_survival");
+		case fm_content_kortz_scoping: return ATSTRINGHASH("fm_content_kortz_scoping");
+		case fm_content_kortz_entry: return ATSTRINGHASH("fm_content_kortz_entry");
+		case fm_content_kortz_equipment: return ATSTRINGHASH("fm_content_kortz_equipment");
+		case fm_content_kortz_disruption: return ATSTRINGHASH("fm_content_kortz_disruption");
+		case fm_content_kortz_task: return ATSTRINGHASH("fm_content_kortz_task");
 		}
 		return 0;
 	}

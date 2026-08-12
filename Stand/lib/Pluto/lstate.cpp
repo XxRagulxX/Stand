@@ -31,87 +31,58 @@
 
 
 
-/*
-** thread state + extra space
-*/
-typedef struct LX {
-  lu_byte extra_[LUA_EXTRASPACE];
-  lua_State l;
-} LX;
-
-
-/*
-** Main thread combines a thread state and the global state
-*/
-typedef struct LG {
-  LX l;
-  global_State g;
-} LG;
-
-
-
 #define fromstate(L)	(cast(LX *, cast(lu_byte *, (L)) - offsetof(LX, l)))
 
 
 /*
-** A macro to create a "random" seed when a state is created;
-** the seed is used to randomize string hashes.
+** these macros allow user-specific actions when a thread is
+** created/deleted
 */
-#if !defined(luai_makeseed)
+#if !defined(luai_userstateopen)
+#define luai_userstateopen(L)		((void)L)
+#endif
 
-#include <time.h>
+#if !defined(luai_userstateclose)
+#define luai_userstateclose(L)		((void)L)
+#endif
 
-/*
-** Compute an initial seed with some level of randomness.
-** Rely on Address Space Layout Randomization (if present) and
-** current time.
-*/
-#define addbuff(b,p,e) \
-  { size_t t = cast_sizet(e); \
-    memcpy(b + p, &t, sizeof(t)); p += sizeof(t); }
+#if !defined(luai_userstatethread)
+#define luai_userstatethread(L,L1)	((void)L)
+#endif
 
-static unsigned int luai_makeseed (lua_State *L) {
-  char buff[3 * sizeof(size_t)];
-  unsigned int h = cast_uint(time(NULL));
-  int p = 0;
-  addbuff(buff, p, L);  /* heap variable */
-  addbuff(buff, p, &h);  /* local variable */
-  addbuff(buff, p, &lua_newstate);  /* public function */
-  lua_assert(p == sizeof(buff));
-  return luaS_hash(buff, p, h);
-}
-
+#if !defined(luai_userstatefree)
+#define luai_userstatefree(L,L1)	((void)L)
 #endif
 
 
 /*
-** set GCdebt to a new value keeping the value (totalbytes + GCdebt)
-** invariant (and avoiding underflows in 'totalbytes')
+** set GCdebt to a new value keeping the real number of allocated
+** objects (GCtotalobjs - GCdebt) invariant and avoiding overflows in
+** 'GCtotalobjs'.
 */
 void luaE_setdebt (global_State *g, l_mem debt) {
   l_mem tb = gettotalbytes(g);
   lua_assert(tb > 0);
-  if (debt < tb - MAX_LMEM)
-    debt = tb - MAX_LMEM;  /* will make 'totalbytes == MAX_LMEM' */
-  g->totalbytes = tb - debt;
+  if (debt > MAX_LMEM - tb)
+    debt = MAX_LMEM - tb;  /* will make GCtotalbytes == MAX_LMEM */
+  g->GCtotalbytes = tb + debt;
   g->GCdebt = debt;
 }
 
 
-LUA_API int lua_setcstacklimit (lua_State *L, unsigned int limit) {
-  UNUSED(L); UNUSED(limit);
-  return LUAI_MAXCCALLS;  /* warning?? */
-}
-
-
-CallInfo *luaE_extendCI (lua_State *L) {
+CallInfo *luaE_extendCI (lua_State *L, int err) {
   CallInfo *ci;
-  lua_assert(L->ci->next == NULL);
-  ci = luaM_new(L, CallInfo);
-  lua_assert(L->ci->next == NULL);
-  L->ci->next = ci;
+  ci = luaM_reallocvector(L, NULL, 0, 1, CallInfo);
+  if (l_unlikely(ci == NULL)) {  /* allocation failed? */
+    if (err)
+      luaM_error(L);  /* raise the error */
+    return NULL;  /* else only report it */
+  }
+  ci->next = L->ci->next;
   ci->previous = L->ci;
-  ci->next = NULL;
+  L->ci->next = ci;
+  if (ci->next)
+    ci->next->previous = ci;
   ci->u.l.trap = 0;
   L->nci++;
   return ci;
@@ -168,7 +139,7 @@ void luaE_checkcstack (lua_State *L) {
   if (getCcalls(L) == LUAI_MAXCCALLS)
     luaG_runerror(L, "C stack overflow");
   else if (getCcalls(L) >= (LUAI_MAXCCALLS / 10 * 11))
-    luaD_throw(L, LUA_ERRERR);  /* error while handling stack error */
+    luaD_errerr(L);  /* error while handling stack error */
 }
 
 
@@ -179,26 +150,29 @@ LUAI_FUNC void luaE_incCstack (lua_State *L) {
 }
 
 
+static void resetCI (lua_State *L) {
+  CallInfo *ci = L->ci = &L->base_ci;
+  ci->func.p = L->stack.p;
+  setnilvalue(s2v(ci->func.p));  /* 'function' entry for basic 'ci' */
+  ci->top.p = ci->func.p + 1 + LUA_MINSTACK;  /* +1 for 'function' entry */
+  ci->u.c.k = NULL;
+  ci->callstatus = CIST_C;
+  L->status = LUA_OK;
+  L->errfunc = 0;  /* stack unwind can "throw away" the error function */
+}
+
+
 static void stack_init (lua_State *L1, lua_State *L) {
-  int i; CallInfo *ci;
+  int i;
   /* initialize stack array */
   L1->stack.p = luaM_newvector(L, BASIC_STACK_SIZE + EXTRA_STACK, StackValue);
   L1->tbclist.p = L1->stack.p;
   for (i = 0; i < BASIC_STACK_SIZE + EXTRA_STACK; i++)
     setnilvalue(s2v(L1->stack.p + i));  /* erase new stack */
-  L1->top.p = L1->stack.p;
   L1->stack_last.p = L1->stack.p + BASIC_STACK_SIZE;
   /* initialize first ci */
-  ci = &L1->base_ci;
-  ci->next = ci->previous = NULL;
-  ci->callstatus = CIST_C;
-  ci->func.p = L1->top.p;
-  ci->u.c.k = NULL;
-  ci->nresults = 0;
-  setnilvalue(s2v(L1->top.p));  /* 'function' entry for this 'ci' */
-  L1->top.p++;
-  ci->top.p = L1->top.p + LUA_MINSTACK;
-  L1->ci = ci;
+  resetCI(L1);
+  L1->top.p = L1->stack.p + 1;  /* +1 for 'function' entry */
 }
 
 
@@ -208,7 +182,8 @@ static void freestack (lua_State *L) {
   L->ci = &L->base_ci;  /* free the entire 'ci' list */
   freeCI(L);
   lua_assert(L->nci == 0);
-  luaM_freearray(L, L->stack.p, stacksize(L) + EXTRA_STACK);  /* free stack */
+  /* free stack */
+  luaM_freearray(L, L->stack.p, cast_sizet(stacksize(L) + EXTRA_STACK));
 }
 
 
@@ -217,13 +192,19 @@ static void freestack (lua_State *L) {
 */
 static void init_registry (lua_State *L, global_State *g) {
   /* create registry */
+  TValue aux;
   Table *registry = luaH_new(L);
   sethvalue(L, &g->l_registry, registry);
   luaH_resize(L, registry, LUA_RIDX_LAST, 0);
+  /* registry[1] = false */
+  setbfvalue(&aux);
+  luaH_setint(L, registry, 1, &aux);
   /* registry[LUA_RIDX_MAINTHREAD] = L */
-  setthvalue(L, &registry->array[LUA_RIDX_MAINTHREAD - 1], L);
+  setthvalue(L, &aux, L);
+  luaH_setint(L, registry, LUA_RIDX_MAINTHREAD, &aux);
   /* registry[LUA_RIDX_GLOBALS] = new table (table of globals) */
-  sethvalue(L, &registry->array[LUA_RIDX_GLOBALS - 1], luaH_new(L));
+  sethvalue(L, &aux, luaH_new(L));
+  luaH_setint(L, registry, LUA_RIDX_GLOBALS, &aux);
 }
 
 
@@ -268,6 +249,16 @@ static void preinit_thread (lua_State *L, global_State *g) {
   L->status = LUA_OK;
   L->errfunc = 0;
   L->oldpc = 0;
+  L->base_ci.previous = L->base_ci.next = NULL;
+}
+
+
+lu_mem luaE_threadsize (lua_State *L) {
+  lu_mem sz = cast(lu_mem, sizeof(LX))
+            + cast_uint(L->nci) * sizeof(CallInfo);
+  if (L->stack.p != NULL)
+    sz += cast_uint(stacksize(L) + EXTRA_STACK) * sizeof(StackValue);
+  return sz;
 }
 
 
@@ -276,20 +267,16 @@ static void close_state (lua_State *L) {
   if (!completestate(g))  /* closing a partially built state? */
     luaC_freeallobjects(L);  /* just collect its objects */
   else {  /* closing a fully built state */
-    L->ci = &L->base_ci;  /* unwind CallInfo list */
+    resetCI(L);
     luaD_closeprotected(L, 1, LUA_OK);  /* close all upvalues */
+    L->top.p = L->stack.p + 1;  /* empty the stack to run finalizers */
     luaC_freeallobjects(L);  /* collect all objects */
-#if !SOUP_WASM
-    if (g->scheduler) {
-      delete reinterpret_cast<soup::DetachedScheduler*>(g->scheduler);
-    }
-#endif
     luai_userstateclose(L);
   }
-  luaM_freearray(L, G(L)->strt.hash, G(L)->strt.size);
+  luaM_freearray(L, G(L)->strt.hash, cast_sizet(G(L)->strt.size));
   freestack(L);
-  lua_assert(gettotalbytes(g) == sizeof(LG));
-  (*g->frealloc)(g->ud, fromstate(L), sizeof(LG), 0);  /* free main block */
+  lua_assert(gettotalbytes(g) == sizeof(global_State));
+  (*g->frealloc)(g->ud, g, sizeof(global_State), 0);  /* free main block */
 }
 
 
@@ -311,7 +298,7 @@ LUA_API lua_State *lua_newthread (lua_State *L) {
   L1->hook = L->hook;
   resethookcount(L1);
   /* initialize L1 extra space */
-  memcpy(lua_getextraspace(L1), lua_getextraspace(g->mainthread),
+  memcpy(lua_getextraspace(L1), lua_getextraspace(mainthread(g)),
          LUA_EXTRASPACE);
   luai_userstatethread(L, L1);
   stack_init(L1, L);  /* init stack */
@@ -330,51 +317,39 @@ void luaE_freethread (lua_State *L, lua_State *L1) {
 }
 
 
-int luaE_resetthread (lua_State *L, int status) {
-  CallInfo *ci = L->ci = &L->base_ci;  /* unwind CallInfo list */
-  setnilvalue(s2v(L->stack.p));  /* 'function' entry for basic 'ci' */
-  ci->func.p = L->stack.p;
-  ci->callstatus = CIST_C;
+TStatus luaE_resetthread (lua_State *L, TStatus status) {
+  resetCI(L);
   if (status == LUA_YIELD)
     status = LUA_OK;
-  L->status = LUA_OK;  /* so it can run __close metamethods */
   status = luaD_closeprotected(L, 1, status);
   if (status != LUA_OK)  /* errors? */
     luaD_seterrorobj(L, status, L->stack.p + 1);
   else
     L->top.p = L->stack.p + 1;
-  ci->top.p = L->top.p + LUA_MINSTACK;
-  luaD_reallocstack(L, cast_int(ci->top.p - L->stack.p), 0);
+  luaD_reallocstack(L, cast_int(L->ci->top.p - L->stack.p), 0);
   return status;
 }
 
 
 LUA_API int lua_closethread (lua_State *L, lua_State *from) {
-  int status;
+  TStatus status;
   lua_lock(L);
   L->nCcalls = (from) ? getCcalls(from) : 0;
   status = luaE_resetthread(L, L->status);
+  if (L == from)  /* closing itself? */
+    luaD_throwbaselevel(L, status);
   lua_unlock(L);
-  return status;
+  return APIstatus(status);
 }
 
 
-/*
-** Deprecated! Use 'lua_closethread' instead.
-*/
-LUA_API int lua_resetthread (lua_State *L) {
-  return lua_closethread(L, NULL);
-}
-
-
-LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
+LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud, unsigned seed) {
   int i;
   lua_State *L;
-  global_State *g;
-  LG *l = cast(LG *, (*f)(ud, NULL, LUA_TTHREAD, sizeof(LG)));
-  if (l == NULL) return NULL;
-  L = &l->l.l;
-  g = &l->g;
+  global_State *g = cast(global_State*,
+                       (*f)(ud, NULL, LUA_TTHREAD, sizeof(global_State)));
+  if (g == NULL) return NULL;
+  L = &g->mainth.l;
   L->tt = LUA_VTHREAD;
   g->currentwhite = bitmask(WHITE0BIT);
   L->marked = luaC_white(g);
@@ -386,8 +361,7 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->ud = ud;
   g->warnf = NULL;
   g->ud_warn = NULL;
-  g->mainthread = L;
-  g->seed = luai_makeseed(L);
+  g->seed = seed;
   g->gcstp = GCSTPGC;  /* no GC while building state */
   g->strt.size = g->strt.nuse = 0;
   g->strt.hash = NULL;
@@ -404,45 +378,142 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->gray = g->grayagain = NULL;
   g->weak = g->ephemeron = g->allweak = NULL;
   g->twups = NULL;
-  g->totalbytes = sizeof(LG);
+  g->GCtotalbytes = sizeof(global_State);
+  g->GCmarked = 0;
   g->GCdebt = 0;
-  g->lastatomic = 0;
   setivalue(&g->nilvalue, 0);  /* to signal that state is not yet built */
-  setgcparam(g->gcpause, LUAI_GCPAUSE);
-  setgcparam(g->gcstepmul, LUAI_GCMUL);
-  g->gcstepsize = LUAI_GCSTEPSIZE;
-  setgcparam(g->genmajormul, LUAI_GENMAJORMUL);
-  g->genminormul = LUAI_GENMINORMUL;
-  for (i=0; i < LUA_NUMTAGS; i++) g->mt[i] = NULL;
-  g->setCompatibilityMode(false);
+  setgcparam(g, PAUSE, LUAI_GCPAUSE);
+  setgcparam(g, STEPMUL, LUAI_GCMUL);
+  setgcparam(g, STEPSIZE, LUAI_GCSTEPSIZE);
+  setgcparam(g, MINORMUL, LUAI_GENMINORMUL);
+  setgcparam(g, MINORMAJOR, LUAI_MINORMAJOR);
+  setgcparam(g, MAJORMINOR, LUAI_MAJORMINOR);
+  for (i=0; i < LUA_NUMTYPES; i++) g->mt[i] = NULL;
+
 #ifdef PLUTO_COMPATIBLE_SWITCH
-  g->compatible_switch = true;
+  g->have_preference_switch = true;
+  g->preference_switch = false;
+#else
+  g->have_preference_switch = false;
 #endif
 #ifdef PLUTO_COMPATIBLE_CONTINUE
-  g->compatible_continue = true;
+  g->have_preference_continue = true;
+  g->preference_continue = false;
+#else
+  g->have_preference_continue = false;
 #endif
 #ifdef PLUTO_COMPATIBLE_ENUM
-  g->compatible_enum = true;
+  g->have_preference_enum = true;
+  g->preference_enum = false;
+#else
+  g->have_preference_enum = false;
 #endif
 #ifdef PLUTO_COMPATIBLE_NEW
-  g->compatible_new = true;
+  g->have_preference_new = true;
+  g->preference_new = false;
+#else
+  g->have_preference_new = false;
 #endif
 #ifdef PLUTO_COMPATIBLE_CLASS
-  g->compatible_class = true;
+  g->have_preference_class = true;
+  g->preference_class = false;
+#else
+  g->have_preference_class = false;
 #endif
 #ifdef PLUTO_COMPATIBLE_PARENT
-  g->compatible_parent = true;
+  g->have_preference_parent = true;
+  g->preference_parent = false;
+#else
+  g->have_preference_parent = false;
 #endif
 #ifdef PLUTO_COMPATIBLE_EXPORT
-  g->compatible_export = true;
+  g->have_preference_export = true;
+  g->preference_export = false;
+#else
+  g->have_preference_export = false;
 #endif
-#ifdef PLUTO_COMPATIBLE_TRY
-  g->compatible_try = true;
+  /* warnings - off by default*/
+#ifdef PLUTO_WARN_GLOBAL_SHADOW
+  g->warn_global_shadow = true;
+#else
+  g->warn_global_shadow = false;
 #endif
-#ifdef PLUTO_COMPATIBLE_CATCH
-  g->compatible_catch = true;
+#ifdef PLUTO_WARN_NON_PORTABLE_CODE
+  g->warn_non_portable_code = true;
+#else
+  g->warn_non_portable_code = false;
 #endif
-  g->scheduler = nullptr;
+#ifdef PLUTO_WARN_NON_PORTABLE_BYTECODE
+  g->warn_non_portable_bytecode = true;
+#else
+  g->warn_non_portable_bytecode = false;
+#endif
+#ifdef PLUTO_WARN_NON_PORTABLE_NAME
+  g->warn_non_portable_name = true;
+#else
+  g->warn_non_portable_name = false;
+#endif
+#ifdef PLUTO_WARN_IMPLICIT_GLOBAL
+  g->warn_implicit_global = true;
+#else
+  g->warn_implicit_global = false;
+#endif
+  /* warnings - on by default */
+#ifdef PLUTO_NO_WARN_VAR_SHADOW
+  g->warn_var_shadow = false;
+#else
+  g->warn_var_shadow = true;
+#endif
+#ifdef PLUTO_NO_WARN_TYPE_MISMATCH
+  g->warn_type_mismatch = false;
+#else
+  g->warn_type_mismatch = true;
+#endif
+#ifdef PLUTO_NO_WARN_UNREACHABLE_CODE
+  g->warn_unreachable_code = false;
+#else
+  g->warn_unreachable_code = true;
+#endif
+#ifdef PLUTO_NO_WARN_EXCESSIVE_ARGUMENTS
+  g->warn_excessive_arguments = false;
+#else
+  g->warn_excessive_arguments = true;
+#endif
+#ifdef PLUTO_NO_WARN_DEPRECATED
+  g->warn_deprecated = false;
+#else
+  g->warn_deprecated = true;
+#endif
+#ifdef PLUTO_NO_WARN_BAD_PRACTICE
+  g->warn_bad_practice = false;
+#else
+  g->warn_bad_practice = true;
+#endif
+#ifdef PLUTO_NO_WARN_POSSIBLE_TYPO
+  g->warn_possible_typo = false;
+#else
+  g->warn_possible_typo = true;
+#endif
+#ifdef PLUTO_NO_WARN_UNANNOTATED_FALLTHROUGH
+  g->warn_unannotated_fallthrough = false;
+#else
+  g->warn_unannotated_fallthrough = true;
+#endif
+#ifdef PLUTO_NO_WARN_DISCARDED_RETURN
+  g->warn_discarded_return = false;
+#else
+  g->warn_discarded_return = true;
+#endif
+#ifdef PLUTO_NO_WARN_FIELD_SHADOW
+  g->warn_field_shadow = false;
+#else
+  g->warn_field_shadow = true;
+#endif
+#ifdef PLUTO_NO_WARN_UNUSED
+  g->warn_unused = false;
+#else
+  g->warn_unused = true;
+#endif
 #ifdef PLUTO_ETL_ENABLE
   g->deadline = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() + PLUTO_ETL_NANOS;
 #endif
@@ -457,7 +528,7 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
 
 LUA_API void lua_close (lua_State *L) {
   lua_lock(L);
-  L = G(L)->mainthread;  /* only the main thread can be closed */
+  L = mainthread(G(L));  /* only the main thread can be closed */
   close_state(L);
 }
 
@@ -477,8 +548,8 @@ void luaE_warnerror (lua_State *L, const char *where) {
   const char *msg = (ttisstring(errobj))
                   ? getstr(tsvalue(errobj))
                   : "error object is not a string";
-  /* produce "warning: error in %s (%s)" (where, msg) */
-  luaE_warning(L, "warning: error in ", 1);
+  /* produce warning "error in %s (%s)" (where, msg) */
+  luaE_warning(L, "error in ", 1);
   luaE_warning(L, where, 1);
   luaE_warning(L, " (", 1);
   luaE_warning(L, msg, 1);

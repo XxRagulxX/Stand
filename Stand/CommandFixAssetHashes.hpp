@@ -74,7 +74,7 @@ namespace Stand
 
 		static void setLegitValues()
 		{
-			setHashes(soup::base64::decode("VBDXIgAAA8da0Xx1AAAB2AAAAAAAAAAATtv7BwAAAACtdCE3"));
+			setHashes(soup::base64::decode("/AQAxQAABAUigfV3AAAB2AAAAAAAAAAANRpOkQAAAABhPmjB"));
 			(*pointers::asset_verifier)->m_memoryTamperCRC.Set(0);
 			(*pointers::asset_verifier)->refreshCrc();
 		}
@@ -119,15 +119,15 @@ namespace Stand
 
 			SOUP_PACKET_IO(s)
 			{
-				return s.u32(m_fileChecksum)
-					&& s.u32(m_numFiles)
-					&& s.u32(m_interiorProxyChecksum)
-					&& s.u32(m_interiorProxyCount)
-					&& s.u32(m_nLocalTunablesCRC)
-					&& s.u32(m_scriptSize)
-					&& s.u32(m_scriptStoreHash)
-					&& s.u32(m_scriptRpfHash)
-					&& s.u32(extra_content_crc)
+				return s.u32_be(m_fileChecksum)
+					&& s.u32_be(m_numFiles)
+					&& s.u32_be(m_interiorProxyChecksum)
+					&& s.u32_be(m_interiorProxyCount)
+					&& s.u32_be(m_nLocalTunablesCRC)
+					&& s.u32_be(m_scriptSize)
+					&& s.u32_be(m_scriptStoreHash)
+					&& s.u32_be(m_scriptRpfHash)
+					&& s.u32_be(extra_content_crc)
 					;
 			}
 		};

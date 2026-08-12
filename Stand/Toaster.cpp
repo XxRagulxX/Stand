@@ -1,7 +1,6 @@
 #include "Toaster.hpp"
 
 #include "GridToaster.hpp"
-#include "Renderer.hpp"
 
 namespace Stand
 {

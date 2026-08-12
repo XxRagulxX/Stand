@@ -80,7 +80,7 @@ namespace Stand
 			StringUtils::replace_all(str, L"iour", L"ior"); // Behaviour
 			StringUtils::replace_all(str, L"mour", L"mor"); // Armour
 			StringUtils::replace_all(str, L"vour", L"vor"); // Favourite
-			StringUtils::replace_all(str, L"logue", L"log"); // Analogue
+			StringUtils::replace_all(str, L"alogue", L"alog"); // Analogue; not Prologue (Prolog would be correct in en-US, but not very common.)
 			if (str.find(L"{") == std::wstring::npos)
 			{
 				StringUtils::replace_all(str, L"lour", L"lor"); // Colour

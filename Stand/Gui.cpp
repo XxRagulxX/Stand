@@ -2552,27 +2552,20 @@ namespace Stand
 		FiberPool::queueJob([]
 		{
 			const char* new_vehs[] = {
-"castigator",
-"coquette5",
-"dominator10",
-"driftcypher",
-"driftnebula",
-"driftsentinel",
-"driftvorschlag",
-"envisage",
-"eurosX32",
-"niobe",
-"paragon3",
-"pipistrello",
-"pizzaboy",
-"poldominator10",
-"poldorado",
-"polgreenwood",
-"policet3",
-"polimpaler5",
-"polimpaler6",
-"vorschlaghammer",
-"yosemite1500",
+"caracara3",
+"cartuccia",
+"driftcoquette",
+"driftdominator8",
+"driftelegy",
+"estride",
+"horus",
+"laufer",
+"lrcgt",
+"merula",
+"polignus",
+"trflat2",
+"velenogt",
+"warden",
 			};
 			for (const auto& veh : new_vehs)
 			{
@@ -2583,7 +2576,7 @@ namespace Stand
 					StringUtils::to_lower(make_name);
 
 					std::string str = "{";
-					str.append(fmt::format(R"("{}", "{}", ATSTRINGHASH("{}"), "1.68 TODO: Update Name")", veh, make_name, veh_classes[VEHICLE::GET_VEHICLE_CLASS_FROM_NAME(hash)]));
+					str.append(fmt::format(R"("{}", "{}", ATSTRINGHASH("{}"), "TODO: Update name")", veh, make_name, veh_classes[VEHICLE::GET_VEHICLE_CLASS_FROM_NAME(hash)]));
 					str.append("},");
 					g_logger.log(std::move(str));
 				});

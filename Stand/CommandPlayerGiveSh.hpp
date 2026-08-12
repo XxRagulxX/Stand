@@ -7,6 +7,7 @@
 #include "ScriptHostUtil.hpp"
 #include "script_thread.hpp"
 
+#if CAN_GIVE_SH
 namespace Stand
 {
 	class CommandPlayerGiveSh : public CommandPlayerAction
@@ -39,3 +40,4 @@ namespace Stand
 		}
 	};
 }
+#endif

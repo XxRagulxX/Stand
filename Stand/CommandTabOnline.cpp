@@ -109,7 +109,7 @@
 #include "CommandBlockJoinsNonWhitelisted.hpp"
 #include "CommandBlockJoinsAdvertisers.hpp"
 #include "CommandBlockJoinsRemoved.hpp"
-#include "CommandBjMessage.hpp"
+//#include "CommandBjMessage.hpp"
 #include "CommandRemovedPlayers.hpp"
 
 #include "CommandStandUserIdentification.hpp"
@@ -296,7 +296,7 @@ namespace Stand
 					bjs->createChild<CommandBlockJoinsAdvertisers>();
 					bjs->createChild<CommandBlockJoinsRemoved>();
 					bjs->createChild<CommandDivider>(LOC("META"));
-					bjs->createChild<CommandBjMessage>();
+					//bjs->createChild<CommandBjMessage>();
 					bjs->createChild<CommandRemovedPlayers>();
 					
 					// Notifications

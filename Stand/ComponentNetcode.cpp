@@ -4,7 +4,6 @@
 #include "AddressGamers.hpp"
 #include "atArray.hpp"
 #include "BattlEyeServer.hpp"
-#include "be_delegate.hpp"
 #include "CNetGamePlayer.hpp"
 #include "CNetworkSession.hpp"
 #include "CommandBlockBlockJoin.hpp"
@@ -1066,13 +1065,11 @@ namespace Stand
 					}
 					else if (!client)
 					{
+#if false
 						soup::ObfusString str("BEClient_x64.dll");
 						if (!GetModuleHandleA(str.c_str()))
 						{
-							if (!g_hooking.block_outgoing_syncs_to_host)
-							{
-								Util::toast(Label::combineWithSpace(LOC("HKI"), LOC("HKI_BS")));
-							}
+							Util::toast(LOC("HKI"));
 
 							if (!g_tunables.getBool(TUNAHASH("disable BottlEye")))
 							{
@@ -1086,6 +1083,7 @@ namespace Stand
 								return;
 							}
 						}
+#endif
 					}
 					else if (BattlEyeServer::isRunningDueToUs())
 					{

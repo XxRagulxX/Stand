@@ -35,7 +35,8 @@ namespace Stand
 			{
 				return onClick(click);
 			}
-			value = StringUtils::utf16_to_utf8(get_next_arg(args));
+			value = StringUtils::utf16_to_utf8(args);
+			args.clear();
 			update_state(click.type);
 			ScAccount::name2rid(click, std::string(value), [this](const ScAccount& a)
 			{

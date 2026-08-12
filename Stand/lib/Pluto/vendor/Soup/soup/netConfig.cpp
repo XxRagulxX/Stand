@@ -1,8 +1,4 @@
 #include "netConfig.hpp"
-#if !SOUP_WASM
-
-#include "dnsSmartResolver.hpp"
-#include "Socket.hpp"
 
 NAMESPACE_SOUP
 {
@@ -13,22 +9,18 @@ NAMESPACE_SOUP
 		return netConfig_inst;
 	}
 
-	dnsResolver& netConfig::getDnsResolver() SOUP_EXCAL
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
+	SharedPtr<dnsResolver>& netConfig::getDnsResolver() SOUP_EXCAL
 	{
 		if (!dns_resolver)
 		{
-			// Reasons for not defaulting to dnsOsResolver:
-			// - Android doesn't have libresolv
-			// - Many ISPs provide disingenuous DNS servers, even blocking sites like pastebin.com
-			dns_resolver = soup::make_unique<dnsSmartResolver>();
+			dns_resolver = dnsResolver::makeDefault();
 		}
-		return *dns_resolver;
+		return dns_resolver;
 	}
+#endif
 
 	netConfig::netConfig()
-		: certchain_validator(&Socket::certchain_validator_default)
 	{
 	}
 }
-
-#endif

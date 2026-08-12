@@ -6,12 +6,11 @@
 
 #include "atStringHash.hpp"
 #include "CommandName.hpp"
-#include "xormagics.hpp"
 
-#define LOC(key) Label(ATSTRINGHASH(key) ^ MAGIC_LABEL ^ Label::getSalt(key), Label::getSalt(key), Label::TagLocalisedXor{})
+#define LOC(key) Label(ATSTRINGHASH(key), Label::TagLocalised{})
 #define LOC_RT(...) Label(__VA_ARGS__, Label::TagLocalised{})
 #define LIT(...) Label(__VA_ARGS__, Label::TagLiteral{})
-#define LIT_OBF(x) LIT(soup::ObfusString(x).str())
+#define LIT_OBF(x) Label(x, Label::TagLiteral{})
 #define NOLABEL Label()
 #if STAND_DEBUG
 #define PHSTR(str) "[PH] " str
@@ -27,7 +26,6 @@ namespace Stand
 		static const Label sNoLabel;
 
 		struct TagLocalised {};
-		struct TagLocalisedXor {};
 		struct TagLiteral {};
 
 	private:
@@ -38,17 +36,12 @@ namespace Stand
 		constexpr Label() noexcept = default;
 
 		constexpr Label(hash_t hash, TagLocalised) noexcept
-			: hash(hash ^ MAGIC_LABEL)
-		{
-		}
-
-		__declspec(noinline) Label(hash_t hash, uint32_t salt, TagLocalisedXor) noexcept
-			: hash(hash ^ salt)
+			: hash(hash)
 		{
 		}
 
 		Label(const std::string& hash, TagLocalised) noexcept
-			: hash(rage::atStringHash(hash) ^ MAGIC_LABEL)
+			: hash(rage::atStringHash(hash))
 		{
 		}
 
@@ -105,7 +98,7 @@ namespace Stand
 		[[nodiscard]] bool isLiteralString(const std::string& b) const noexcept;
 
 		[[nodiscard]] uint64_t getHash() const noexcept;
-		[[nodiscard]] hash_t getLocalisationHash() const noexcept;
+		[[nodiscard]] constexpr hash_t getLocalisationHash() const noexcept { return hash; }
 
 		[[nodiscard]] std::string getWebString() const noexcept;
 
@@ -121,11 +114,6 @@ namespace Stand
 		[[nodiscard]] CommandName getEnglishForCommandName() const noexcept;
 
 		void makeLiteralLocalised() noexcept;
-
-		[[nodiscard]] static consteval uint32_t getSalt(const char* label)
-		{
-			return static_cast<uint32_t>(soup::compiletime::strlen(label)) * soup::rand.getConstexprSeed();
-		}
 	};
 #pragma pack(pop)
 }

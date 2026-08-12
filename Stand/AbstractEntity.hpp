@@ -303,6 +303,7 @@ namespace Stand
 		[[nodiscard]] bool isOnRoad();
 		[[nodiscard]] AbstractPlayer getPersonalVehicleOwner();
 		[[nodiscard]] std::pair<Vector3, Vector3> getBombBayPos();
+		[[nodiscard]] Hash getEquippedVehicleWeapon();
 	};
 #pragma pack(pop)
 

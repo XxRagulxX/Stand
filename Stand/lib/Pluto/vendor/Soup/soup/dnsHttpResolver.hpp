@@ -1,9 +1,7 @@
 #pragma once
 
-#include "base.hpp"
-#if !SOUP_WASM
-
 #include "dnsRawResolver.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 NAMESPACE_SOUP
 {

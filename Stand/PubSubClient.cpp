@@ -1,6 +1,5 @@
 #include "PubSubClient.hpp"
 
-#include <soup/DelayedCtor.hpp>
 #include <soup/EstablishWebSocketConnectionTask.hpp>
 #include <soup/MaintainWebSocketConnectionTask.hpp>
 #include <soup/ObfusString.hpp>
@@ -49,19 +48,21 @@ namespace Stand
 		{
 			if (underlying.tickUntilDone())
 			{
-				for (const auto& subscription : s_subscriptions)
+				if (underlying.sock)
 				{
-					std::string msg(1, '+');
-					msg.append(subscription.topic);
+					for (const auto& subscription : s_subscriptions)
+					{
+						std::string msg(1, '+');
+						msg.append(subscription.topic);
 #ifdef STAND_DEBUG
-					//Util::toast(std::string(msg));
+						//Util::toast(std::string(msg));
 #endif
-					underlying.sock->wsSend(std::move(msg));
+						underlying.sock->wsSend(std::move(msg));
+					}
+					g_net_interface.add<soup::MaintainWebSocketConnectionTask>(underlying.sock, &onWebSocketFrame);
 				}
-				g_net_interface.add<soup::MaintainWebSocketConnectionTask>(underlying.sock, &onWebSocketFrame);
 				s_sock = std::move(underlying.sock);
 				s_connecting = false;
-
 				setWorkDone();
 			}
 		}

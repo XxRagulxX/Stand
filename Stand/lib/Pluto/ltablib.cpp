@@ -18,6 +18,8 @@
 
 #include "lauxlib.h"
 #include "lualib.h"
+#include "llimits.h"
+#include "ljson.hpp" // isIndexBasedTable
 #include "lstate.h"
 #include "ltable.h"
 
@@ -60,6 +62,16 @@ static void checktab (lua_State *L, int arg, int what) {
 }
 
 
+static int tcreate (lua_State *L) {
+  lua_Unsigned sizeseq = (lua_Unsigned)luaL_checkinteger(L, 1);
+  lua_Unsigned sizerest = (lua_Unsigned)luaL_optinteger(L, 2, 0);
+  luaL_argcheck(L, sizeseq <= cast_uint(INT_MAX), 1, "out of range");
+  luaL_argcheck(L, sizerest <= cast_uint(INT_MAX), 2, "out of range");
+  lua_createtable(L, cast_int(sizeseq), cast_int(sizerest));
+  return 1;
+}
+
+
 static int tinsert (lua_State *L) {
   lua_Integer pos;  /* where to insert new element */
   lua_Integer e = aux_getn(L, 1, TAB_RW);
@@ -82,7 +94,7 @@ static int tinsert (lua_State *L) {
       break;
     }
     default: {
-      luaL_error(L, "wrong number of arguments to 'insert'");
+      return luaL_error(L, "wrong number of arguments to 'insert'");
     }
   }
   lua_seti(L, 1, pos);  /* t[pos] = v */
@@ -119,9 +131,6 @@ static int tremove (lua_State *L) {
     /* check whether 'pos' is in [1, size + 1] */
     luaL_argcheck(L, (lua_Unsigned)pos - 1u <= (lua_Unsigned)size, 2,
                      "position out of bounds");
-#ifndef PLUTO_DISABLE_LENGTH_CACHE
-  lua_setcachelen(L, size - 1, 1);
-#endif
   lua_geti(L, 1, pos);  /* result = t[pos] */
   for ( ; pos < size; pos++) {
     lua_geti(L, 1, pos + 1);
@@ -223,10 +232,10 @@ static int tunpack (lua_State *L) {
   lua_Integer i = luaL_optinteger(L, 2, 1);
   lua_Integer e = luaL_opt(L, luaL_checkinteger, 3, luaL_len(L, 1));
   if (i > e) return 0;  /* empty range */
-  n = (lua_Unsigned)e - i;  /* number of elements minus 1 (avoid overflows) */
+  n = l_castS2U(e) - l_castS2U(i);  /* number of elements minus 1 */
   if (l_unlikely(n >= (unsigned int)INT_MAX  ||
                  !lua_checkstack(L, (int)(++n))))
-    luaL_error(L, "too many results to unpack");
+    return luaL_error(L, "too many results to unpack");
   for (; i < e; i++) {  /* push arg[i..e - 1] (to avoid overflows) */
     lua_geti(L, 1, i);
   }
@@ -239,6 +248,59 @@ static int tunpack (lua_State *L) {
 
 
 /*
+** For each key-value pair in the table at -1, assigns it to the table at -2.
+** Pops the former table from the stack.
+*/
+static void trivialcopy (lua_State* L) {
+  lua_pushnil(L);
+  /* stack now: newtable, table, key */
+  while (lua_next(L, -2)) {
+    /* stack now: newtable, table, key, value */
+    lua_pushvalue(L, -2);
+    lua_pushvalue(L, -2);
+    lua_settable(L, -6);
+    lua_pop(L, 1);
+  }
+  lua_pop(L, 1);
+}
+
+
+/*
+** Pushes a clone of the table at i.
+*/
+static void auxclone (lua_State *L, int i, int depth) {
+  --depth;
+  lua_checkstack(L, 6);
+  lua_newtable(L);
+  lua_pushvalue(L, i < 0 ? i - 1 : i);
+  lua_pushnil(L);
+  while (lua_next(L, -2)) {
+    /* stack now: newtable, table, key, value */
+    lua_pushvalue(L, -2);
+    if (depth > 0 && lua_type(L, -2) == LUA_TTABLE) {
+      auxclone(L, -2, depth);
+    }
+    else {
+      lua_pushvalue(L, -2);
+    }
+    lua_settable(L, -6);
+    lua_pop(L, 1);
+  }
+  lua_pop(L, 1);
+}
+
+
+static int clone (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  auto depth = (int)luaL_optinteger(L, 2, 100);
+  luaL_argcheck(L, depth >= 1, 2, "depth must be at least 1");
+  auxclone(L, 1, depth);
+  return 1;
+}
+
+
+
+/*
 ** {======================================================
 ** Quicksort
 ** (based on 'Algorithms in MODULA-3', Robert Sedgewick;
@@ -247,8 +309,16 @@ static int tunpack (lua_State *L) {
 */
 
 
-/* type for array indices */
+/*
+** Type for array indices. These indices are always limited by INT_MAX,
+** so it is safe to cast them to lua_Integer even for Lua 32 bits.
+*/
 typedef unsigned int IdxT;
+
+
+/* Versions of lua_seti/lua_geti specialized for IdxT */
+#define geti(L,idt,idx)	lua_geti(L, idt, l_castU2S(idx))
+#define seti(L,idt,idx)	lua_seti(L, idt, l_castU2S(idx))
 
 
 /*
@@ -257,31 +327,8 @@ typedef unsigned int IdxT;
 ** of a partition. (If you don't want/need this "randomness", ~0 is a
 ** good choice.)
 */
-#if !defined(l_randomizePivot)		/* { */
-
-#include <time.h>
-
-/* size of 'e' measured in number of 'unsigned int's */
-#define sof(e)		(sizeof(e) / sizeof(unsigned int))
-
-/*
-** Use 'time' and 'clock' as sources of "randomness". Because we don't
-** know the types 'clock_t' and 'time_t', we cannot cast them to
-** anything without risking overflows. A safe way to use their values
-** is to copy them to an array of a known type and use the array values.
-*/
-static unsigned int l_randomizePivot (void) {
-  clock_t c = clock();
-  time_t t = time(NULL);
-  unsigned int buff[sof(c) + sof(t)];
-  unsigned int i, rnd = 0;
-  memcpy(buff, &c, sof(c) * sizeof(unsigned int));
-  memcpy(buff + sof(c), &t, sof(t) * sizeof(unsigned int));
-  for (i = 0; i < sof(buff); i++)
-    rnd += buff[i];
-  return rnd;
-}
-
+#if !defined(l_randomizePivot)
+#define l_randomizePivot(L)	luaL_makeseed(L)
 #endif					/* } */
 
 
@@ -290,8 +337,8 @@ static unsigned int l_randomizePivot (void) {
 
 
 static void set2 (lua_State *L, IdxT i, IdxT j) {
-  lua_seti(L, 1, i);
-  lua_seti(L, 1, j);
+  seti(L, 1, i);
+  seti(L, 1, j);
 }
 
 
@@ -328,15 +375,15 @@ static IdxT partition (lua_State *L, IdxT lo, IdxT up) {
   /* loop invariant: a[lo .. i] <= P <= a[j .. up] */
   for (;;) {
     /* next loop: repeat ++i while a[i] < P */
-    while ((void)lua_geti(L, 1, ++i), sort_comp(L, -1, -2)) {
-      if (l_unlikely(i == up - 1))  /* a[i] < P  but a[up - 1] == P  ?? */
+    while ((void)geti(L, 1, ++i), sort_comp(L, -1, -2)) {
+      if (l_unlikely(i == up - 1))  /* a[up - 1] < P == a[up - 1] */
         luaL_error(L, "invalid order function for sorting");
       lua_pop(L, 1);  /* remove a[i] */
     }
-    /* after the loop, a[i] >= P and a[lo .. i - 1] < P */
+    /* after the loop, a[i] >= P and a[lo .. i - 1] < P  (a) */
     /* next loop: repeat --j while P < a[j] */
-    while ((void)lua_geti(L, 1, --j), sort_comp(L, -3, -1)) {
-      if (l_unlikely(j < i))  /* j < i  but  a[j] > P ?? */
+    while ((void)geti(L, 1, --j), sort_comp(L, -3, -1)) {
+      if (l_unlikely(j < i))  /* j <= i - 1 and a[j] > P, contradicts (a) */
         luaL_error(L, "invalid order function for sorting");
       lua_pop(L, 1);  /* remove a[j] */
     }
@@ -360,7 +407,7 @@ static IdxT partition (lua_State *L, IdxT lo, IdxT up) {
 */
 static IdxT choosePivot (IdxT lo, IdxT up, unsigned int rnd) {
   IdxT r4 = (up - lo) / 4;  /* range/4 */
-  IdxT p = rnd % (r4 * 2) + (lo + r4);
+  IdxT p = (rnd ^ lo ^ up) % (r4 * 2) + (lo + r4);
   lua_assert(lo + r4 <= p && p <= up - r4);
   return p;
 }
@@ -369,14 +416,13 @@ static IdxT choosePivot (IdxT lo, IdxT up, unsigned int rnd) {
 /*
 ** Quicksort algorithm (recursive function)
 */
-static void auxsort (lua_State *L, IdxT lo, IdxT up,
-                                   unsigned int rnd) {
+static void auxsort (lua_State *L, IdxT lo, IdxT up, unsigned rnd) {
   while (lo < up) {  /* loop for tail recursion */
     IdxT p;  /* Pivot index */
     IdxT n;  /* to be used later */
     /* sort elements 'lo', 'p', and 'up' */
-    lua_geti(L, 1, lo);
-    lua_geti(L, 1, up);
+    geti(L, 1, lo);
+    geti(L, 1, up);
     if (sort_comp(L, -1, -2))  /* a[up] < a[lo]? */
       set2(L, lo, up);  /* swap a[lo] - a[up] */
     else
@@ -387,13 +433,13 @@ static void auxsort (lua_State *L, IdxT lo, IdxT up,
       p = (lo + up)/2;  /* middle element is a good pivot */
     else  /* for larger intervals, it is worth a random pivot */
       p = choosePivot(lo, up, rnd);
-    lua_geti(L, 1, p);
-    lua_geti(L, 1, lo);
+    geti(L, 1, p);
+    geti(L, 1, lo);
     if (sort_comp(L, -2, -1))  /* a[p] < a[lo]? */
       set2(L, p, lo);  /* swap a[p] - a[lo] */
     else {
       lua_pop(L, 1);  /* remove a[lo] */
-      lua_geti(L, 1, up);
+      geti(L, 1, up);
       if (sort_comp(L, -1, -2))  /* a[up] < a[p]? */
         set2(L, p, up);  /* swap a[up] - a[p] */
       else
@@ -401,9 +447,9 @@ static void auxsort (lua_State *L, IdxT lo, IdxT up,
     }
     if (up - lo == 2)  /* only 3 elements? */
       return;  /* already sorted */
-    lua_geti(L, 1, p);  /* get middle element (Pivot) */
+    geti(L, 1, p);  /* get middle element (Pivot) */
     lua_pushvalue(L, -1);  /* push Pivot */
-    lua_geti(L, 1, up - 1);  /* push a[up - 1] */
+    geti(L, 1, up - 1);  /* push a[up - 1] */
     set2(L, p, up - 1);  /* swap Pivot (a[p]) with a[up - 1] */
     p = partition(L, lo, up);
     /* a[lo .. p - 1] <= a[p] == P <= a[p + 1 .. up] */
@@ -418,38 +464,20 @@ static void auxsort (lua_State *L, IdxT lo, IdxT up,
       up = p - 1;  /* tail call for [lo .. p - 1]  (lower interval) */
     }
     if ((up - lo) / 128 > n) /* partition too imbalanced? */
-      rnd = l_randomizePivot();  /* try a new randomization */
+      rnd = l_randomizePivot(L);  /* try a new randomization */
   }  /* tail call auxsort(L, lo, up, rnd) */
-}
-
-
-/*
-** For each key-value pair in the table at -1, assigns it to the table at -2.
-** Pops the latter table from the stack.
-*/
-static void trivialcopy (lua_State* L) {
-  lua_pushnil(L);
-  /* stack now: newtable, table, key */
-  while (lua_next(L, -2)) {
-    /* stack now: newtable, table, key, value */
-    lua_pushvalue(L, -2);
-    lua_pushvalue(L, -2);
-    lua_settable(L, -6);
-    lua_pop(L, 1);
-  }
-  lua_pop(L, 1);
 }
 
 
 template <bool make_copy>
 static int sort (lua_State *L) {
+  lua_Integer n = aux_getn(L, 1, TAB_RW);
   if (make_copy) {
     lua_newtable(L);
     lua_pushvalue(L, 1);
     trivialcopy(L);
     lua_replace(L, 1);
   }
-  lua_Integer n = aux_getn(L, 1, TAB_RW);
   if (n > 1) {  /* non-trivial interval? */
     luaL_argcheck(L, n < INT_MAX, 1, "array too big");
     if (!lua_isnoneornil(L, 2))  /* is there a 2nd argument? */
@@ -468,7 +496,7 @@ static int getn (lua_State *L) {
 }
 
 
-#ifndef PLUTO_DISABLE_TABLE_FREEZING
+#ifdef PLUTO_ENABLE_TABLE_FREEZING
 static int tfreeze(lua_State* L) {
   luaL_checktype(L, 1, LUA_TTABLE);
   if (lua_gettop(L) > 1) {
@@ -675,7 +703,7 @@ static int tsize (lua_State *L) {
 
   unsigned int size = luaH_gethsize(t);
   if (!hashonly)
-    size += luaH_realasize(t);
+    size += t->asize;
 
   lua_pushinteger(L, size);
   return 1;
@@ -712,6 +740,7 @@ static int treduce (lua_State *L) {
 }
 
 
+template <bool findindex>
 static int tfind (lua_State *L) {
   luaL_checktype(L, 1, LUA_TTABLE);
   luaL_checktype(L, 2, LUA_TFUNCTION);
@@ -727,8 +756,8 @@ static int tfind (lua_State *L) {
     /* stack now: table, key, value, func, value */
     lua_call(L, 1, 1);
     /* stack now: table, key, value, bool */
-    if (lua_istrue(L, -1)) {
-      lua_pop(L, 1);
+    if (lua_toboolean(L, -1)) {
+      lua_pop(L, findindex ? 2 : 1);
       return 1;
     }
     lua_pop(L, 2);
@@ -755,7 +784,7 @@ static int checkall (lua_State *L) {
     /* stack now: table, key, value, func, value */
     lua_call(L, 1, 1);
     /* stack now: table, key, value, bool */
-    if (!lua_istrue(L, -1)) {
+    if (!lua_toboolean(L, -1)) {
       return 1;
     }
     lua_pop(L, 2);
@@ -774,13 +803,285 @@ static int tclear (lua_State *L) {
 }
 
 
+static int tback (lua_State *L) {
+  getn(L);
+  lua_gettable(L, 1);
+  return 1;
+}
+
+
+static int modget (lua_State *L) {
+  const lua_Integer i = ((luaL_checkinteger(L, 2) - 1) % aux_getn(L, 1, TAB_R)) + 1;
+  lua_pushinteger(L, i);
+  lua_gettable(L, 1);
+  return 1;
+}
+
+
+static int modset (lua_State *L) {
+  const lua_Integer i = ((luaL_checkinteger(L, 2) - 1) % aux_getn(L, 1, TAB_W)) + 1;
+  lua_pushinteger(L, i);
+  lua_pushvalue(L, 3);
+  lua_settable(L, 1);
+  return 0;
+}
+
+
+static int tkeys (lua_State *L) {
+  lua_newtable(L);
+  lua_Integer i = 0;
+  lua_pushnil(L);
+  /* stack now: res, key */
+  while (lua_next(L, 1)) {
+    /* stack now: res, key, value */
+    lua_pop(L, 1);
+    /* stack now: res, key */
+    lua_pushinteger(L, ++i);
+    /* stack now: res, key, index */
+    lua_pushvalue(L, -2);
+    /* stack now: res, key, index, key */
+    lua_settable(L, -4);
+    /* stack now: res, key */
+  }
+  /* stack now: res */
+  return 1;
+}
+
+
+static int tvalues (lua_State *L) {
+  lua_newtable(L);
+  lua_Integer i = 0;
+  lua_pushnil(L);
+  /* stack now: res, key */
+  while (lua_next(L, 1)) {
+    /* stack now: res, key, value */
+    lua_pushinteger(L, ++i);
+    /* stack now: res, key, value, index */
+    lua_pushvalue(L, -2);
+    /* stack now: res, key, value, index, value */
+    lua_settable(L, -5);
+    /* stack now: res, key, value */
+    lua_pop(L, 1);
+    /* stack now: res, key */
+  }
+  /* stack now: res */
+  return 1;
+}
+
+
+static int tcountvalues (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_settop(L, 1);
+
+  lua_newtable(L);
+  lua_pushnil(L);
+  while (lua_next(L, 1)) { /* og, result, key */
+    lua_pushvalue(L, 4); /* push the key, prepare for result[value] */
+    lua_gettable(L, 2); /* push result[value] */
+    const lua_Integer i = luaL_optinteger(L, -1, 0) + 1; /* start or update count */
+    lua_pushvalue(L, 4); /* push the key again */
+    lua_pushinteger(L, i); /* push updated count */
+    lua_settable(L, 2); /* update result */
+    lua_settop(L, 3); /* reset stack to og, result, key */
+  }
+
+  return 1;
+}
+
+
+static int tdeduplicate (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_settop(L, 1);
+
+  lua_newtable(L);  /* set of seen values */
+  lua_pushnil(L);
+  while (lua_next(L, 1)) {
+    lua_pushvalue(L, 4);
+    if (lua_gettable(L, 2) > LUA_TNIL) {  /* seen this value before? */
+      lua_pushvalue(L, 3);
+      lua_pushnil(L);
+      lua_settable(L, 1);
+    }
+
+    lua_pushvalue(L, 4);
+    lua_pushboolean(L, true);
+    lua_settable(L, 2);
+
+    lua_settop(L, 3);
+  }
+
+  lua_settop(L, 1);
+  return 1;
+}
+
+
+static int tdeduplicated (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_settop(L, 1);
+
+  lua_Integer i = 1;
+  lua_newtable(L);  /* result */
+  lua_newtable(L);  /* set of seen values */
+  lua_pushnil(L);
+  while (lua_next(L, 1)) {
+    lua_pushvalue(L, 5);
+    if (lua_gettable(L, 3) <= LUA_TNIL) {  /* value not seen before? */
+      lua_pushinteger(L, i++);
+      lua_pushvalue(L, 5);
+      lua_settable(L, 2);
+    }
+
+    lua_pushvalue(L, 5);
+    lua_pushboolean(L, true);
+    lua_settable(L, 3);
+
+    lua_settop(L, 4);
+  }
+
+  lua_settop(L, 2);
+  return 1;
+}
+
+
+static int tslice (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+
+  const lua_Integer l = luaL_len(L, 1);
+
+  lua_Integer idx_start = luaL_checkinteger(L, 2);
+  lua_Integer idx_end = luaL_optinteger(L, 3, l);
+
+  if (idx_start < 0) {
+    idx_start = l + idx_start + 1;
+  }
+
+  if (idx_end < 0) {
+    idx_end = l + idx_end + 1;
+  }
+  else if (idx_end > l) {
+    idx_end = l;
+  }
+
+  lua_newtable(L);
+  lua_Integer idx_result = 1;
+  for (lua_Integer i = idx_start; i <= idx_end; ++i) {
+    /* stack: res */
+    lua_pushinteger(L, i);
+    /* stack: res, idx */
+    lua_gettable(L, 1);
+    /* stack: res, val */
+    if (!lua_isnoneornil(L, -1)) {
+      lua_pushinteger(L, idx_result++);
+      /* stack: res, val, idx */
+      lua_pushvalue(L, -2);
+      /* stack: res, val, idx, val */
+      lua_settable(L, -4);
+    }
+    /* stack: res, val */
+    lua_pop(L, 1);
+  }
+  return 1;
+}
+
+static int tchunk (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+
+  const lua_Integer size = luaL_checkinteger(L, 2);
+
+  if (size <= 0) {
+    luaL_error(L, "argument 'size' to table.chunk must be greater than zero (got %d)", size);
+  }
+
+  lua_pop(L, 1);
+  
+  lua_Integer chunk_idx = 0;
+  lua_Integer subtable_len = 0;
+
+  lua_newtable(L);
+  lua_pushnil(L);
+  while (lua_next(L, 1)) {
+    if (!lua_isnoneornil(L, 4)) { /* stack: og, result, key, value */
+      /* push our table to the stack. either by creating a new one, or fetching the latest subtable */
+      if (subtable_len % size == 0) { /* if we've reached chunk size or should start creating a new chunk */
+        lua_newtable(L); /* create a new table */
+        lua_pushinteger(L, ++chunk_idx); /* create its index */
+        lua_pushvalue(L, -2); /* copy reference to table */
+        lua_settable(L, 2); /* result[chunk_idx] = subtable */
+        subtable_len = 0;
+      }
+      else { /* we should already have a subtable at result[chunk_idx] */
+        lua_pushinteger(L, chunk_idx);
+        lua_gettable(L, 2); /* push result[chunk_idx] */
+      }
+
+      lua_pushinteger(L, ++subtable_len); /* push key for use in chunk */
+      lua_pushvalue(L, 4); /* push value from lua_next */
+      lua_settable(L, 5); /* chunk[subtable_len] = value */
+    }
+
+    lua_settop(L, 3); /* reset stack: og, result, key */
+  }
+
+  return 1;
+}
+
+
+static int tinvert (lua_State *L) {
+  lua_newtable(L);
+  lua_pushnil(L);
+  while (lua_next(L, 1)) {
+    /* stack now: res, key, value */
+    lua_pushvalue(L, -2);
+    /* stack now: res, key, value, key */
+    lua_settable(L, -4);
+    /* stack now: res, key */
+  }
+  /* stack now: res */
+  return 1;
+}
+
+
+static int tisarray (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  if (const auto n = isIndexBasedTable(L, 1)) {
+    for (lua_Integer k = 1; k != n; ++k) {
+      if (l_unlikely(lua_geti(L, 1, k) == LUA_TNIL)) {
+        lua_pop(L, 1);
+        lua_pushboolean(L, false);
+        return 1;
+      }
+      lua_pop(L, 1);
+    }
+    lua_pushboolean(L, true);
+  }
+  else lua_pushboolean(L, false);
+  return 1;
+}
+
+
 /* }====================================================== */
 
 
 static const luaL_Reg tab_funcs[] = {
+  {"isarray", tisarray},
+  {"invert", tinvert},
+  {"chunk", tchunk},
+  {"slice", tslice},
+  {"countvalues", tcountvalues},
+  {"dedup", tdeduplicate},
+  {"deduplicate", tdeduplicate},
+  {"deduped", tdeduplicated},
+  {"deduplicated", tdeduplicated},
+  {"keys", tkeys},
+  {"values", tvalues},
+  {"modget", modget},
+  {"modset", modset},
+  {"back", tback},
   {"clear", tclear},
   {"checkall", checkall},
-  {"find", tfind},
+  {"find", tfind<false>},
+  {"findindex", tfind<true>},
+  {"findkey", tfind<true>},
   {"reduce", treduce},
   {"size", tsize},
   {"reorder", treorder<false>},
@@ -793,11 +1094,12 @@ static const luaL_Reg tab_funcs[] = {
   {"filtered", tfilter<true>},
   {"foreach", foreach},
   {"contains", tcontains},
-#ifndef PLUTO_DISABLE_TABLE_FREEZING
+#ifdef PLUTO_ENABLE_TABLE_FREEZING
   {"isfrozen", tisfrozen},
   {"freeze", tfreeze},
 #endif
   {"concat", tconcat},
+  {"create", tcreate},
   {"insert", tinsert},
   {"pack", tpack},
   {"unpack", tunpack},
@@ -805,6 +1107,7 @@ static const luaL_Reg tab_funcs[] = {
   {"move", tmove},
   {"sort", sort<false>},
   {"sorted", sort<true>},
+  {"clone", clone},
   {"getn", getn},
   {NULL, NULL}
 };
@@ -813,6 +1116,7 @@ static const luaL_Reg tab_funcs[] = {
 LUAMOD_API int luaopen_table (lua_State *L) {
   luaL_newlib(L, tab_funcs);
 
+#ifndef PLUTO_DONT_LOAD_ANY_STANDARD_LIBRARY_CODE_WRITTEN_IN_PLUTO
   lua_pushliteral(L, "min");
   luaL_loadstring(L, "return |t| -> table.reduce(t, math.min, math.maxinteger)");
   lua_call(L, 0, 1);
@@ -822,6 +1126,7 @@ LUAMOD_API int luaopen_table (lua_State *L) {
   luaL_loadstring(L, "return |t| -> table.reduce(t, math.max, math.mininteger)");
   lua_call(L, 0, 1);
   lua_settable(L, -3);
+#endif
 
   return 1;
 }

@@ -1,7 +1,14 @@
+<?php
+if ($_SERVER["REQUEST_URI"] == "/index")
+{
+	header("Location: /");
+	exit;
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Stand for GTA V</title>
+	<title>Stand for GTA V Legacy</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="/halfmoon-variables.min.css" crossorigin="anonymous" rel="stylesheet" />
 	<link href="/halfmoon-config.css" rel="stylesheet" />
@@ -21,33 +28,36 @@
 		<div class="content-wrapper">
 			<div class="container-lg">
 				<div class="content">
-					<h1>Stand <span class="font-weight-lighter">for GTA V</span></h1>
-					<p>The Grand Theft Auto V mod menu that enhances your game experience.</p>
+					<h1>Stand <span class="font-weight-lighter">for GTA V Legacy</span></h1>
+					<p>The mod menu that enhances your game experience.</p>
+					<div class="alert alert-primary">
+						<p>Stand is up-to-date for game version <b>1.73-3889.0</b>.</p>
+					</div>
 					<p><a href="#editions" class="btn btn-primary">GET STARTED</a></p>
 				</div>
 				<div class="content">
 					<h3 class="font-weight-lighter">What makes Stand special</h3>
 				</div>
 				<div class="row pl-20 pr-20">
-					<div class="col-xl-3 col-sm-6">
+					<div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fa fa-cog"></i> Customisable</h2>
 							<p>You can customise Stand's appearance, theme, and add functionality by using <a href="help/lua-api-documentation" target="_blank">Lua scripts</a> or ASI Mods, of which you can find plenty on the internet.</p>
 						</div>
 					</div>
-					<div class="col-xl-3 col-sm-6">
+					<!-- <div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fa fa-shield"></i> Granular Protections</h2>
 							<p>Never be teleported, stuck in an infinite loading screen, or crashed again. Stand detects it and gives you fine control over the reaction.</p>
 						</div>
-					</div>
-					<div class="col-xl-3 col-sm-6">
+					</div> -->
+					<div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fa fa-vr-cardboard"></i> Augmented Reality</h2>
 							<p>Explore an entirely new way of seeing Los Santos with <abbr title="Stand's Watch_Dogs-like world hacking allows you to do many things, such as killing and reviving NPCs, just by looking at them and using the corresponding &quot;hack&quot;.">Watch_Dogs-like World Hacking</abbr>, AR Beacons, an AR Speedometer, Bone ESP, and more.</p>
 						</div>
 					</div>
-					<div class="col-xl-3 col-sm-6">
+					<div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fa fa-globe"></i> Fully Translated</h2>
 							<p>Stand is not just English; every version has up-to-date translations in 14 languages.</p>
@@ -76,25 +86,25 @@
 							</details>
 						</div>
 					</div>
-					<div class="col-xl-3 col-sm-6">
+					<!-- <div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fa fa-comments"></i> Enhanced Chat</h2>
 							<p>The best part of GTA Online can get even better with a Discord-like typing indicator, tab-completion for player names, the ability to paste, and unmatched ad-blocking.</p>
 						</div>
-					</div>
-					<div class="col-xl-3 col-sm-6">
+					</div> -->
+					<div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="far fa-browser"></i> Web Interface</h2>
 							<p>The web interface allows you to use Stand from your web browser, even on your smartphone. <a href="help/what-does-the-web-interface-look-like.jpg" target="_blank">Here's how it looks.</a></p>
 						</div>
 					</div>
-					<div class="col-xl-3 col-sm-6">
+					<div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fad fa-terminal"></i> Command Box</h2>
-							<p>Most <a href="help/command-list" target="_blank">commands in Stand</a> can be executed or changed using <a href="help/command-box-documentation" target="_blank">the command box</a>. You can even turn the chat into the command box, and give other players access to some commands.</p>
+							<p>Most <a href="help/command-list" target="_blank">commands in Stand</a> can be executed or changed using <a href="help/command-box-documentation" target="_blank">the command box</a>. <!-- You can even turn the chat into the command box, and give other players access to some commands. --></p>
 						</div>
 					</div>
-					<div class="col-xl-3 col-sm-6">
+					<div class="col-xl-4 col-md-6">
 						<div class="card p-20 m-10">
 							<h2 class="card-title"><i class="fa fa-heart"></i> Made With Love</h2>
 							<p>Unlike other menus, Stand strives to be highly polished, so it has no impact on your game's performance, doesn't break missions, and is able to <a href="help/co-loading" target="_blank">co-load with other menus</a>.</p>

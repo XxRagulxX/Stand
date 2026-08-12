@@ -1,13 +1,6 @@
+#if false
 #include "CNetworkAssetVerifier.hpp"
 
-#if true
-#include "pointers.hpp"
-
-void CNetworkAssetVerifier::refreshCrc()
-{
-	::Stand::pointers::CNetworkAssetVerifier_RefreshEnvironmentCRC(this);
-}
-#else
 void CNetworkAssetVerifier::refreshCrc()
 {
 	m_CRC.Set(calculateCrc());

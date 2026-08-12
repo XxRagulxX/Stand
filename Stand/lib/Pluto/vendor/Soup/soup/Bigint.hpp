@@ -38,7 +38,6 @@ NAMESPACE_SOUP
 		using chunk_t = halfsize_t;
 		using chunk_signed_t = halfintmax_t;
 
-	private:
 #if SOUP_BIGINT_USE_INTVECTOR
 		IntVector<chunk_t> chunks{};
 #else
@@ -46,7 +45,6 @@ NAMESPACE_SOUP
 #endif
 		bool negative = false;
 
-	public:
 		Bigint() noexcept = default;
 		Bigint(chunk_signed_t v) SOUP_EXCAL;
 		Bigint(chunk_t v, bool negative = false) SOUP_EXCAL;
@@ -172,9 +170,9 @@ NAMESPACE_SOUP
 		void operator/=(const Bigint& divisor) SOUP_EXCAL;
 		void operator%=(const Bigint& divisor) SOUP_EXCAL;
 		[[nodiscard]] std::pair<Bigint, Bigint> divide(const Bigint& divisor) const SOUP_EXCAL; // (Quotient, Remainder)
-		void divide(const Bigint& divisor, Bigint& outQuotient, Bigint& outRemainder) const SOUP_EXCAL;
+		void divide(const Bigint& divisor, Bigint& SOUP_UNIQADDR outQuotient, Bigint& SOUP_UNIQADDR outRemainder) const SOUP_EXCAL;
 		[[nodiscard]] std::pair<Bigint, Bigint> divideUnsigned(const Bigint& divisor) const SOUP_EXCAL; // (Quotient, Remainder)
-		void divideUnsigned(const Bigint& divisor, Bigint& remainder) SOUP_EXCAL;
+		void divideUnsigned(const Bigint& divisor, Bigint& SOUP_UNIQADDR remainder) SOUP_EXCAL;
 		[[nodiscard]] chunk_t divideUnsignedSmall(chunk_t divisor) noexcept;
 		[[nodiscard]] Bigint mod(const Bigint& m) const SOUP_EXCAL;
 		[[nodiscard]] Bigint modUnsigned(const Bigint& m) const SOUP_EXCAL;
@@ -326,7 +324,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] static Bigint fromBinary(const std::string& msg) SOUP_EXCAL;
 		[[nodiscard]] static Bigint fromBinary(const void* data, size_t size) SOUP_EXCAL;
 		[[nodiscard]] std::string toBinary() const SOUP_EXCAL;
-		[[nodiscard]] std::string toBinary(size_t bytes) const;
+		[[nodiscard]] std::string toBinary(size_t min_bytes) const SOUP_EXCAL;
 
 		SOUP_PACKET_IO(s) SOUP_EXCAL
 		{
@@ -406,7 +404,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] int getSchedulingDisposition() const noexcept final
 		{
-			return HIGH_FRQUENCY;
+			return HIGH_FREQUENCY;
 		}
 	};
 }

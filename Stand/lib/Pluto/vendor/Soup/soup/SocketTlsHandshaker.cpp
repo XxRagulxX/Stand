@@ -2,6 +2,7 @@
 
 #if !SOUP_WASM
 
+#include "md5.hpp"
 #include "ObfusString.hpp"
 #include "sha256.hpp"
 #include "sha384.hpp"
@@ -9,10 +10,20 @@
 
 NAMESPACE_SOUP
 {
-	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& callback_capture) noexcept
-		: callback(callback), callback_capture(std::move(callback_capture))
+	SocketTlsHandshaker::SocketTlsHandshaker(Capture&& callback_capture)
+		: callback_capture(std::move(callback_capture))
+	{
+	}
+
+	SocketTlsHandshakerClient::SocketTlsHandshakerClient(void(*callback)(Socket&, Capture&&, std::string&&), Capture&& callback_capture, certchain_validator_t certchain_validator) noexcept
+		: SocketTlsHandshaker(std::move(callback_capture)), callback(callback), certchain_validator(certchain_validator)
 	{
 		layer_bytes.reserve(2800); // When we receive "finished" from Cloudflare, this is 2689~2696 bytes.
+	}
+
+	SocketTlsHandshakerServer::SocketTlsHandshakerServer(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_select_ciphersuite_t select_ciphersuite, tls_server_alpn_select_protocol_t alpn_select_protocol) noexcept
+		: SocketTlsHandshaker(std::move(callback_capture)), callback(callback), certstore(std::move(certstore)), select_ciphersuite(select_ciphersuite), alpn_select_protocol(alpn_select_protocol)
+	{
 	}
 
 	std::string SocketTlsHandshaker::pack(TlsHandshakeType_t handshake_type, const std::string& content) SOUP_EXCAL
@@ -55,17 +66,21 @@ NAMESPACE_SOUP
 		return master_secret;
 	}
 
-	void SocketTlsHandshaker::getKeys(std::string& client_write_mac, std::string& server_write_mac, std::vector<uint8_t>& client_write_key, std::vector<uint8_t>& server_write_key, std::vector<uint8_t>& client_write_iv, std::vector<uint8_t>& server_write_iv) SOUP_EXCAL
+	void SocketTlsHandshaker::getKeys(SocketTlsEncrypter& client_write, SocketTlsEncrypter& server_write) SOUP_EXCAL
 	{
-		size_t mac_key_length = 20; // SHA1 = 20, SHA256 = 32
+		size_t mac_key_length = 20; // MD5 = 16, SHA1 = 20, SHA256 = 32
 		size_t fixed_iv_length = 0;
 		switch (cipher_suite)
 		{
+		case TLS_RSA_WITH_RC4_128_MD5:
+			mac_key_length = 16;
+			break;
+
 		case TLS_RSA_WITH_AES_128_CBC_SHA256:
 		case TLS_RSA_WITH_AES_256_CBC_SHA256:
 		case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256:
 		case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
-			mac_key_length = 32;
+			mac_key_length = 32; static_assert(sizeof(SocketTlsEncrypter::mac_key) >= 32);
 			break;
 
 		case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
@@ -73,11 +88,11 @@ NAMESPACE_SOUP
 		case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
 		case TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:
 			mac_key_length = 0;
-			fixed_iv_length = 4;
+			fixed_iv_length = 4; static_assert(sizeof(SocketTlsEncrypter::implicit_iv) >= 4);
 			break;
 		}
 
-		size_t enc_key_length = 16; // AES128 = 16, AES256 = 32
+		size_t enc_key_length = 16; // RC4 = 16, AES128 = 16, AES256 = 32
 		switch (cipher_suite)
 		{
 		case TLS_RSA_WITH_AES_256_CBC_SHA:
@@ -86,7 +101,7 @@ NAMESPACE_SOUP
 		case TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:
 		case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
 		case TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:
-			enc_key_length = 32;
+			enc_key_length = 32; static_assert(sizeof(SocketTlsEncrypter::cipher_key) >= 32);
 			break;
 		}
 
@@ -97,18 +112,19 @@ NAMESPACE_SOUP
 			std::string(server_random).append(client_random)
 		);
 
-		client_write_mac = key_block.substr(0, mac_key_length);
-		server_write_mac = key_block.substr(mac_key_length, mac_key_length);
+		memcpy(client_write.mac_key, key_block.data() + 0, mac_key_length);
+		memcpy(server_write.mac_key, key_block.data() + mac_key_length, mac_key_length);
+		memcpy(client_write.cipher_key, key_block.data() + mac_key_length * 2, enc_key_length);
+		memcpy(server_write.cipher_key, key_block.data() + (mac_key_length * 2) + enc_key_length, enc_key_length);
+		memcpy(client_write.implicit_iv, key_block.data() + (mac_key_length * 2) + (enc_key_length * 2), fixed_iv_length);
+		memcpy(server_write.implicit_iv, key_block.data() + (mac_key_length * 2) + (enc_key_length * 2) + fixed_iv_length, fixed_iv_length);
 
-		auto client_write_key_str = key_block.substr(mac_key_length * 2, enc_key_length);
-		auto server_write_key_str = key_block.substr((mac_key_length * 2) + enc_key_length, enc_key_length);
-		client_write_key = std::vector<uint8_t>(client_write_key_str.begin(), client_write_key_str.end());
-		server_write_key = std::vector<uint8_t>(server_write_key_str.begin(), server_write_key_str.end());
-
-		auto client_write_iv_str = key_block.substr((mac_key_length * 2) + (enc_key_length * 2), fixed_iv_length);
-		auto server_write_iv_str = key_block.substr((mac_key_length * 2) + (enc_key_length * 2) + fixed_iv_length, fixed_iv_length);
-		client_write_iv = std::vector<uint8_t>(client_write_iv_str.begin(), client_write_iv_str.end());
-		server_write_iv = std::vector<uint8_t>(server_write_iv_str.begin(), server_write_iv_str.end());
+		client_write.cipher_key_len = static_cast<uint8_t>(enc_key_length);
+		server_write.cipher_key_len = static_cast<uint8_t>(enc_key_length);
+		client_write.mac_key_len = static_cast<uint8_t>(mac_key_length);
+		server_write.mac_key_len = static_cast<uint8_t>(mac_key_length);
+		client_write.implicit_iv_len = static_cast<uint8_t>(fixed_iv_length);
+		server_write.implicit_iv_len = static_cast<uint8_t>(fixed_iv_length);
 	}
 
 	std::string SocketTlsHandshaker::getClientFinishVerifyData() SOUP_EXCAL

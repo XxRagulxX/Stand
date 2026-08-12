@@ -26,16 +26,17 @@ if (empty($db->query("SELECT `ip` FROM `account_devices` WHERE `account_id`=? AN
 	}
 }
 
-$res = $db->query("SELECT `activation_key`, `privilege`, `suspended_for`, `coins`, `created_quiz_success`, `interested` FROM `accounts` WHERE `id`=? AND `migrated_from`!='1'", "s", $_POST["account_id"]);
+$res = $db->query("SELECT `activation_key`, `privilege`, `suspended_for`, `coins`, `created_quiz_success`, `interested`, `pinkeyed` FROM `accounts` WHERE `id`=? AND `migrated_from`!='1'", "s", $_POST["account_id"]);
 if(empty($res))
 {
 	die("bad");
 }
 header("Content-Type: application/json");
 $res[0]["created_quiz_success"] = (bool)$res[0]["created_quiz_success"];
-$res[0]["interested"] = (bool)$res[0]["interested"];
+//$res[0]["interested"] = (bool)$res[0]["interested"];
+//$res[0]["pinkeyed"] = (bool)$res[0]["pinkeyed"];
 echo json_encode($res[0]);
-if($res[0]["suspended_for"] == "")
+//if($res[0]["suspended_for"] == "")
 {
 	antisharing_tallyAccountAccess($_POST["account_id"]);
 }

@@ -67,7 +67,7 @@ namespace Stand
 
 		static void join(rage::rlSessionInfo session_info, long long method = JM_DEFAULT)
 		{
-			connect(method, std::move(session_info), false);
+			connect(method, JoinHint(std::move(session_info)), false);
 		}
 
 		static void spectate(int64_t rid, long long method = JM_DEFAULT)
@@ -77,15 +77,20 @@ namespace Stand
 
 		static void spectate(rage::rlSessionInfo session_info, long long method = JM_DEFAULT)
 		{
-			connect(method, std::move(session_info), true);
+			connect(method, JoinHint(std::move(session_info)), true);
 		}
 
 		static void connect(rage::rlSessionInfo session_info, bool as_spectator)
 		{
-			connect(JM_DEFAULT, std::move(session_info), as_spectator);
+			connect(JM_DEFAULT, JoinHint(std::move(session_info)), as_spectator);
 		}
 
-		static void connectViaCode(const std::string& code, bool as_spectator);
+		static void connect(long long method, rage::rlSessionInfo session_info, bool as_spectator)
+		{
+			connect(method, JoinHint(std::move(session_info)), as_spectator);
+		}
+
+		static void connectViaCode(long long method, const std::string& code, bool as_spectator);
 
 		static void connect(long long method, JoinHint&& hint, bool as_spectator);
 
@@ -108,6 +113,7 @@ namespace Stand
 
 		// Utilities
 
+		[[nodiscard]] static bool isJoinMethodAvailable(long long method);
 		[[nodiscard]] static std::string parseCode(std::wstring& args);
 
 	private:

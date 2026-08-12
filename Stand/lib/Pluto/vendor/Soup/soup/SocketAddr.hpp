@@ -21,6 +21,8 @@ NAMESPACE_SOUP
 		{
 		}
 
+		bool fromString(const std::string& str) SOUP_EXCAL;
+
 		[[nodiscard]] native_u16_t getPort() const noexcept
 		{
 			return Endianness::toNative(port);
@@ -28,17 +30,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] std::string toString() const noexcept
 		{
-			std::string str;
-			if (ip.isV4())
-			{
-				str.append(ip.toString4());
-			}
-			else
-			{
-				str.push_back('[');
-				str.append(ip.toString6());
-				str.push_back(']');
-			}
+			std::string str = ip.toStringForAddr();
 			str.push_back(':');
 			str.append(std::to_string(getPort()));
 			return str;

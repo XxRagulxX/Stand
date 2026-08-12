@@ -21,6 +21,7 @@ namespace Stand
 		DPFLAG_SUION      = 1 << 1,
 		DPFLAG_DEVDBG     = 1 << 2,
 		DPFLAG_DETASDEV   = 1 << 3,
+		//DPFLAG_PINKEYE    = 1 << 4,
 	};
 
 #pragma pack(push, 1)

@@ -2,16 +2,18 @@
 
 #include "base.hpp"
 
-#if defined(SOUP_USE_INTRIN) && SOUP_BITS == 64 && (SOUP_X86 || SOUP_ARM)
-#define SHA256_USE_INTRIN true
+#if SOUP_BITS == 64 && (SOUP_X86 || SOUP_ARM)
+	#define SHA256_USE_INTRIN true
 #else
-#define SHA256_USE_INTRIN false
+	#define SHA256_USE_INTRIN false
 #endif
 
-#if SHA256_USE_INTRIN
-#include "CpuInfo.hpp"
-#endif
 #include "Reader.hpp"
+
+#if SHA256_USE_INTRIN
+	#include "CpuInfo.hpp"
+	#include "sha256_intrin.hpp"
+#endif
 
 /*
 Original source: https://github.com/983/SHA-256
@@ -20,13 +22,6 @@ Original licence: Dedicated to the public domain.
 
 NAMESPACE_SOUP
 {
-#if SHA256_USE_INTRIN
-	namespace intrin
-	{
-		extern void sha256_transform(uint32_t state[8], const uint8_t data[64]) noexcept;
-	}
-#endif
-
 	struct sha256_state
 	{
 		uint32_t state[8];
@@ -73,11 +68,11 @@ NAMESPACE_SOUP
 	}
 
 #if SHA256_USE_INTRIN
-	[[nodiscard]] static bool sha256_can_use_intrin() noexcept
+	[[nodiscard]] static SOUP_FORCEINLINE bool sha256_can_use_intrin() noexcept
 	{
 	#if SOUP_X86
 		const CpuInfo& cpu_info = CpuInfo::get();
-		return cpu_info.supportsSSSE3()
+		return cpu_info.supportsSSE4_1() // _mm_blend_epi16
 			&& cpu_info.supportsSHA()
 			;
 	#elif SOUP_ARM
@@ -136,15 +131,13 @@ NAMESPACE_SOUP
 		state[5] = 0x9b05688c;
 		state[6] = 0x1f83d9ab;
 		state[7] = 0x5be0cd19;
-		buffer_counter = 0;
-		n_bits = 0;
+		n_bytes = 0;
 	}
 
 	void sha256::State::transform() noexcept
 	{
 #if SHA256_USE_INTRIN
-		static bool good_cpu = sha256_can_use_intrin();
-		if (good_cpu)
+		if (sha256_can_use_intrin())
 		{
 			return intrin::sha256_transform(this->state, this->buffer);
 		}
@@ -196,11 +189,11 @@ NAMESPACE_SOUP
 
 	void sha256::State::finalise() noexcept
 	{
-		uint64_t n_bits = this->n_bits;
+		uint64_t n_bits = this->n_bytes * 8;
 
 		appendByte(0x80);
 
-		while (buffer_counter != 56)
+		while ((this->n_bytes % BLOCK_BYTES) != 56)
 		{
 			appendByte(0);
 		}

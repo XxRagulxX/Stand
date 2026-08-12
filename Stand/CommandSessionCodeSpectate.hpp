@@ -26,7 +26,7 @@ namespace Stand
 		{
 			if (auto code = JoinUtil::parseCode(args); !code.empty())
 			{
-				JoinUtil::connectViaCode(code, true);
+				JoinUtil::connectViaCode(value, code, true);
 			}
 			else
 			{

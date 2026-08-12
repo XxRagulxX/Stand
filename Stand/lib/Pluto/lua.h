@@ -1,36 +1,39 @@
-#pragma once
 /*
 ** $Id: lua.h $
 ** Lua - A Scripting Language
-** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
+** Lua.org, PUC-Rio, Brazil (www.lua.org)
 ** See Copyright Notice at the end of this file
 */
 
+
+#ifndef lua_h
+#define lua_h
+
 #include <stdarg.h>
 #include <stddef.h>
+#ifdef __cplusplus
 #include <string>
 #include <string_view>
+#endif
 
 
-#include "luaconf.h"
-
-
-#define LUA_VERSION_MAJOR	"5"
-#define LUA_VERSION_MINOR	"4"
-#define LUA_VERSION_RELEASE	"7"
-
-#define LUA_VERSION_NUM			504
-#define LUA_VERSION_RELEASE_NUM		(LUA_VERSION_NUM * 100 + 7)
-
-#define LUA_VERSION	"Lua " LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
-#define LUA_RELEASE	LUA_VERSION "." LUA_VERSION_RELEASE
-#define LUA_COPYRIGHT	LUA_RELEASE "  Copyright (C) 1994-2024 Lua.org, PUC-Rio"
+#define LUA_COPYRIGHT	LUA_RELEASE "  Copyright (C) 1994-2025 Lua.org, PUC-Rio"
 #define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo, W. Celes"
 
 
-#define PLUTO_VERSION "Pluto 0.9.5"
-#define PLUTO_COPYRIGHT_NO_BASED PLUTO_VERSION ", Copyright (C) 2022-2024 PlutoLang.org, PlutoLang (https://github.com/PlutoLang)"
+#define LUA_VERSION_MAJOR_N	5
+#define LUA_VERSION_MINOR_N	5
+#define LUA_VERSION_RELEASE_N	0
+
+#define LUA_VERSION_NUM  (LUA_VERSION_MAJOR_N * 100 + LUA_VERSION_MINOR_N)
+#define LUA_VERSION_RELEASE_NUM  (LUA_VERSION_NUM * 100 + LUA_VERSION_RELEASE_N)
+
+#define PLUTO_VERSION "Pluto 0.13.0"
+#define PLUTO_COPYRIGHT_NO_BASED PLUTO_VERSION ", Copyright (C) 2022-2025 PlutoLang.org, PlutoLang (https://github.com/PlutoLang)"
 #define PLUTO_COPYRIGHT PLUTO_COPYRIGHT_NO_BASED "\r\nBased on " LUA_COPYRIGHT
+
+
+#include "luaconf.h"
 
 
 /* mark for precompiled code ('<esc>Lua') */
@@ -42,10 +45,10 @@
 
 /*
 ** Pseudo-indices
-** (-LUAI_MAXSTACK is the minimum valid index; we keep some free empty
-** space after that to help overflow detection)
+** (The stack size is limited to INT_MAX/2; we keep some free empty
+** space after that to help overflow detection.)
 */
-#define LUA_REGISTRYINDEX	(-LUAI_MAXSTACK - 1000)
+#define LUA_REGISTRYINDEX	(-(INT_MAX/2 + 1000))
 #define lua_upvalueindex(i)	(LUA_REGISTRYINDEX - (i))
 
 
@@ -85,9 +88,10 @@ typedef struct lua_State lua_State;
 
 
 /* predefined values in the registry */
-#define LUA_RIDX_MAINTHREAD	1
+/* index 1 is reserved for the reference mechanism */
 #define LUA_RIDX_GLOBALS	2
-#define LUA_RIDX_LAST		LUA_RIDX_GLOBALS
+#define LUA_RIDX_MAINTHREAD	3
+#define LUA_RIDX_LAST		3
 
 
 /* type of numbers in Lua */
@@ -164,11 +168,10 @@ extern const char lua_ident[];
 /*
 ** state manipulation
 */
-LUA_API lua_State *(lua_newstate) (lua_Alloc f, void *ud);
+LUA_API lua_State *(lua_newstate) (lua_Alloc f, void *ud, unsigned seed);
 LUA_API void       (lua_close) (lua_State *L);
 LUA_API lua_State *(lua_newthread) (lua_State *L);
 LUA_API int        (lua_closethread) (lua_State *L, lua_State *from);
-LUA_API int        (lua_resetthread) (lua_State *L);  /* Deprecated! */
 
 LUA_API lua_CFunction (lua_atpanic) (lua_State *L, lua_CFunction panicf);
 
@@ -198,7 +201,9 @@ LUA_API int             (lua_isnumber) (lua_State *L, int idx);
 LUA_API int             (lua_isstring) (lua_State *L, int idx);
 LUA_API int             (lua_iscfunction) (lua_State *L, int idx);
 LUA_API int             (lua_isinteger) (lua_State *L, int idx);
-LUA_API int             (lua_istrue) (lua_State *L, int idx) noexcept;
+#ifndef PLUTO_LUA_LINKABLE
+LUA_API int             (lua_istrue) (lua_State *L, int idx);
+#endif
 LUA_API int             (lua_isuserdata) (lua_State *L, int idx);
 LUA_API int             (lua_type) (lua_State *L, int idx);
 LUA_API const char     *(lua_typename) (lua_State *L, int tp);
@@ -250,9 +255,13 @@ LUA_API void        (lua_pushnil) (lua_State *L);
 LUA_API void        (lua_pushnumber) (lua_State *L, lua_Number n);
 LUA_API void        (lua_pushinteger) (lua_State *L, lua_Integer n);
 LUA_API const char *(lua_pushlstring) (lua_State *L, const char *s, size_t len);
+LUA_API const char *(lua_pushexternalstring) (lua_State *L,
+		const char *s, size_t len, lua_Alloc falloc, void *ud);
 LUA_API const char *(lua_pushstring) (lua_State *L, const char *s);
+#ifdef __cplusplus
 PLUTO_API const char *(pluto_pushstring) (lua_State* L, const std::string& str);
 PLUTO_API const char *(pluto_pushstring) (lua_State* L, const std::string_view&& str);
+#endif
 LUA_API const char *(lua_pushvfstring) (lua_State *L, const char *fmt,
                                                       va_list argp);
 LUA_API const char *(lua_pushfstring) (lua_State *L, const char *fmt, ...);
@@ -291,10 +300,7 @@ LUA_API void  (lua_rawseti) (lua_State *L, int idx, lua_Integer n);
 LUA_API void  (lua_rawsetp) (lua_State *L, int idx, const void *p);
 LUA_API int   (lua_setmetatable) (lua_State *L, int objindex);
 LUA_API int   (lua_setiuservalue) (lua_State *L, int idx, int n);
-#ifndef PLUTO_DISABLE_LENGTH_CACHE
-LUA_API void  (lua_setcachelen) (lua_State *L, lua_Unsigned len, int idx);
-#endif
-#ifndef PLUTO_DISABLE_TABLE_FREEZING
+#ifdef PLUTO_ENABLE_TABLE_FREEZING
 LUA_API void  (lua_freezetable) (lua_State *L, int idx);
 LUA_API int   (lua_istablefrozen) (lua_State *L, int idx);
 LUA_API void  (lua_erriffrozen) (lua_State *L, int idx);
@@ -342,7 +348,7 @@ PLUTO_API void (pluto_warning) (lua_State *L, const char *msg);
 
 
 /*
-** garbage-collection function and options
+** garbage-collection options
 */
 
 #define LUA_GCSTOP		0
@@ -351,11 +357,28 @@ PLUTO_API void (pluto_warning) (lua_State *L, const char *msg);
 #define LUA_GCCOUNT		3
 #define LUA_GCCOUNTB		4
 #define LUA_GCSTEP		5
-#define LUA_GCSETPAUSE		6
-#define LUA_GCSETSTEPMUL	7
-#define LUA_GCISRUNNING		9
-#define LUA_GCGEN		10
-#define LUA_GCINC		11
+#define LUA_GCISRUNNING		6
+#define LUA_GCGEN		7
+#define LUA_GCINC		8
+#define LUA_GCPARAM		9
+
+
+/*
+** garbage-collection parameters
+*/
+/* parameters for generational mode */
+#define LUA_GCPMINORMUL		0  /* control minor collections */
+#define LUA_GCPMAJORMINOR	1  /* control shift major->minor */
+#define LUA_GCPMINORMAJOR	2  /* control shift minor->major */
+
+/* parameters for incremental mode */
+#define LUA_GCPPAUSE		3  /* size of pause between successive GCs */
+#define LUA_GCPSTEPMUL		4  /* GC "speed" */
+#define LUA_GCPSTEPSIZE		5  /* GC granularity */
+
+/* number of parameters */
+#define LUA_GCPN		6
+
 
 LUA_API int (lua_gc) (lua_State *L, int what, ...);
 
@@ -371,7 +394,9 @@ LUA_API int   (lua_next) (lua_State *L, int idx);
 LUA_API void  (lua_concat) (lua_State *L, int n);
 LUA_API void  (lua_len)    (lua_State *L, int idx);
 
-LUA_API size_t   (lua_stringtonumber) (lua_State *L, const char *s);
+#define LUA_N2SBUFFSZ	64
+LUA_API unsigned  (lua_numbertocstring) (lua_State *L, int idx, char *buff);
+LUA_API size_t  (lua_stringtonumber) (lua_State *L, const char *s);
 
 LUA_API lua_Alloc (lua_getallocf) (lua_State *L, void **ud);
 LUA_API void      (lua_setallocf) (lua_State *L, lua_Alloc f, void *ud);
@@ -411,7 +436,7 @@ LUA_API void (lua_closeslot) (lua_State *L, int idx);
 #define lua_pushliteral(L, s)	lua_pushstring(L, "" s)
 
 #define lua_pushglobaltable(L)  \
-    ((void)lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS))
+	((void)lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)
 
@@ -439,19 +464,12 @@ LUA_API void (lua_replace) (lua_State *L, int idx);
 ** compatibility macros
 ** ===============================================================
 */
-#if defined(LUA_COMPAT_APIINTCASTS)
-
-#define lua_pushunsigned(L,n)	lua_pushinteger(L, (lua_Integer)(n))
-#define lua_tounsignedx(L,i,is)	((lua_Unsigned)lua_tointegerx(L,i,is))
-#define lua_tounsigned(L,i)	lua_tounsignedx(L,(i),NULL)
-
-#endif
 
 #define lua_newuserdata(L,s)	lua_newuserdatauv(L,s,1)
 #define lua_getuservalue(L,idx)	lua_getiuservalue(L,idx,1)
 #define lua_setuservalue(L,idx)	lua_setiuservalue(L,idx,1)
 
-#define LUA_NUMTAGS		LUA_NUMTYPES
+#define lua_resetthread(L)	lua_closethread(L,NULL)
 
 /* }============================================================== */
 
@@ -497,7 +515,6 @@ LUA_API lua_Hook (lua_gethook) (lua_State *L);
 LUA_API int (lua_gethookmask) (lua_State *L);
 LUA_API int (lua_gethookcount) (lua_State *L);
 
-LUA_API int (lua_setcstacklimit) (lua_State *L, unsigned int limit);
 
 struct lua_Debug {
   int event;
@@ -512,9 +529,10 @@ struct lua_Debug {
   unsigned char nups;	/* (u) number of upvalues */
   unsigned char nparams;/* (u) number of parameters */
   char isvararg;        /* (u) */
+  unsigned char extraargs;  /* (t) number of extra arguments */
   char istailcall;	/* (t) */
-  unsigned short ftransfer;   /* (r) index of first value transferred */
-  unsigned short ntransfer;   /* (r) number of transferred values */
+  int ftransfer;   /* (r) index of first value transferred */
+  int ntransfer;   /* (r) number of transferred values */
   char short_src[LUA_IDSIZE]; /* (S) */
   /* private part */
   struct CallInfo *i_ci;  /* active function */
@@ -523,9 +541,20 @@ struct lua_Debug {
 /* }====================================================================== */
 
 
+#define LUAI_TOSTRAUX(x)	#x
+#define LUAI_TOSTR(x)		LUAI_TOSTRAUX(x)
+
+#define LUA_VERSION_MAJOR	LUAI_TOSTR(LUA_VERSION_MAJOR_N)
+#define LUA_VERSION_MINOR	LUAI_TOSTR(LUA_VERSION_MINOR_N)
+#define LUA_VERSION_RELEASE	LUAI_TOSTR(LUA_VERSION_RELEASE_N)
+
+#define LUA_VERSION	"Lua " LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
+#define LUA_RELEASE	LUA_VERSION "." LUA_VERSION_RELEASE
+
+
 /******************************************************************************
-* Copyright (C) 2022-2024 PlutoLang.org, Ryan Starrett, Sainan.
-* Copyright (C) 1994-2024 Lua.org, PUC-Rio.
+* Copyright (C) 2022-2025 PlutoLang.org, Ryan Starrett, Sainan.
+* Copyright (C) 1994-2025 Lua.org, PUC-Rio.
 *
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -546,3 +575,6 @@ struct lua_Debug {
 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************************/
+
+
+#endif

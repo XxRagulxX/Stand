@@ -70,18 +70,18 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	std::string urlenc::decode(const std::string& data) SOUP_EXCAL
+	std::string urlenc::decode(const std::string::const_iterator begin, const std::string::const_iterator end) SOUP_EXCAL
 	{
 		std::string res;
-		for (auto i = data.begin(); i != data.end(); )
+		for (auto i = begin; i != end; )
 		{
-			if (*i == '%' && (i + 1) != data.end() && (i + 2) != data.end())
+			if (*i == '%' && (i + 1) != end && (i + 2) != end)
 			{
 				std::string hex;
 				hex.push_back(*(++i));
 				hex.push_back(*(++i));
 				++i;
-				if (unsigned char c; string::hexToInt<unsigned char>(hex).consume(c))
+				if (unsigned char c; string::hexToIntOpt<unsigned char>(hex).consume(c))
 				{
 					res.push_back(static_cast<char>(c));
 				}

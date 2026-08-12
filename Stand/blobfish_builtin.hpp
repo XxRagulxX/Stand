@@ -2,5 +2,5 @@
 
 namespace Stand
 {
-	inline const char blobfish_builtin[] = "AAjrKdIjS57VcZ3l4TAEhm+8ZkyOiHtqaLY6ASpy6BNgJ8oDtuqWy4DaxAmeUWa9gNrECYlLXLirAg";
+	inline const char blobfish_builtin[] = "AAn1Ou2y/SnSI0ue1XGd5eEwBIZvvGZMjoh7ami2OgEqcugA/EaxkwS26pbLgNrECZ5RZr2A2sQJiUtcuK0CPNJaBqwD";
 }

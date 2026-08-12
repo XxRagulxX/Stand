@@ -8,9 +8,7 @@
 #include <soup/x64.hpp>
 
 #include "ColoadMgr.hpp"
-#ifdef STAND_DEV
 #include "FileLogger.hpp"
-#endif
 #include "StringUtils.hpp"
 
 namespace Stand
@@ -102,9 +100,7 @@ namespace Stand
 			{
 				throw std::runtime_error(std::move(error));
 			}
-#ifdef STAND_DEV
 			g_logger.log(std::move(error));
-#endif
 		}
 	}
 

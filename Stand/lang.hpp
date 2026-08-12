@@ -8,11 +8,10 @@
 #include "typedecl.hpp"
 
 #include "atStringHash.hpp"
-#include "xormagics.hpp"
 
-#define LANG_GET(key) Lang::getXor(ATSTRINGHASH(key) ^ MAGIC_LANG_GET)
-#define LANG_GET_W(key) Lang::getXorW(ATSTRINGHASH(key) ^ MAGIC_LANG_GET_W)
-#define LANG_GET_EN(key) Lang::getXorEn(ATSTRINGHASH(key) ^ MAGIC_LANG_GET_EN)
+#define LANG_GET(key) Lang::get(ATSTRINGHASH(key))
+#define LANG_GET_W(key) Lang::getW(ATSTRINGHASH(key))
+#define LANG_GET_EN(key) Lang::getEn(ATSTRINGHASH(key))
 #define LANG_FMT(key, ...) fmt::format(fmt::runtime(LANG_GET(key)), __VA_ARGS__)
 #define LANG_FMT_W(key, ...) fmt::format(fmt::runtime(LANG_GET_W(key)), __VA_ARGS__)
 
@@ -35,13 +34,10 @@ namespace Stand
 		[[nodiscard]] static std::string get(const char* key) noexcept;
 		[[nodiscard]] static std::string get(const std::string& key) noexcept;
 		[[nodiscard]] static std::string get(const hash_t key) noexcept;
-		[[nodiscard]] static __declspec(noinline) std::string getXor(const hash_t key) noexcept;
 
 		[[nodiscard]] static std::wstring getW(const hash_t key) noexcept;
-		[[nodiscard]] static __declspec(noinline) std::wstring getXorW(const hash_t key) noexcept;
 
-		[[nodiscard]] static std::string get_en(const hash_t key) noexcept;
-		[[nodiscard]] static __declspec(noinline) std::string getXorEn(const hash_t key) noexcept;
+		[[nodiscard]] static std::string getEn(const hash_t key) noexcept;
 
 		[[nodiscard]] static bool isEnabled(const lang_t lang_id) noexcept;
 		[[nodiscard]] static const LangData* id_to_data(const lang_t lang_id) noexcept;

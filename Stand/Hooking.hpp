@@ -34,6 +34,9 @@
 #include "Whitelist.hpp"
 
 #define HAVE_SUPERJUMP_ANTI_DETECTION false
+#define HAVE_SEND_CLONE_CREATE_HOOK false
+#define HAVE_SEND_CLONE_SYNC_HOOK false
+
 #define FORCE_SEND_MESSAGES_BY_DEFAULT true
 
 #define OG(name) ::Stand::g_hooking.name##_hook.getOriginal<decltype(&::Stand::hooks::name)>()
@@ -119,7 +122,7 @@ namespace Stand
 		__int64 __fastcall received_clone_sync(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, rage::NetworkObjectType object_type, uint16_t object_id, rage::datBitBuffer* buffer, uint32_t unk, uint32_t timestamp);
 		void __fastcall clone_pack(CNetworkObjectMgr* mgr, rage::netObject* netObject, CNetGamePlayer* recipient, rage::datBitBuffer* buffer);
 		//void __fastcall send_clone_create(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer);
-		void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6);
+		//void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6);
 		//bool __fastcall send_clone_remove(CNetworkObjectMgr* mgr, rage::netObject* obj, CNetGamePlayer* player, char a4);
 		void rage_netSyncTree_Read(rage::netSyncTree* tree, rage::SyncType sync_type, uint32_t sync_flags, rage::datBitBuffer* buffer, rage::netLoggingInterface* logger);
 #ifdef STAND_DEV
@@ -144,7 +147,7 @@ namespace Stand
 
 		void __fastcall rage_netArrayHandlerBase_WriteUpdate(rage::netArrayHandlerBase* _this, const rage::netPlayer* player, rage::datBitBuffer* bitBuffer, uint16_t updateSeq, unsigned int* currentElement, bool logSizes);
 
-		bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, const char* name, uint64_t metricTime, rage::rlMetric* metric);
+		bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, void* a2, void* a3, uint64_t metricTime, rage::rlMetric* metric);
 #if HTTP_HOOK
 		char __fastcall rage_netHttpRequest_Update(rage::netHttpRequest* a1);
 #endif
@@ -166,7 +169,7 @@ namespace Stand
 
 		void __fastcall write_player_game_state_data_node(uintptr_t a1, CPlayerGameStateDataNode* node);
 
-		bool __fastcall CNetworkSession_OnHandleJoinRequest(CNetworkSession* _this, rage::snSession* pSession, rage::rlGamerInfo* gamerInfo, void* snJoinRequest, const unsigned int sessionType);
+		//bool __fastcall CNetworkSession_OnHandleJoinRequest(CNetworkSession* _this, rage::snSession* pSession, rage::rlGamerInfo* gamerInfo, void* snJoinRequest, const unsigned int sessionType);
 
 		unsigned int __fastcall rage_netIceSession_GetAdditionalLocalCandidates(void* _this, rage::netSocketAddress* addrs, unsigned int maxAddrs);
 
@@ -175,7 +178,7 @@ namespace Stand
 		float* __fastcall get_visual_config_colour(void* config, float* a2, const char* prop);
 		camBaseObject* __fastcall camFactory_CreateObject(const camBaseObjectMetadata* metadata, const rage::ClassId* classIdToVerify);
 
-		char __fastcall some_player_sync(CNetworkObjectMgr* mgr, CNetGamePlayer* player);
+		//char __fastcall some_player_sync(CNetworkObjectMgr* mgr, CNetGamePlayer* player);
 		unsigned int __fastcall rage_aiTaskTree_UpdateTask(rage::aiTaskTree* tree, rage::aiTask* task, float timeStep);
 
 		void __fastcall CControl_StartPlayerPadShake(void* _this, unsigned int lightDuration, int lightIntensity, unsigned int heavyDuration, int heavyIntensity, int DelayAfterThisOne);
@@ -199,7 +202,6 @@ namespace Stand
 		floweventreaction_t player_net_event_reactions[MAX_PLAYERS] = { 0 };
 		floweventreaction_t player_sync_in_reactions[MAX_PLAYERS] = { 0 };
 		floweventreaction_t player_sync_out_reactions[MAX_PLAYERS + 1] = { 0 };
-		bool block_outgoing_syncs_to_host = false;
 		time_t player_timeouts[MAX_PLAYERS]{};
 		void putInTimeout(compactplayer_t p);
 
@@ -359,7 +361,7 @@ namespace Stand
 		bool block_bail_spectating = false;
 		bool block_bail_other = true;
 
-		DetourHook rage_rlGetGamerStateTask_ParseResults_hook;
+		//DetourHook rage_rlGetGamerStateTask_ParseResults_hook;
 
 		bool disable_matchmaking = false;
 		uint8_t magnet_matchmaking = 0;
@@ -401,12 +403,15 @@ namespace Stand
 		DetourHook received_clone_create_hook;
 		DetourHook received_clone_sync_hook;
 
+#if HAVE_SEND_CLONE_CREATE_HOOK
 		static constexpr auto footlettuce_model_from = ATSTRINGHASH("bkr_prop_biker_barstool_01");
 		static constexpr auto footlettuce_model_to = ATSTRINGHASH("prop_thindesertfiller_aa");
 		CNetGamePlayer* footlettuce_target = nullptr;
-		CNetGamePlayer* nextgen_target = nullptr;
-		Whitelist<CNetGamePlayer*> outgoing_train_create_exclusive{};
+#endif
+		Whitelist<CNetGamePlayer*> outgoing_train_create_exclusive{}; // if not HAVE_SEND_CLONE_CREATE_HOOK, still used to avoid spamming of the train crash
+#if HAVE_SEND_CLONE_SYNC_HOOK
 		Whitelist<CNetGamePlayer*> outgoing_player_sync_exclusive{};
+#endif
 
 		AssociatedWhitelist<compactplayer_t, rage::netGameEvent*> play_sound_whitelist{};
 		AssociatedWhitelist<compactplayer_t, rage::netGameEvent*> stop_sound_whitelist{};
@@ -416,7 +421,7 @@ namespace Stand
 		Blamer veh_appearance_sync_blamer{ 5000 };
 
 		//DetourHook send_clone_create_hook;
-		DetourHook send_clone_sync_hook;
+		//DetourHook send_clone_sync_hook;
 		//DetourHook send_clone_remove_hook;
 		DetourHook rage_netSyncTree_Read_hook;
 #ifdef STAND_DEV
@@ -500,8 +505,8 @@ namespace Stand
 		std::vector<std::pair<std::string, GamerIdentifierLatest>> removed_players{};
 		DetourHook CNetworkSession_OnSessionEvent_hook;
 
-		DetourHook CNetworkSession_OnHandleJoinRequest_hook;
-		int32_t host_bj_message = 1;
+		//DetourHook CNetworkSession_OnHandleJoinRequest_hook;
+		//int32_t host_bj_message = 1;
 
 		DetourHook rage_netIceSession_GetAdditionalLocalCandidates_hook;
 		bool force_relay_connections = false;
@@ -514,12 +519,10 @@ namespace Stand
 		DetourHook camFactory_CreateObject_hook;
 		bool disable_cam_shake = false;
 
-		DetourHook some_player_sync_hook;
+		//DetourHook some_player_sync_hook;
 
 		DetourHook rage_aiTaskTree_UpdateTask_hook;
 		uint8_t graceful_landing = 0;
-
-		DetourHook net_event_error_pre_memmove_hook;
 
 		DetourHook CControl_StartPlayerPadShake_hook;
 
@@ -556,9 +559,7 @@ namespace Stand
 			a.insert(a.end(), b.begin(), b.end());
 		}
 
-		[[nodiscard]] std::vector<DetourHook*> getAllHooks();
 		[[nodiscard]] std::vector<DetourHook*> getNonPassiveHooks();
-		[[nodiscard]] std::vector<DetourHook*> getHookedHooks();
 
 		void batchCreateHooks(const std::vector<DetourHook*>& hooks);
 		void batchEnableHooks(const std::vector<DetourHook*>& hooks);

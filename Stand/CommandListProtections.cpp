@@ -170,7 +170,6 @@ namespace Stand
 		{
 			auto syncs = this->createChild<CommandList>(LOC("PTX_S"));
 
-			syncs->createChild<CommandTogglePointer>(&g_hooking.block_outgoing_syncs_to_host, LOC("OUTSBH"), {}, LOC("OUTSBH_H"));
 			syncs->createChild<CommandModelBlacklist>();
 			syncs->createChildWithBuilder<CommandFlowEventGlobal>(FlowEvent::SYNCIN_CAGE, LOC("PTX_BEWARE_RESYNCH"));
 			syncs->createChildWithBuilder<CommandFlowEventGlobal>(FlowEvent::SYNCIN_WOS, LOC("PTX_BEWARE_RESYNCH"));

@@ -40,7 +40,7 @@ public:
 	/* 0xE4 */ rage::sysObfuscated_Mutate<int32_t> m_StaticCRC; // based on m_EnvironmentCRC
 	/* 0xF4 */ rage::sysObfuscated_Mutate<int32_t> m_BattlEye;
 
-	void refreshCrc();
+	void refreshCrc() {}
 	[[nodiscard]] int32_t calculateCrc() const;
 };
 static_assert(offsetof(CNetworkAssetVerifier, m_memoryTamperCRC) == 0x84); // 2845, might be wrong for 2944

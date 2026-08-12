@@ -1,6 +1,6 @@
 #pragma once
 
-#define ERASE_PE_HEADER !STAND_DEBUG || false
+#define ERASE_PE_HEADER false
 
 #if ERASE_PE_HEADER
 #include <cstdint>

@@ -6,14 +6,14 @@ if(empty($product))
 
 header("Cache-Control: public, max-age=7200");
 
-// 100 XXX in EUR (Last updated: 2024-09-06)
+// 100 XXX in EUR (Last updated: 2025-04-19)
 $to_euro = [
-	"$" => (90.01 / 100), // USD
-	"£" => (118.60 / 100), // GBP
-	"R$" => (16.16 / 100), // BRL
-	"元" => (12.71 / 100), // RMB 欧元
-	"₩" => (0.068 / 100), // KRW
-	"₽" => (1.00 / 100), // RUB
+	"$" => (87.93 / 100), // USD
+	"£" => (116.64 / 100), // GBP
+	"R$" => (15.11 / 100), // BRL
+	"元" => (12.05 / 100), // RMB 欧元
+	"₩" => (0.062 / 100), // KRW
+	"₽" => (1.07 / 100), // RUB
 ];
 
 function parsePrice(string $price): array
@@ -138,7 +138,11 @@ if($json)
 				{
 					$price_converted = $hard_price_bottom[$product];
 				}
-				$weight = $price_converted;
+				$weight = 0;
+				if ($payname != "amazongift" && $payname != "psc")
+				{
+					$weight += $price_converted;
+				}
 				if ($seller_stock < 5)
 				{
 					$weight += 1;
@@ -166,7 +170,7 @@ if($json)
 			?>
 			<div class="col-xl-3 col-md-6">
 				<div class="card p-20 m-10">
-					<h2 class="card-title"><?=$display_name; ?></h2>
+					<h5 class="card-title" style="margin-bottom:0.5rem"><?=$display_name; ?></h5>
 					<ul style="min-width:290px;max-width:calc(100vw - 50px)">
 						<?php
 						usort($paymets[$code_name], function($a, $b)
@@ -175,7 +179,8 @@ if($json)
 						});
 						foreach($paymets[$code_name] as $seller)
 						{
-							echo '<li><a data-weight="'.$seller[0].'" data-stock="'.$seller[3].'" href="'.$seller[2].'">'.$seller[1].'</a></li>';
+							echo '<li class="mb-0"><a data-weight="'.$seller[0].'" data-stock="'.$seller[3].'" href="'.$seller[2].'">'.$seller[1].'</a></li>';
+							//echo '<li class="mb-0"><a href="'.$seller[2].'">'.$seller[1].'</a></li>';
 						}
 						?>
 					</ul>
@@ -210,7 +215,7 @@ if($json)
 	// Have "xmr" for Monero, but only 1 reseller with it.
 
 	printPaymet("PaySafeCard", "psc");
-	printPaymet("Amazon Gift Card (USA)", "amazongift");
+	printPaymet("Amazon Gift Card", "amazongift");
 	printPaymet("Perfect Money", "perfect");
 	printPaymet("Amazon Pay", "amazon");
 

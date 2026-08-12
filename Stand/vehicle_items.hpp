@@ -20,5 +20,5 @@ namespace Stand
 	};
 #pragma pack(pop)
 
-	extern const VehicleItem vehicle_items[864];
+	extern const VehicleItem vehicle_items[930];
 }

@@ -6,18 +6,25 @@
 
 #include <deque>
 #include <queue>
-#include <thread>
+#include <vector>
 
+#undef MAX_SIZE
+
+#include "vendor/Soup/soup/CertStore.hpp"
 #include "vendor/Soup/soup/netConnectTask.hpp"
+#include "vendor/Soup/soup/os.hpp"
+#include "vendor/Soup/soup/ResolveIpAddrTask.hpp"
 #include "vendor/Soup/soup/Scheduler.hpp"
 #include "vendor/Soup/soup/Server.hpp"
 #include "vendor/Soup/soup/ServerService.hpp"
 #include "vendor/Soup/soup/Socket.hpp"
+#include "vendor/Soup/soup/TlsExtAlpn.hpp"
 
 struct StandaloneSocket {
   soup::Scheduler sched;
   soup::SharedPtr<soup::Socket> sock;
   std::deque<std::string> recvd;
+  bool udp = false;
   bool did_tls_handshake = false;
   bool from_listener = false;
 
@@ -25,11 +32,30 @@ struct StandaloneSocket {
     sock->recv([](soup::Socket&, std::string&& data, soup::Capture&& cap) SOUP_EXCAL {
       StandaloneSocket& ss = *cap.get<StandaloneSocket*>();
       ss.recvd.push_back(std::move(data));
-      if (!ss.sock->remote_closed)
-        ss.recvLoop();
+      ss.recvLoop();
+    }, this);
+  }
+
+  void recvLoopUdp(soup::Socket& s) {
+    s.udpRecv([](soup::Socket& s, soup::SocketAddr&& addr, std::string&& data, soup::Capture&& cap) SOUP_EXCAL {
+#if !SOUP_WINDOWS
+      s.peer = std::move(addr);
+#endif
+      StandaloneSocket& ss = *cap.get<StandaloneSocket*>();
+#if SOUP_WINDOWS
+      if (ss.from_listener) {
+        s.peer = std::move(addr);
+        ss.sock = ss.sched.getShared(s);  /* we may need to switch from IPv6 to IPv4 or vice-versa */
+      }
+#endif
+      ss.recvd.push_back(std::move(data));
+      ss.recvLoopUdp(s);
     }, this);
   }
 };
+
+using AlpnProtocol = std::string;
+using AlpnProtocols = std::vector<std::string>;
 
 static StandaloneSocket* checksocket (lua_State *L, int i) {
   return (StandaloneSocket*)luaL_checkudata(L, i, "pluto:socket");
@@ -44,6 +70,7 @@ static StandaloneSocket& pushsocket (lua_State *L) {
     lua_settable(L, -3);
     lua_pushliteral(L, "__gc");
     lua_pushcfunction(L, [](lua_State *L) {
+      pluto_errorifnotgc(L);
       std::destroy_at<>(checksocket(L, 1));
       return 0;
     });
@@ -69,30 +96,84 @@ static int connectcont (lua_State *L, int status, lua_KContext ctx) {
   return lua_yieldk(L, 0, ctx, connectcont);
 }
 
+static int restconnectudp (lua_State *L, soup::ResolveIpAddrTask *pTask) {
+  if (l_unlikely(!pTask->result.has_value())) {
+    return 0;
+  }
+  StandaloneSocket& ss = *checksocket(L, -1);
+  ss.sock->peer.ip = std::move(*pTask->result);
+  ss.sched.tick();  /* get rid of ResolveIpAddrTask */
+  return 1;
+}
+
+static int connectudpcont (lua_State *L, int status, lua_KContext ctx) {
+  auto pTask = reinterpret_cast<soup::ResolveIpAddrTask*>(ctx);
+  if (pTask->isWorkDone())
+    return restconnectudp(L, pTask);
+  StandaloneSocket& ss = *checksocket(L, -1);
+  ss.sched.tick();
+  return lua_yieldk(L, 0, ctx, connectudpcont);
+}
+
 static int l_connect (lua_State *L) {
   const char *host = luaL_checkstring(L, 1);
   auto port = static_cast<uint16_t>(luaL_checkinteger(L, 2));
+  const char *const opts[] = { "tcp", "udp", nullptr };
+  bool udp = luaL_checkoption(L, 3, "tcp", opts);
 
   StandaloneSocket& ss = pushsocket(L);
 
+  if (udp) {
+    ss.sock = ss.sched.addSocket();
+    const bool host_is_ip_addr = ss.sock->peer.ip.fromString(host);
+    ss.sock->peer.port = soup::Endianness::toNetwork(soup::native_u16_t(port));
+#if SOUP_WINDOWS
+    ss.sock->init(ss.sock->peer.ip.isV4() ? AF_INET : AF_INET6, SOCK_DGRAM);  /* init socket right away so we can use udpServerSend as client */
+#else
+    ss.sock->init(AF_INET6, SOCK_DGRAM);  /* init socket right away so we can use udpServerSend as client */
+#endif
+    ss.udp = true;
+    ss.recvLoopUdp(*ss.sock);
+    if (!host_is_ip_addr) {
+      auto spTask = ss.sched.add<soup::ResolveIpAddrTask>(host);
+      ss.sched.tick();
+      lua_assert(!spTask->isWorkDone());
+      if (lua_isyieldable(L)) {
+        const auto ctx = reinterpret_cast<lua_KContext>(spTask.get());
+        spTask.reset();
+        return lua_yieldk(L, 0, ctx, connectudpcont);
+      }
+      do {
+        soup::os::sleep(1);
+        ss.sched.tick();
+      } while (!spTask->isWorkDone());
+      return restconnectudp(L, spTask.get());
+    }
+    return 1;
+  }
+
   if (!lua_isyieldable(L)) {
     ss.sock = ss.sched.addSocket();
-    bool connected = ss.sock->connect(host, port);
-    if (!connected)
+    if (l_unlikely(!ss.sock->connect(host, port)))
       return 0;
     ss.recvLoop();
     return 1;
   }
 
-  auto spTask = ss.sched.add<soup::netConnectTask>(host, port);
+  auto pTask = ss.sched.add<soup::netConnectTask>(host, port).get();
   ss.sched.tick();
-  return lua_yieldk(L, 0, reinterpret_cast<lua_KContext>(spTask.get()), connectcont);
+  lua_assert(!pTask->isWorkDone());
+  return lua_yieldk(L, 0, reinterpret_cast<lua_KContext>(pTask), connectcont);
 }
 
 static int l_send (lua_State *L) {
   size_t len;
   const char *str = luaL_checklstring(L, 2, &len);
-  checksocket(L, 1)->sock->send(str, len);
+  StandaloneSocket& ss = *checksocket(L, 1);
+  if (ss.udp)
+    ss.sock->udpServerSend(ss.sock->peer, str, len);
+  else
+    ss.sock->send(str, len);
   return 0;
 }
 
@@ -116,16 +197,24 @@ static int recvcont (lua_State *L, int status, lua_KContext ctx) {
   return restrecv(L, ss);
 }
 
+static int l_peek (lua_State *L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  ss.sched.tick();
+  if (!ss.recvd.empty()) {
+    pluto_pushstring(L, ss.recvd.front());
+    return 1;
+  }
+  return 0;
+}
+
 static int l_recv (lua_State *L) {
   StandaloneSocket& ss = *checksocket(L, 1);
-  
-  if (lua_isyieldable(L))
-    return lua_yieldk(L, 0, reinterpret_cast<lua_KContext>(&ss), recvcont);
-
+  ss.sched.tick();
   if (ss.recvd.empty()) {
-    ss.sched.tick();
+    if (lua_isyieldable(L))
+      return lua_yieldk(L, 0, reinterpret_cast<lua_KContext>(&ss), recvcont);
     while (ss.recvd.empty() && !ss.sock->isWorkDone()) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      soup::os::sleep(1);
       ss.sched.tick();
     }
   }
@@ -143,36 +232,213 @@ static int starttlscont (lua_State *L, int status, lua_KContext ctx) {
   if (l_likely(!ss.did_tls_handshake && !ss.sock->isWorkDone()))
     return lua_yieldk(L, 0, ctx, starttlscont);
   lua_pushboolean(L, ss.did_tls_handshake);
+  if (ss.sock->custom_data.isStructInMap(AlpnProtocol)) {
+    pluto_pushstring(L, ss.sock->custom_data.getStructFromMapConst(AlpnProtocol));
+    ss.sock->custom_data.removeStructFromMap(AlpnProtocol);
+    return 2;
+  }
   return 1;
+}
+
+static void starttlscallbackserver (soup::Socket&, soup::Capture&& cap) SOUP_EXCAL {
+  StandaloneSocket& ss = *cap.get<StandaloneSocket*>();
+  ss.did_tls_handshake = true;
+  if (ss.sock->custom_data.isStructInMap(AlpnProtocols)) {
+    ss.sock->custom_data.removeStructFromMap(AlpnProtocols);
+  }
+  ss.recvLoop();  /* re-add recv loop, now on crypto layer */
+}
+
+static void starttlscallbackclient (soup::Socket&, soup::Capture&& cap, std::string&& alpn_protocol) SOUP_EXCAL {
+  StandaloneSocket& ss = *cap.get<StandaloneSocket*>();
+  ss.did_tls_handshake = true;
+  if (!alpn_protocol.empty()) {
+    ss.sock->custom_data.addStructToMap(AlpnProtocol, std::move(alpn_protocol));
+  }
+  ss.recvLoop();  /* re-add recv loop, now on crypto layer */
+}
+
+static std::string starttls_alpn_select_protocol(soup::Socket& s, const soup::TlsExtAlpn& ext_alpn, soup::TlsCipherSuite_t) SOUP_EXCAL {
+  for (const auto& sp : s.custom_data.getStructFromMapConst(AlpnProtocols)) {
+    for (const auto& cp : ext_alpn.protocol_names) {
+      if (sp == cp) {
+        s.custom_data.addStructToMap(AlpnProtocol, AlpnProtocol(sp));
+        return sp;
+      }
+    }
+  }
+  return {};
 }
 
 static int starttls (lua_State *L) {
   StandaloneSocket& ss = *checksocket(L, 1);
-  if (ss.from_listener) {
-    luaL_error(L, "starttls is currently only possible on client sockets");  /* TODO */
-  }
+
+  if (l_unlikely(ss.udp))
+    luaL_error(L, "TLS is only available on TCP sockets");
+
   if (ss.did_tls_handshake)
     return 0;
-  ss.sock->enableCryptoClient(luaL_checkstring(L, 2), [](soup::Socket&, soup::Capture&& cap) SOUP_EXCAL {
-    StandaloneSocket& ss = *cap.get<StandaloneSocket*>();
-    ss.did_tls_handshake = true;
-    ss.recvLoop();  /* re-add recv loop, now on crypto layer */
-  }, &ss);
+
+  if (ss.from_listener) {
+    auto certstore = pluto_newclassinst(L, soup::SharedPtr<soup::CertStore>, new soup::CertStore());
+    lua_pushnil(L);
+    while (lua_next(L, 2)) {
+      lua_pushliteral(L, "chain");
+      lua_gettable(L, -2);
+      size_t chain_len;
+      const char *chain = luaL_checklstring(L, -1, &chain_len);
+      lua_pop(L, 1);
+      
+      lua_pushliteral(L, "private_key");
+      lua_gettable(L, -2);
+      size_t privkey_len;
+      const char *privkey = luaL_checklstring(L, -1, &privkey_len);
+      lua_pop(L, 1);
+
+      soup::X509Certchain chainstruct;
+      chainstruct.fromPem(std::string(chain, chain_len));
+      (*certstore)->add(std::move(chainstruct), soup::RsaPrivateKey::fromPem(std::string(privkey, privkey_len)));
+
+      lua_pop(L, 1);
+    }
+
+    /* We may have already consumed the client_hello, so we need to give it back to Soup. */
+    while (!ss.recvd.empty()) {
+      ss.sock->transport_unrecv(ss.recvd.back());
+      ss.recvd.pop_back();
+    }
+    if (lua_gettop(L) >= 3 && lua_type(L, 3) == LUA_TTABLE) {
+      lua_pushliteral(L, "alpn");
+      if (lua_rawget(L, 3) > 0) {
+        AlpnProtocols& alpn_protocols = ss.sock->custom_data.getStructFromMap(AlpnProtocols);
+        lua_pushnil(L);
+        while (lua_next(L, -2)) {
+          alpn_protocols.emplace_back(pluto_checkstring(L, -1));
+          lua_pop(L, 1);
+        }
+      }
+      lua_pop(L, 1);
+    }
+    if (ss.sock->custom_data.isStructInMap(AlpnProtocols)) {
+      ss.sock->enableCryptoServer(std::move(*certstore), starttlscallbackserver, &ss, nullptr, starttls_alpn_select_protocol);
+    }
+    else {
+      ss.sock->enableCryptoServer(std::move(*certstore), starttlscallbackserver, &ss);
+    }
+  }
+  else {
+    auto& early_data = *pluto_newclassinst(L, std::string);
+    auto& alpn_protocols = *pluto_newclassinst(L, std::vector<std::string>);
+    bool require_ecdhe = false;
+    if (lua_type(L, 3) == LUA_TTABLE) {
+      lua_pushliteral(L, "early_data");
+      if (lua_rawget(L, 3) > 0) {
+        early_data = pluto_checkstring(L, -1);
+      }
+      lua_pop(L, 1);
+
+      lua_pushliteral(L, "alpn");
+      if (lua_rawget(L, 3) > 0) {
+        lua_pushnil(L);
+        while (lua_next(L, -2)) {
+          alpn_protocols.emplace_back(pluto_checkstring(L, -1));
+          lua_pop(L, 1);
+        }
+      }
+      lua_pop(L, 1);
+
+      lua_pushliteral(L, "require_ecdhe");
+      if (lua_rawget(L, 3) > 0) {
+        require_ecdhe = lua_istrue(L, -1);
+      }
+      lua_pop(L, 1);
+    }
+    ss.sock->enableCryptoClient(luaL_checkstring(L, 2), starttlscallbackclient, &ss, std::move(early_data), &soup::Socket::certchain_validator_default, std::move(alpn_protocols), require_ecdhe);
+  }
 
   if (lua_isyieldable(L))
     return lua_yieldk(L, 0, reinterpret_cast<lua_KContext>(&ss), starttlscont);
 
   do {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    soup::os::sleep(1);
     ss.sched.tick();
   } while (!ss.did_tls_handshake && !ss.sock->isWorkDone());
   lua_pushboolean(L, ss.did_tls_handshake);
+  if (ss.sock->custom_data.isStructInMap(AlpnProtocol)) {
+    pluto_pushstring(L, ss.sock->custom_data.getStructFromMapConst(AlpnProtocol));
+    ss.sock->custom_data.removeStructFromMap(AlpnProtocol);
+    return 2;
+  }
+  return 1;
+}
+
+static int socket_istls (lua_State *L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  lua_pushboolean(L, ss.did_tls_handshake);
+  return 1;
+}
+
+static int socket_isudp (lua_State *L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  lua_pushboolean(L, ss.udp);
   return 1;
 }
 
 static int socket_close (lua_State *L) {
   StandaloneSocket& ss = *checksocket(L, 1);
   ss.sock->close();
+  return 0;
+}
+
+static int socket_isopen (lua_State *L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  lua_pushboolean(L, !ss.sock->isWorkDoneOrClosed());
+  return 1;
+}
+
+static int socket_getside (lua_State *L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  if (ss.from_listener)
+    lua_pushliteral(L, "server");
+  else
+    lua_pushliteral(L, "client");
+  return 1;
+}
+
+static int socket_getpeer (lua_State *L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  auto ipstr = ss.sock->peer.ip.toString();
+  if (!ss.sock->peer.ip.isV4()) {
+    ipstr.insert(0, 1, '[');
+    ipstr.push_back(']');
+  }
+  pluto_pushstring(L, std::move(ipstr));
+  lua_pushinteger(L, ss.sock->peer.getPort());
+  return 2;
+}
+
+static int socket_setpeer(lua_State* L) {
+  StandaloneSocket& ss = *checksocket(L, 1);
+  const char *ipstr = luaL_checkstring(L, 2);
+  const lua_Integer port = luaL_checkinteger(L, 3);
+  if (l_unlikely(!ss.udp)) {
+    luaL_error(L, "setpeer is only available on UDP sockets");
+  }
+  soup::IpAddr ip; static_assert(std::is_trivially_destructible_v<soup::IpAddr>);
+  if (l_unlikely(!ip.fromString(ipstr))) {
+    luaL_error(L, "invalid IP address");
+  }
+#if SOUP_WINDOWS
+  if (ss.from_listener) {
+    /* We may need to switch from IPv4 to IPv6 or vice-versa */
+    ss.sock = ss.sched.workers.at(ip.isV4() ? 1 : 0);
+  }
+  else if (ss.sock->peer.ip.isV4() != ip.isV4()) {
+    luaL_error(L, "cannot change address family");
+  }
+#endif
+  ss.sock->peer.ip = ip;
+  ss.sock->peer.port = soup::Endianness::toNetwork((soup::native_u16_t)(uint16_t)port);
   return 0;
 }
 
@@ -220,7 +486,7 @@ static int listener_accept (lua_State *L) {
     }
     do {
       l.serv.tick();
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      soup::os::sleep(1);
     } while (!l.accepted);
   }
   return restaccept(L, l);
@@ -238,8 +504,20 @@ static int listener_hasconnection (lua_State *L) {
   return 1;
 }
 
+[[nodiscard]] static soup::SocketAddr checkaddr (lua_State *L, int i) {
+  soup::SocketAddr addr;
+  if (lua_type(L, i) == LUA_TSTRING) {
+    if (l_unlikely(!addr.fromString(luaL_checkstring(L, i))))
+      luaL_error(L, "Invalid bind address");
+  }
+  else
+    addr.port = soup::Endianness::toNetwork(static_cast<uint16_t>(luaL_checkinteger(L, i)));
+  return addr;
+}
+
 static int l_listen (lua_State *L) {
-  auto port = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+  soup::SocketAddr addr = checkaddr(L, 1);
+  const auto port = addr.getPort();
 
   Listener& l = *new (lua_newuserdata(L, sizeof(Listener))) Listener{};
   if (luaL_newmetatable(L, "pluto:socket-listener")) {
@@ -254,6 +532,7 @@ static int l_listen (lua_State *L) {
     lua_settable(L, -3);
     lua_pushliteral(L, "__gc");
     lua_pushcfunction(L, [](lua_State *L) {
+      pluto_errorifnotgc(L);
       std::destroy_at<>(checklistener(L, 1));
       return 0;
     });
@@ -261,29 +540,66 @@ static int l_listen (lua_State *L) {
   }
   lua_setmetatable(L, -2);
 
-  return l.serv.bind(port, &l.srv) ? 1 : 0;
+  return (addr.ip.isZero() ? l.serv.bind(port, &l.srv) : l.serv.bind(addr.ip, port, &l.srv)) ? 1 : 0;
+}
+
+static int l_udpserver (lua_State *L) {
+  soup::SocketAddr addr = checkaddr(L, 1);
+  const auto port = addr.getPort();
+
+  StandaloneSocket& ss = pushsocket(L);
+  ss.sock = ss.sched.addSocket();
+  ss.udp = true;
+  ss.from_listener = true;
+  if (addr.ip.isZero()) {
+    if (l_unlikely(!ss.sock->udpBind6(port)))
+      return 0;
+    ss.recvLoopUdp(*ss.sock);
+#if SOUP_WINDOWS
+    auto ipv4_sock = ss.sched.addSocket();
+    if (l_likely(ipv4_sock->udpBind4(port)))
+      ss.recvLoopUdp(*ipv4_sock);
+#endif
+  }
+  else {
+    if (l_unlikely(!ss.sock->udpBind(addr.ip, addr.port)))
+      return 0;
+  }
+#if SOUP_WINDOWS
+  ss.sched.tick(); lua_assert(ss.sched.workers.size() >= 2);
+#endif
+  return 1;
 }
 
 static const luaL_Reg funcs_socket[] = {
   {"connect", l_connect},
   {"send", l_send},
+  {"peek", l_peek},
   {"recv", l_recv},
   {"unrecv", unrecv},
   {"starttls", starttls},
+  {"istls", socket_istls},
+  {"isudp", socket_isudp},
   {"close", socket_close},
+  {"isopen", socket_isopen},
+  {"getside", socket_getside},
+  {"getpeer", socket_getpeer},
+  {"setpeer", socket_setpeer},
   {"listen", l_listen},
+  {"udpserver", l_udpserver},
   {NULL, NULL}
 };
 
 LUAMOD_API int luaopen_socket (lua_State *L) {
   luaL_newlib(L, funcs_socket);
 
+#ifndef PLUTO_DONT_LOAD_ANY_STANDARD_LIBRARY_CODE_WRITTEN_IN_PLUTO
   lua_pushliteral(L, "bind");
   luaL_loadstring(L, R"EOC(
 return function(sched, port, callback)
-    sched:add(function()
-        local l = require"pluto:socket".listen(port)
-        assert(l, "Failed to bind port "..port)
+    local l = require"pluto:socket".listen(port)
+    assert(l, "Failed to bind port "..port)
+    return sched:add(function()
         while s := l:accept() do
             sched:add(function()
                 callback(s)
@@ -293,9 +609,10 @@ return function(sched, port, callback)
 end)EOC");
   lua_call(L, 0, 1);
   lua_settable(L, -3);
+#endif
 
   return 1;
 }
-const Pluto::PreloadedLibrary Pluto::preloaded_socket{ "socket", funcs_socket, &luaopen_socket };
+const Pluto::PreloadedLibrary Pluto::preloaded_socket{ PLUTO_SOCKETLIBNAME, funcs_socket, &luaopen_socket };
 
 #endif

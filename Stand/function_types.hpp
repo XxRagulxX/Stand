@@ -5,7 +5,6 @@
 
 namespace Stand
 {
-	using void_func_no_args_t = void(*)();
 	using aes_func_t = bool(__fastcall*)(void* inst, void* data, unsigned int size);
 
 	using CTheScripts_GetGUIDFromEntity_t = int(__fastcall*)(const rage::fwEntity&);
@@ -153,7 +152,7 @@ namespace Stand
 
 	using remove_known_ref_t = void(__fastcall*)(rage::fwRefAwareBase*, void** ppReference);
 
-	using CNetworkAssetVerifier_RefreshEnvironmentCRC_t = void(__fastcall*)(CNetworkAssetVerifier* _this);
+	//using CNetworkAssetVerifier_RefreshEnvironmentCRC_t = void(__fastcall*)(CNetworkAssetVerifier* _this);
 
 	using CTextConversion_FormatIntForHumans_t = void(__fastcall*)(__int64 iValue, char* pOutValue, int iLength, const char* pszPrefix, bool bAddCurrencyDeliminator);
 

@@ -12,7 +12,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPlayerCrashTrain(CommandList* const parent)
-			: CommandPlayerCrash(parent, LOC("PLYCRSH_T"), CMDNAMES_OBF("steamroll"), LOC("PLYCRSH_H_AOE2"))
+			: CommandPlayerCrash(parent, LOC("PLYCRSH_T"), CMDNAMES_OBF("steamroll"), HAVE_SEND_CLONE_CREATE_HOOK ? LOC("PLYCRSH_H_AOE2") : NOLABEL)
 		{
 		}
 

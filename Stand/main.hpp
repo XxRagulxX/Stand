@@ -7,11 +7,7 @@
 
 BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID);
 
-#ifdef STAND_DEBUG
 #define HIDE_MODULE false
-#else
-#define HIDE_MODULE true
-#endif
 
 #define ENABLE_PASSIVE_DLL true
 

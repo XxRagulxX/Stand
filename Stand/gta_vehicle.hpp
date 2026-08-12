@@ -323,7 +323,7 @@ public:
 	/* 0x0968 */ CVehicleFlags m_nVehicleFlags; // F6 05 ? ? ? ? 7F
 	PAD(0x0968 + sizeof(CVehicleFlags), 0x0A54) float m_fHomingProjectileDistance; // 0F 2E 05 ? ? ? ? 74 05 0F 2F C8 - CVehicle::SetHomingProjectileDistance
 	PAD(0x0A54 + 4, 0x0AEE) bool m_bAllowHomingMissleLockOnSynced;
-	PAD(0x0AEE + 1, 0x0C18) VehicleType vehicle_type;
+	PAD(0x0AEE + 1, 0x0C28) VehicleType vehicle_type;
 	PAD(0x0C18 + 4, 0x0C20) CWheel** wheels;
 	/* 0x0C28 */ int32_t num_wheels;
 	PAD(0x0C28 + 4, 0x0C38) CCarDoor* m_pDoors;
@@ -337,16 +337,7 @@ public:
 
 	[[nodiscard]] hash_t getModelAsObservedByOthers() const noexcept;
 };
-static_assert(offsetof(CVehicle, boost_charge) == 0x0300);
-static_assert(offsetof(CVehicle, m_ParachuteModelHash) == 0x033C); // 3095: 0x032C -> 0x033C (+0x10)
-static_assert(offsetof(CVehicle, m_vehicleDamage) == 0x0420); // 3095: 0x0410 -> 0x0420 (+0x10)
-static_assert(offsetof(CVehicle, m_Transmission) == 0x0880); // 3095: 0x0870 -> 0x0880 (+0x10)
-static_assert(offsetof(CVehicle, m_nVehicleFlags) == 0x0968); // 3095: 0x0920 -> 0x0968 (+0x48)
-static_assert(offsetof(CVehicle, m_fHomingProjectileDistance) == 0x0A54); // 3095
-static_assert(offsetof(CVehicle, m_bAllowHomingMissleLockOnSynced) == 0x0AEE); // 3095: 0x0A9E -> 0x0AEE (+0x50)
-static_assert(offsetof(CVehicle, vehicle_type) == 0x0C18); // 3095: 0x0BC8 -> 0x0C18 (+0x50)
-static_assert(offsetof(CVehicle, num_wheels) == 0x0C28); // 3095: 0x0BD0 -> 0x0C28 (+0x58)
-static_assert(offsetof(CVehicle, m_pVehicleGadgets) == 0x0C80); // 3095: 0x0C28 -> 0x0C80 (+0x58)
+static_assert(offsetof(CVehicle, vehicle_type) == 0x0C28); // 1.70: 0x0C18 -> 0x0C28 (+0x10)
 
 class CAutomobile : public CVehicle
 {
@@ -371,7 +362,7 @@ class CAutomobile : public CVehicle
 		uint8_t bInWheelieModeWheelsUp : 1;
 	};
 
-	INIT_PAD(CVehicle, 0x1441 + 0x50) bool m_bExplosionEffectSlick;
+	INIT_PAD(CVehicle, 0x1441 + 0x50 + 0x10) bool m_bExplosionEffectSlick;
 	PAD(0x1441 + 1, 0x144C) uint32_t m_uLastHitByExplosionEffectSlick;
 	PAD(0x144C + 4, 0x1518) CAutomobileFlags m_nAutomobileFlags;
 	PAD(0x1518 + sizeof(CAutomobileFlags), 0x1A10) void* active_parachute;
@@ -379,22 +370,26 @@ class CAutomobile : public CVehicle
 	PAD(0x1A18 + 4, 0x1A20) int32_t parachute_model_info_index;
 	PAD(0x1A20 + 4, 0x1A3C) uint8_t parachute_texture_variation;
 	/* 0x1A3D */ uint8_t can_activate_parachute;
+	PAD(0x1A9E, 0x1B00);
 };
 
 class CAircraftDamage {};
 
 class CPlane : public CAutomobile
 {
-	INIT_PAD(CAutomobile, 0x1AA0 + 0x50) float turbulence_multiplier;
-	/* 0x1AA4 */ float wind_multiplier;
+public:
+	/* 0x1B00 */ float turbulence_multiplier;
+	float wind_multiplier;
 	PAD(0x1AA4 + 4, 0x1D60) CAircraftDamage m_aircraftDamage;
 };
+static_assert(offsetof(CPlane, turbulence_multiplier) == 0x1B00); // 1.70
 
 class CRotaryWingAircraft : public CAutomobile
 {
-	INIT_PAD(CAutomobile, 0x1AD0 + 0x50) float main_rotor_health;
-	/* 0x1AD4 */ float tail_rotor_health;
-	/* 0x1AD8 */ float tail_boom_health;
+public:
+	/* 0x1B00 */ float main_rotor_health;
+	float tail_rotor_health;
+	float tail_boom_health;
 };
 
 class CHeli : public CRotaryWingAircraft
@@ -408,7 +403,7 @@ class CBoat : public CVehicle
 
 class CTrain : public CVehicle
 {
-	INIT_PAD(CVehicle, 0x14C0 + 0x50) float m_desiredCruiseSpeed;
+	INIT_PAD(CVehicle, 0x14C0 + 0x50 + 0x10) float m_desiredCruiseSpeed;
 	/* 0x14C4 */ float m_trackForwardSpeed;
 	/* 0x14C8 */ float m_trackPosFront;
 	/* 0x14CC */ float m_trackForwardAccPortion;
@@ -446,7 +441,9 @@ class CTrain : public CVehicle
 		return false;
 	}
 };
-static_assert(offsetof(CTrain, m_pEngine) == 0x1538); // 3095: 0x14E8 -> 0x1538 (+0x50)
+static_assert(offsetof(CTrain, m_pEngine) == 0x1548); // 1.70
+static_assert(offsetof(CTrain, linked_forward) == 0x1550); // 1.70
+static_assert(offsetof(CTrain, linked_backward) == 0x1558); // 1.70
 
 class CTrainTrack
 {

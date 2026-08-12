@@ -25,9 +25,11 @@ namespace Stand
 
 		void onCommand(Click& click, std::wstring& args) final
 		{
+			auto name = StringUtils::utf16_to_utf8(args);
+			args.clear();
 			if (JoinUtil::inviteViaRidPreflightCheck(click))
 			{
-				if (ScAccount::name2rid(click, StringUtils::utf16_to_utf8(get_next_arg(args)), [](const ScAccount& a)
+				if (ScAccount::name2rid(click, std::move(name), [](const ScAccount& a)
 				{
 					const int64_t rid = a.rid;
 					FiberPool::queueJob([rid]

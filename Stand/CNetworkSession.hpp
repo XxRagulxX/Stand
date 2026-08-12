@@ -160,26 +160,20 @@ namespace rage
 #pragma pack(push, 1)
 	struct netPeerComplainer
 	{
-		enum Flags : uint8_t
-		{
-			HOST = 1 << 1,
-		};
-
 		/* 0x00 */ netPeerId user_peer_id;
 		/* 0x08 */ uint32_t host_endpoint;
 		PAD(0x0C, 0x10) netConnectionManager* con_mgr;
 		PAD(0x18, 0x258) int num_slots; // = player count - 1
-		PAD(0x258 + 4, 0xE84) uint32_t channel_index; // 13 as of b2545
-		PAD(0xE84 + 4, 0xE94) uint8_t flags;
-		PAD(0xE94 + 1, 0xE98);
+		PAD(0x258 + 4, 0x1084) uint32_t channel_index; // 13 as of b2545
+		PAD(0x1084 + 4, 0x1098)
 
 		//void sendComplaint(const netComplaintMsg* packet) noexcept;
 	};
-	static_assert(sizeof(netPeerComplainer) == 0xE98); // 3337
-	static_assert(offsetof(netPeerComplainer, host_endpoint) == 0x08); // 2944
-	static_assert(offsetof(netPeerComplainer, con_mgr) == 0x10); // 2944
-	static_assert(offsetof(netPeerComplainer, channel_index) == 0xE84); // 2944
-	static_assert(offsetof(netPeerComplainer, flags) == 0xE94); // 2944
+	static_assert(sizeof(netPeerComplainer) == 0x1098); // 1.70
+	static_assert(offsetof(netPeerComplainer, user_peer_id) == 0x00); // 1.70
+	static_assert(offsetof(netPeerComplainer, host_endpoint) == 0x08); // 1.70
+	static_assert(offsetof(netPeerComplainer, con_mgr) == 0x10); // 1.70
+	static_assert(offsetof(netPeerComplainer, channel_index) == 0x1084); // 1.70
 };
 
 struct BlacklistEntry
@@ -244,15 +238,16 @@ public:
 	/* 0xACF0 */ bool m_bChangeAttributesPending[::SessionType::ST_Max];
 	rage::netStatus m_ChangeAttributesStatus[::SessionType::ST_Max];
 	/* 0xAD04 */ uint32_t m_nHostFlags[::SessionType::ST_Max];
-	PAD(0xAD04 + 8, 0xB09C) uint32_t m_SessionState; // 48 8B D9 8B 89 ? ? ? ? 83 F9 08 7D
-	PAD(0xB09C + 4, 0x1E54C) int m_MatchmakingGroupMax[5]; // CNetworkSession::SetMatchmakingGroupMax - 83 FA FF 74 15 48 63 C2 // 0 = regular joiner, 4 = spectator. signed ints but must not be negative?
-	PAD(0x1E54C + (4 * 5), 0x2E580) int host_queue_sort_algo;
-	PAD(0x2E580 + 4, 0x2E5A8) rage::netPeerComplainer complaint_mgr;
-	/* 0x2E5A8 + 0xE98 */ rage::netPeerComplainer transition_complainer;
+	PAD(0xAD04 + 8, 0xB09C) uint32_t m_SessionState; // 48 8B D9 8B 89 ? ? ? ? 83 F9 08 7D (this sig broke in 1.71)
+	uint64_t unk_added_in_1_71;
+	PAD(0xB09C + 4, 0x1E854) int m_MatchmakingGroupMax[5]; // CNetworkSession::SetMatchmakingGroupMax - 83 FA FF 74 15 48 63 C2 // 0 = regular joiner, 4 = spectator. signed ints but must not be negative?
+	PAD(0x1E854 + (4 * 5), 0x2E888) int host_queue_sort_algo; // 83 C9 FC 03 CF
+	PAD(0x2E888 + 4, 0x2E8B0) rage::netPeerComplainer complaint_mgr;
+	/* 0x2E8B0 + 0x1098 */ rage::netPeerComplainer transition_complainer;
 	// bool m_bAllowComplaintsWhenEstablishing;
 	// CNetworkRecentPlayers m_RecentPlayers;
-	PAD(0x2E5A8 + (0xE98 * 2), 0x32BD8) CBlacklistedGamers blacklist;
-	PAD(0x32BD8 + sizeof(CBlacklistedGamers), 0x3490C) uint32_t m_TransitionState; // 74 ? 83 F8 05 7D
+	PAD(0x2E8B0 + (0x1098 * 2), 0x332E8) CBlacklistedGamers blacklist;
+	PAD(0x332E8 + sizeof(CBlacklistedGamers), 0x34F1C) uint32_t m_TransitionState; // 74 ? 83 F8 05 7D
 #if false
 	unsigned m_TransitionStateTime;
 	rage::rlSessionInfo m_TransitionJoinSessionInfo;
@@ -291,8 +286,5 @@ public:
 	void setMatchmakingGroupSlots(Stand::SessionType type) noexcept;
 };
 static_assert(offsetof(CNetworkSession, m_SessionState) == 0xB09C);
-static_assert(offsetof(CNetworkSession, m_MatchmakingGroupMax) == 0x1E54C); // b3337: 0x1DF3C -> 0x1E54C (+0x610)
-static_assert(offsetof(CNetworkSession, host_queue_sort_algo) == 0x2E580);
-static_assert(offsetof(CNetworkSession, complaint_mgr) == 0x2E5A8); // b3337: 0x2DF90 -> 0x2E5A8 (+0x618)
-static_assert(offsetof(CNetworkSession, blacklist) == 0x32BD8); // b3337: 0x325C0 -> 0x32BD8 (+0x618)
-static_assert(offsetof(CNetworkSession, m_TransitionState) == 0x3490C); // b3337: 0x342F0 -> 0x3490C (+0x61C)
+static_assert(offsetof(CNetworkSession, m_MatchmakingGroupMax) == 0x1E85C); // 1.71
+static_assert(offsetof(CNetworkSession, host_queue_sort_algo) == 0x2E890); // 1.71

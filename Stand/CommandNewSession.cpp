@@ -49,23 +49,22 @@ namespace Stand
 		{
 			onChildClick(click, JOIN_CREW);
 		});
-		// As of b3351, attempting to matchmake for a public session seems to crash.
-		/*createChild<CommandActionSuffixLambda>(LOC("NWSESS_FP"), { CMDNAME("public") }, NOLABEL, [this](Click& click)
+		createChild<CommandActionSuffixLambda>(LOC("NWSESS_FP"), { CMDNAME("public") }, NOLABEL, [this](Click& click)
 		{
 			onChildClick(click, FIND_PUBLIC);
 		});
 		createChild<CommandActionSuffixLambda>(LOC("NWSESS_NP"), { CMDNAME("newpublic") }, LOC("NWSESS_NP_H"), [this](Click& click)
 		{
 			onChildClick(click, STAND_NEW_PUBLIC);
-		});*/
+		});
 		createChild<CommandActionSuffixLambda>(LOC("NWSESS_CTOR"), { CMDNAME("creatormode") }, NOLABEL, [this](Click& click)
 		{
 			onChildClick(click, STAND_CREATOR_MODE);
 		});
-		/*createChild<CommandActionSuffixLambda>(LOC("NWSESS_SCTV"), { CMDNAME("sctv") }, NOLABEL, [this](Click& click)
+		createChild<CommandActionSuffixLambda>(LOC("NWSESS_SCTV"), { CMDNAME("sctv") }, NOLABEL, [this](Click& click)
 		{
 			onChildClick(click, STAND_SCTV);
-		});*/
+		});
 	}
 
 	void CommandNewSession::onChildClick(Click& click, SessionType value)

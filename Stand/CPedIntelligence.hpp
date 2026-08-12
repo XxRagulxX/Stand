@@ -61,8 +61,8 @@ public:
 	PAD(0x358 + 8, 0x368) CPedTaskManager task_manager;
 	PAD(0x368 + sizeof(CPedTaskManager), 0xB08) CTaskInfo* task_info;
 	PAD(0xB08 + 8, 0xBE0) CFiringPatternInfo* firing_pattern_info;
-	PAD(0xBE0 + 8, 0xC20) CRelationshipGroup* m_pRelationshipGroupDefault;
-	/* 0xC28 */ CRelationshipGroup* m_pRelationshipGroup;
+	PAD(0xBE0 + 8, 0xCD8) CRelationshipGroup* m_pRelationshipGroupDefault;
+	/* 0xCE0 */ CRelationshipGroup* m_pRelationshipGroup;
 
 	[[nodiscard]] CRelationshipGroup* GetRelationshipGroup() const noexcept
 	{
@@ -79,4 +79,4 @@ public:
 
 	[[nodiscard]] CTask* FindTaskActiveByType(const int iType) const noexcept;
 };
-static_assert(sizeof(CPedIntelligence) == 0xC28 + 8);
+static_assert(sizeof(CPedIntelligence) == 0xCE0 + 8);

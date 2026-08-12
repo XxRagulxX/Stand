@@ -21,7 +21,7 @@ namespace Stand
 				const auto val = (int)value;
 				ensureYieldableScriptThread(click, [this, val]
 				{
-					if (auto thread = parent->as<CommandSessionScript>()->getThreadAndEnsureControl())
+					if (auto thread = parent->as<CommandSessionScript>()->getThread())
 					{
 						*ScriptLocal(thread, LOCAL_CHLNG_PLYDATA).at(g_player, LOCAL_CHLNG_PLYDATA_SIZE).at(4).as<int*>() = val;
 					}

@@ -115,7 +115,7 @@ namespace Stand
 				}
 				else if (file_name == g_stand_dll_file_name)
 				{
-					str.append(soup::ObfusString(STAND_NAMEVERSION).str()).append(", ").append(Util::to_padded_hex_string(offset + 0x1337694200000000));
+					str.append(soup::ObfusString(STAND_NAMEVERSION).str()).append(", ").append(Util::to_padded_hex_string(offset + 0x180000000));
 #ifndef STAND_DEBUG
 					use_debug_symbols = false;
 #endif

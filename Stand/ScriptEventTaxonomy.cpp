@@ -28,8 +28,10 @@
 #include "Tunables.hpp"
 #include "Util.hpp"
 
-#define MAX_INTERIOR_ID g_tunables.getInt(TUNAHASH("MAX_INTERIOR_ID"))
+static SOUP_TUNABLE(uint32_t, MAX_INTERIOR_ID) = 173;
 #define INTERIOR_ARRAY_SIZE MAX_INTERIOR_ID + 1
+
+static SOUP_TUNABLE(uint32_t, MAX_MISSION_ID) = 236;
 
 namespace Stand
 {
@@ -379,7 +381,7 @@ namespace Stand
 				{
 					res.add(FlowEvent::SE_INVALID, "S3");
 				}
-				if (_args_count > ARGSCOUNT2(5) && uint32_t(ARGSIDX2(5)) >= 225)
+				if (_args_count > ARGSCOUNT2(5) && uint32_t(ARGSIDX2(5)) >= MAX_MISSION_ID)
 				{
 					res.add(FlowEvent::SE_KICK, "S3");
 				}
@@ -390,7 +392,7 @@ namespace Stand
 				{
 					res.add(FlowEvent::SE_INVALID, "S3");
 				}
-				if (_args_count > ARGSCOUNT2(4) && uint32_t(ARGSIDX2(4)) >= 225)
+				if (_args_count > ARGSCOUNT2(4) && uint32_t(ARGSIDX2(4)) >= MAX_MISSION_ID)
 				{
 					res.add(FlowEvent::SE_KICK, "S3");
 				}
@@ -722,7 +724,7 @@ namespace Stand
 						const auto target = AbstractPlayer((uint32_t)ARGSIDX2(2));
 
 						// Bounty Reactions
-						if (target == g_player)
+						if (target == g_player && sender != g_player)
 						{
 							auto reactions = sender.getReactions(FlowEvent::MISC_BOUNTY);
 							const auto toast_flags = flow_event_reactions_to_toast_flags(reactions);
@@ -1122,6 +1124,13 @@ namespace Stand
 
 	bool ScriptEventTaxonomy::isValidFreemodeMissionId(uint32_t id)
 	{
+		std::string tuna_name = soup::ObfusString("isValidFreemodeMissionId.").str();
+		tuna_name.append(fmt::to_string(id));
+		if (auto opt = g_tunables.getOptionalBool(soup::joaat::hash(tuna_name)); opt.has_value())
+		{
+			return opt.value();
+		}
+
 		switch (id)
 		{
 		case 142:
@@ -1247,6 +1256,10 @@ namespace Stand
 		case 338:
 		case 339:
 		case 340:
+		case 341:
+		case 342:
+		case 343:
+		case 344:
 			return true;
 		}
 		// 1.68-3095, freemode, func_8858

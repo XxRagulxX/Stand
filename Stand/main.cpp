@@ -8,7 +8,6 @@
 #include <soup/sha1.hpp>
 #include <soup/string.hpp>
 
-#include "AntiDbg.hpp"
 #include "Auth.hpp"
 #include "CNetworkAssetVerifier.hpp"
 #include "CodeIntegrity.hpp"
@@ -64,22 +63,13 @@
 #include "Tunables.hpp"
 #include "Util.hpp"
 
-BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
+BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID lpArg)
 {
 	if (reason == DLL_PROCESS_ATTACH)
 	{
-		return ::Stand::onDllAttach(hmod);
+		return Stand::onDllAttach(hmod);
 	}
 	return TRUE;
-}
-
-// PinkEye helper
-extern "C"
-{
-	__declspec(dllexport) LRESULT Deez(int code, WPARAM wParam, LPARAM lParam)
-	{
-		return CallNextHookEx(nullptr, code, wParam, lParam);
-	}
 }
 
 namespace Stand
@@ -112,9 +102,6 @@ namespace Stand
 		// aes_helper.asm
 		void aes_initfile_init(void* call, void* cont);
 		void aes_decrypt_init(void* call, void* cont);
-
-		// overrun_helper.asm
-		void net_event_error_init(void* cont);
 	}
 
 	static void showMessageBoxAndLog(const char* message)
@@ -166,7 +153,7 @@ namespace Stand
 		return *pointers::CLoadingScreens_ms_Context == 0 && *pointers::ped_factory != nullptr && (*pointers::ped_factory)->m_local_ped != nullptr;
 	}
 
-	static void call_with_time_limit(void f(uintptr_t), uintptr_t ud = 0)
+	/*static void call_with_time_limit(void f(uintptr_t), uintptr_t ud = 0)
 	{
 		auto t = get_current_time_millis();
 		f(ud);
@@ -175,7 +162,7 @@ namespace Stand
 			AntiDbg::apologiseInAdvance(1);
 			AntiDbg::bToTheSToTheOToTheD();
 		};
-	}
+	}*/
 
 	static void ensureAntiDump()
 	{
@@ -190,20 +177,8 @@ namespace Stand
 	BOOL onDllAttach(HMODULE hmod) // OBFUS!
 	{
 		// Initialise
-		DisableThreadLibraryCalls(hmod);
 		g_logger.init(FileLogger::getMainFilePath());
 		g_logger.log(soup::ObfusString(STAND_NAMEVERSION " reporting for duty!"));
-		// Check debugger
-		if (auto dbgid = AntiDbg::getRunningDebuggerId(true))
-		{
-			if (dbgid >= 100)
-			{
-				dbgid -= 100;
-			}
-			g_logger.log(fmt::format("Startup failed ({})", dbgid));
-			mainUnload();
-			return FALSE;
-		}
 		// Start exception handling
 		g_hmodule = hmod;
 		g_og_unhandled_exception_filter = Exceptional::setUnhandledExceptionHandler();
@@ -246,7 +221,8 @@ namespace Stand
 	{
 		// Detect early inject
 		std::wstring sGrcWindow = StringUtils::utf8_to_utf16(soup::ObfusString("grcWindow").str());
-		if (!FindWindowW(sGrcWindow.c_str(), nullptr)
+		std::wstring sSgaWindow = StringUtils::utf8_to_utf16(soup::ObfusString("sgaWindow").str());
+		if ((!FindWindowW(sGrcWindow.c_str(), nullptr) && !FindWindowW(sSgaWindow.c_str(), nullptr))
 			|| GetModuleHandleA(soup::ObfusString("socialclub.dll")) == nullptr
 			)
 		{
@@ -265,7 +241,7 @@ namespace Stand
 
 		// Erase PE Header
 #if ERASE_PE_HEADER
-		call_with_time_limit([](uintptr_t)
+		/*call_with_time_limit*/([](uintptr_t)
 		{
 			DWORD OldProtect;
 			VirtualProtect(g_hmodule, 0x1000, PAGE_READWRITE, &OldProtect);
@@ -420,7 +396,8 @@ namespace Stand
 			if (early_inject)
 			{
 				std::wstring sGrcWindow = StringUtils::utf8_to_utf16(soup::ObfusString("grcWindow").str());
-				while (!FindWindowW(sGrcWindow.c_str(), nullptr))
+				std::wstring sSgaWindow = StringUtils::utf8_to_utf16(soup::ObfusString("sgaWindow").str());
+				while (!FindWindowW(sGrcWindow.c_str(), nullptr) && !FindWindowW(sSgaWindow.c_str(), nullptr))
 				{
 					soup::os::sleep(10);
 				}
@@ -580,19 +557,7 @@ namespace Stand
 
 			while (true)
 			{
-				if constexpr (AntiDbg::isEnabled())
-				{
-					if (AntiDbg::getRunningDebuggerId(true) != 0)
-					{
-						if (!g_logger.isInited())
-						{
-							g_logger.init(FileLogger::getMainFilePath());
-						}
-						AntiDbg::apologiseInAdvance(3);
-						AntiDbg::crash();
-					}
-				}
-				soup::os::sleep(500);
+				soup::os::sleep(60 * 60 * 1000);
 			}
 		}
 		else
@@ -723,14 +688,6 @@ namespace Stand
 
 	static void mainProcessEarlyInject()
 	{
-		if (MapUtil::hasKeyValue(g_gui.active_profile.data, soup::ObfusString("Game>Disable Keyboard Hook").str(), soup::ObfusString("On").str()))
-		{
-			g_logger.log(soup::ObfusString("Disable Keyboard Hook is enabled in state, doing that now."));
-			if (pointers::remove_keyboard_hook)
-			{
-				pointers::remove_keyboard_hook();
-			}
-		}
 	}
 
 	static void mainSetNotRunning()
@@ -914,13 +871,13 @@ namespace Stand
 			switch (rage::atStringHash(e->second))
 			{
 			case ATSTRINGHASH("OS"):
-				g_logger.log(soup::ObfusString("DNS Conduit set to OS."));
-				HttpRequestBuilder::dns_conduit = DNS_CONDUIT_OS;
+				/*g_logger.log(soup::ObfusString("DNS Conduit set to OS."));
+				HttpRequestBuilder::dns_conduit = DNS_CONDUIT_OS;*/
 				break;
 
 			case ATSTRINGHASH("SMART"):
-				/*g_logger.log(soup::ObfusString("DNS Conduit set to Smart."));
-				HttpRequestBuilder::dns_conduit = DNS_CONDUIT_SMART;*/
+				g_logger.log(soup::ObfusString("DNS Conduit set to Smart."));
+				HttpRequestBuilder::dns_conduit = DNS_CONDUIT_SMART;
 				break;
 
 			case ATSTRINGHASH("HTTP"):
@@ -1271,9 +1228,14 @@ namespace Stand
 		pointers::hwnd = FindWindowW(sGrcWindow.c_str(), nullptr);
 		if (!pointers::hwnd)
 		{
-			std::string msg = soup::ObfusString("Failed to find the game's window.").str();
-			showMessageBoxAndLog(msg.c_str());
-			return false;
+			std::wstring sSgaWindow = StringUtils::utf8_to_utf16(soup::ObfusString("sgaWindow").str());
+			pointers::hwnd = FindWindowW(sSgaWindow.c_str(), nullptr);
+			if (!pointers::hwnd)
+			{
+				std::string msg = soup::ObfusString("Failed to find the game's window.").str();
+				showMessageBoxAndLog(msg.c_str());
+				return false;
+			}
 		}
 
 		// Get window title
@@ -1424,7 +1386,7 @@ namespace Stand
 		{
 			pointers::hide_hud_and_radar_this_frame = p.add(4).rip().add(1).as<bool*>();
 		});
-		BATCH_ADD("BP", "48 8B 0D ? ? ? ? 4C 8D 44 24 20 48 8B D6 E8 ? ? ? ? B0 01", [](soup::Pointer p)
+		BATCH_ADD("BP", "48 8B 0D ? ? ? ? 4C 8D 44 24 20 48 8B D7 E8 ? ? ? ? B0 01", [](soup::Pointer p)
 		{
 			pointers::network_session = p.add(3).rip().as<CNetworkSession**>();
 			pointers::send_MsgTextMessage = p.add(16).rip().add(
@@ -1460,13 +1422,13 @@ namespace Stand
 		{
 			g_hooking.CEventGroupScriptNetwork_DispatchEvent_hook.setTarget(*p.add(24).rip().add(8).as<void**>());
 		});
-		BATCH_ADD("BX", "74 1D 4C 8D 05 ? ? ? ? 0F B7 C1", [](soup::Pointer p)
+		BATCH_ADD("BX", "3D A3 06 00 00 77 1A 4C 8D 05", [](soup::Pointer p)
 		{
-			pointers::blips = p.add(5).rip().as<CMiniMapBlip**>();
+			pointers::blips = p.add(10).rip().as<CMiniMapBlip**>();
 		});
-		BATCH_ADD("BY", "78 13 8B D1 48 8B 0D ? ? ? ? E8", [](soup::Pointer p)
+		BATCH_ADD("BY", "4C 8B 05 ? ? ? ? 41 3B 50 10 7D 0A", [](soup::Pointer p)
 		{
-			pointers::cam_pool = p.add(7).rip().as<rage::fwPool<camBaseCamera>**>();
+			pointers::cam_pool = p.add(3).rip().as<rage::fwPool<camBaseCamera>**>();
 		});
 		BATCH_ADD("BZ", "8B 15 ? ? ? ? 4C 8B 43 20 48 8B 05", [](soup::Pointer p)
 		{
@@ -1511,7 +1473,7 @@ namespace Stand
 		});
 		BATCH_ADD_MANDATORY_HOOK("C6", scaleform_is_key_pressed_1, "44 3B 41 04 74", "0F 41 83 F8 1B 75 06 83 79 04 01 75 03 32 C0 C3 48 63 0D ? ? ? ? 48 63 C2 48 8D 15");
 		BATCH_ADD_OPTIONAL_HOOK("C7", is_chat_character_valid, "40 55 48 8B EC", "48 83 EC 70 0F B7 D1 33 C9 33 C0 C7 45 90 7F 00 60 00");
-		BATCH_ADD_OPTIONAL("C8", "48 8B D8 41 BC 1F 00 00 00", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("C8", "48 8B D8 41 BD 1F 00 00 00", [](soup::Pointer p)
 		{
 			pointers::min_character_value = p.add(5).as<uint32_t*>();
 		});
@@ -1529,7 +1491,6 @@ namespace Stand
 		{
 			p = p.add(1).rip();
 			pointers::CMultiplayerChat_SetFocus = p.as<CMultiplayerChat_SetFocus_t>();
-			pointers::rage_ioKeyboard_sm_AllowLocalKeyboardLayout = p.add((0x00007FF749923DE8 - 0x00007FF749923DA8) + 3).rip().as<bool*>();
 		});
 		BATCH_ADD("CC", "E8 ? ? ? ? 48 8D 43 4E", [](soup::Pointer p)
 		{
@@ -1544,6 +1505,10 @@ namespace Stand
 			p = p.sub(0x00007FF749932B66 - 0x00007FF749932B48);
 			CHECK_EXISTING_HOOK_WONT_HOOK("CD", "48 89 5C 24 10");
 			STORE_POINTER(CNewHud_UpdateImeText);
+		});
+		BATCH_ADD("CE", "48 8B D8 33 C0 38 05 ? ? ? ? 75", [](soup::Pointer p)
+		{
+			pointers::rage_ioKeyboard_sm_AllowLocalKeyboardLayout = p.add(7).rip().as<bool*>();
 		});
 
 		BATCH_ADD("D0", "FF ? 41 8B DE EB 1B", [](soup::Pointer p)
@@ -1595,13 +1560,8 @@ namespace Stand
 			pointers::viewport_manager = p.add(31).rip().sub(0x00).as<CViewportManager*>();
 		});
 
-		BATCH_ADD_OPTIONAL("F0", "48 83 EC 28 33 C9 FF 15 ? ? ? ? 45 33 C9 48 8D 15", [](soup::Pointer p)
-		{
-			pointers::add_keyboard_hook = p.as<void_func_no_args_t>();
-			pointers::remove_keyboard_hook = p.add(38).rip().as<void_func_no_args_t>();
-		});
 		// F1 used by ComponentCrash
-		BATCH_ADD_OPTIONAL_HOOK("F2", CControl_StartPlayerPadShake, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 56 48 83 EC 30 83 B9 D0 1A 02 00 FF");
+		BATCH_ADD_OPTIONAL_HOOK("F2", CControl_StartPlayerPadShake, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 56 48 83 EC ? 83 B9 20 83 02 00 FF 45 8B F1 41 8B E8");
 		BATCH_ADD_OPTIONAL("F3", "E8 ? ? ? ? 48 8B 4B 20 48 8B 11", [](soup::Pointer p)
 		{
 			pointers::CRagdollRequestEvent_Trigger = p.add(1).rip().as<CRagdollRequestEvent_Trigger_t>();
@@ -1632,7 +1592,7 @@ namespace Stand
 		{
 			p = p.add(1).rip();
 			STORE_POINTER(CPlaySoundEvent_TriggerPos);
-			p = p.add(140);
+			p = p.add(0x00007FF6F9CCB390 - 0x00007FF6F9CCB2F4);
 			CHECK_EXISTING_HOOK("FA", "48 89 5C 24 08");
 			STORE_POINTER(CPlaySoundEvent_TriggerEnt);
 			p = p.add(0x00007FF638B809EB - 0x00007FF638B809D4).add(3).rip();
@@ -1723,6 +1683,7 @@ namespace Stand
 			p = p.add(1).rip();
 			STORE_HOOK(rage_netTransactor_SendResponse_rage_rlSessionDetailResponse);
 		});
+		// F0 is unused
 
 		BATCH_ADD_OPTIONAL_HOOK("G0", CProjectileManager_CreateProjectile, "48 89 5C 24 08", "89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 F9 48 81 EC B0 00 00 00");
 		BATCH_ADD("G1", "48 63 0D ? ? ? ? 48 8D 15 ? ? ? ? 48 8D 45", [](soup::Pointer p)
@@ -1740,7 +1701,7 @@ namespace Stand
 		BATCH_ADD("H1", "57 48 83 EC 20 8B D9 E8 ? ? ? ? 48 8B 10 48 8B C8", [](soup::Pointer p)
 		{
 			ColoadMgr::addCheck("H1", p.sub(5).as<void*>(), "\x48\x89\x5C\x24\x10", 5);
-			pointers::is_explosion_type_valid_patch = p.add(0x00007FF7C108C8CA - 0x00007FF7C108C869).as<uint16_t*>(); // xor al, al
+			pointers::is_explosion_type_valid_patch = p.add(0x00007FF62B77D80C - 0x00007FF62B77D795).as<uint16_t*>(); // xor al, al
 		});
 		BATCH_ADD("H2", "0F 2F D0 73 05 0F 28 D0 EB 08 0F 2F D3 76 03 0F 28 D3 0F 2F C8 73 05 0F 28 C8 EB 08 0F 2F CB 76 03 0F 28 CB F3 0F 59 15 ? ? ? ? F3 0F 59 0D ? ? ? ? F3 0F 11 54 24 40 F3 0F 11 4C 24 44 E8 ? ? ? ? 48 8B 4C 24 40 48 89 88 E8 06 00 00 C6 80 FD 06 00 00 01 48 83 C4 28", [](soup::Pointer p)
 		{
@@ -1770,7 +1731,7 @@ namespace Stand
 		{
 			pointers::watchdog_thread_crash_patch.initPatchNOP(p.add(2).as<uint8_t*>(), 2);
 		});
-		BATCH_ADD_OPTIONAL("H9", "44 38 35 ? ? ? ? 0F 85 ? 00 00 00 48 8B 05", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("H9", "44 38 25 ? ? ? ? 0F 85 ? 00 00 00 84 C0 0F 84 ? 00 00 00 48 8B 05", [](soup::Pointer p)
 		{
 			// fire_commands::CommandAddOwnedExplosion
 			// set sm_BeenBusted to true so it won't try to do any funny shit anymore
@@ -1830,6 +1791,10 @@ namespace Stand
 		{
 			pointers::rage__audRequestedSettings__sm_IgnoreBlockedAudioThread = p.add(5).rip().as<bool*>();
 		});
+		BATCH_ADD_OPTIONAL("HN", "E8 ? ? ? ? 40 38 35 ? ? ? ? 75 05", [](soup::Pointer p)
+		{
+			pointers::audNorthAudioEngine__sm_RunUpdateInSeperateThread = p.add(8).rip().as<bool*>();
+		});
 
 		// rage::ioMapper::Update
 		BATCH_ADD_OPTIONAL("I0", "0F 28 F7 83 FF 09", [](soup::Pointer p)
@@ -1842,13 +1807,13 @@ namespace Stand
 			STORE_HOOK(set_value_from_mkb_axis);
 			set_value_from_mkb_axis_init_ret_og(p.add(5).as<void*>());
 		});
-		BATCH_ADD_OPTIONAL("I2", "49 8B 9C DE B8 15 00 00", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("I2", "49 8B 9C DE 68 1A 00 00", [](soup::Pointer p)
 		{
 			set_value_from_mkb_axis_init_ret_bail(p.as<void*>());
 		});
 
-		BATCH_ADD_OPTIONAL_HOOK("L0", CTextFile_Get, "48 89 5C 24", "57 48 83 EC 20 48 8B DA 48 8B F9 48 85 D2 75 44 E8");
-		BATCH_ADD("L1", "83 8B B0 02 00 00 FF 48 8D 8B", [](soup::Pointer p)
+		BATCH_ADD_MANDATORY_HOOK("L0", CTextFile_Get, "48 89 5C 24", "57 48 83 EC 20 48 8B DA 48 8B F9 48 85 D2 75 44 E8");
+		BATCH_ADD("L1", "83 8B B0 02 00 00 FF", [](soup::Pointer p)
 		{
 			p = p.sub(0x00007FF6C3ABDEE0 - 0x00007FF6C3ABDEB8);
 			CHECK_EXISTING_HOOK("L1", "48 89 5C 24 08");
@@ -1865,9 +1830,9 @@ namespace Stand
 			pointers::CProfileSettings_Set = p.add(24).rip().as<CProfileSettings_Set_t>();
 			pointers::rage_rlSetLanguage = p.add(47).rip().as<rage_rlSetLanguage_t>();
 		});
-		BATCH_ADD_FUNC("L4", CPauseMenu_UpdateProfileFromMenuOptions, "48 89 5C 24 08", "57 48 83 EC 20 48 8B 1D ? ? ? ? 44 8B 05");
+		BATCH_ADD_FUNC("L4", CPauseMenu_UpdateProfileFromMenuOptions, "48 89 5C 24 08", "48 89 74 24 10 57 48 83 EC 20 48 8B 1D ? ? ? ? 44 8B 05 ? ? ? ? 40 8A F2 40 8A F9 BA 02 00 00 00");
 
-		BATCH_ADD_OPTIONAL_HOOK("N0", rage_rlTelemetry_Export, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 56 48 83 EC 30 49 8B E8 4C 8D 40 EC 49 8B F1 48 8B D9 40 32 FF E8");
+		BATCH_ADD_OPTIONAL_HOOK("N0", rage_rlTelemetry_Export, "48 89 5C 24 08", "48 89 6C 24 18 56 57 41 56 48 83 EC 20 4D 8B F1 49 8B D8 48 8B F2 48 8B F9 C6 02 00");
 #if HTTP_HOOK
 		BATCH_ADD("N1", "48 8D 6C 24 30 48 89 9D 30 04 00 00 48 89 B5 40 04 00 00", [](soup::Pointer p)
 		{
@@ -1951,14 +1916,13 @@ namespace Stand
 			pointers::grcdevice_crash_patch.initPatch(p.add(11).as<uint8_t*>(), patch, COUNT(patch));
 		}));
 #endif
-		BATCH_ADD("NB", "48 8B 0D ? ? ? ? E8 ? ? ? ? 44 38 63 0C 74", [](soup::Pointer p)
+		/*BATCH_ADD("NB", "48 8B 0D ? ? ? ? E8 ? ? ? ? 44 38 63 0C 74", [](soup::Pointer p)
 		{
 			p = p.add(8).rip();
 			CHECK_EXISTING_HOOK_WONT_HOOK("NB", "40 53 48 83 EC");
 			STORE_POINTER(CNetworkAssetVerifier_RefreshEnvironmentCRC);
-		});
-		// Can be found shortly before "BD C3 9E 26 00"
-		BATCH_ADD("ND", "48 8B 15 ? ? ? ? 33 C9 48 39 0D", [](soup::Pointer p)
+		});*/
+		BATCH_ADD("ND", "48 8B 1D ? ? ? ? 33 F6 BD C3 9E 26 00", [](soup::Pointer p)
 		{
 			pointers::ac_thing_data = p.add(3).rip().as<AcThingData**>();
 		});
@@ -1969,7 +1933,7 @@ namespace Stand
 		});
 #endif
 		BATCH_ADD_OPTIONAL_HOOK("NE", rage_sysDependencyScheduler_InsertInternal, "48 89 5C 24 08", "57 48 83 EC 20 0F B6 99 ? 00 00 00 4C 8B C1");
-		BATCH_ADD("NF", "E8 ? ? ? ? 8B 54 24 30 89 13", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("NF", "E8 ? ? ? ? 8B 54 24 30 89 13", [](soup::Pointer p)
 		{
 			p = p.add(1).rip();
 			STORE_HOOK(network_can_access_multiplayer);
@@ -2050,7 +2014,7 @@ namespace Stand
 			pointers::rage_datBitBuffer_ReadBits = p.sub(5).as<rage_datBitBuffer_ReadBits_t>();
 		});
 		BATCH_ADD_FUNC("P3", rage_datBitBuffer_WriteBits, "48 89 5C 24 08", "57 48 83 EC 30 F6 41 1C 01 45 8B D1");
-		BATCH_ADD("P4", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 80 7A ? FF 41 8B F1 49 8B E8 48 8B DA 48 8B F9 74 59 0F B6 42 ? 44 8B 4C 24 ? 48 81 C1 ? ? ? ? 44 8B C6 48 8B D5 48 69 C0", [](soup::Pointer p)
+		BATCH_ADD("P4", "4C 8B DC 49 89 5B 08 49 89 6B 10 49 89 73 18 57 41 56 41 57 48 83 EC ? 80 7A 61 FF", [](soup::Pointer p)
 		{
 			pointers::send_net_event_ack = p.as<send_net_event_ack_t>();
 		});
@@ -2062,7 +2026,7 @@ namespace Stand
 			// This function is actually entity_commands::GetEntityAttachParent which calls rage::fwEntity::GetAttachParent and CNetObjPhysical::GetEntityAttachedTo as a fallback.
 		});
 		BATCH_ADD_OPTIONAL_HOOK("P6", rage_netPlayerMgrBase_SendBuffer, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 60 48 8B 84 24 B0 00 00 00");
-		BATCH_ADD_OPTIONAL("P7", "45 33 C9 4C 8B DA 66 85 C0 0F 84 ? ? ? ? 44 0F B7 C0 33 D2 8B C1 41 F7 F0 48 8B 05 ? ? ? ? 4C 8B 14 D0 EB 09 41 3B 0A 74 54", [](soup::Pointer p)
+		BATCH_ADD("P7", "45 33 C9 4C 8B DA 66 85 C0 0F 84 ? ? ? ? 44 0F B7 C0 33 D2 8B C1 41 F7 F0 48 8B 05 ? ? ? ? 4C 8B 14 D0 EB 09 41 3B 0A 74 54", [](soup::Pointer p)
 		{
 			p = p.sub(7);
 			CHECK_EXISTING_HOOK("P7", "0F B7 05");
@@ -2073,12 +2037,6 @@ namespace Stand
 			p = p.add(6).rip();
 			CHECK_EXISTING_HOOK_WONT_HOOK("P8", "48 89 5C 24 08");
 			STORE_POINTER(remove_known_ref);
-		});
-		BATCH_ADD_OPTIONAL("P9", "48 8B 54 24 68 49 8D 4C 24 60", [](soup::Pointer p)
-		{
-			p = p.add(5);
-			STORE_HOOK(net_event_error_pre_memmove);
-			net_event_error_init(p.add(5).as<void*>());
 		});
 		BATCH_ADD_FUNC("PA", CGameWorld_Remove, "48 89 5C 24 08", "48 89 74 24 10 57 48 83 EC 20 48 89 0D");
 		BATCH_ADD("PB", "48 85 FF 48 89 1D", [](soup::Pointer p)
@@ -2095,10 +2053,10 @@ namespace Stand
 			script_vm_helper_init_1(pointers::script_vm_jump_table, &ScriptVmErrorHandling::onInvalidScriptOpCode);
 			script_vm_op_native_init(&pointers::script_vm_jump_table[Native]);
 		});
-		BATCH_ADD_OPTIONAL("PD", "4D 85 C0 74 06 2B FE 41 89 78 14 45 89 57 08 41 8B C2 EB", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("PD", "45 89 57 08 41 8B C2 EB", [](soup::Pointer p)
 		{
-			script_vm_helper_init_2(&ScriptVmErrorHandling::onScriptThreadError, p.add(19).ripT<int8_t>().as<void*>());
-			pointers::script_thread_error_kill_1 = p.add(11).as<void*>();
+			script_vm_helper_init_2(&ScriptVmErrorHandling::onScriptThreadError, p.add(8).ripT<int8_t>().as<void*>());
+			pointers::script_thread_error_kill_1 = p.as<void*>();
 		});
 		BATCH_ADD_OPTIONAL("PE", "B8 02 00 00 00 41 89 47 08 48 81 C4 B8 00 00 00", [](soup::Pointer p)
 		{
@@ -2107,11 +2065,11 @@ namespace Stand
 		BATCH_ADD_OPTIONAL_HOOK("PF", received_clone_create_ack, "48 8b c4 48 89", "58 ? 48 89 68 ? 48 89 70 ? 48 89 78 ? 41 54 41 56 41 57 48 83 ec ? 4c 8b fa 49 8b d8");
 		BATCH_ADD_OPTIONAL_HOOK("PG", received_clone_sync_ack, "48 89 5c 24", "48 89 74 24 ? 48 89 7c 24 ? 41 54 41 56 41 57 48 83 ec ? 4c 8b e2");
 		BATCH_ADD_OPTIONAL_HOOK("PH", received_clone_remove_ack, "48 8b c4 48 89", "58 ? 48 89 68 ? 48 89 70 ? 57 41 56 41 57 48 83 ec ? 4c 8b fa 49 8b d8");
-		BATCH_ADD_MANDATORY_HOOK("PI", received_clone_create, "48 8B C4 66 44", "89 48 20 4C 89 40 18 48 89 48 08 53 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 68 44 0F B7 ? 24 D8 00 00 00");
-		BATCH_ADD_MANDATORY_HOOK("PJ", received_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 4C 8B EA");
+		BATCH_ADD_OPTIONAL_HOOK("PI", received_clone_create, "48 8B C4 66 44", "89 48 20 4C 89 40 18 48 89 48 08 53 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 68 44 0F B7 ? 24 D8 00 00 00");
+		BATCH_ADD_OPTIONAL_HOOK("PJ", received_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 4C 8B EA");
 		BATCH_ADD_OPTIONAL_HOOK("PK", clone_pack, "48 89 5c 24", "48 89 6c 24 ? 48 89 74 24 ? 57 48 83 ec ? 48 8b f9 48 8b ca 49 8b e9");
 		//BATCH_ADD_OPTIONAL_HOOK("PL", send_clone_create, "4C 8B DC 49 89", "5B 08 49 89 6B 18 49 89 73 20 57 41 54 41 55 41 56 41 57 48 83 EC 50 48 8B 02 4D 8B F8");
-		BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 72");
+		//BATCH_ADD_OPTIONAL_HOOK("PM", send_clone_sync, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 54 41 55 41 56 41 57 48 83 EC 40 0F B6 72");
 		//BATCH_ADD_OPTIONAL_HOOK("PN", send_clone_remove, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 80 78 ? FF 41 8A E9 49 8B F8 48 8B DA 48 8B F1 74");
 		BATCH_ADD_OPTIONAL_HOOK("PO", rage_netSyncTree_Read, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 20 44 89 40 18 57 48 83 EC 30 44 8B 05");
 		BATCH_ADD("PP", "49 8B CE FF 90 A0 00 00 00 84 C0 74 31 33 FF", [](soup::Pointer p)
@@ -2153,6 +2111,7 @@ namespace Stand
 			uint8_t byte = -1;
 			pointers::point_gun_at_head_patch.initPatch(p.add(12).as<uint8_t*>(), &byte, 1);
 		});
+		// P9 is unused
 
 		// Q0 is added by ComponentNetcode
 		BATCH_ADD("Q1", "4D 8B C5 49 8B D7 49 8B CE 89 5C 24 20 E8", [](soup::Pointer p)
@@ -2164,28 +2123,29 @@ namespace Stand
 		BATCH_ADD("Q2", "48 8B CB 48 89 44 24 28 83 64 24 20 00 E8", [](soup::Pointer p)
 		{
 			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("Q2", "48 89 5C 24 10");
+			CHECK_EXISTING_HOOK_WONT_HOOK("Q2", "48 89 5C 24 08");
 			pointers::CNetworkSession_KickPlayer = p.as<CNetworkSession_KickPlayer_t>();
 		});
 		BATCH_ADD("Q3", "39 3D ? ? ? ? 0F 85 ? ? ? ? 48 89", [](soup::Pointer p)
 		{
 			pointers::connection_mgr = p.add(2).rip().as<rage::netConnectionManager**>();
 		});
-		BATCH_ADD_MANDATORY_HOOK("Q4", CNetworkSession_OnSessionEvent, "48 8B C4 48 89", "58 08 48 89 70 10 48 89 78 18 55 41 56 41 57 48 8D 68 A1 48 81 EC ? ? ? ? 49 8B F8");
+		BATCH_ADD_MANDATORY_HOOK("Q4", CNetworkSession_OnSessionEvent, "48 8B C4 48 89", "58 08 48 89 70 10 48 89 78 18 55 41 54 41 55 41 56 41 57 48 8D 68 ? 48 81 EC ? ? ? ? 49 8B F8");
 		BATCH_ADD_OPTIONAL("Q5", "74 52 44 39 67 0C 7F 4C", [](soup::Pointer p)
 		{
 			pointers::netIceSession_terminationTimer_IsTimedOut = p.as<uint8_t*>();
 		});
 		BATCH_ADD_FUNC("Q6", rage_datBitBuffer_WriteUnsigned, "48 89 5C 24 08", "44 8B DA 83 CB FF 4D 63 D1 49 C1 FA 03");
-		BATCH_ADD("Q7", "45 33 F6 4C 8B F9 48 8D", [](soup::Pointer p)
+		/*BATCH_ADD("Q7", "45 33 E4 4C 8B F1 48 8D 4D B0", [](soup::Pointer p)
 		{
-			p = p.sub(0x00007FF7DB406578 - 0x00007FF7DB40654C);
+			p = p.sub(0x00007FF677B3AF80 - 0x00007FF677B3AF54);
 			CHECK_EXISTING_HOOK("Q7", "48 8B C4 48 89");
 			STORE_HOOK(CNetworkSession_OnHandleJoinRequest);
-		});
-		BATCH_ADD("Q8", "80 78 1E 00 74 18 83 64 24 20 00 4C 8D 4C 24 30 44 8B C7 48 8B D0 48 8B CB E8", [](soup::Pointer p)
+		})*/;
+		// to help locate this: 83 7F 44 07
+		BATCH_ADD("Q8", "83 64 24 20 00 4C 8D 4C 24 30 44 8B C6 48 8B D0 48 8B CF E8", [](soup::Pointer p)
 		{
-			p = p.add(26).rip();
+			p = p.add(20).rip();
 			CHECK_EXISTING_HOOK_WONT_HOOK("Q8", "48 89 5C 24 08");
 			STORE_POINTER(send_netComplaintMsg); // rage::netConnectionManager::SendOutOfBand<rage::netComplaintMsg>
 		});
@@ -2196,7 +2156,7 @@ namespace Stand
 			CHECK_EXISTING_HOOK_WONT_HOOK("QA", "48 85 D2 0F 84");
 			STORE_POINTER(rage_snSession_HandleRemoveGamerCmd);
 		});
-		BATCH_ADD_FUNC("QB", CBlacklistedGamers_BlacklistGamer, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 56 48 83 EC 40 45 8B F1"); // caller: 83 FE 04 74 ? 85 F6
+		BATCH_ADD_FUNC("QB", CBlacklistedGamers_BlacklistGamer, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 8B E8 48 8B F2 48 8B F9 E8");
 		/*BATCH_ADD("QC", "48 8B 05 ? ? ? ? 48 89 3D ? ? ? ? 39 B8 B0", [](soup::Pointer p)
 		{
 			pointers::network_session = p.add(3).rip().as<CNetworkSession**>();
@@ -2224,11 +2184,11 @@ namespace Stand
 		});
 #endif
 		// QH is used by ComponentSpoofPos
-		BATCH_ADD("QI", "74 0B 41 BC 18 00 00 00", [](soup::Pointer p)
+		/*BATCH_ADD("QI", "74 0B 41 BF 18 00 00 00", [](soup::Pointer p)
 		{
 			pointers::custombjmsg_nop2bytes = p.as<uint8_t*>();
 			pointers::custombjmsg_responsecode = p.add(4).as<int32_t*>();
-		});
+		});*/
 		BATCH_ADD("QJ", "E8 ? ? ? ? 44 8B 86 80 00 00 00 48 8B 96 88 00 00 00 48 8D 8D F0 00 00 00 45 33 C9 E8", [](soup::Pointer p)
 		{
 			// now within rage::netIceTunneler::OnCxnEvent
@@ -2402,16 +2362,16 @@ namespace Stand
 		{
 			pointers::session_id = p.add(10).rip().as<uint64_t*>();
 		});*/
-		BATCH_ADD("RN", "B9 E0 07 00 00 E8", [](soup::Pointer p)
+		/*BATCH_ADD("RN", "B9 E0 07 00 00 E8", [](soup::Pointer p)
 		{
 			pointers::send_session_info_request = p.sub(0x00007FF71EAA2F19 - 0x00007FF71EAA2EBC).as<send_session_info_request_t>();
 		});
-		BATCH_ADD("RO", "48 8D A8 F8 FE FF FF 48 81 EC F0 01 00 00 33 F6", [](soup::Pointer p)
+		BATCH_ADD("RO", "45 33 F6 48 8B F9 45 8D 6E 01 44 39 B1 C4 33 00 00", [](soup::Pointer p)
 		{
-			p = p.sub(20);
+			p = p.sub(0x00007FF62C1C2F42 - 0x00007FF62C1C2F20);
 			CHECK_EXISTING_HOOK("RO", "48 8B C4 48 89");
 			STORE_HOOK(rage_rlGetGamerStateTask_ParseResults);
-		});
+		});*/
 		{
 			SIG_INST("40 53 48 83 EC 40 48 8B 01 48 8B D9");
 			batch.add_optional("RP", soup::Module("socialclub.dll"), sig_inst, [](soup::Pointer p)
@@ -2437,7 +2397,7 @@ namespace Stand
 			CHECK_EXISTING_HOOK("S0", "48 89 5C 24 08");
 			STORE_HOOK(send_net_info_to_lobby_wrap);
 		});
-		BATCH_ADD_OPTIONAL("S3", "48 8B 81 A8 00 00 00 48 83 C0 20 C3", [](soup::Pointer p)
+		BATCH_ADD_OPTIONAL("S3", "48 8B 81 E8 00 00 00 48 83 C0 20 C3", [](soup::Pointer p)
 		{
 			STORE_HOOK(CNetGamePlayer_GetGamerInfo);
 		});
@@ -2526,7 +2486,7 @@ namespace Stand
 		// V7, V8, V9, & VA are used by ComponentDrawPatch
 		BATCH_ADD_MANDATORY_HOOK("VB", camFrame_copy, "48 89 5C 24 08", "57 48 83 EC 20 8B 42 40 F3 0F 10 4A 48");
 
-		BATCH_ADD_OPTIONAL_HOOK("X0", some_player_sync, "48 89 5C 24 08", "55 56 57 41 54 41 55 41 56 41 57 B8 ? ? ? ? E8 ? ? ? ? 48 2B E0 48 8B FA 48 8B F1");
+		//BATCH_ADD_OPTIONAL_HOOK("X0", some_player_sync, "48 89 5C 24 10", "48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 B8 ? ? ? ? E8 ? ? ? ? 48 2B E0 48 8B FA 48 8B F1");
 		BATCH_ADD_OPTIONAL("X1", "0F 28 D6 48 8B D3 48 8B CF E8 ? ? ? ? 8B F0 EB 4F", [](soup::Pointer p)
 		{
 			p = p.add(10).rip();
@@ -2647,13 +2607,18 @@ namespace Stand
 				PointerCache::saveAndDeinit();
 				return false;
 			}
+#ifdef STAND_DEBUG
+			if (*pointers::is_explosion_type_valid_patch != CS_NONE && *pointers::is_explosion_type_valid_patch != CS_PASSIVE)
+			{
+				g_logger.log("Got wrong offset for is_explosion_type_valid_patch !!!");
+			}
+#endif
 			if (!existing_hooks.empty() || !batch.allowed_fails.empty())
 			{
 				bool failed_due_to_coload = (!existing_hooks.empty()
 					&& existing_hooks != soup::ObfusString("G3").str() // FSL
 					);
 
-#ifdef STAND_DEV
 				message.append(soup::ObfusString(" with ").str());
 				if (!existing_hooks.empty())
 				{
@@ -2668,7 +2633,6 @@ namespace Stand
 				{
 					message.append(soup::ObfusString("some restrictions (").str()).append(batch.allowed_fails).push_back(')');
 				}
-#endif
 
 				if (!ColoadMgr::coloading_with_any_menu)
 				{
@@ -2875,17 +2839,6 @@ namespace Stand
 			{
 				bad_state = 24;
 			}
-			else if (auto dbgid = AntiDbg::getRunningDebuggerId(false))
-			{
-				if (dbgid >= 100)
-				{
-					AntiDbg::apologiseInAdvance(4);
-					AntiDbg::enqueueSuspension(dbgid);
-					AntiDbg::bToTheSToTheOToTheD();
-					dbgid -= 100;
-				}
-				bad_state = dbgid + 100;
-			}
 			else if (!CodeIntegrity::verify())
 			{
 				bad_state = 25;
@@ -2963,9 +2916,6 @@ namespace Stand
 				// 1 & 9 are unused
 				if (bad_state >= 10 || ++st.bad_state_unload == 15)
 				{
-					// This will brick future attempts to update the grid if a content update is not queued right now
-					g_menu_grid.content_update_queued = true;
-
 					g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("It looks like Stand is in a bad state ({})").str()), bad_state));
 					//g_auth.reportEvent("D1", fmt::to_string(bad_state));
 
@@ -3074,12 +3024,12 @@ namespace Stand
 					else if (clipboard.substr(6, 5) == soup::ObfusString("Join-").str())
 					{
 						handled = true; mainFlashWindow();
-						JoinUtil::connectViaCode(clipboard.substr(6 + 5), false);
+						JoinUtil::connectViaCode(JM_DEFAULT, clipboard.substr(6 + 5), false);
 					}
 					else if (clipboard.substr(6, 9) == soup::ObfusString("Spectate-").str())
 					{
 						handled = true; mainFlashWindow();
-						JoinUtil::connectViaCode(clipboard.substr(6 + 9), true);
+						JoinUtil::connectViaCode(JM_DEFAULT, clipboard.substr(6 + 9), true);
 					}
 					else if (clipboard.substr(6, 6) == soup::ObfusString("Relay-").str())
 					{

@@ -32,7 +32,7 @@
 
 namespace Stand
 {
-	void JoinUtil::connectViaCode(const std::string& code, bool as_spectator)
+	void JoinUtil::connectViaCode(long long method, const std::string& code, bool as_spectator)
 	{
 		auto entry = session_code_cache.find(code);
 		if (entry == session_code_cache.end())
@@ -41,7 +41,7 @@ namespace Stand
 			std::string path(soup::ObfusString("/api/session_code_redeem?code=").str());
 			path.append(code);
 			HttpRequestBuilder(HttpRequestBuilder::GET, soup::ObfusString("stand.sh"), std::move(path))
-				.setResponseCallback([code, as_spectator](soup::HttpResponse&& resp)
+				.setResponseCallback([method, code, as_spectator](soup::HttpResponse&& resp)
 				{
 					g_tb_loading_session_details.disable();
 					if (resp.body.empty())
@@ -50,7 +50,7 @@ namespace Stand
 					}
 					else
 					{
-						connect(resp.body, as_spectator);
+						connect(method, resp.body, as_spectator);
 						session_code_cache.emplace(code, std::move(resp.body));
 					}
 				})
@@ -62,7 +62,7 @@ namespace Stand
 		}
 		else
 		{
-			connect(entry->second, as_spectator);
+			connect(method, entry->second, as_spectator);
 		}
 	}
 
@@ -80,6 +80,7 @@ namespace Stand
 
 	void JoinUtil::dispatch(long long method, JoinHint& hint, bool as_spectator)
 	{
+		SOUP_ASSERT(isJoinMethodAvailable(method));
 		switch (method)
 		{
 		case JM_NINJA: dispatchNinja(hint, as_spectator); RageConnector::pending_join_host_startup_id = 0; return;
@@ -356,8 +357,6 @@ namespace Stand
 
 	void JoinUtil::dispatchMatchmaking(JoinHint& hint, bool as_spectator)
 	{
-		SOUP_ASSERT_UNREACHABLE;
-
 		if (hint.ensureSessionInfo()
 			&& hint.onPreJoin(true)
 			)
@@ -372,8 +371,6 @@ namespace Stand
 
 	void JoinUtil::dispatchNuts(JoinHint& hint, bool as_spectator, bool rejoin)
 	{
-		SOUP_ASSERT_UNREACHABLE;
-
 		if (hint.ensureSessionInfo()
 			&& hint.onPreJoin(true, rejoin)
 			)
@@ -451,6 +448,18 @@ namespace Stand
 			HUD::SET_FRONTEND_ACTIVE(false);
 			Script::current()->yield();
 		}
+	}
+
+	bool JoinUtil::isJoinMethodAvailable(long long method)
+	{
+		switch (method)
+		{
+		case JM_NUTS:
+		case JM_MATCHMAKING:
+		case JM_NUTS_REJOIN:
+			return false;
+		}
+		return true;
 	}
 
 	std::string JoinUtil::parseCode(std::wstring& args)

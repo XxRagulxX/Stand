@@ -33,6 +33,8 @@
 
 #define LuaClosure(f)		((f) != NULL && (f)->c.tt == LUA_VLCL)
 
+static const char strlocal[] = "local";
+static const char strupval[] = "upvalue";
 
 static const char *funcnamefromcall (lua_State *L, CallInfo *ci,
                                                    const char **name);
@@ -63,7 +65,7 @@ static int getbaseline (const Proto *f, int pc, int *basepc) {
     return f->linedefined;
   }
   else {
-    int i = cast_uint(pc) / MAXIWTHABS - 1;  /* get an estimate */
+    int i = pc / MAXIWTHABS - 1;  /* get an estimate */
     /* estimate must be a lower bound of the correct base */
     lua_assert(i < 0 ||
               (i < f->sizeabslineinfo && f->abslineinfo[i].pc <= pc));
@@ -182,7 +184,7 @@ static const char *upvalname (const Proto *p, int uv) {
 
 
 static const char *findvararg (CallInfo *ci, int n, StkId *pos) {
-  if (clLvalue(s2v(ci->func.p))->p->is_vararg) {
+  if (clLvalue(s2v(ci->func.p))->p->flag & PF_VAHID) {
     int nextra = ci->u.l.nextraargs;
     if (n >= -nextra) {  /* 'n' is negative */
       *pos = ci->func.p - nextra - (n + 1);
@@ -230,10 +232,7 @@ LUA_API const char *lua_getlocal (lua_State *L, const lua_Debug *ar, int n) {
     StkId pos = NULL;  /* to avoid warnings */
     name = luaG_findlocal(L, ar->i_ci, n, &pos);
     if (name) {
-      if (luai_unlikely(ttype(s2v(pos)) == LUA_TITER))
-        setnilvalue(s2v(L->top.p));
-      else
-        setobjs2s(L, L->top.p, pos);
+      setobjs2s(L, L->top.p, pos);
       api_incr_top(L);
     }
   }
@@ -248,8 +247,8 @@ LUA_API const char *lua_setlocal (lua_State *L, const lua_Debug *ar, int n) {
   lua_lock(L);
   name = luaG_findlocal(L, ar->i_ci, n, &pos);
   if (name) {
-    StkId to = pos + 4;
-#ifndef PLUTO_DISABLE_TABLE_FREEZING
+    api_checkpop(L, 1);
+#ifdef PLUTO_ENABLE_TABLE_FREEZING
     if (ttistable(s2v(pos))) {
       if (hvalue(s2v(pos))->isfrozen) {
         luaG_runerror(L, "attempt to modify local variable with a frozen table.");
@@ -258,13 +257,6 @@ LUA_API const char *lua_setlocal (lua_State *L, const lua_Debug *ar, int n) {
 #endif
     setobjs2s(L, pos, L->top.p - 1);
     L->top.p--;  /* pop value */
-    if (to > L->top.p) to = L->top.p;
-    while(++pos < to) {
-      if (luai_unlikely(ttype(s2v(pos)) == LUA_TITER)) {
-        setnilvalue(s2v(pos));
-        break;
-      }
-    }
   }
   lua_unlock(L);
   return name;
@@ -282,8 +274,7 @@ static void funcinfo (lua_Debug *ar, Closure *cl) {
   else {
     const Proto *p = cl->l.p;
     if (p->source) {
-      ar->source = getstr(p->source);
-      ar->srclen = tsslen(p->source);
+      ar->source = getlstr(p->source, ar->srclen);
     }
     else {
       ar->source = "=?";
@@ -291,7 +282,7 @@ static void funcinfo (lua_Debug *ar, Closure *cl) {
     }
     ar->linedefined = p->linedefined;
     ar->lastlinedefined = p->lastlinedefined;
-    if (ar->linedefined == 'plin') {
+    if (ar->linedefined == /*'plin'*/ 1886153070) {
       ar->source = "=[Pluto-injected code]";
       ar->srclen = LL("=[Pluto-injected code]");
       ar->linedefined = -1;
@@ -329,7 +320,7 @@ static void collectvalidlines (lua_State *L, Closure *f) {
       int i;
       TValue v;
       setbtvalue(&v);  /* boolean 'true' to be the value of all indices */
-      if (!p->is_vararg)  /* regular function? */
+      if (!(isvararg(p)))  /* regular function? */
         i = 0;  /* consider all instructions */
       else {  /* vararg function */
         lua_assert(GET_OPCODE(p->code[0]) == OP_VARARGPREP);
@@ -364,7 +355,7 @@ static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
       }
       case 'l': {
         ar->currentline = (ci && isLua(ci)) ? getcurrentline(ci) : -1;
-        if (ar->currentline == 'plin')
+        if (ar->currentline == /*'plin'*/ 1886153070)
           ar->currentline = -1;
         break;
       }
@@ -375,13 +366,21 @@ static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
           ar->nparams = 0;
         }
         else {
-          ar->isvararg = f->l.p->is_vararg;
+          ar->isvararg = (isvararg(f->l.p)) ? 1 : 0;
           ar->nparams = f->l.p->numparams;
         }
         break;
       }
       case 't': {
-        ar->istailcall = (ci) ? ci->callstatus & CIST_TAIL : 0;
+        if (ci != NULL) {
+          ar->istailcall = !!(ci->callstatus & CIST_TAIL);
+          ar->extraargs =
+                   cast_uchar((ci->callstatus & MAX_CCMT) >> CIST_CCMT);
+        }
+        else {
+          ar->istailcall = 0;
+          ar->extraargs = 0;
+        }
         break;
       }
       case 'n': {
@@ -393,11 +392,11 @@ static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
         break;
       }
       case 'r': {
-        if (ci == NULL || !(ci->callstatus & CIST_TRAN))
+        if (ci == NULL || !(ci->callstatus & CIST_HOOKED))
           ar->ftransfer = ar->ntransfer = 0;
         else {
-          ar->ftransfer = ci->u2.transferinfo.ftransfer;
-          ar->ntransfer = ci->u2.transferinfo.ntransfer;
+          ar->ftransfer = L->transferinfo.ftransfer;
+          ar->ntransfer = L->transferinfo.ntransfer;
         }
         break;
       }
@@ -526,7 +525,7 @@ static const char *basicgetobjname (const Proto *p, int *ppc, int reg,
   int pc = *ppc;
   *name = luaF_getlocalname(p, reg + 1, pc);
   if (*name)  /* is a local? */
-    return "local";
+    return strlocal;
   /* else try symbolic execution */
   *ppc = pc = findsetreg(p, pc, reg);
   if (pc != -1) {  /* could find instruction? */
@@ -541,7 +540,7 @@ static const char *basicgetobjname (const Proto *p, int *ppc, int reg,
       }
       case OP_GETUPVAL: {
         *name = upvalname(p, GETARG_B(i));
-        return "upvalue";
+        return strupval;
       }
       case OP_LOADK: return kname(p, GETARG_Bx(i), name);
       case OP_LOADKX: return kname(p, GETARG_Ax(p->code[pc + 1]), name);
@@ -563,18 +562,6 @@ static void rname (const Proto *p, int pc, int c, const char **name) {
 
 
 /*
-** Find a "name" for a 'C' value in an RK instruction.
-*/
-static void rkname (const Proto *p, int pc, Instruction i, const char **name) {
-  int c = GETARG_C(i);  /* key index */
-  if (GETARG_k(i))  /* is 'c' a constant? */
-    kname(p, c, name);
-  else  /* 'c' is a register */
-    rname(p, pc, c, name);
-}
-
-
-/*
 ** Check whether table being indexed by instruction 'i' is the
 ** environment '_ENV'
 */
@@ -583,8 +570,13 @@ static const char *isEnv (const Proto *p, int pc, Instruction i, int isup) {
   const char *name;  /* name of indexed variable */
   if (isup)  /* is 't' an upvalue? */
     name = upvalname(p, t);
-  else  /* 't' is a register */
-    basicgetobjname(p, &pc, t, &name);
+  else {  /* 't' is a register */
+    const char *what = basicgetobjname(p, &pc, t, &name);
+    /* 'name' must be the name of a local variable (at the current
+       level or an upvalue) */
+    if (what != strlocal && what != strupval)
+      name = NULL;  /* cannot be the variable _ENV */
+  }
   return (name && strcmp(name, LUA_ENV) == 0) ? "global" : "field";
 }
 
@@ -621,7 +613,8 @@ static const char *getobjname (const Proto *p, int lastpc, int reg,
         return isEnv(p, lastpc, i, 0);
       }
       case OP_SELF: {
-        rkname(p, lastpc, i, name);
+        int k = GETARG_C(i);  /* key index */
+        kname(p, k, name);
         return "method";
       }
       default: break;  /* go through to return NULL */
@@ -730,7 +723,7 @@ static const char *getupvalname (CallInfo *ci, const TValue *o,
   for (i = 0; i < c->nupvalues; i++) {
     if (c->upvals[i]->v.p == o) {
       *name = upvalname(c->p, i);
-      return "upvalue";
+      return strupval;
     }
   }
   return NULL;
@@ -839,18 +832,28 @@ l_noret luaG_ordererror (lua_State *L, const TValue *p1, const TValue *p2) {
 }
 
 
+l_noret luaG_errnnil (lua_State *L, LClosure *cl, int k) {
+  const char *globalname = "?";  /* default name if k == 0 */
+  if (k > 0)
+    kname(cl->p, k - 1, &globalname);
+  luaG_runerror(L, "global '%s' already defined", globalname);
+}
+
+
 /* add src:line information to 'msg' */
 const char *luaG_addinfo (lua_State *L, const char *msg, TString *src,
                                         int line) {
-  if (line == 'plin')
+  if (line == /*'plin'*/ 1886153070)
     return luaO_pushfstring(L, "[Pluto-injected code]: %s", msg);
-  char buff[LUA_IDSIZE];
-  if (src)
-    luaO_chunkid(buff, getstr(src), tsslen(src));
-  else {  /* no source available; use "?" instead */
-    buff[0] = '?'; buff[1] = '\0';
+  if (src == NULL)  /* no debug information? */
+    return luaO_pushfstring(L, "?:?: %s", msg);
+  else {
+    char buff[LUA_IDSIZE];
+    size_t idlen;
+    const char *id = getlstr(src, idlen);
+    luaO_chunkid(buff, id, idlen);
+    return luaO_pushfstring(L, "%s:%d: %s", buff, line, msg);
   }
-  return luaO_pushfstring(L, "%s:%d: %s", buff, line, msg);
 }
 
 
@@ -877,6 +880,10 @@ l_noret luaG_errormsg (lua_State *L) {
     L->top.p++;  /* assume EXTRA_STACK */
     luaD_callnoyield(L, L->top.p - 2, 1);  /* call it */
   }
+  if (ttisnil(s2v(L->top.p - 1))) {  /* error object is nil? */
+    /* change it to a proper message */
+    setsvalue2s(L, L->top.p - 1, luaS_newliteral(L, "<no error object>"));
+  }
   luaD_throw(L, LUA_ERRRUN);
 }
 
@@ -886,10 +893,9 @@ l_noret luaG_runerror (lua_State *L, const char *fmt, ...) {
   const char *msg;
   va_list argp;
   luaC_checkGC(L);  /* error message uses memory */
-  va_start(argp, fmt);
-  msg = luaO_pushvfstring(L, fmt, argp);  /* format message */
-  va_end(argp);
-  if (isLua(ci)) {  /* if Lua function, add source:line information */
+  pushvfstring(L, argp, fmt, msg);
+  if (isLua(ci)) {  /* Lua function? */
+    /* add source:line information */
     luaG_addinfo(L, msg, ci_func(ci)->p->source, getcurrentline(ci));
     setobjs2s(L, L->top.p - 2, L->top.p - 1);  /* remove 'msg' */
     L->top.p--;
@@ -940,9 +946,9 @@ int luaG_tracecall (lua_State *L) {
   Proto *p = ci_func(ci)->p;
   ci->u.l.trap = 1;  /* ensure hooks will be checked */
   if (ci->u.l.savedpc == p->code) {  /* first instruction (not resuming)? */
-    if (p->is_vararg)
+    if (isvararg(p))
       return 0;  /* hooks will start at VARARGPREP instruction */
-    else if (!(ci->callstatus & CIST_HOOKYIELD))  /* not yieded? */
+    else if (!(ci->callstatus & CIST_HOOKYIELD))  /* not yielded? */
       luaD_hookcall(L, ci);  /* check 'call' hook */
   }
   return 1;  /* keep 'trap' on */
@@ -963,7 +969,7 @@ int luaG_tracecall (lua_State *L) {
 */
 int luaG_traceexec (lua_State *L, const Instruction *pc) {
   CallInfo *ci = L->ci;
-  lu_byte mask = L->hookmask;
+  lu_byte mask = cast_byte(L->hookmask);
   const Proto *p = ci_func(ci)->p;
   int counthook;
   if (!(mask & (LUA_MASKLINE | LUA_MASKCOUNT))) {  /* no hooks? */
@@ -981,7 +987,7 @@ int luaG_traceexec (lua_State *L, const Instruction *pc) {
     ci->callstatus &= ~CIST_HOOKYIELD;  /* erase mark */
     return 1;  /* do not call hook again (VM yielded, so it did not move) */
   }
-  if (!isIT(*(ci->u.l.savedpc - 1)))  /* top not being used? */
+  if (!luaP_isIT(*(ci->u.l.savedpc - 1)))  /* top not being used? */
     L->top.p = ci->top.p;  /* correct top */
   if (counthook)
     luaD_hook(L, LUA_HOOKCOUNT, -1, 0, 0);  /* call count hook */

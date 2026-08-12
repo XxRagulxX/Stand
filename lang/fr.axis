@@ -1590,6 +1590,10 @@ DLC_640=Drug Wars
 DLC_670=Mercenaires de San Andreas
 DLC_680=Casse de Haut Vol
 DLC_690=Primes de Bottom Dollar
+DLC_700=Agents Saboteurs
+DLC_710=Argent Sale et Affaires Propres
+# DLC_720=A Safehouse in the Hills
+# DLC_730=The Kortz Center Heist
 
 MANUFNS=Noms des Fabricants
 
@@ -3347,9 +3351,6 @@ PTX_SI=Sync Entrantes
 PTX_SO=Sync Sortantes
 PTX_SI_ANY=Toutes Sync Entrantes
 
-OUTSBH=Bloquer Les Syncs Sortantes de L'hôte
-OUTSBH_H=Cela vous aidera à éviter les expulsions de BattlEye quand vous n'êtes pas hôte, mais cela signifie également que l'hôte ne pourra pas interagir avec vous.
-
 PTX_CSB=Réactions Au Modèle Sync Personnalisé
 ADDMDL=Ajouter Modèle
 PTX_CSB_T=Modèle Sync Par {player} Avec {hash}
@@ -3446,7 +3447,6 @@ PTX_HK_H=Réduire L'hôte Kick de sorte que vous ne recevez une notification lor
 PTX_HK_T=Quelqu'un a utilisé un hôte kick contre vous ({method}), probablement {player}.
 
 HKI=L'hôte vous expulsera bientôt.
-HKI_BS=Je suggère de bloquer les syncs avec eux.
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=Vote Kick
@@ -3743,6 +3743,7 @@ GIVECOLL_16=Bonshommes de Neige
 GIVECOLL_17=Colis de G
 ! Tags as in graffiti
 GIVECOLL_19=Tags de Los Santos
+GIVECOLL_21=Yuanbao
 
 GIVECOLLE=Donner Collectables
 GIVECOLLE_NCEO=Donner Collectables (Pas Mon Boss)
@@ -4825,6 +4826,9 @@ SGMELNG_H=Certains langages possèdent une police de caractères différentes qu
 
 STUTFIX=Corriger Les Saccades À Haut FPS
 STUTFIX_H=Corriger les saccades qui se produisent quand le jeu approche les 188 FPS.
+
+UNCAPFPS=Désactiver La Limite de FPS
+UNCAPFPS_H=Permet au jeu de dépasser les 188 FPS.
 
 NKBDHK=Désactiver Verrouillage Clavier
 NKBDHK_H=Permet d'appuyer sur la touche Windows lorsque vous êtes sur GTA et empêche le lag du jeu d'entraîner un lag de la touche.

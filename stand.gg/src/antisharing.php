@@ -44,7 +44,7 @@ function antisharing_tallyAccountAccess($account_id)
 		$db->query("INSERT INTO `account_devices` (`account_id`, `ip`, `ua_hash`, `created`) VALUES (?, ?, ?, ?)", "siii", $account_id, $ip, $ua_hash, time());
 		if(count($devices) == 4)
 		{
-			$db->query("UPDATE `accounts` SET `suspended_for`='account sharing (B4)' WHERE `id`=?", "s", $account_id);
+			$db->query("UPDATE `accounts` SET `suspended_for`='account sharing (B4)' WHERE `id`=? AND `suspended_for`=''", "s", $account_id);
 			return false;
 		}
 	}

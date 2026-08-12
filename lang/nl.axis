@@ -1590,6 +1590,10 @@ DLC_640=Drug Wars
 DLC_670=San Andreas Mercenaries
 DLC_680=The Chop Shop
 DLC_690=Bodem Dollar Beloningen
+DLC_700=Agents of Sabotage
+# DLC_710=Money Fronts
+# DLC_720=A Safehouse in the Hills
+# DLC_730=The Kortz Center Heist
 
 MANUFNS=Fabrikant Namen
 
@@ -3347,9 +3351,6 @@ PTX_SI=Inkomende Synchronisaties
 PTX_SO=Uitgaande Synchronisaties
 PTX_SI_ANY=Elke Inkomende Synchronisatie
 
-OUTSBH=Blokkeer Uitgaande Syncs Naar Beheerder
-OUTSBH_H=Dit helpt je BattlEye kicks te vermijden als niet-beheerder, maar betekent ook dat de beheerder niet met je kan communiceren.
-
 PTX_CSB=Aangepaste Model Synchronisatie Reacties
 ADDMDL=Model Toevoegen
 PTX_CSB_T=Model synchronisatie door {player} met {hash}
@@ -3446,7 +3447,6 @@ PTX_HK_H=Vermindert beheerder kicks zodat je alleen een melding krijgt als een b
 PTX_HK_T=Iemand heeft een beheerder kick op je gebruikt ({method}), waarschijnlijk {player}.
 
 HKI=De beheerder gaat je binnenkort kicken.
-HKI_BS=Ik raad je aan syncs met hen te blokkeren.
 
 ! To be used as a substitute for {method} in PTX_HK_T.
 PTX_HK_M_V=Stem Kick
@@ -3743,6 +3743,7 @@ GIVECOLL_16=Sneeuwpop
 GIVECOLL_17=G's Opslag
 ! Tags as in graffiti
 GIVECOLL_19=Los Santos Labellen
+GIVECOLL_21=Yuanbao
 
 GIVECOLLE=Geef Verzamelobject
 GIVECOLLE_NCEO=Geef Verzamelobjecten (Niet Mijn Baas)
@@ -4825,6 +4826,9 @@ SGMELNG_H=Sommige talen hebben een andere lettertype dat alleen geladen wordt na
 
 STUTFIX=Fix Stotteren Bij Hoge FPS
 STUTFIX_H=Fixt het stotteren dat gebeurd wanneer het spel in de buurt komt van 188 FPS.
+
+UNCAPFPS=Verwijder FPS Limiet
+UNCAPFPS_H=Staat het spel toe om hoger dan 188 FPS te gaan.
 
 NKBDHK=Toetsenbord Haak Uitschakelen
 NKBDHK_H=Staat je toe om de Windows toets te gebruiken terwijl GTA gefocused is en voorkomt game lag die resulteert in toetsenbord vertraging.

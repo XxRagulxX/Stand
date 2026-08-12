@@ -73,7 +73,7 @@ namespace rage
 
 		[[nodiscard]] static netIpAddress random();
 
-		[[nodiscard]] const char* getGeoIpField(Stand::GeoIpField field);
+		[[nodiscard]] std::string getGeoIpField(Stand::GeoIpField field);
 	};
 	static_assert(sizeof(netIpAddress) == 4);
 }

@@ -52,7 +52,7 @@
 		}
 		if(!account_id)
 		{
-			location.href=".";
+			location.href="/account/";
 		}
 		else
 		{
@@ -109,6 +109,11 @@
 				let email=prompt("What's your email address?");
 				if(email!==null&&email.indexOf("@")!==-1&&email.indexOf(".")!==-1)
 				{
+					if (email.endsWith("@t-online.de"))
+					{
+						alert("Your email provider does not want to receive emails from send-only systems such as ours.");
+						return;
+					}
 					document.getElementById("main").classList.add("d-none");
 					document.getElementById("email-progress").classList.remove("d-none");
 					$.post("/api/brain_replacement", {

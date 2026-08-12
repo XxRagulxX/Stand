@@ -154,10 +154,12 @@
 #include "CommandPlayerKickPickup.hpp"
 
 #include "CommandPlayerCrashElegant.hpp"
-#ifdef STAND_DEBUG
+#if defined(STAND_DEBUG) && HAVE_SEND_CLONE_SYNC_HOOK
 #include "CommandPlayerCrashTask.hpp"
 #endif
+#if HAVE_SEND_CLONE_CREATE_HOOK
 #include "CommandPlayerCrashFootlettuce.hpp"
+#endif
 #include "CommandPlayerCrashVehicle.hpp"
 #include "CommandPlayerCrashTrain.hpp"
 
@@ -255,6 +257,7 @@ namespace Stand
 				gc->createChild<CommandPlayerGiveCollectibles>(16, LOC("GIVECOLL_16"));
 				gc->createChild<CommandPlayerGiveCollectibles>(17, LOC("GIVECOLL_17"));
 				gc->createChild<CommandPlayerGiveCollectibles>(19, LOC("GIVECOLL_19"));
+				gc->createChild<CommandPlayerGiveCollectibles>(21, LOC("GIVECOLL_21"));
 			}
 
 #if REMOTE_STAT_WRITING
@@ -283,10 +286,12 @@ namespace Stand
 			friendly->createChild<CommandPlayerSnack>();
 			friendly->createChild<CommandPlayerExplosiveHits>();
 			friendly->createChild<CommandPlayerImpactParticles>();
+#if CAN_GIVE_SH
 			if (this->pp->single)
 			{
 				friendly->createChild<CommandPlayerGiveSh>();
 			}
+#endif
 		}
 
 		// Chat
@@ -571,13 +576,23 @@ namespace Stand
 			crash->createChild<CommandPlayerCrashElegant>();
 			if (this->pp->single)
 			{
-#ifdef STAND_DEBUG
+#if defined(STAND_DEBUG) && HAVE_SEND_CLONE_SYNC_HOOK
 				crash->createChild<CommandPlayerCrashTask>();
 #endif
+#if HAVE_SEND_CLONE_CREATE_HOOK
 				crash->createChild<CommandPlayerCrashFootlettuce>();
+#endif
 				crash->createChild<CommandPlayerCrashVehicle>();
+#if HAVE_SEND_CLONE_CREATE_HOOK
+				crash->createChild<CommandPlayerCrashTrain>();
+#endif
+			}
+#if !HAVE_SEND_CLONE_CREATE_HOOK
+			else
+			{
 				crash->createChild<CommandPlayerCrashTrain>();
 			}
+#endif
 		}
 
 		// Network Traffic

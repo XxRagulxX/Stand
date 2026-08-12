@@ -129,6 +129,7 @@ namespace Stand
 
 	void RemoteGamer::considerRefresh(bool detailed)
 	{
+#if RG_HAS_BULK
 		if (requested_at == -1) // Queued for a bulk request?
 		{
 			if (detailed) // Want a detailed request?
@@ -143,6 +144,7 @@ namespace Stand
 			}
 			return;
 		}
+#endif
 		if (GET_MILLIS_SINCE(requested_at) > 15000) // No request active or more than 15 seconds since request was initiated?
 		{
 			time_t refresh_interval = 15000;
@@ -193,7 +195,7 @@ namespace Stand
 		}
 #endif
 
-		if (detailed)
+		if (detailed || !RG_HAS_BULK)
 		{
 			requestDetailed();
 		}
@@ -259,6 +261,7 @@ namespace Stand
 		}
 		EXCEPTIONAL_UNLOCK(active_requests_mtx)
 
+#if RG_HAS_BULK
 		// Bulk requests
 		EXCEPTIONAL_LOCK(queued_mtx)
 		if (!queued.empty()
@@ -284,6 +287,7 @@ namespace Stand
 			queued.erase(queued.begin(), queued.begin() + i);
 		}
 		EXCEPTIONAL_UNLOCK(queued_mtx)
+#endif
 	}
 
 	bool RemoteGamer::isUser() const noexcept
@@ -643,7 +647,7 @@ namespace Stand
 					&& this->session_info.host.gamer_handle.rockstar_id != g_player.getRockstarId()
 					)
 				{
-					JoinUtil::join(this->session_info, nuts ? JM_NUTS : JM_NINJA);
+					JoinUtil::join(this->session_info, nuts && JoinUtil::isJoinMethodAvailable(JM_NUTS) ? JM_NUTS : JM_NINJA);
 					success = true;
 					break;
 				}

@@ -18,6 +18,7 @@
 
 #include "lauxlib.h"
 #include "lualib.h"
+#include "llimits.h"
 
 
 /*
@@ -165,7 +166,7 @@ static int db_getinfo (lua_State *L) {
     }
   }
   if (!lua_getinfo(L1, options, &ar))
-    luaL_argerror(L, arg+2, "invalid option");
+    return luaL_argerror(L, arg+2, "invalid option");
   lua_newtable(L);  /* table to collect results */
   if (strchr(options, 'S')) {
     lua_pushlstring(L, ar.source, ar.srclen);
@@ -190,8 +191,10 @@ static int db_getinfo (lua_State *L) {
     settabsi(L, "ftransfer", ar.ftransfer);
     settabsi(L, "ntransfer", ar.ntransfer);
   }
-  if (strchr(options, 't'))
+  if (strchr(options, 't')) {
     settabsb(L, "istailcall", ar.istailcall);
+    settabsi(L, "extraargs", ar.extraargs);
+  }
   if (strchr(options, 'L'))
     treatstackoption(L, L1, "activelines");
   if (strchr(options, 'f'))
@@ -214,7 +217,7 @@ static int db_getlocal (lua_State *L) {
     const char *name;
     int level = (int)luaL_checkinteger(L, arg + 1);
     if (l_unlikely(!lua_getstack(L1, level, &ar)))  /* out of range? */
-      luaL_argerror(L, arg+1, "level out of range");
+      return luaL_argerror(L, arg+1, "level out of range");
     checkstack(L, L1, 1);
     name = lua_getlocal(L1, &ar, nvar);
     if (name) {
@@ -239,7 +242,7 @@ static int db_setlocal (lua_State *L) {
   int level = (int)luaL_checkinteger(L, arg + 1);
   int nvar = (int)luaL_checkinteger(L, arg + 2);
   if (l_unlikely(!lua_getstack(L1, level, &ar)))  /* out of range? */
-    luaL_argerror(L, arg+1, "level out of range");
+    return luaL_argerror(L, arg+1, "level out of range");
   luaL_checkany(L, arg+3);
   lua_settop(L, arg+3);
   checkstack(L, L1, 1);
@@ -446,14 +449,6 @@ static int db_traceback (lua_State *L) {
 }
 
 
-static int db_setcstacklimit (lua_State *L) {
-  int limit = (int)luaL_checkinteger(L, 1);
-  int res = lua_setcstacklimit(L, limit);
-  lua_pushinteger(L, res);
-  return 1;
-}
-
-
 static const luaL_Reg dblib[] = {
   {"debug", db_debug},
   {"getuservalue", db_getuservalue},
@@ -471,7 +466,6 @@ static const luaL_Reg dblib[] = {
   {"setmetatable", db_setmetatable},
   {"setupvalue", db_setupvalue},
   {"traceback", db_traceback},
-  {"setcstacklimit", db_setcstacklimit},
   {NULL, NULL}
 };
 

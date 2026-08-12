@@ -20,7 +20,7 @@ namespace Stand
 	class HttpRequestBuilder : public soup::HttpRequest
 	{
 	public:
-		inline static DnsConduit dns_conduit = DNS_CONDUIT_SMART;
+		inline static DnsConduit dns_conduit = DNS_CONDUIT_OS;
 
 		enum Method : uint8_t
 		{
@@ -46,9 +46,10 @@ namespace Stand
 
 		void setPathWithRockstarLocalisation(std::string&& path) noexcept;
 
+		// Bit of a misnomer now but oh well
 		HttpRequestBuilder& addHeader(const char* key, std::string&& value) noexcept
 		{
-			header_fields.emplace(key, std::move(value));
+			setHeader(key, value);
 			return *this;
 		}
 

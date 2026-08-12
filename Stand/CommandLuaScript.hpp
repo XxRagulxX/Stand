@@ -162,6 +162,7 @@ namespace Stand
 
 	extern int luaS_panic_handler(lua_State* L);
 	extern void luaS_openMenu(lua_State* L);
+	extern void luaS_openPlayers(lua_State* L);
 	extern void luaS_openEntities(lua_State* L);
 	extern void luaS_openUtil(lua_State* L);
 	extern void luaS_openFilesystem(lua_State* L);
@@ -770,6 +771,8 @@ f(target)
 	extern int lua_util_sc_unblock(lua_State* L);
 	extern int lua_util_get_tunable_int(lua_State* L);
 	extern int lua_util_get_tunable_bool(lua_State* L);
+	extern int lua_util_soup_tunables_get(lua_State* L);
+	extern int lua_util_soup_tunables_set(lua_State* L);
 	extern int lua_util_ui3dscene_set_element_2d_position(lua_State* L);
 	extern int lua_util_ui3dscene_set_element_2d_size(lua_State* L);
 	extern int lua_util_ui3dscene_set_element_background_colour(lua_State* L);

@@ -86,7 +86,7 @@ namespace rage
 		{
 			uint8_t buf[916];
 			uint32_t size;
-			return msg.Export<T>(buf, sizeof(buf), &size)
+			return netMessage::Export(msg, buf, sizeof(buf), &size)
 				&& this->Send(cxnId, buf, size, sendFlags, frameSeq)
 				;
 		}
@@ -98,7 +98,7 @@ namespace rage
 		{
 			uint8_t buf[916];
 			uint32_t size;
-			return msg.Export<T>(buf, sizeof(buf), &size)
+			return netMessage::Export(msg, buf, sizeof(buf), &size)
 				&& this->SendOutOfBand(addr, channelId, buf, size, sendFlags)
 				;
 		}

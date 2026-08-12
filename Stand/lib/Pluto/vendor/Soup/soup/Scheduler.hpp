@@ -13,6 +13,7 @@
 #endif
 
 #include "AtomicDeque.hpp"
+#include "netSocketSecurity.hpp"
 #include "SharedPtr.hpp"
 #include "Worker.hpp"
 
@@ -29,6 +30,7 @@ NAMESPACE_SOUP
 		std::vector<SharedPtr<Worker>> workers{};
 		AtomicDeque<SharedPtr<Worker>> pending_workers{};
 		size_t passive_workers = 0;
+		uint8_t default_workload_flags = 0;
 #if !SOUP_WASM
 		bool dont_make_reusable_sockets = false;
 #endif
@@ -52,7 +54,7 @@ NAMESPACE_SOUP
 
 		virtual ~Scheduler() = default;
 
-		virtual void addWorker(SharedPtr<Worker>&& w) SOUP_EXCAL;
+		virtual void addWorker(SharedPtr<Worker>&& w);
 
 #if !SOUP_WASM
 		SharedPtr<Socket> addSocket() SOUP_EXCAL;
@@ -89,8 +91,20 @@ NAMESPACE_SOUP
 #endif
 		}
 
+		// When a scheduler only has sockets, addWorker can take up to 50ms.
+		// If this is called, that delay is reduced to 1ms.
+		void reduceAddWorkerDelay() noexcept
+		{
+			default_workload_flags |= NOT_JUST_SOCKETS;
+		}
+
+		void setHighFrequency() noexcept
+		{
+			default_workload_flags |= HAS_HIGH_FREQUENCY_TASKS;
+		}
+
 		void run();
-		void runFor(unsigned int ms);
+		bool runFor(unsigned int ms); // false = timeout, true = all done.
 		[[nodiscard]] bool shouldKeepRunning() const noexcept;
 		void tick();
 	protected:
@@ -122,7 +136,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] SharedPtr<Worker> getShared(const Worker& w) const;
 #if !SOUP_WASM
-		[[nodiscard]] SharedPtr<Socket> findReusableSocket(const std::string& host, uint16_t port, bool tls);
+		[[nodiscard]] SharedPtr<Socket> findReusableSocket(const std::string& host, uint16_t port, netSocketSecurity min_security);
 		void closeReusableSockets() SOUP_EXCAL;
 #endif
 

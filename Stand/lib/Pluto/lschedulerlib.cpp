@@ -8,6 +8,9 @@ static const luaL_Reg funcs[] = {
 };
 
 LUAMOD_API int luaopen_scheduler (lua_State *L) {
+#ifdef PLUTO_DONT_LOAD_ANY_STANDARD_LIBRARY_CODE_WRITTEN_IN_PLUTO
+    return 0;
+#else
     const auto code = R"EOC(pluto_use "0.6.0"
 
 return class
@@ -38,7 +41,14 @@ return class
 
     function add(t)
         if type(t) ~= "thread" then
-            t = coroutine.create(t)
+            if self.errorfunc then
+                local f = t
+                t = coroutine.create(function()
+                    xpcall(f, self.errorfunc)
+                end)
+            else
+                t = coroutine.create(t)
+            end
         end
         table.insert(self.coros, t)
         self:internalresume(t)
@@ -53,10 +63,27 @@ return class
         end)
     end
 
+    function contains(needle)
+        for self.coros as t do
+            if t == needle then
+                return true
+            end
+        end
+        return false
+    end
+
+    function remove(needle)
+        for i, t in self.coros do
+            if t == needle then
+                table.remove(self.coros, i)
+                break
+            end
+        end
+    end
+
     function run()
-        local all_dead
-        repeat
-            all_dead = true
+        while true do
+            local all_dead = true
             for i, coro in self.coros do
                 if coroutine.status(coro) == "suspended" then
                     self:internalresume(coro)
@@ -65,13 +92,17 @@ return class
                     self.coros[i] = nil
                 end
             end
+            if all_dead then
+                break
+            end
             self.yieldfunc()
-        until all_dead
+        end
     end
 end)EOC";
     luaL_loadbuffer(L, code, strlen(code), "pluto:scheduler");
     lua_call(L, 0, 1);
     return 1;
+#endif
 }
 
-const Pluto::PreloadedLibrary Pluto::preloaded_scheduler{ "scheduler", funcs, &luaopen_scheduler };
+const Pluto::PreloadedLibrary Pluto::preloaded_scheduler{ PLUTO_SCHEDULERLIBNAME, funcs, &luaopen_scheduler };

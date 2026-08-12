@@ -38,6 +38,7 @@ namespace Stand
 
 	void CommandListRefreshable::onActiveListUpdate()
 	{
+		//Util::toast(fmt::format("CommandListRefreshable::onActiveListUpdate - active: {}", isThisOrSublistCurrentMenuListInTab()), TOAST_ALL);
 		if (isThisOrSublistCurrentMenuListInTab())
 		{
 			if (!active)
@@ -83,9 +84,9 @@ namespace Stand
 				divider = nullptr;
 			}
 			EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
-			updateWebState();
+			//updateWebState();
 			callback();
-			processChildrenUpdate();
+			processChildrenUpdate(); // implies updateWebState
 			for (auto i = children.cbegin() + getFullBodyOffset(); i != children.cend(); ++i)
 			{
 				if ((*i)->type == COMMAND_LIST)

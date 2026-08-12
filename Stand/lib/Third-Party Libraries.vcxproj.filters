@@ -58,9 +58,6 @@
     <Filter Include="DirectXTK">
       <UniqueIdentifier>{ac83015b-d49e-4b50-b40d-64b222509a1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Pluto\vendor\Intrin">
-      <UniqueIdentifier>{e44ab721-6c74-43d9-8efe-8cdea48727b7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="discord-rpc\src\connection_win.cpp">
@@ -192,6 +189,162 @@
     <ClCompile Include="DirectXTK\CommonStates.cpp">
       <Filter>DirectXTK</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\lauxlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lbase32.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lbase64.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lbaselib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lbigint.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lcanvas.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lcatlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lcode.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lcorolib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lcryptolib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lctype.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ldblib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ldebug.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ldo.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ldump.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lffi.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lfunc.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lgc.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lhttplib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\linit.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\liolib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ljson.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\llex.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lmathlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lmem.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\loadlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lobject.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lopcodes.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\loslib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lparser.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lregex.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lschedulerlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lsocketlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lstarlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lstate.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lstring.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lstrlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ltable.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ltablib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\ltm.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lundump.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lurllib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lutf8lib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lvector3lib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lvm.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lxml.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lzio.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lapi.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lassertlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lbufferlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\lwasmlib.cpp">
+      <Filter>Pluto</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\alloc.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Asn1Identifier.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
@@ -210,6 +363,12 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\Bigint.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\bitutil.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Canvas.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Capture.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
@@ -220,6 +379,9 @@
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\crc32.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\crc32c.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Curve25519.cpp">
@@ -243,6 +405,9 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\dnsName.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\dnsOsResolver.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\dnsRawResolver.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
@@ -252,10 +417,16 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\dnsSmartResolver.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\dnsType.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\dnsUdpResolver.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\ecc.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\ffi.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\filesystem.cpp">
@@ -303,10 +474,31 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\JsonString.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\LangDesc.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\LexemeParser.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\log.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\lzf.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\md5.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\memAllocator.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\memGuard.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\MimeMessage.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Mixed.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\netConfig.cpp">
@@ -321,16 +513,70 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\Oid.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\os.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\parse_tree.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\ParserState.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Pattern.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\pem.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Process.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\ProcessHandle.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Promise.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\QrCode.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\rand.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Range.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\RasterFont.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Rc4State.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Reader.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Regex.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\RegexConstraint.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\RegexGroup.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\RegexGroupConstraint.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\ResolveIpAddrTask.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\rflParser.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\Rgb.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\ripemd160.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\rsa.cpp">
@@ -357,7 +603,13 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\sha512.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\SharedLibrary.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Socket.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\SocketAddr.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\SocketTlsEncrypter.cpp">
@@ -381,6 +633,9 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\time.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\TinyPngOut.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\TrustStore.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
@@ -394,6 +649,12 @@
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\version_compare.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\wasm.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\whirlpool.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\Worker.cpp">
@@ -418,165 +679,6 @@
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
     <ClCompile Include="Pluto\vendor\Soup\soup\aes.cpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lundump.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lurllib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lutf8lib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lvector3lib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lvm.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lxml.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lzio.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lapi.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lassertlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lauxlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lbase32.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lbase64.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lbaselib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lbigint.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lcatlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lcode.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lcorolib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lcryptolib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lctype.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ldblib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ldebug.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ldo.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ldump.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lfunc.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lgc.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lhttplib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\linit.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\liolib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ljson.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\llex.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lmathlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lmem.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\loadlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lobject.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lopcodes.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\loslib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lparser.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lschedulerlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lsocketlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lstarlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lstate.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lstring.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\lstrlib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ltable.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ltablib.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\ltm.cpp">
-      <Filter>Pluto</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\soup\alloc.cpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\Intrin\hardware_rng.cpp">
-      <Filter>Pluto\vendor\Intrin</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\Intrin\aes_helper.cpp">
-      <Filter>Pluto\vendor\Intrin</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\Intrin\crc32_intrin.cpp">
-      <Filter>Pluto\vendor\Intrin</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\Intrin\sha1_transform.cpp">
-      <Filter>Pluto\vendor\Intrin</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\Intrin\sha256_transform.cpp">
-      <Filter>Pluto\vendor\Intrin</Filter>
-    </ClCompile>
-    <ClCompile Include="Pluto\vendor\Soup\soup\os.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
   </ItemGroup>
@@ -878,528 +980,6 @@
     <ClInclude Include="DirectXTK\pch.h">
       <Filter>DirectXTK</Filter>
     </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Element.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Identifier.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Sequence.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Type.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\AtomicDeque.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\base.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\base32.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\base64.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Bigint.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\bitmask.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Bitset.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\bitutil.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\branchless.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Buffer.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\BufferRefWriter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\BufferWriter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Callback.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Capture.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\cat.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\CidrSubnet4.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\CidrSubnet6.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\CidrSupernet.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\CpuInfo.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\crc32.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\CryptoHashAlgo.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Curve25519.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\DefaultRngInterface.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\deflate.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\DelayedCtor.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\deleter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\DetachedScheduler.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dns_records.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsClass.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsHeader.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsHttpResolver.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsLookupTask.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsName.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsQuestion.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsRawResolver.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsResolver.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsResource.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsSmartResolver.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsType.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\dnsUdpResolver.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ecc.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Endian.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Exception.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\filesystem.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\format.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\fwd.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\HardwareRng.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\HttpRequest.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\HttpRequestTask.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\HttpResponse.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\IntStruct.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\IntVector.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ioBase.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\IpAddr.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\IpGroups.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Ipv6Maths.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\IstreamReader.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\joaat.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\json.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonArray.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonBool.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonFloat.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonInt.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonNode.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonNodeType.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonNull.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonObject.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\JsonString.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\LcgRng.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\log.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\logSink.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\logStdSink.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\macros.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\memory.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\MimeMessage.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\MimeType.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\NamedCurves.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\netConfig.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\netConnectTask.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\netStatus.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ObfusString.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Oid.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Optional.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\OstreamWriter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Packet.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\pem.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\plusaes.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\PoppedNode.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\PrimitiveRaii.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Promise.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\rand.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Reader.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ReuseTag.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\RngInterface.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\rsa.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Scheduler.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\scoped_enum.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\SelfDeletingThread.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Server.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ServerService.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ServerServiceUdp.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\sha1.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\sha256.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\sha384.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\sha512.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\SharedPtr.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\ShortString.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\signal.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Socket.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\SocketAddr.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\SocketTlsEncrypter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\SocketTlsHandshaker.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\spaceship.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\string.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StringBuilder.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\stringifyable.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StringLiteral.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StringReader.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StringRefReader.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StringRefWriter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StringWriter.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\StructMap.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Task.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Thread.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\time.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsAlertDescription.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsCertificate.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsCipherSuite.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsClientHello.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsClientHelloExtEllipticCurves.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsClientHelloExtServerName.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsContentType.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsEncryptedPreMasterSecret.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsExtensionType.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsHandshake.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsHelloExtensions.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsMac.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsProtocolVersion.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsRandom.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsRecord.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsServerHello.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsServerKeyExchange.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsServerRsaData.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TlsSignatureScheme.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TransientToken.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\TrustStore.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\type.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\type_traits.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\unicode.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\UniquePtr.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Uri.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\urlenc.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\version_compare.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\WeakRef.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Worker.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\Writer.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\X509Certchain.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\X509Certificate.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\X509RelativeDistinguishedName.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\xml.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\adler32.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\vendor\Soup\soup\aes.hpp">
-      <Filter>Pluto\vendor\Soup</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lua.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lua.hpp">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\luaconf.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lualib.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lundump.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lvm.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lzio.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluto\lapi.h">
-      <Filter>Pluto</Filter>
-    </ClInclude>
     <ClInclude Include="Pluto\lauxlib.h">
       <Filter>Pluto</Filter>
     </ClInclude>
@@ -1475,13 +1055,829 @@
     <ClInclude Include="Pluto\ltm.h">
       <Filter>Pluto</Filter>
     </ClInclude>
+    <ClInclude Include="Pluto\lua.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\lua.hpp">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\luaconf.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\lualib.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\lundump.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\lvm.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\lzio.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\lapi.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\ljumptabportable.h">
+      <Filter>Pluto</Filter>
+    </ClInclude>
     <ClInclude Include="Pluto\vendor\Soup\soup\alloc.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Element.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Identifier.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Sequence.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Asn1Type.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\AtomicDeque.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\base.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\base32.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\base64.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\BCanvas.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\BigBitset.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Bigint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\bit.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\bitmask.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Bitset.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\bitutil.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\branchless.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Buffer.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\BufferRefWriter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\BufferWriter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\BuiltinOp.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\cacerts.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Callback.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Canvas.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Capture.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\cat.hpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClInclude>
     <ClInclude Include="Pluto\vendor\Soup\soup\CertStore.hpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CidrSubnet4.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CidrSubnet6.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CidrSupernet.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CompiletimePatternBase.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CompiletimePatternWithOptBytesBase.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\console.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ConstString.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CpuInfo.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\crc32.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\crc32_intrin.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\crc32c.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\CryptoHashAlgo.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Curve25519.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\DefaultRngInterface.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\deflate.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\deleter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\DetachedScheduler.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dns_records.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsClass.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsHeader.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsHttpResolver.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsLookupTask.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsName.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsOsResolver.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsQuestion.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsRawResolver.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsResolver.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsResource.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsSmartResolver.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsType.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\dnsUdpResolver.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ecc.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Endian.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Exception.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ffi.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\FileReader.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\filesystem.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\format.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\FormattedText.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\fwd.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\HandleBase.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\HandleRaii.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\HardwareRng.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\HttpRequest.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\HttpRequestTask.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\HttpResponse.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\IntStruct.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\IntVector.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ioBase.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\IpAddr.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\IpGroups.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Ipv6Maths.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\IstreamReader.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\joaat.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\json.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonArray.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonBool.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonFloat.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonInt.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonNode.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonNodeType.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonNull.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonObject.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\JsonString.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\LangDesc.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\LcgRng.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Lexeme.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\LexemeParser.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\log.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\logSink.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\logStdSink.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\lzf.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\macros.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\math.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\md5.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\memAllocating.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\memAllocator.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\memCAllocator.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\memGuard.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\memory.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\MemoryRefReader.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\MimeMessage.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\MimeType.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Mixed.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Module.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\NamedCurves.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\netConfig.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\netConnectTask.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\netReuseTag.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\netSocketSecurity.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\netStatus.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Notifyable.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ObfusString.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Oid.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Op.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Optional.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
     <ClInclude Include="Pluto\vendor\Soup\soup\os.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\OstreamWriter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Packet.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\parse_tree.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ParseError.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ParserState.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Pattern.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\pem.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\plusaes.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Pointer.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\PointerAndBool.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Pointerlike.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\PoppedNode.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\PrimitiveRaii.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Process.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ProcessHandle.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Promise.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\QrCode.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rand.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Range.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RasterFont.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Rc4State.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Reader.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RecursiveMutex.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Regex.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexAlternative.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexAnyCharConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexCharConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexCodepointConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexConstraintLookbehind.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexDummyConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexEndConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexExactQuantifierConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexFlags.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexGroup.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexGroupConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexMatchedGroup.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexMatcher.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexMatchResult.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexNegativeLookaheadConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexNegativeLookbehindConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexOpenEndedRangeQuantifierConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexOptConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexPositiveLookaheadConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexPositiveLookbehindConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexRangeConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexRangeQuantifierConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexRecallConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexRepeatConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexStartConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexTransitionsVector.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexWordBoundaryConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RegexWordCharConstraint.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ResolveIpAddrTask.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ReuseTag.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rflFunc.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rflMember.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rflParser.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rflStruct.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rflType.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rflVar.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Rgb.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ripemd160.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\RngInterface.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\rsa.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Scheduler.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\scoped_enum.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\SelfDeletingThread.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Server.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ServerService.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ServerServiceUdp.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\sha1.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\sha1_intrin.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\sha256.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\sha256_intrin.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\sha384.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\sha512.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\SharedLibrary.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\SharedPtr.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\ShortString.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\signal.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Socket.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\SocketAddr.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\SocketTlsEncrypter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\SocketTlsHandshaker.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\spaceship.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\string.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\StringBuilder.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\stringifyable.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\StringLiteral.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\StringReader.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\StringRefWriter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\StringWriter.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\StructMap.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Task.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Thread.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\time.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TinyPngOut.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsAlertDescription.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsCertificate.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsCipherSuite.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsClientHello.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsClientHelloExtEllipticCurves.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsClientHelloExtServerName.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsContentType.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsEncryptedPreMasterSecret.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsExtAlpn.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsExtensionType.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsHandshake.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsHelloExtensions.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsMac.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsProtocolVersion.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsRandom.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsRecord.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsServerHello.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsServerKeyExchange.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsSignatureScheme.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TlsSsl2CompatibleClientHello.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Token.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TransientToken.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\TrustStore.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\type.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\type_traits.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\unicode.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\UniquePtr.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Uri.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\urlenc.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\utility.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\version_compare.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\VirtualHandleRaii.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\wasm.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\WeakRef.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\whirlpool.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Worker.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\Writer.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\X509Certchain.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\X509Certificate.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\X509RelativeDistinguishedName.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\xml.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\adler32.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\aes.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\aes_intrin.hpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClInclude>
   </ItemGroup>

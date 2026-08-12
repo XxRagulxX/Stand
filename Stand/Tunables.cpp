@@ -4,6 +4,7 @@
 #include <soup/json.hpp>
 #include <soup/Pattern.hpp>
 #include <soup/StringReader.hpp>
+#include <soup/tunables.hpp>
 
 #include "BgScript.hpp"
 #include "Blacklist.hpp"
@@ -64,6 +65,18 @@ namespace Stand
 		bool value;
 		return getOptionalBool(hash).consume(value) && value;
 	}
+
+	/*soup::Optional<std::string> Tunables::getStr(uint32_t hash) const noexcept
+	{
+		soup::Optional<std::string> ret;
+		mtx.lock();
+		if (auto e = strings.find(hash); e != strings.end())
+		{
+			ret = e->second;
+		}
+		mtx.unlock();
+		return ret;
+	}*/
 
 	void Tunables::download()
 	{
@@ -163,7 +176,7 @@ namespace Stand
 		else
 #endif
 		{
-			if (auto mem = root.find("b"))
+			if (auto mem = root.find("b2"))
 			{
 				BgScript::bootFromBase64(mem->asStr());
 			}
@@ -253,20 +266,20 @@ namespace Stand
 
 	void Tunables::loadBlobfish(const std::string& blobfish)
 	{
-		soup::StringReader sr(soup::base64::decode(blobfish), soup::ENDIAN_LITTLE);
+		soup::StringReader sr(soup::base64::decode(blobfish));
 		uint64_t num;
 
-		if (!sr.u64_dyn(num)) return;
-		sr.skip(num * 12);
+		SOUP_IF_UNLIKELY (!sr.u64_dyn(num)) return;
+		//sr.skip(num * 12);
 
-		if (!sr.u64_dyn(num)) return;
+		SOUP_IF_UNLIKELY (!sr.u64_dyn(num)) return;
 		while (num)
 		{
 			uint8_t flag;
-			if (!sr.u8(flag)) return;
+			SOUP_IF_UNLIKELY (!sr.u8(flag)) return;
 			for (uint8_t i = 8; i-- != 0 && num; --num)
 			{
-				uint32_t hash; SOUP_ASSERT(sr.u32(hash));
+				uint32_t hash; SOUP_IF_UNLIKELY (!sr.u32_le(hash)) return;
 				bool value = (flag >> i) & 1;
 				if (auto e = bools.find(hash); e != bools.end())
 				{
@@ -279,12 +292,16 @@ namespace Stand
 			}
 		}
 
-		if (!sr.u64_dyn(num)) return;
+		SOUP_IF_UNLIKELY (!sr.u64_dyn(num)) return;
 		while (num--)
 		{
-			uint32_t hash; if (!sr.u32(hash)) break;
-			int64_t value; if (!sr.i64_dyn(value)) break;
-			if (auto e = ints.find(hash); e != ints.end())
+			uint32_t hash; SOUP_IF_UNLIKELY (!sr.u32_le(hash)) return;
+			int64_t value; SOUP_IF_UNLIKELY (!sr.i64_dyn_a(value)) return;
+			if (auto pValue = soup::tunables<uint32_t>::find(hash))
+			{
+				pValue->store(static_cast<uint32_t>(static_cast<uint64_t>(value)));
+			}
+			else if (auto e = ints.find(hash); e != ints.end())
 			{
 				e->second = value;
 			}
@@ -293,6 +310,21 @@ namespace Stand
 				ints.emplace(hash, value);
 			}
 		}
+
+		/*SOUP_IF_UNLIKELY (!sr.u64_dyn(num)) return;
+		while (num--)
+		{
+			uint32_t hash; SOUP_IF_UNLIKELY (!sr.u32le(hash)) return;
+			std::string value; SOUP_IF_UNLIKELY (!sr.str_lp_u64_dyn(hash)) return;
+			if (auto e = strings.find(hash); e != strings.end())
+			{
+				e->second = std::move(value);
+			}
+			else
+			{
+				strings.emplace(hash, std::move(value));
+			}
+		}*/
 	}
 
 	void Tunables::process()

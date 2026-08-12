@@ -2,7 +2,8 @@
 
 #include "CommandToggle.hpp"
 
-#include <soup/DelayedCtor.hpp>
+#include <optional>
+
 #include <soup/SharedLibrary.hpp>
 
 #include "pointers.hpp"
@@ -23,7 +24,7 @@ namespace Stand
 		using wooting_analog_set_keycode_mode_t = WootingAnalogResult(*)(int mode);
 		using wooting_analog_read_full_buffer_t = int(*)(unsigned short* code_buffer, float* analog_buffer, unsigned int len);
 
-		soup::DelayedCtor<soup::SharedLibrary> sdk;
+		std::optional<soup::SharedLibrary> sdk;
 		wooting_analog_read_full_buffer_t read_full_buffer;
 		float arr[256];
 
@@ -40,7 +41,7 @@ namespace Stand
 			// Prevent Wooting Analog SDK writing to our console.
 			SetEnvironmentVariableA("RUST_LOG", "off");
 
-			sdk.construct("wooting_analog_sdk");
+			sdk.emplace("wooting_analog_sdk");
 			if (sdk->isLoaded()
 				&& ((wooting_analog_initialise_t)sdk->getAddress("wooting_analog_initialise"))() >= 0
 				)
@@ -93,7 +94,7 @@ namespace Stand
 			{
 				((wooting_analog_uninitialise_t)sdk->getAddress("wooting_analog_uninitialise"))();
 			}
-			sdk.destroy();
+			sdk.reset();
 		}
 	};
 }

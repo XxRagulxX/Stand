@@ -82,7 +82,7 @@ namespace Stand
 		{
 			if (auto e = g_comp_savedata.obj.find(soup::JsonInt(StatId)); e != nullptr)
 			{
-				switch (e->type)
+				switch (e->getType())
 				{
 				default:
 					data_shim.type = STAT_TYPE_UINT64;

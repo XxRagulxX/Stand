@@ -26,7 +26,15 @@ NAMESPACE_SOUP
 
 	size_t RsaMod::getMaxPkcs1MessageBytes() const noexcept
 	{
-		return getMaxUnpaddedMessageBytes() - 11;
+		const auto k = getMaxUnpaddedMessageBytes();
+		return k > 11 ? k - 11 : 0;
+	}
+
+	size_t RsaMod::getMaxOaepMessageBytes(size_t digest_bytes) const noexcept
+	{
+		const auto k = getMaxUnpaddedMessageBytes();
+		const auto sl = 2 * digest_bytes + 2;
+		return k > sl ? k - sl : 0;
 	}
 
 	bool RsaMod::padPublic(std::string& str) const SOUP_EXCAL
@@ -269,7 +277,7 @@ NAMESPACE_SOUP
 				X509RelativeDistinguishedName subject;
 				for (const auto& common_name : common_names)
 				{
-					subject.emplace_back(Oid::COMMON_NAME, common_name);
+					subject.emplace_back(OID_COMMON_NAME, common_name);
 				}
 				certReqInfo.addName(subject);
 			}
@@ -277,7 +285,7 @@ NAMESPACE_SOUP
 				Asn1Sequence subjectPublicKeyInfo;
 				{
 					Asn1Sequence algorithm;
-					algorithm.addOid(Oid::RSA_ENCRYPTION);
+					algorithm.addOid(OID_RSA_ENCRYPTION);
 					algorithm.addNull();
 					subjectPublicKeyInfo.addSeq(algorithm);
 				}
@@ -298,7 +306,7 @@ NAMESPACE_SOUP
 		}
 		{
 			Asn1Sequence signatureAlgorithm;
-			signatureAlgorithm.addOid(Oid::SHA256_WITH_RSA_ENCRYPTION);
+			signatureAlgorithm.addOid(OID_SHA256_WITH_RSA_ENCRYPTION);
 			signatureAlgorithm.addNull();
 			certReq.addSeq(signatureAlgorithm);
 		}
@@ -316,6 +324,7 @@ NAMESPACE_SOUP
 		const auto t = (pm1 * qm1);
 		if (t < RsaPublicKey::E_PREF)
 		{
+			SOUP_ASSERT(p > 2_b && q > 2_b);
 			const auto bl = t.getBitLength();
 			do
 			{

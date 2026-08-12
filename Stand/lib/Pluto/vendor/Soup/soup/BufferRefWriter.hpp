@@ -9,10 +9,10 @@ NAMESPACE_SOUP
 	class BufferRefWriter final : public Writer
 	{
 	public:
-		Buffer& buf;
+		Buffer<>& buf;
 
-		BufferRefWriter(Buffer& buf, Endian endian = ENDIAN_LITTLE)
-			: Writer(endian), buf(buf)
+		BufferRefWriter(Buffer<>& buf)
+			: Writer(), buf(buf)
 		{
 		}
 
@@ -20,19 +20,20 @@ NAMESPACE_SOUP
 
 		bool raw(void* data, size_t size) noexcept final
 		{
-#if SOUP_EXCEPTIONS
-			try
-#endif
+			SOUP_TRY
 			{
 				buf.append(data, size);
 			}
-#if SOUP_EXCEPTIONS
-			catch (...)
+			SOUP_CATCH_ANY
 			{
 				return false;
 			}
-#endif
 			return true;
+		}
+
+		[[nodiscard]] std::streamoff getPosition() final
+		{
+			return buf.size();
 		}
 	};
 }

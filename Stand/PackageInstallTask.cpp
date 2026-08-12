@@ -15,7 +15,7 @@ namespace Stand
 {
 	void PackageInstallTask::onTick()
 	{
-		if (hr.isConstructed())
+		if (hr.has_value())
 		{
 			if (hr->tickUntilDone())
 			{
@@ -43,7 +43,7 @@ namespace Stand
 				package.local.files.emplace_back(file.first);
 
 				++fi;
-				hr.destroy();
+				hr.reset();
 				initiateDownload();
 			}
 		}
@@ -74,6 +74,6 @@ namespace Stand
 		}
 		//Util::toast(fmt::format("Downloading {} for package {} from {}", file.first, package.name, url), TOAST_LOGGER);
 		auto [host, path] = HttpRequestBuilder::parseHostPathString(url);
-		hr.construct(soup::HttpRequest(std::move(host), std::move(path)));
+		hr.emplace(soup::HttpRequest(std::move(host), std::move(path)));
 	}
 }

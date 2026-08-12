@@ -282,6 +282,37 @@ namespace rage
 		case ATSTRINGHASH("fm_content_daily_bounty"): return LIT("fm_content_daily_bounty");
 		case ATSTRINGHASH("fm_content_dispatch_work"): return LIT("fm_content_dispatch_work");
 		case ATSTRINGHASH("fm_content_pizza_delivery"): return LIT("fm_content_pizza_delivery");
+		case ATSTRINGHASH("fm_content_hacker_cargo_finale"): return LIT("fm_content_hacker_cargo_finale");
+		case ATSTRINGHASH("fm_content_hacker_zancudo_fin"): return LIT("fm_content_hacker_zancudo_fin");
+		case ATSTRINGHASH("fm_content_hacker_house_finale"): return LIT("fm_content_hacker_house_finale");
+		case ATSTRINGHASH("fm_content_hacker_whistle_fin"): return LIT("fm_content_hacker_whistle_fin");
+		case ATSTRINGHASH("fm_content_hacker_cargo_prep"): return LIT("fm_content_hacker_cargo_prep");
+		case ATSTRINGHASH("fm_content_hacker_zancudo_prep"): return LIT("fm_content_hacker_zancudo_prep");
+		case ATSTRINGHASH("fm_content_hacker_house_prep"): return LIT("fm_content_hacker_house_prep");
+		case ATSTRINGHASH("fm_content_hacker_whistle_prep"): return LIT("fm_content_hacker_whistle_prep");
+		case ATSTRINGHASH("fm_content_arms_trafficking"): return LIT("fm_content_arms_trafficking");
+		case ATSTRINGHASH("AM_MP_HOTWIRE"): return LIT("AM_MP_HOTWIRE");
+		case ATSTRINGHASH("fm_content_community_outreach"): return LIT("fm_content_community_outreach");
+		case ATSTRINGHASH("fm_content_car_wash_work"): return LIT("fm_content_car_wash_work");
+		case ATSTRINGHASH("fm_content_car_wash_detailing"): return LIT("fm_content_car_wash_detailing");
+		case ATSTRINGHASH("fm_content_helitours_work"): return LIT("fm_content_helitours_work");
+		case ATSTRINGHASH("fm_content_helitours_tour"): return LIT("fm_content_helitours_tour");
+		case ATSTRINGHASH("fm_content_weed_shop_work"): return LIT("fm_content_weed_shop_work");
+		case ATSTRINGHASH("fm_content_weed_shop_delivery"): return LIT("fm_content_weed_shop_delivery");
+		case ATSTRINGHASH("fm_content_tycoon_odd_jobs"): return LIT("fm_content_tycoon_odd_jobs");
+		case ATSTRINGHASH("fm_content_cutscene"): return LIT("fm_content_cutscene");
+		case ATSTRINGHASH("fm_content_firefighter"): return LIT("fm_content_firefighter");
+		case ATSTRINGHASH("fm_content_forklift_operator"): return LIT("fm_content_forklift_operator");
+		case ATSTRINGHASH("fm_content_postal_worker"): return LIT("fm_content_postal_worker");
+		case ATSTRINGHASH("fm_content_getaway_driver"): return LIT("fm_content_getaway_driver");
+		case ATSTRINGHASH("fm_content_survival_grouping"): return LIT("fm_content_survival_grouping");
+		case ATSTRINGHASH("fm_content_valentine_cheater"): return LIT("fm_content_valentine_cheater");
+		case ATSTRINGHASH("fm_content_survival"): return LIT("fm_content_survival");
+		case ATSTRINGHASH("fm_content_kortz_scoping"): return LIT("fm_content_kortz_scoping");
+		case ATSTRINGHASH("fm_content_kortz_entry"): return LIT("fm_content_kortz_entry");
+		case ATSTRINGHASH("fm_content_kortz_equipment"): return LIT("fm_content_kortz_equipment");
+		case ATSTRINGHASH("fm_content_kortz_disruption"): return LIT("fm_content_kortz_disruption");
+		case ATSTRINGHASH("fm_content_kortz_task"): return LIT("fm_content_kortz_task");
 		}
 		return LIT(fmt::to_string(hash));
 	}

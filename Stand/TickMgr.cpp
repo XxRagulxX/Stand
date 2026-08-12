@@ -64,9 +64,6 @@ namespace Stand
 	{
 		// script_vm_helper.asm
 		uint64_t script_vm_op_native_tick();
-
-		// overrun_helper.asm
-		bool overrun_helper_tick();
 	}
 
 	[[nodiscard]] static uint64_t getNativesGameInvokedLastTick()
@@ -92,11 +89,6 @@ namespace Stand
 		Metrics::natives_game_invoked_last_tick = getNativesGameInvokedLastTick();
 		Metrics::natives_stand_invoked_last_tick = Metrics::natives_stand_invoked_this_tick;
 		Metrics::natives_stand_invoked_this_tick = 0;
-
-		SOUP_IF_UNLIKELY (overrun_helper_tick())
-		{
-			Util::onPreventedCrash(Codename("P9"));
-		}
 
 		SOUP_IF_LIKELY (*pointers::CLoadingScreens_ms_Context == 0)
 		{

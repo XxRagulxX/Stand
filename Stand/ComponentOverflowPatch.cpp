@@ -38,7 +38,7 @@ namespace Stand
 	static DetourHook CTrain_SetTrackActive_hook{ "Y2" };
 	static DetourHook rage_fwAltSkeletonExtension_GetOrAddExtension_hook{ "Y3" };
 	static DetourHook DoVehicleLightsAsync_RunFromDependency_hook{ "Y4" };
-	static DetourHook rage_netObjectIDMgr_GetNewObjectId_hook{ "Y5" };
+	//static DetourHook rage_netObjectIDMgr_GetNewObjectId_hook{ "Y5" };
 	static DetourHook CVehicleVariationInstance_RequestVehicleModFiles_hook{ "Y6" };
 
 	static bool CPedVariationStream_SetVariation(CPed* ped, CPedPropData* pedPropData, CPedVariationData* pedVarData, ePedVarComp_t slotId, uint32_t drawblId, uint32_t drawablAltId, uint32_t texId, uint32_t paletteId, int32_t streamFlags, bool force)
@@ -180,7 +180,7 @@ namespace Stand
 		return true;
 	}
 
-	static uint16_t __fastcall rage_netObjectIDMgr_GetNewObjectId(void* _this)
+	/*static uint16_t __fastcall rage_netObjectIDMgr_GetNewObjectId(void* _this)
 	{
 		uint16_t id = COMP_OG(rage_netObjectIDMgr_GetNewObjectId)(_this);
 		SOUP_IF_UNLIKELY ((*pointers::network_object_mgr)->find_object_by_id(id, true))
@@ -192,7 +192,7 @@ namespace Stand
 			} while ((*pointers::network_object_mgr)->find_object_by_id(id, true));
 		}
 		return id;
-	}
+	}*/
 
 	static void __fastcall CVehicleVariationInstance_RequestVehicleModFiles(CVehicle* veh, int streamFlags)
 	{
@@ -245,12 +245,12 @@ namespace Stand
 			CHECK_EXISTING_HOOK(CODENAME(DoVehicleLightsAsync_RunFromDependency), "E8");
 			CVehicle_DoVehicleLightsAsync = p.add(1).rip().as<CVehicle_DoVehicleLightsAsync_t>();
 		});
-		BATCH_ADD_OPTIONAL(CODENAME(rage_netObjectIDMgr_GetNewObjectId), "8B 81 C0 3E 00 00", [](soup::Pointer p)
+		/*BATCH_ADD_OPTIONAL(CODENAME(rage_netObjectIDMgr_GetNewObjectId), "8B 81 C0 3E 00 00", [](soup::Pointer p)
 		{
 			p = p.sub(6);
 			CHECK_EXISTING_HOOK(CODENAME(rage_netObjectIDMgr_GetNewObjectId), "FF 81 C0 3E 00 00");
 			INIT_HOOK_OPTIONAL(rage_netObjectIDMgr_GetNewObjectId);
-		});
+		});*/
 		BATCH_ADD_OPTIONAL(CODENAME(CVehicleVariationInstance_RequestVehicleModFiles), "8B 15 ? ? ? ? 4C 8B F1 48 83 C1 10 E8 ? ? ? ? 48 8B 0D", [](soup::Pointer p)
 		{
 			CVehicleStreamRequestGfx_pool = p.add(21).rip().as<rage::fwBasePool**>();
@@ -268,7 +268,7 @@ namespace Stand
 			&CTrain_SetTrackActive_hook,
 			&rage_fwAltSkeletonExtension_GetOrAddExtension_hook,
 			&DoVehicleLightsAsync_RunFromDependency_hook,
-			&rage_netObjectIDMgr_GetNewObjectId_hook,
+			//&rage_netObjectIDMgr_GetNewObjectId_hook,
 			&CVehicleVariationInstance_RequestVehicleModFiles_hook,
 		};
 	}

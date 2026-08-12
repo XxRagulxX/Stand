@@ -792,7 +792,7 @@ namespace Stand
 						g_logger.enterBlockMode();
 						for (auto const& entry : g_script_mgr.handler_map)
 						{
-							g_logger.log(std::string("0x").append(Util::to_padded_hex_string(entry.first.getHash())).append(" -> ").append(Util::to_padded_hex_string(reinterpret_cast<uint64_t>(TO_IDA_ADDR(entry.second)))));
+							g_logger.log(std::string("0x").append(Util::to_padded_hex_string(entry.first)).append(" -> ").append(Util::to_padded_hex_string(reinterpret_cast<uint64_t>(TO_IDA_ADDR(entry.second)))));
 						}
 						g_logger.leaveBlockMode();
 						click.setResponse(LIT("Your Log.txt has been populated."));

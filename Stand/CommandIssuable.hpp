@@ -5,8 +5,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include <soup/ObfusString.hpp>
-
 #include "Click.hpp"
 #include "CommandName.hpp" // COMPACT_COMMAND_NAMES
 #include "CommandPerm.hpp"
@@ -36,7 +34,7 @@ namespace Stand
 #define CMDNAME_SHRT(a1) utf8ToCmdName(a1)
 #define CMDNAMES_SHRT(a1) std::vector<CommandName>{ CMDNAME_SHRT(a1) }
 
-#define CMDNAME_OBF(x) utf8ToCmdName(soup::ObfusString(x).str())
+#define CMDNAME_OBF(x) utf8ToCmdName(x)
 #define CMDNAMES_OBF_0() std::vector<CommandName>{}
 #define CMDNAMES_OBF_1(a1) std::vector<CommandName>{ CMDNAME_OBF(a1) }
 #define CMDNAMES_OBF_2(a1, a2) std::vector<CommandName>{ CMDNAME_OBF(a1), CMDNAME_OBF(a2) }

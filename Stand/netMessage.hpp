@@ -43,12 +43,12 @@ namespace rage
 		}
 
 		template <typename Msg>
-		bool Export(void* data, unsigned int size, unsigned int* written) const
+		static bool Export(const Msg& msg, void* data, unsigned int size, unsigned int* written)
 		{
 			datExportBuffer buf;
 			buf.SetReadWriteBytes(data, size);
 			if (WriteHeader(Msg::id, buf)
-				&& static_cast<Msg*>(const_cast<netMessage*>(this))->ser(buf)
+				&& const_cast<Msg&>(msg).ser(buf)
 				)
 			{
 				if (written)

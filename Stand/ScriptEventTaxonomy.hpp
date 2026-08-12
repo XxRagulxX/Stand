@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include <soup/tunables.hpp>
+
 #include "gta_player.hpp"
 
 #include "EventAggregation.hpp"

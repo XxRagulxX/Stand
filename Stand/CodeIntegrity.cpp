@@ -42,7 +42,7 @@ namespace Stand
 			{
 				break;
 			}
-			hash = soup::joaat::partial((const char*)start, p - start, hash);
+			hash = soup::joaat::partialRange((const char*)start, p - start, hash);
 			if (strcmp(ins.operation->name, "jmp") == 0)
 			{
 				p += (int32_t)ins.operands[0].val;

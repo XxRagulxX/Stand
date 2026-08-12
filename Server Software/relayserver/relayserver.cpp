@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <CertStore.hpp>
 #include <HttpRequest.hpp>
 #include <netConfig.hpp>
 #include <pem.hpp>
@@ -9,7 +10,6 @@
 #include <ServerWebService.hpp>
 #include <Socket.hpp>
 #include <string.hpp>
-#include <TlsServerRsaData.hpp>
 #include <WebSocketMessage.hpp>
 
 struct RelayClientData
@@ -94,17 +94,15 @@ static void modRecvLoop(soup::Socket& s) SOUP_EXCAL
 	});
 }
 
-static soup::TlsServerRsaData server_rsa_data;
-
-static void cert_selector(soup::TlsServerRsaData& out, const std::string& server_name) SOUP_EXCAL
-{
-	out = server_rsa_data;
-}
-
 int main()
 {
-	server_rsa_data.der_encoded_certchain = soup::pem::decodeChain(soup::string::fromFile("cert/certplusissuer.pem"));
-	server_rsa_data.private_key = soup::RsaPrivateKey::fromPem(soup::string::fromFile("cert/privkey.pem"));
+	auto certstore = soup::make_shared<soup::CertStore>();
+	{
+		soup::X509Certchain certchain;
+		certchain.fromDer(soup::pem::decodeChain(soup::string::fromFile("cert/cert.pem")));
+		auto private_key = soup::RsaPrivateKey::fromPem(soup::string::fromFile("cert/key.pem"));
+		certstore->add(std::move(certchain), std::move(private_key));
+	}
 
 	serv.on_work_done = [](soup::Worker& w, soup::Scheduler&)
 	{
@@ -162,7 +160,7 @@ int main()
 							{
 								return false;
 							}
-							return soup::string::toInt<uint8_t>(res->body) >= 2;
+							return soup::string::toInt<uint8_t>(res->body, 0) >= 2;
 						}, std::move(key));
 						soup::PromiseBase* pp = p.get();
 						s.awaitPromiseCompletion(pp, [](soup::Worker& w, soup::Capture&& cap)
@@ -249,11 +247,16 @@ int main()
 		std::cout << "Failed to bind to port 25769." << std::endl;
 		return 1;
 	}
-	if (!serv.bindCrypto(4269, &web_srv, &cert_selector))
+	if (!serv.bindCrypto(4269, &web_srv, std::move(certstore)))
 	{
 		std::cout << "Failed to bind to port 4269." << std::endl;
 		return 2;
 	}
-	std::cout << "Listening on ports 25769 and 4269." << std::endl;
+	if (!serv.bind(4242, &web_srv))
+	{
+		std::cout << "Failed to bind to port 4242." << std::endl;
+		return 2;
+	}
+	std::cout << "Listening on ports 25769, 4269, and 4242." << std::endl;
 	serv.run();
 }

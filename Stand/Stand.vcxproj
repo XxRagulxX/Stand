@@ -28,6 +28,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev Build|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -125,7 +126,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalOptions>"/pdbaltpath:*notices your IDA* OwO" /base:0x1337694200000000</AdditionalOptions>
+      <AdditionalOptions>/pdbaltpath:dll</AdditionalOptions>
       <EnableUAC>false</EnableUAC>
       <MapExports>true</MapExports>
       <ForceSymbolReferences>
@@ -139,7 +140,7 @@
       <Command>cd .. &amp;&amp; cd lang &amp;&amp; php update.php</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>cd .. &amp;&amp; php xormagics.php &amp;&amp; move /Y Stand\bin\Release\Stand.dll Stand\bin\Release\Stand_unprotected.dll &amp;&amp;  move /Y Stand\bin\Release\Stand.map Stand\bin\Release\Stand_unprotected.map &amp;&amp; ISaidNoRTTI\bin\ISaidNoRTTI.exe Stand\bin\Release\Stand_unprotected.dll &amp;&amp; "Virtualizer\Virtualizer.exe" /protect Stand.cv /shareconsole &amp;&amp; vanitysec.exe Stand\bin\Release\Stand_uncompressed.dll .Stand &amp;&amp; upx.exe Stand\bin\Release\Stand_uncompressed.dll -o Stand\bin\Release\Stand.dll -9 --overlay=strip --compress-exports=0 &amp;&amp; vanitysec.exe Stand\bin\Release\Stand.dll .Stand</Command>
+      <Command>cd .. &amp;&amp; move /Y Stand\bin\Release\Stand.dll Stand\bin\Release\Stand_uncompressed.dll &amp;&amp; move /Y Stand\bin\Release\Stand.map Stand\bin\Release\Stand_uncompressed.map &amp;&amp; ISaidNoRTTI\bin\ISaidNoRTTI.exe Stand\bin\Release\Stand_uncompressed.dll &amp;&amp; upx.exe Stand\bin\Release\Stand_uncompressed.dll -o Stand\bin\Release\Stand.dll -9 --overlay=strip --compress-exports=0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dev Build|x64'">
@@ -179,7 +180,7 @@
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalOptions>"/pdbaltpath:*notices your IDA* OwO" /base:0x1337694200000000</AdditionalOptions>
+      <AdditionalOptions>/pdbaltpath:dll</AdditionalOptions>
       <EnableUAC>false</EnableUAC>
       <MapExports>true</MapExports>
       <ForceSymbolReferences>
@@ -194,7 +195,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>cd .. &amp;&amp; move /Y Stand\bin\Release\Stand.dll Stand\bin\Release\Stand_unprotected.dll &amp;&amp;  move /Y Stand\bin\Release\Stand.map Stand\bin\Release\Stand_unprotected.map &amp;&amp; ISaidNoRTTI\bin\ISaidNoRTTI.exe Stand\bin\Release\Stand_unprotected.dll &amp;&amp; "Virtualizer\Virtualizer.exe" /protect Stand.cv /shareconsole &amp;&amp; vanitysec.exe Stand\bin\Release\Stand_uncompressed.dll .Stand &amp;&amp; upx.exe Stand\bin\Release\Stand_uncompressed.dll -o Stand\bin\Release\Stand.dll -9 --overlay=strip --compress-exports=0 &amp;&amp; vanitysec.exe Stand\bin\Release\Stand.dll .Stand</Command>
+      <Command>cd .. &amp;&amp; move /Y Stand\bin\Release\Stand.dll Stand\bin\Release\Stand_uncompressed.dll &amp;&amp; move /Y Stand\bin\Release\Stand.map Stand\bin\Release\Stand_uncompressed.map &amp;&amp; ISaidNoRTTI\bin\ISaidNoRTTI.exe Stand\bin\Release\Stand_uncompressed.dll &amp;&amp; upx.exe Stand\bin\Release\Stand_uncompressed.dll -o Stand\bin\Release\Stand.dll -9 --overlay=strip --compress-exports=0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -239,7 +240,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <EnableUAC>false</EnableUAC>
-      <AdditionalOptions>/base:0x1337694200000000</AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <ForceSymbolReferences>
       </ForceSymbolReferences>
     </Link>
@@ -269,7 +271,6 @@
     <ClInclude Include="alphanum.hpp" />
     <ClInclude Include="Animations.hpp" />
     <ClInclude Include="AntiAntiCheat.hpp" />
-    <ClInclude Include="AntiDbg.hpp" />
     <ClInclude Include="AntiEntitySpam.hpp" />
     <ClInclude Include="apply_spoofed_name.hpp" />
     <ClInclude Include="AptHelper.hpp" />
@@ -457,6 +458,7 @@
     <ClInclude Include="CommandTogglePointerDuplex.hpp" />
     <ClInclude Include="CommandTurnSignal.hpp" />
     <ClInclude Include="CommandLightSignals.hpp" />
+    <ClInclude Include="CommandUncapFps.hpp" />
     <ClInclude Include="CommandUseBrakelights.hpp" />
     <ClInclude Include="CommandVehicleGunToggle.hpp" />
     <ClInclude Include="CommandVehicleNoObjectCollision.hpp" />
@@ -500,7 +502,6 @@
     <ClInclude Include="fwRegdRef.hpp" />
     <ClInclude Include="fwRenderThreadInterface.hpp" />
     <ClInclude Include="fwStepAllocator.hpp" />
-    <ClInclude Include="GarbageCollector.hpp" />
     <ClInclude Include="IsolatedText.hpp" />
     <ClInclude Include="lua_runtime.pluto" />
     <ClInclude Include="AssociatedWhitelist.hpp" />
@@ -819,7 +820,6 @@
     <ClInclude Include="CDrivebyWeaponGroup.hpp" />
     <ClInclude Include="CommandDisablePassiveCooldown.hpp" />
     <ClInclude Include="CommandHistoryFriendsNote.hpp" />
-    <ClInclude Include="CommandKeyboardHook.hpp" />
     <ClInclude Include="CommandRemovedPlayers.hpp" />
     <ClInclude Include="CommandListHandling.hpp" />
     <ClInclude Include="CommandListQrcode.hpp" />
@@ -2080,8 +2080,6 @@
     <ClInclude Include="Whitelist.hpp" />
     <ClInclude Include="Worker.hpp" />
     <ClInclude Include="WorldState.hpp" />
-    <ClInclude Include="XoredNativeHash.hpp" />
-    <ClInclude Include="xormagics.hpp" />
     <ClInclude Include="yeet_flow.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -2094,7 +2092,6 @@
     <ClCompile Include="AllEntitiesEveryTick.cpp" />
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="AntiAntiCheat.cpp" />
-    <ClCompile Include="AntiDbg.cpp" />
     <ClCompile Include="AntiEntitySpam.cpp" />
     <ClCompile Include="apply_spoofed_name.cpp" />
     <ClCompile Include="AptHelper.cpp" />
@@ -2194,7 +2191,6 @@
     <ClCompile Include="FeatureCanvasWindow.cpp" />
     <ClCompile Include="font_bevietnamprolight_1.cpp" />
     <ClCompile Include="fwRefAwareBase.cpp" />
-    <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="gta_ped.cpp" />
     <ClCompile Include="is_rid.cpp" />
     <ClCompile Include="lang_it.cpp">
@@ -2852,7 +2848,6 @@
     <MASM Include="data_node_helper.asm" />
     <MASM Include="exceptional_helper.asm" />
     <MASM Include="get_stack_pointer.asm" />
-    <MASM Include="overrun_helper.asm" />
     <MASM Include="rage_input_helper.asm" />
     <MASM Include="script_vm_helper.asm" />
     <MASM Include="swapchain_hook.asm" />
