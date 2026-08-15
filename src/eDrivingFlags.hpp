@@ -44,7 +44,7 @@ enum eDrivingFlags : uint64_t
 	DF_AvoidHighways = BIT(29),
 	DF_ForceJoinInRoadDirection = BIT(30),
 
-	DF_DontTerminateTaskWhenAchieved = BIT(31),
+	DF_DontTerminateTaskWhenAchieved = uint64_t(1) << 31,
 
 	DF_LastFlag = DF_DontTerminateTaskWhenAchieved,
 
