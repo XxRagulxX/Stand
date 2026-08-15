@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstring>
 #include <cstdint>
+#include <type_traits>
 
 #include "sysMemSimpleAllocator.hpp"
 #include "tlsContext.hpp"
@@ -32,7 +34,7 @@ namespace rage
 		Value data;
 		atMapEntry* next;
 	};
-	static_assert(((uintptr_t)&((atMapEntry<uint32_t, uint32_t>*)0)->next) == 8);
+	static_assert(sizeof(atMapEntry<uint32_t, uint32_t>) == 0x10);
 
 	template <typename Key, typename Value>
 	struct atMap
