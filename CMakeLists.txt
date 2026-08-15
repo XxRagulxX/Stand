@@ -38,6 +38,10 @@ set(RAPIDJSON_DIR
     "${STAND_DIR}/rapidjson"
 )
 
+set(DISCORD_RPC_DIR
+    "${STAND_DIR}/discord-rpc"
+)
+
 # ------------------------------------------------------------
 # Stand C++ sources
 # ------------------------------------------------------------
@@ -50,6 +54,7 @@ file(GLOB_RECURSE STAND_CPP CONFIGURE_DEPENDS
 list(FILTER STAND_CPP EXCLUDE REGEX "/directxtk/")
 list(FILTER STAND_CPP EXCLUDE REGEX "/pluto/")
 list(FILTER STAND_CPP EXCLUDE REGEX "/fmt/")
+list(FILTER STAND_CPP EXCLUDE REGEX "/discord-rpc/")
 
 # ------------------------------------------------------------
 # Stand ASM sources
@@ -121,9 +126,24 @@ add_library(DirectXTK STATIC
     "${DIRECTXTK_DIR}/GamePad.cpp"
 )
 
+add_library(DiscordRPC STATIC
+    "${DISCORD_RPC_DIR}/src/connection_win.cpp"
+    "${DISCORD_RPC_DIR}/src/discord_register_win.cpp"
+    "${DISCORD_RPC_DIR}/src/discord_rpc.cpp"
+    "${DISCORD_RPC_DIR}/src/rpc_connection.cpp"
+    "${DISCORD_RPC_DIR}/src/serialization.cpp"
+)
+
 target_include_directories(DirectXTK
     PUBLIC
         "${DIRECTXTK_DIR}"
+)
+
+target_include_directories(DiscordRPC
+    PUBLIC
+        "${DISCORD_RPC_DIR}/include"
+    PRIVATE
+        "${DISCORD_RPC_DIR}/src"
 )
 
 target_link_libraries(DirectXTK
@@ -132,6 +152,7 @@ target_link_libraries(DirectXTK
         dxgi
         d3dcompiler
         windowscodecs
+        DiscordRPC
 )
 
 # ------------------------------------------------------------
