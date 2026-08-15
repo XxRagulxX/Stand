@@ -1,0 +1,2825 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="fwd.hpp" />
+    <ClInclude Include="Bytepatch.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="BytepatchExternal.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="Pattern.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="CompiletimePattern.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="CompiletimePatternBase.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="CompiletimePatternWithOptBytesBase.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_macros.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="CompiletimePatternWithOptBytes.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="Pointer.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="Pointerlike.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="Range.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="Process.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="IpAddr.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketAddr.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="console.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorBase.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3Base.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Module.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="HandleBase.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="HandlePlain.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Bigint.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="rsa.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="rand.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="BitPointer.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="sha1.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="CryptoHashAlgo.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="string.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="ObfusString.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="StringLiteral.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="base.hpp" />
+    <ClInclude Include="Packet.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="scoped_enum.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="sha256.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="X509Certificate.hpp">
+      <Filter>crypto\x509</Filter>
+    </ClInclude>
+    <ClInclude Include="X509RelativeDistinguishedName.hpp">
+      <Filter>crypto\x509</Filter>
+    </ClInclude>
+    <ClInclude Include="Asn1Sequence.hpp">
+      <Filter>data\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="Asn1Identifier.hpp">
+      <Filter>data\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="Asn1Element.hpp">
+      <Filter>data\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="Asn1Type.hpp">
+      <Filter>data\asn1</Filter>
+    </ClInclude>
+    <ClInclude Include="aes.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsCertificate.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsClientHello.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsClientHelloExtServerName.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsContentType.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsEncryptedPreMasterSecret.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsHandshake.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsProtocolVersion.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsRandom.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsRecord.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsServerHello.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsMac.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="type.hpp" />
+    <ClInclude Include="TlsAlertDescription.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketTlsEncrypter.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketTlsHandshaker.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="Curve25519.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsCipherSuite.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsServerKeyExchange.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsExtensionType.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsClientHelloExtEllipticCurves.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="NamedCurves.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsHelloExtensions.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="Worker.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Promise.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseButton.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="ConuiApp.hpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="ConuiSpan.hpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="ConuiBase.hpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="ConuiDiv.hpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor.hpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorTab.hpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Callback.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="Capture.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorText.hpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="signal.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorFile.hpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipReader.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="crc32.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipCentralDirectoryFile.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipEndOfCentralDirectory.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipFileCommon.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipLocalFileHeader.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipWriter.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipIndexedFile.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="TrustStore.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="X509Certchain.hpp">
+      <Filter>crypto\x509</Filter>
+    </ClInclude>
+    <ClInclude Include="Chessboard.hpp">
+      <Filter>misc\chess</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessSquare.hpp">
+      <Filter>misc\chess</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessPiece.hpp">
+      <Filter>misc\chess</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessCoordinate.hpp">
+      <Filter>misc\chess</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessCli.hpp">
+      <Filter>misc\chess</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpRequest.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="MimeMessage.hpp">
+      <Filter>data\mime</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpResponse.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="WordType.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="WordMeaning.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="DictionaryWord.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonNode.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonString.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonInt.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonArray.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="Oid.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonNodeType.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="Reader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="FileReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="StringReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="ioBase.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="IstreamReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="Writer.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="OstreamWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="StringWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonObject.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonNull.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonBool.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonFloat.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="Dictionary.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="WebResource.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="PolyVector.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.hpp">
+      <Filter>math\3d\sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="UvSphere.hpp">
+      <Filter>math\3d\sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="os.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="QrCode.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="Notifyable.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="Uri.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="MimeType.hpp">
+      <Filter>data\mime</Filter>
+    </ClInclude>
+    <ClInclude Include="adler32.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="joaat.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="Canvas.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="Rgb.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerWebService.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="main.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocketMessage.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocketFrameType.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="type_traits.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="bcrypt.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterFont.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.hpp">
+      <Filter>vis\render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetCanvas.hpp">
+      <Filter>vis\render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetWindow.hpp">
+      <Filter>vis\render</Filter>
+    </ClInclude>
+    <ClInclude Include="base64.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="deflate.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="pem.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="urlenc.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="unicode.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="FileWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="YubikeyValidator.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="ShortString.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicDeque.hpp">
+      <Filter>data\container\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicStack.hpp">
+      <Filter>data\container\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="PoppedNode.hpp">
+      <Filter>data\container\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedIterator.hpp">
+      <Filter>data\container\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleHider.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="structing.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="OpaqueString.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlHandshake.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlHandshakeResponse.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlFrame.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlCapabilities.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlAuthSwitchRequest.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlConnection.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlColumnDefinition.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlFieldType.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlStmtPrepareOk.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlStmtExecute.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="code_tree.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="unit_testing.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="Bigfloat.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="acme.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="PhpState.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="ffi.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="FormattedText.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.hpp">
+      <Filter>math\3d\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRaytracingRenderer.hpp">
+      <Filter>math\3d\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRenderer.hpp">
+      <Filter>math\3d\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRasterisingRenderer.hpp">
+      <Filter>math\3d\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeGenerator.hpp">
+      <Filter>algos\maze</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeGeneratorDepthFirst.hpp">
+      <Filter>algos\maze</Filter>
+    </ClInclude>
+    <ClInclude Include="Hotp.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="Totp.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="base32.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="ripemd160.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="bech32.hpp">
+      <Filter>crypto\btc</Filter>
+    </ClInclude>
+    <ClInclude Include="SegWitAddress.hpp">
+      <Filter>crypto\btc</Filter>
+    </ClInclude>
+    <ClInclude Include="BitReader.hpp">
+      <Filter>io\bits</Filter>
+    </ClInclude>
+    <ClInclude Include="base58.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="FileRaii.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tempfile.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="CompiledExecutable.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="JitModule.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedLibrary.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="StringBuilder.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="alpha2decodetbl.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="branchless.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocketConnectionEmscripten.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="StringMatch.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaii.hpp">
+      <Filter>mem\allocraii</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiLocalBase.hpp">
+      <Filter>mem\allocraii</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiRemote.hpp">
+      <Filter>mem\allocraii</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiVirtual.hpp">
+      <Filter>mem\allocraii</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoDocument.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoElement.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoContainer.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoTextElement.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoFlatDocument.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="AssemblyBuilder.hpp">
+      <Filter>cpu\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="x64.hpp">
+      <Filter>cpu\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="netIntel.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="netAs.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="DerivableMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="IntVector.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="StructMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="RangeMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="country_names.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="csv.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="netIntelLocationData.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="BitWriter.hpp">
+      <Filter>io\bits</Filter>
+    </ClInclude>
+    <ClInclude Include="huffman_tree.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="BitString.hpp">
+      <Filter>io\bits</Filter>
+    </ClInclude>
+    <ClInclude Include="elo.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoStylesheet.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoStyle.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsHeader.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsQuestion.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsClass.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsType.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsResource.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsName.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="ioSizeMeasurer.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="dns_records.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsOsResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsHttpResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerService.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsUdpResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsRawResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryRefReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="StringRefWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="HashProofOfWork.hpp">
+      <Filter>crypto\proof_of_work</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoriseProofOfWork.hpp">
+      <Filter>crypto\proof_of_work</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyPngOut.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="UniquePtr.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedPtr.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="Endian.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="BigBitset.hpp">
+      <Filter>data\bit</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmask.hpp">
+      <Filter>data\bit</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitset.hpp">
+      <Filter>data\bit</Filter>
+    </ClInclude>
+    <ClInclude Include="deleter.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="time.hpp">
+      <Filter>util\time</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopwatch.hpp">
+      <Filter>util\time</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet6.hpp">
+      <Filter>net\cidr</Filter>
+    </ClInclude>
+    <ClInclude Include="Ipv6Maths.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet4.hpp">
+      <Filter>net\cidr</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSupernet.hpp">
+      <Filter>net\cidr</Filter>
+    </ClInclude>
+    <ClInclude Include="IpGroups.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>util\time</Filter>
+    </ClInclude>
+    <ClInclude Include="memObject.hpp">
+      <Filter>mem\vft</Filter>
+    </ClInclude>
+    <ClInclude Include="memVft.hpp">
+      <Filter>mem\vft</Filter>
+    </ClInclude>
+    <ClInclude Include="rtti.hpp">
+      <Filter>mem\vft</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomEncoding.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="base40.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="HammingCode.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="bitutil.hpp">
+      <Filter>data\bit</Filter>
+    </ClInclude>
+    <ClInclude Include="RaiiEmulator.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="LcgRngInterface.hpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultRngInterface.hpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="RngInterface.hpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="MsvcRng.hpp">
+      <Filter>algos\rng</Filter>
+    </ClInclude>
+    <ClInclude Include="LcgRng.hpp">
+      <Filter>algos\rng</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskGuard.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferRefWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="logSink.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="logStdSink.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="log.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="netInfo.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="rflType.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflParser.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflVar.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflStruct.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflMember.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="stringifyable.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="format.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="Diff.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveRaii.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bindings\soup.h" />
+    <ClInclude Include="InquiryLang.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmd.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdGreeting.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="Chatbot.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdDefine.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdCoinflip.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdFarewell.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdArithmetic.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdRand.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbResult.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdDelete.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="Jokebook.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdJoke.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdConvert.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbMeasurement.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdOpinion.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdOpinionFollowup.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdHowAreYou.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdThanks.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdCapabilities.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="rflFunc.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="CApiUtil.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="audDevice.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audPlayback.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audMixer.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audSound.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="morse.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="aud_common.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="riff.hpp">
+      <Filter>io\riff</Filter>
+    </ClInclude>
+    <ClInclude Include="WavFmtChunk.hpp">
+      <Filter>io\riff</Filter>
+    </ClInclude>
+    <ClInclude Include="audWav.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="cat.hpp">
+      <Filter>data\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="catTreeReader.hpp">
+      <Filter>data\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeReader.hpp">
+      <Filter>util\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeWriter.hpp">
+      <Filter>util\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="catTreeWriter.hpp">
+      <Filter>data\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="Rgba.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="RgbaCanvas.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="NativeString.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="Svg.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="BCanvas.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocketConnection.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocket.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="X11Api.hpp">
+      <Filter>os\linux</Filter>
+    </ClInclude>
+    <ClInclude Include="DetachedScheduler.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="netConfig.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachineTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpRequestTask.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsLookupTask.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="netConnectTask.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="GetFileContentsTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="netReuseTag.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="SchedulerStats.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="visCurves.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="Uuid.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="textmate_grammar.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="xml.hpp">
+      <Filter>data\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="plist.hpp">
+      <Filter>data\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="StringParser.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="Regex.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexGroup.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexAlternative.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexConstraint.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexMatcher.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexAnyCharConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexCharConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexGroupConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexMatchedGroup.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexMatchResult.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexStartConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexRangeConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexEndConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexOptConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexFlags.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexRepeatConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexPositiveLookaheadConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexNegativeLookaheadConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexExactQuantifierConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexPositiveLookbehindConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexNegativeLookbehindConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexWordBoundaryConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsServerService.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerServiceUdp.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexDummyConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="ecc.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="compiletime.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="IpcSocket.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="osRegistry.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="ByteTraits.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="Hashmap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsCacheResolver.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexCodepointConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexConstraintLookbehind.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexWordCharConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexRangeQuantifierConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexOpenEndedRangeQuantifierConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="StringPool.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="drData.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drString.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drDatetime.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drInt.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drAdaptor.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drJsonObject.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnetInterface.hpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet4Interface.hpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet6Interface.hpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="TransientToken.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="WeakRef.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="drIpAddr.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Fiber.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="FiberTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="EmailAddress.hpp">
+      <Filter>net\email</Filter>
+    </ClInclude>
+    <ClInclude Include="dhcp.hpp">
+      <Filter>net\dhcp</Filter>
+    </ClInclude>
+    <ClInclude Include="DhcpMessage.hpp">
+      <Filter>net\dhcp</Filter>
+    </ClInclude>
+    <ClInclude Include="netAdaptor.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="MacAddr.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="punycode.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="EstablishWebSocketConnectionTask.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="SelfDeletingThread.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="fnv.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="Sudoku.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="visKeyboard.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="hwHid.hpp">
+      <Filter>hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="AnalogueKeyboard.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="DigitalKeyboard.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="Key.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="kbRgbWooting.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
+    <ClInclude Include="kbRgb.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdQrcode.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="HidScancode.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="Ps2Scancode.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="netMesh.hpp">
+      <Filter>net\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="netMeshService.hpp">
+      <Filter>net\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="netMeshMsgType.hpp">
+      <Filter>net\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="hwGamepad.hpp">
+      <Filter>hardware\gamepad</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons.hpp">
+      <Filter>hardware\gamepad</Filter>
+    </ClInclude>
+    <ClInclude Include="kbRgbRazerChroma.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="kbRgbCorsairCue.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
+    <ClInclude Include="audNote.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audNoteEnvelope.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="MidiComposition.hpp">
+      <Filter>audio\midi</Filter>
+    </ClInclude>
+    <ClInclude Include="filesystem.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="wooting_enums.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="MathExpr.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="Pathfind.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="netStatus.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsSmartResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualFilesystem.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="HardwareRng.hpp">
+      <Filter>algos\rng</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsSignatureScheme.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="cursed.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="sha512.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="sha384.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexRecallConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageStream.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="wasm.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="memBox.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="gmText.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="gmBoxCorners.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="gmBox.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="gmAxisAlignedBox.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="LangDesc.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="LangVm.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Lexeme.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="LexemeParser.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Op.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="parse_tree.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="ParseError.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserState.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Token.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="laPlutoFrontend.hpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="laFrontend.hpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="BuiltinOp.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="laBackend.hpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="laWasmBackend.hpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="irExpression.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
+    <ClInclude Include="irModule.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
+    <ClInclude Include="irType.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
+    <ClInclude Include="irFunction.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
+    <ClInclude Include="irVm.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
+    <ClInclude Include="CpuInfo.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="laMathFrontend.hpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.hpp" />
+    <ClInclude Include="RegexTransitionsVector.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="netStun.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="netIce.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="exceptions.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoInputElement.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="macros.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessHandle.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="CertStore.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="osInput.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="Hwid.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="memGuard.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="crc32c.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="netIntrospectTask.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="laX64Backend.hpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="RecursiveMutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="NamedMutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualHandleRaii.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="HandleRaii.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="memAllocator.hpp">
+      <Filter>mem\allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="memCAllocator.hpp">
+      <Filter>mem\allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="MaintainWebSocketConnectionTask.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="ResponseCurve.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="HidReportDescriptor.hpp">
+      <Filter>hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="utility.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="HidUsage.hpp">
+      <Filter>hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="ResolveIpAddrTask.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="alloc.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="CompactDetourHook.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourHook.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourHookBase.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="aes_intrin.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crc32_intrin.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="sha1_intrin.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="sha256_intrin.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="TarReader.hpp">
+      <Filter>io\tar</Filter>
+    </ClInclude>
+    <ClInclude Include="TarIndexedFile.hpp">
+      <Filter>io\tar</Filter>
+    </ClInclude>
+    <ClInclude Include="HookBase.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="ReplacementHook.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="Spinlock.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="CallsiteHook.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="loc.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourHookNoreg.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="IrcServer.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="PointerAndBool.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="UniqueList.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="UniqueListLink.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="Benchmark.hpp">
+      <Filter>util\time</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorderedMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstString.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="Mixed.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="IntStruct.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="Optional.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceLocation.hpp">
+      <Filter>util\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Searchspace.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="Percentage.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="parallel.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="version_compare.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="spaceship.hpp">
+      <Filter>util\polyfill</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.hpp">
+      <Filter>util\polyfill</Filter>
+    </ClInclude>
+    <ClInclude Include="tunables.hpp">
+      <Filter>util\config</Filter>
+    </ClInclude>
+    <ClInclude Include="GarbageCollector.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="memAllocating.hpp">
+      <Filter>mem\allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryMappedMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryMappedRangeMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiFileMapping.hpp">
+      <Filter>mem\allocraii</Filter>
+    </ClInclude>
+    <ClInclude Include="lzf.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsExtAlpn.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="Rc4State.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="whirlpool.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="TlsSsl2CompatibleClientHello.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="bit.hpp">
+      <Filter>util\polyfill</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="memStlAllocator.hpp">
+      <Filter>mem\allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="netSocketSecurity.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="cadArchive.hpp">
+      <Filter>data\content-addressed</Filter>
+    </ClInclude>
+    <ClInclude Include="cadInterface.hpp">
+      <Filter>data\content-addressed</Filter>
+    </ClInclude>
+    <ClInclude Include="cadArchiveInterface.hpp">
+      <Filter>data\content-addressed</Filter>
+    </ClInclude>
+    <ClInclude Include="hotfix.hpp">
+      <Filter>util\config</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Bytepatch.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="Pattern.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="Pointer.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="Range.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="Module.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Bigint.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="rsa.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="sha1.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="sha256.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="X509Certificate.cpp">
+      <Filter>crypto\x509</Filter>
+    </ClCompile>
+    <ClCompile Include="Asn1Sequence.cpp">
+      <Filter>data\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="aes.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketTlsEncrypter.cpp">
+      <Filter>net\tls</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketTlsHandshaker.cpp">
+      <Filter>net\tls</Filter>
+    </ClCompile>
+    <ClCompile Include="Curve25519.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="Worker.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="console.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="ConuiSpan.cpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClCompile>
+    <ClCompile Include="ConuiApp.cpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClCompile>
+    <ClCompile Include="ConuiBase.cpp">
+      <Filter>vis\ui\conui</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor.cpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorTab.cpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorText.cpp">
+      <Filter>vis\ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="crc32.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="ZipReader.cpp">
+      <Filter>io\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="ZipWriter.cpp">
+      <Filter>io\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="TrustStore.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="X509Certchain.cpp">
+      <Filter>crypto\x509</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessCli.cpp">
+      <Filter>misc\chess</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessSquare.cpp">
+      <Filter>misc\chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Chessboard.cpp">
+      <Filter>misc\chess</Filter>
+    </ClCompile>
+    <ClCompile Include="MimeMessage.cpp">
+      <Filter>data\mime</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpRequest.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonString.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="Oid.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="Asn1Identifier.cpp">
+      <Filter>data\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonArray.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonNode.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonObject.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonInt.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonFloat.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="Dictionary.cpp">
+      <Filter>ling</Filter>
+    </ClCompile>
+    <ClCompile Include="WebResource.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Poly.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="UvSphere.cpp">
+      <Filter>math\3d\sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="os.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="QrCode.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="Uri.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="adler32.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="Canvas.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="Rgb.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="joaat.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerWebService.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="bcrypt.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterFont.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>vis\render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetCanvas.cpp">
+      <Filter>vis\render</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="deflate.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="pem.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="urlenc.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="unicode.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonBool.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonNull.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="YubikeyValidator.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="MysqlConnection.cpp">
+      <Filter>net\mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="rand.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleHider.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="OpaqueString.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_testing.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="Bigfloat.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="acme.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="PhpState.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="ffi.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="FormattedText.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>math\3d\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneRaytracingRenderer.cpp">
+      <Filter>math\3d\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneRasterisingRenderer.cpp">
+      <Filter>math\3d\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MazeGeneratorDepthFirst.cpp">
+      <Filter>algos\maze</Filter>
+    </ClCompile>
+    <ClCompile Include="Hotp.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="Totp.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="base32.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="ripemd160.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="SegWitAddress.cpp">
+      <Filter>crypto\btc</Filter>
+    </ClCompile>
+    <ClCompile Include="bech32.cpp">
+      <Filter>crypto\btc</Filter>
+    </ClCompile>
+    <ClCompile Include="base58.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="FileRaii.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tempfile.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="CompiledExecutable.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="JitModule.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedLibrary.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocketConnectionEmscripten.cpp">
+      <Filter>net\web\websocket</Filter>
+    </ClCompile>
+    <ClCompile Include="StringMatch.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoDocument.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoTextElement.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoContainer.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoFlatDocument.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoElement.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyBuilder.cpp">
+      <Filter>cpu\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="x64.cpp">
+      <Filter>cpu\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="netIntel.cpp">
+      <Filter>net\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="csv.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="IpAddr.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="netAs.cpp">
+      <Filter>net\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="BitWriter.cpp">
+      <Filter>io\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="BitReader.cpp">
+      <Filter>io\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="huffman_tree.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoStyle.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsOsResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsHttpResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsUdpResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsRawResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dns_records.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsName.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsType.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="FactoriseProofOfWork.cpp">
+      <Filter>crypto\proof_of_work</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyPngOut.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="CidrSubnet6.cpp">
+      <Filter>net\cidr</Filter>
+    </ClCompile>
+    <ClCompile Include="rtti.cpp">
+      <Filter>mem\vft</Filter>
+    </ClCompile>
+    <ClCompile Include="memObject.cpp">
+      <Filter>mem\vft</Filter>
+    </ClCompile>
+    <ClCompile Include="memVft.cpp">
+      <Filter>mem\vft</Filter>
+    </ClCompile>
+    <ClCompile Include="HammingCode.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="bitutil.cpp">
+      <Filter>data\bit</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultRngInterface.cpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="LcgRng.cpp">
+      <Filter>algos\rng</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="netInfo.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Writer.cpp">
+      <Filter>io\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Reader.cpp">
+      <Filter>io\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="rflParser.cpp">
+      <Filter>lang\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="Diff.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="soup.cpp" />
+    <ClCompile Include="InquiryLang.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="Chatbot.cpp">
+      <Filter>ling\chatbot</Filter>
+    </ClCompile>
+    <ClCompile Include="Jokebook.cpp">
+      <Filter>ling</Filter>
+    </ClCompile>
+    <ClCompile Include="cbMeasurement.cpp">
+      <Filter>ling\chatbot</Filter>
+    </ClCompile>
+    <ClCompile Include="audDevice.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audPlayback.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audMixer.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="morse.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="audWav.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="cat.cpp">
+      <Filter>data\cat</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeReader.cpp">
+      <Filter>util\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeWriter.cpp">
+      <Filter>util\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="RgbaCanvas.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="NativeString.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="Rgba.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="Svg.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="BCanvas.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocketConnection.cpp">
+      <Filter>net\web\websocket</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocket.cpp">
+      <Filter>net\web\websocket</Filter>
+    </ClCompile>
+    <ClCompile Include="DetachedScheduler.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="netConfig.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpRequestTask.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="netConnectTask.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Uuid.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="Capture.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="textmate_grammar.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="xml.cpp">
+      <Filter>data\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="plist.cpp">
+      <Filter>data\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexGroup.cpp">
+      <Filter>data\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Regex.cpp">
+      <Filter>data\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsServerService.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="ecc.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="IpcSocket.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="base.cpp" />
+    <ClCompile Include="dnsCacheResolver.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="drDatetime.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="drData.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="drString.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="drJsonObject.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="CidrSubnetInterface.cpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Fiber.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="netAdaptor.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="MacAddr.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="dhcp.cpp">
+      <Filter>net\dhcp</Filter>
+    </ClCompile>
+    <ClCompile Include="punycode.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="Promise.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="SelfDeletingThread.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoStylesheet.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Sudoku.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="visKeyboard.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="hwHid.cpp">
+      <Filter>hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="AnalogueKeyboard.cpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="DigitalKeyboard.cpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgbWooting.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgb.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="Key.cpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="netMesh.cpp">
+      <Filter>net\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="netMeshService.cpp">
+      <Filter>net\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="hwGamepad.cpp">
+      <Filter>hardware\gamepad</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgbRazerChroma.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgbCorsairCue.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="audSound.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audNoteEnvelope.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="MidiComposition.cpp">
+      <Filter>audio\midi</Filter>
+    </ClCompile>
+    <ClCompile Include="X509RelativeDistinguishedName.cpp">
+      <Filter>crypto\x509</Filter>
+    </ClCompile>
+    <ClCompile Include="filesystem.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="MathExpr.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="netStatus.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsSmartResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualFilesystem.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="HardwareRng.cpp">
+      <Filter>algos\rng</Filter>
+    </ClCompile>
+    <ClCompile Include="sha512.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="sha384.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="wasm.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="gmText.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="gmBox.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="gmAxisAlignedBox.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="gmBoxCorners.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="LangDesc.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="LangVm.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="LexemeParser.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="parse_tree.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserState.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="laPlutoFrontend.cpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="laWasmBackend.cpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="irExpression.cpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClCompile>
+    <ClCompile Include="irVm.cpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClCompile>
+    <ClCompile Include="irModule.cpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClCompile>
+    <ClCompile Include="CpuInfo.cpp">
+      <Filter>cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="laMathFrontend.cpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="netStun.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="netIce.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="exceptions.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoInputElement.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessHandle.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="osInput.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="Hwid.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="memGuard.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="crc32c.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="netIntrospectTask.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="laX64Backend.cpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="MaintainWebSocketConnectionTask.cpp">
+      <Filter>net\web\websocket</Filter>
+    </ClCompile>
+    <ClCompile Include="ResponseCurve.cpp">
+      <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="HidReportDescriptor.cpp">
+      <Filter>hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="ResolveIpAddrTask.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketAddr.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="alloc.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourHook.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="CompactDetourHook.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourHookBase.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="TarReader.cpp">
+      <Filter>io\tar</Filter>
+    </ClCompile>
+    <ClCompile Include="HookBase.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="ReplacementHook.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="CallsiteHook.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="loc.cpp">
+      <Filter>ling</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourHookNoreg.cpp">
+      <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="IrcServer.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Benchmark.cpp">
+      <Filter>util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="Mixed.cpp">
+      <Filter>data\container</Filter>
+    </ClCompile>
+    <ClCompile Include="parallel.cpp">
+      <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="version_compare.cpp">
+      <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="spaceship.cpp">
+      <Filter>util\polyfill</Filter>
+    </ClCompile>
+    <ClCompile Include="GarbageCollector.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="lzf.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="Rc4State.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="whirlpool.cpp">
+      <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexConstraint.cpp">
+      <Filter>data\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexGroupConstraint.cpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClCompile>
+    <ClCompile Include="hotfix.cpp">
+      <Filter>util\config</Filter>
+    </ClCompile>
+    <ClCompile Include="ffi_call_win_x64.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="os">
+      <UniqueIdentifier>{f93928c1-dcc7-414f-aa35-092f9c01254c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{a908246f-7651-4858-a665-d6c359ed73d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="os\windows">
+      <UniqueIdentifier>{8662bd3c-4741-400c-8355-6a34ac8e770f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{4bcbb6ff-ce7a-473c-8330-c8f6a9c1e764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem">
+      <UniqueIdentifier>{2a5982c9-2e94-4883-be44-862fd3d7e0b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto">
+      <UniqueIdentifier>{2977e49c-bf74-490c-a67a-0888e8df098f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{dba0001f-054d-4ddf-ba50-932ef7505446}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto\x509">
+      <UniqueIdentifier>{ac1efe97-34c7-4c84-ae8e-6772370e049c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\tls">
+      <UniqueIdentifier>{ad3f66ba-4aaa-4648-8066-12c3d553bfb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="task">
+      <UniqueIdentifier>{b14f98a7-4337-4266-8f79-7c3942c95cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{1c7b8b47-6f42-4f4b-953a-ae2ebda20781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\string">
+      <UniqueIdentifier>{db02d3fa-069e-4d94-ac69-1ceda5822d24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\zip">
+      <UniqueIdentifier>{5e908491-421e-426f-ad6f-f870c4b0a291}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\web">
+      <UniqueIdentifier>{107b4f0f-f5db-4e5f-9a6a-8893289fac04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ling">
+      <UniqueIdentifier>{ded31275-73f9-4bb2-b6d4-095d5f6e7eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{fddd6fad-45ea-4b2b-9b3c-f9bf40ce10a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\json">
+      <UniqueIdentifier>{c9cb16ff-3edf-4e1e-8120-52b82b69b75c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\asn1">
+      <UniqueIdentifier>{226c8613-6f40-4b31-98c9-5b22b100c1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\mime">
+      <UniqueIdentifier>{0f633a4f-04c0-44e0-b0e4-8bd4e5a65e67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\stream">
+      <UniqueIdentifier>{a9d0d460-1d1e-45e7-b1a1-61141c904c4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d">
+      <UniqueIdentifier>{420a3716-0d15-4a0e-94bf-cdbceb5e361b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d\sphere">
+      <UniqueIdentifier>{5aab1dce-54fa-45bc-be6f-04c692f2834b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis">
+      <UniqueIdentifier>{80b6270e-7c01-41fb-8800-755a35c9202b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\ui">
+      <UniqueIdentifier>{8ae8a474-8788-479f-91a0-1146f0b02f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\ui\conui">
+      <UniqueIdentifier>{05898064-5c55-4356-aa00-29a449c503ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\ui\editor">
+      <UniqueIdentifier>{7dd9aa6c-701c-402c-9c96-dc2194ba2344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\web\websocket">
+      <UniqueIdentifier>{b051e810-7a59-4a16-a3c6-c1489ab35907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\render">
+      <UniqueIdentifier>{86298434-e9f0-4a23-aa41-1cb7fa3f89a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\enc">
+      <UniqueIdentifier>{d42a16a2-9997-4a38-b9ab-9db1a0abfb79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\mysql">
+      <UniqueIdentifier>{9c39909c-d109-4853-b572-c2fa9de042e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\hash">
+      <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang">
+      <UniqueIdentifier>{2e73bbce-41b8-4c8c-8f2f-efdd61207e83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d\scene">
+      <UniqueIdentifier>{865109e2-8a37-48ea-be8d-f85c1c1a7a36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos">
+      <UniqueIdentifier>{039cce06-0529-4573-b017-965ff1ca2670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\maze">
+      <UniqueIdentifier>{16b78dc5-8998-48bd-b278-3bcd7be2a396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto\btc">
+      <UniqueIdentifier>{385363c6-a64d-429c-b5a5-967db32a31db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\bits">
+      <UniqueIdentifier>{ebe8b704-42e4-428a-b61d-1fdb19129b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\files">
+      <UniqueIdentifier>{91cc5788-ba3a-40f8-b033-de517ffd69b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\layout">
+      <UniqueIdentifier>{16ee7ff8-9fa2-45ca-a0dc-af917f737be9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu">
+      <UniqueIdentifier>{b18c0394-f8e2-4766-8d61-5935815a793a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu\x64">
+      <UniqueIdentifier>{5cebdfd1-ff30-423b-ac88-52db95a78ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\intel">
+      <UniqueIdentifier>{8dd56217-4732-43f0-9717-85a0debe1adf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\container">
+      <UniqueIdentifier>{81e9b45e-7d1b-4a89-801c-fbdb09ba896d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\dns">
+      <UniqueIdentifier>{5b858f22-62ff-4489-bc21-838a71ed20a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\dns\resolver">
+      <UniqueIdentifier>{80908fe7-bfd1-42cd-b12e-6c3be2fae56a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto\proof_of_work">
+      <UniqueIdentifier>{cc6c3a53-3611-43fc-b49e-801934a47954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\time">
+      <UniqueIdentifier>{37497716-d60c-41ab-a70e-892939e68678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\cidr">
+      <UniqueIdentifier>{b4da67f7-29fa-47e4-817e-f7158a905b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem\vft">
+      <UniqueIdentifier>{fcfb25bb-fc65-4ad8-8817-385319ff3bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\rng">
+      <UniqueIdentifier>{bd18ff21-d179-48f9-9f75-aac83f019e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\rng\interface">
+      <UniqueIdentifier>{915ef795-feb7-4250-86db-669eca6e99fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{4c970a96-ef10-46fc-a11b-19d57ae6ff4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\reflection">
+      <UniqueIdentifier>{9004d1b5-0669-4083-b4a5-aa132fc59a80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ling\chatbot">
+      <UniqueIdentifier>{fb1ff912-9766-484b-92a8-d22cd7b0ef54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio">
+      <UniqueIdentifier>{c3b27eb2-fb78-4ba6-a084-cc0a273361ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\riff">
+      <UniqueIdentifier>{cc6120c7-1cc4-4e7a-8380-cee6f2fa3d6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\cat">
+      <UniqueIdentifier>{4293b753-209b-4d22-97a7-c54e2f1e9384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\tree">
+      <UniqueIdentifier>{d96d8487-d3a5-4b49-9ede-1ed0a920b12d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="os\linux">
+      <UniqueIdentifier>{310e94c6-0abc-4e73-93af-75ce41ba7409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\xml">
+      <UniqueIdentifier>{f75ca3d0-fd85-4d6c-8548-f420d29ee4c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\regex">
+      <UniqueIdentifier>{ceea55fc-68cc-44d8-bcfe-2aa0b5b07e39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\regex\constraints">
+      <UniqueIdentifier>{56f8c494-c165-4643-91ae-3b1a1f7122b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\reflection">
+      <UniqueIdentifier>{9521e71a-b92c-4612-918e-b721d28ff517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\cidr\interface">
+      <UniqueIdentifier>{fa30efdc-f50f-4704-9a3b-16c74b58f622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\email">
+      <UniqueIdentifier>{fdc38d4c-17dd-4110-979d-b75739f33d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\dhcp">
+      <UniqueIdentifier>{8a9eeee2-244b-4c20-805e-db7637f1a562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{d70cd700-b144-40cf-a83e-740e3d60518b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc\chess">
+      <UniqueIdentifier>{4a2a3fea-b914-4a9e-b7c3-c051aa854664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware">
+      <UniqueIdentifier>{bdf5fc38-a930-40cf-8437-ee0c8827dee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\keyboard">
+      <UniqueIdentifier>{350adf99-141c-4765-8d24-9c61d0b5981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\bit">
+      <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\keyboard\rgb">
+      <UniqueIdentifier>{aade056e-91d5-44ee-aaa2-d9dea1caa7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\mesh">
+      <UniqueIdentifier>{a08f39b5-d0c9-4b21-8456-47713eed92af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\gamepad">
+      <UniqueIdentifier>{5c9b4e26-6f33-4af2-a73d-a360194d66a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio\midi">
+      <UniqueIdentifier>{e94b4139-78fe-41db-8ed7-7a6cae5d9fca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d\geometry">
+      <UniqueIdentifier>{0fee4f27-cb87-4e66-bf92-eeff59b4e983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler">
+      <UniqueIdentifier>{f7686e88-8816-441d-9ce5-eb5c818728dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler\frontend">
+      <UniqueIdentifier>{2d8e0b45-78ce-426c-8043-9d6b5f97ce8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler\backend">
+      <UniqueIdentifier>{72083afc-441a-49d0-85be-3ca60dcaedd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler\ir">
+      <UniqueIdentifier>{96271236-fdb8-4957-9ea5-b3ae5043f3ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem\allocraii">
+      <UniqueIdentifier>{94274a4e-32df-4623-92f5-91d366f63fb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem\allocators">
+      <UniqueIdentifier>{8d0fb062-3f88-4509-8569-f89f3fb97186}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\hooks">
+      <UniqueIdentifier>{a7f4aeee-77a2-4381-a5cb-7d9492511b79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\tar">
+      <UniqueIdentifier>{362041cb-1458-4b94-a12e-e5369f3ce84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\container\atomic">
+      <UniqueIdentifier>{a887a824-7b3f-4831-b102-4a7c9d4530e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\debug">
+      <UniqueIdentifier>{3942a9eb-114b-4a54-8b75-e7e210eae7e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\polyfill">
+      <UniqueIdentifier>{ebbcf17a-7d82-4a37-b24b-08701d657633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\config">
+      <UniqueIdentifier>{7c9623e7-7b68-4531-b297-c4c8f60a8a63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\content-addressed">
+      <UniqueIdentifier>{7f56cda1-a0a3-44f1-a2b7-b769043fa802}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+</Project>

@@ -1,1 +1,0 @@
-If you landed here, your browser is either not executing Javascript or is absolutely broken in some other way.

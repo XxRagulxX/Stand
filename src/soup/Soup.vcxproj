@@ -1,0 +1,1750 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugDLL|ARM">
+      <Configuration>DebugDLL</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugDLL|ARM64">
+      <Configuration>DebugDLL</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugDLL|Win32">
+      <Configuration>DebugDLL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugDLL|x64">
+      <Configuration>DebugDLL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugEXE|ARM">
+      <Configuration>DebugEXE</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugEXE|ARM64">
+      <Configuration>DebugEXE</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugEXE|Win32">
+      <Configuration>DebugEXE</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugEXE|x64">
+      <Configuration>DebugEXE</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDLL|ARM">
+      <Configuration>ReleaseDLL</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDLL|ARM64">
+      <Configuration>ReleaseDLL</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDLL|Win32">
+      <Configuration>ReleaseDLL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDLL|x64">
+      <Configuration>ReleaseDLL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseEXE|ARM">
+      <Configuration>ReleaseEXE</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseEXE|ARM64">
+      <Configuration>ReleaseEXE</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseEXE|Win32">
+      <Configuration>ReleaseEXE</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseEXE|x64">
+      <Configuration>ReleaseEXE</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{84d33f55-dc5b-4aaa-8db2-0ef66190bfba}</ProjectGuid>
+    <RootNamespace>Soup</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Configuration) $(Platform)\</OutDir>
+    <IntDir>..\bin\$(Configuration) $(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugEXE|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x601;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\bindings\soup.h" />
+    <ClInclude Include="acme.hpp" />
+    <ClInclude Include="adler32.hpp" />
+    <ClInclude Include="aes.hpp" />
+    <ClInclude Include="aes_intrin.hpp" />
+    <ClInclude Include="alloc.hpp" />
+    <ClInclude Include="AllocRaii.hpp" />
+    <ClInclude Include="AllocRaiiFileMapping.hpp" />
+    <ClInclude Include="AllocRaiiLocalBase.hpp" />
+    <ClInclude Include="AllocRaiiRemote.hpp" />
+    <ClInclude Include="AllocRaiiVirtual.hpp" />
+    <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="AnalogueKeyboard.hpp" />
+    <ClInclude Include="audDevice.hpp" />
+    <ClInclude Include="audMixer.hpp" />
+    <ClInclude Include="audNote.hpp" />
+    <ClInclude Include="audNoteEnvelope.hpp" />
+    <ClInclude Include="audPlayback.hpp" />
+    <ClInclude Include="audSound.hpp" />
+    <ClInclude Include="audWav.hpp" />
+    <ClInclude Include="aud_common.hpp" />
+    <ClInclude Include="base40.hpp" />
+    <ClInclude Include="BCanvas.hpp" />
+    <ClInclude Include="Benchmark.hpp" />
+    <ClInclude Include="bit.hpp" />
+    <ClInclude Include="BitString.hpp" />
+    <ClInclude Include="BitWriter.hpp" />
+    <ClInclude Include="Buffer.hpp" />
+    <ClInclude Include="BufferRefWriter.hpp" />
+    <ClInclude Include="BufferWriter.hpp" />
+    <ClInclude Include="buttons.hpp" />
+    <ClInclude Include="ByteTraits.hpp" />
+    <ClInclude Include="cadArchiveInterface.hpp" />
+    <ClInclude Include="cadInterface.hpp" />
+    <ClInclude Include="CallsiteHook.hpp" />
+    <ClInclude Include="CApiUtil.hpp" />
+    <ClInclude Include="cadArchive.hpp" />
+    <ClInclude Include="cat.hpp" />
+    <ClInclude Include="catTreeReader.hpp" />
+    <ClInclude Include="catTreeWriter.hpp" />
+    <ClInclude Include="cbCmd.hpp" />
+    <ClInclude Include="cbCmdArithmetic.hpp" />
+    <ClInclude Include="cbCmdCapabilities.hpp" />
+    <ClInclude Include="cbCmdCoinflip.hpp" />
+    <ClInclude Include="cbCmdConvert.hpp" />
+    <ClInclude Include="cbCmdDefine.hpp" />
+    <ClInclude Include="cbCmdDelete.hpp" />
+    <ClInclude Include="cbCmdFarewell.hpp" />
+    <ClInclude Include="cbCmdGreeting.hpp" />
+    <ClInclude Include="cbCmdHowAreYou.hpp" />
+    <ClInclude Include="cbCmdJoke.hpp" />
+    <ClInclude Include="cbCmdOpinion.hpp" />
+    <ClInclude Include="cbCmdOpinionFollowup.hpp" />
+    <ClInclude Include="cbCmdQrcode.hpp" />
+    <ClInclude Include="cbCmdRand.hpp" />
+    <ClInclude Include="cbCmdThanks.hpp" />
+    <ClInclude Include="cbResult.hpp" />
+    <ClInclude Include="cbMeasurement.hpp" />
+    <ClInclude Include="CertStore.hpp" />
+    <ClInclude Include="Chatbot.hpp" />
+    <ClInclude Include="CidrSubnet4.hpp" />
+    <ClInclude Include="CidrSubnet4Interface.hpp" />
+    <ClInclude Include="CidrSubnet6.hpp" />
+    <ClInclude Include="CidrSubnet6Interface.hpp" />
+    <ClInclude Include="CidrSubnetInterface.hpp" />
+    <ClInclude Include="CidrSupernet.hpp" />
+    <ClInclude Include="CompactDetourHook.hpp" />
+    <ClInclude Include="compiletime.hpp" />
+    <ClInclude Include="country_names.hpp" />
+    <ClInclude Include="CpuInfo.hpp" />
+    <ClInclude Include="crc32c.hpp" />
+    <ClInclude Include="crc32_intrin.hpp" />
+    <ClInclude Include="csv.hpp" />
+    <ClInclude Include="cursed.hpp" />
+    <ClInclude Include="DetourHook.hpp" />
+    <ClInclude Include="DetourHookBase.hpp" />
+    <ClInclude Include="DetourHookNoreg.hpp" />
+    <ClInclude Include="dhcp.hpp" />
+    <ClInclude Include="DhcpMessage.hpp" />
+    <ClInclude Include="DigitalKeyboard.hpp" />
+    <ClInclude Include="dnsCacheResolver.hpp" />
+    <ClInclude Include="dnsServerService.hpp" />
+    <ClInclude Include="dnsSmartResolver.hpp" />
+    <ClInclude Include="drAdaptor.hpp" />
+    <ClInclude Include="drData.hpp" />
+    <ClInclude Include="drDatetime.hpp" />
+    <ClInclude Include="drInt.hpp" />
+    <ClInclude Include="drIpAddr.hpp" />
+    <ClInclude Include="drJsonObject.hpp" />
+    <ClInclude Include="drString.hpp" />
+    <ClInclude Include="DummyTask.hpp" />
+    <ClInclude Include="ecc.hpp" />
+    <ClInclude Include="EstablishWebSocketConnectionTask.hpp" />
+    <ClInclude Include="exceptions.hpp" />
+    <ClInclude Include="FiberTask.hpp" />
+    <ClInclude Include="filesystem.hpp" />
+    <ClInclude Include="fnv.hpp" />
+    <ClInclude Include="GarbageCollector.hpp" />
+    <ClInclude Include="HardwareRng.hpp" />
+    <ClInclude Include="Hashmap.hpp" />
+    <ClInclude Include="HidReportDescriptor.hpp" />
+    <ClInclude Include="HidScancode.hpp" />
+    <ClInclude Include="HidUsage.hpp" />
+    <ClInclude Include="hotfix.hpp" />
+    <ClInclude Include="IrcServer.hpp" />
+    <ClInclude Include="loc.hpp" />
+    <ClInclude Include="lzf.hpp" />
+    <ClInclude Include="md5.hpp" />
+    <ClInclude Include="memAllocating.hpp" />
+    <ClInclude Include="MemoryMappedMap.hpp" />
+    <ClInclude Include="MemoryMappedRangeMap.hpp" />
+    <ClInclude Include="memStlAllocator.hpp" />
+    <ClInclude Include="netSocketSecurity.hpp" />
+    <ClInclude Include="Rc4State.hpp" />
+    <ClInclude Include="ReplacementHook.hpp" />
+    <ClInclude Include="HookBase.hpp" />
+    <ClInclude Include="hwGamepad.hpp" />
+    <ClInclude Include="Hwid.hpp" />
+    <ClInclude Include="IpcSocket.hpp" />
+    <ClInclude Include="EmailAddress.hpp" />
+    <ClInclude Include="irExpression.hpp" />
+    <ClInclude Include="irFunction.hpp" />
+    <ClInclude Include="irModule.hpp" />
+    <ClInclude Include="irType.hpp" />
+    <ClInclude Include="irVm.hpp" />
+    <ClInclude Include="kbRgb.hpp" />
+    <ClInclude Include="kbRgbCorsairCue.hpp" />
+    <ClInclude Include="kbRgbRazerChroma.hpp" />
+    <ClInclude Include="kbRgbWooting.hpp" />
+    <ClInclude Include="Key.hpp" />
+    <ClInclude Include="Keyboard.hpp" />
+    <ClInclude Include="laBackend.hpp" />
+    <ClInclude Include="laFrontend.hpp" />
+    <ClInclude Include="laMathFrontend.hpp" />
+    <ClInclude Include="laPlutoFrontend.hpp" />
+    <ClInclude Include="laWasmBackend.hpp" />
+    <ClInclude Include="laX64Backend.hpp" />
+    <ClInclude Include="lyoInputElement.hpp" />
+    <ClInclude Include="MaintainWebSocketConnectionTask.hpp" />
+    <ClInclude Include="MathExpr.hpp" />
+    <ClInclude Include="memAllocator.hpp" />
+    <ClInclude Include="memBox.hpp" />
+    <ClInclude Include="memCAllocator.hpp" />
+    <ClInclude Include="memGuard.hpp" />
+    <ClInclude Include="MessageStream.hpp" />
+    <ClInclude Include="MidiComposition.hpp" />
+    <ClInclude Include="Mutex.hpp" />
+    <ClInclude Include="NamedMutex.hpp" />
+    <ClInclude Include="netAdaptor.hpp" />
+    <ClInclude Include="MacAddr.hpp" />
+    <ClInclude Include="netIce.hpp" />
+    <ClInclude Include="netIntrospectTask.hpp" />
+    <ClInclude Include="netStatus.hpp" />
+    <ClInclude Include="netMesh.hpp" />
+    <ClInclude Include="netMeshMsgType.hpp" />
+    <ClInclude Include="netMeshService.hpp" />
+    <ClInclude Include="netStun.hpp" />
+    <ClInclude Include="Optional.hpp" />
+    <ClInclude Include="osInput.hpp" />
+    <ClInclude Include="osRegistry.hpp" />
+    <ClInclude Include="parallel.hpp" />
+    <ClInclude Include="Pathfind.hpp" />
+    <ClInclude Include="pch.hpp" />
+    <ClInclude Include="Percentage.hpp" />
+    <ClInclude Include="plist.hpp" />
+    <ClInclude Include="PointerAndBool.hpp" />
+    <ClInclude Include="ProcessHandle.hpp" />
+    <ClInclude Include="Ps2Scancode.hpp" />
+    <ClInclude Include="punycode.hpp" />
+    <ClInclude Include="RecursiveMutex.hpp" />
+    <ClInclude Include="Regex.hpp" />
+    <ClInclude Include="RegexAlternative.hpp" />
+    <ClInclude Include="RegexCodepointConstraint.hpp" />
+    <ClInclude Include="RegexConstraint.hpp" />
+    <ClInclude Include="RegexAnyCharConstraint.hpp" />
+    <ClInclude Include="RegexCharConstraint.hpp" />
+    <ClInclude Include="RegexConstraintLookbehind.hpp" />
+    <ClInclude Include="RegexDummyConstraint.hpp" />
+    <ClInclude Include="RegexEndConstraint.hpp" />
+    <ClInclude Include="RegexFlags.hpp" />
+    <ClInclude Include="RegexOpenEndedRangeQuantifierConstraint.hpp" />
+    <ClInclude Include="RegexRecallConstraint.hpp" />
+    <ClInclude Include="RegexRepeatConstraint.hpp" />
+    <ClInclude Include="RegexGroupConstraint.hpp" />
+    <ClInclude Include="RegexGroup.hpp" />
+    <ClInclude Include="RegexNegativeLookaheadConstraint.hpp" />
+    <ClInclude Include="RegexNegativeLookbehindConstraint.hpp" />
+    <ClInclude Include="RegexPositiveLookaheadConstraint.hpp" />
+    <ClInclude Include="RegexMatchedGroup.hpp" />
+    <ClInclude Include="RegexMatcher.hpp" />
+    <ClInclude Include="RegexMatchResult.hpp" />
+    <ClInclude Include="RegexOptConstraint.hpp" />
+    <ClInclude Include="RegexPositiveLookbehindConstraint.hpp" />
+    <ClInclude Include="RegexRangeConstraint.hpp" />
+    <ClInclude Include="RegexExactQuantifierConstraint.hpp" />
+    <ClInclude Include="RegexRangeQuantifierConstraint.hpp" />
+    <ClInclude Include="RegexStartConstraint.hpp" />
+    <ClInclude Include="RegexTransitionsVector.hpp" />
+    <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
+    <ClInclude Include="RegexWordCharConstraint.hpp" />
+    <ClInclude Include="ResolveIpAddrTask.hpp" />
+    <ClInclude Include="ResponseCurve.hpp" />
+    <ClInclude Include="SelfDeletingThread.hpp" />
+    <ClInclude Include="ServerServiceUdp.hpp" />
+    <ClInclude Include="sha1_intrin.hpp" />
+    <ClInclude Include="sha256_intrin.hpp" />
+    <ClInclude Include="sha384.hpp" />
+    <ClInclude Include="sha512.hpp" />
+    <ClInclude Include="Spinlock.hpp" />
+    <ClInclude Include="Stack.hpp" />
+    <ClInclude Include="TlsSsl2CompatibleClientHello.hpp" />
+    <ClInclude Include="StringParser.hpp" />
+    <ClInclude Include="StringPool.hpp" />
+    <ClInclude Include="Sudoku.hpp" />
+    <ClInclude Include="TarIndexedFile.hpp" />
+    <ClInclude Include="TarReader.hpp" />
+    <ClInclude Include="textmate_grammar.hpp" />
+    <ClInclude Include="TlsExtAlpn.hpp" />
+    <ClInclude Include="TlsSignatureScheme.hpp" />
+    <ClInclude Include="TransientToken.hpp" />
+    <ClInclude Include="tunables.hpp" />
+    <ClInclude Include="UniqueList.hpp" />
+    <ClInclude Include="hwHid.hpp" />
+    <ClInclude Include="UniqueListLink.hpp" />
+    <ClInclude Include="UnorderedMap.hpp" />
+    <ClInclude Include="utility.hpp" />
+    <ClInclude Include="Uuid.hpp" />
+    <ClInclude Include="VirtualFilesystem.hpp" />
+    <ClInclude Include="VirtualHandleRaii.hpp" />
+    <ClInclude Include="visCurves.hpp" />
+    <ClInclude Include="CustomEncoding.hpp" />
+    <ClInclude Include="DetachedScheduler.hpp" />
+    <ClInclude Include="Diff.hpp" />
+    <ClInclude Include="dnsLookupTask.hpp" />
+    <ClInclude Include="dnsUdpResolver.hpp" />
+    <ClInclude Include="dnsClass.hpp" />
+    <ClInclude Include="dnsHeader.hpp" />
+    <ClInclude Include="dnsHttpResolver.hpp" />
+    <ClInclude Include="dnsName.hpp" />
+    <ClInclude Include="dnsQuestion.hpp" />
+    <ClInclude Include="dnsRawResolver.hpp" />
+    <ClInclude Include="dnsResolver.hpp" />
+    <ClInclude Include="dnsResource.hpp" />
+    <ClInclude Include="dnsType.hpp" />
+    <ClInclude Include="dns_records.hpp" />
+    <ClInclude Include="Exception.hpp" />
+    <ClInclude Include="FactoriseProofOfWork.hpp" />
+    <ClInclude Include="format.hpp" />
+    <ClInclude Include="GetFileContentsTask.hpp" />
+    <ClInclude Include="HammingCode.hpp" />
+    <ClInclude Include="HttpRequestTask.hpp" />
+    <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="memory.hpp" />
+    <ClInclude Include="NativeString.hpp" />
+    <ClInclude Include="netConfig.hpp" />
+    <ClInclude Include="netConnectTask.hpp" />
+    <ClInclude Include="netReuseTag.hpp" />
+    <ClInclude Include="Rgba.hpp" />
+    <ClInclude Include="RgbaCanvas.hpp" />
+    <ClInclude Include="SchedulerStats.hpp" />
+    <ClInclude Include="StateMachineTask.hpp" />
+    <ClInclude Include="Svg.hpp" />
+    <ClInclude Include="TreeWriter.hpp" />
+    <ClInclude Include="visKeyboard.hpp" />
+    <ClInclude Include="wasm.hpp" />
+    <ClInclude Include="WeakRef.hpp" />
+    <ClInclude Include="WebSocket.hpp" />
+    <ClInclude Include="WebSocketConnection.hpp" />
+    <ClInclude Include="InquiryLang.hpp" />
+    <ClInclude Include="IntStruct.hpp" />
+    <ClInclude Include="IpGroups.hpp" />
+    <ClInclude Include="Ipv6Maths.hpp" />
+    <ClInclude Include="Jokebook.hpp" />
+    <ClInclude Include="LcgRng.hpp" />
+    <ClInclude Include="LexemeParser.hpp" />
+    <ClInclude Include="log.hpp" />
+    <ClInclude Include="logSink.hpp" />
+    <ClInclude Include="logStdSink.hpp" />
+    <ClInclude Include="lyoStyle.hpp" />
+    <ClInclude Include="lyoStylesheet.hpp" />
+    <ClInclude Include="memObject.hpp" />
+    <ClInclude Include="memVft.hpp" />
+    <ClInclude Include="morse.hpp" />
+    <ClInclude Include="netAs.hpp" />
+    <ClInclude Include="Asn1Element.hpp" />
+    <ClInclude Include="Asn1Sequence.hpp" />
+    <ClInclude Include="Asn1Identifier.hpp" />
+    <ClInclude Include="Asn1Type.hpp" />
+    <ClInclude Include="base32.hpp" />
+    <ClInclude Include="base58.hpp" />
+    <ClInclude Include="bech32.hpp" />
+    <ClInclude Include="bitutil.hpp" />
+    <ClInclude Include="CompiledExecutable.hpp" />
+    <ClInclude Include="Compiler.hpp" />
+    <ClInclude Include="netInfo.hpp" />
+    <ClInclude Include="netIntel.hpp" />
+    <ClInclude Include="Hotp.hpp" />
+    <ClInclude Include="JitModule.hpp" />
+    <ClInclude Include="LcgRngInterface.hpp" />
+    <ClInclude Include="lyoContainer.hpp" />
+    <ClInclude Include="lyoDocument.hpp" />
+    <ClInclude Include="lyoElement.hpp" />
+    <ClInclude Include="lyoFlatDocument.hpp" />
+    <ClInclude Include="lyoTextElement.hpp" />
+    <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
+    <ClInclude Include="MsvcRng.hpp" />
+    <ClInclude Include="DefaultRngInterface.hpp" />
+    <ClInclude Include="MazeGenerator.hpp" />
+    <ClInclude Include="netIntelLocationData.hpp" />
+    <ClInclude Include="Op.hpp" />
+    <ClInclude Include="AtomicDeque.hpp" />
+    <ClInclude Include="AtomicStack.hpp" />
+    <ClInclude Include="base.hpp" />
+    <ClInclude Include="base64.hpp" />
+    <ClInclude Include="bcrypt.hpp" />
+    <ClInclude Include="Bigfloat.hpp" />
+    <ClInclude Include="Bigint.hpp" />
+    <ClInclude Include="bitmask.hpp" />
+    <ClInclude Include="BitPointer.hpp" />
+    <ClInclude Include="Bitset.hpp" />
+    <ClInclude Include="BigBitset.hpp" />
+    <ClInclude Include="BitReader.hpp" />
+    <ClInclude Include="gmBox.hpp" />
+    <ClInclude Include="gmAxisAlignedBox.hpp" />
+    <ClInclude Include="gmBoxCorners.hpp" />
+    <ClInclude Include="Bytepatch.hpp" />
+    <ClInclude Include="BytepatchExternal.hpp" />
+    <ClInclude Include="Callback.hpp" />
+    <ClInclude Include="Canvas.hpp" />
+    <ClInclude Include="Capture.hpp" />
+    <ClInclude Include="ioSizeMeasurer.hpp" />
+    <ClInclude Include="HashProofOfWork.hpp" />
+    <ClInclude Include="PrimitiveRaii.hpp" />
+    <ClInclude Include="RaiiEmulator.hpp" />
+    <ClInclude Include="rflFunc.hpp" />
+    <ClInclude Include="rflMember.hpp" />
+    <ClInclude Include="rflParser.hpp" />
+    <ClInclude Include="rflStruct.hpp" />
+    <ClInclude Include="rflType.hpp" />
+    <ClInclude Include="rflVar.hpp" />
+    <ClInclude Include="riff.hpp" />
+    <ClInclude Include="SharedPtr.hpp" />
+    <ClInclude Include="spaceship.hpp" />
+    <ClInclude Include="stringifyable.hpp" />
+    <ClInclude Include="MemoryRefReader.hpp" />
+    <ClInclude Include="StringRefWriter.hpp" />
+    <ClInclude Include="Task.hpp" />
+    <ClInclude Include="TaskGuard.hpp" />
+    <ClInclude Include="Timer.hpp" />
+    <ClInclude Include="TinyPngOut.hpp" />
+    <ClInclude Include="TreeReader.hpp" />
+    <ClInclude Include="gmText.hpp" />
+    <ClInclude Include="version_compare.hpp" />
+    <ClInclude Include="WavFmtChunk.hpp" />
+    <ClInclude Include="whirlpool.hpp" />
+    <ClInclude Include="wooting_enums.hpp" />
+    <ClInclude Include="X11Api.hpp" />
+    <ClInclude Include="X509Certchain.hpp" />
+    <ClInclude Include="Chessboard.hpp" />
+    <ClInclude Include="ChessCli.hpp" />
+    <ClInclude Include="ChessCoordinate.hpp" />
+    <ClInclude Include="ChessPiece.hpp" />
+    <ClInclude Include="ChessSquare.hpp" />
+    <ClInclude Include="code_tree.hpp" />
+    <ClInclude Include="ConstString.hpp" />
+    <ClInclude Include="ConuiApp.hpp" />
+    <ClInclude Include="ConuiBase.hpp" />
+    <ClInclude Include="ConuiDiv.hpp" />
+    <ClInclude Include="ConuiSpan.hpp" />
+    <ClInclude Include="crc32.hpp" />
+    <ClInclude Include="CryptoHashAlgo.hpp" />
+    <ClInclude Include="deflate.hpp" />
+    <ClInclude Include="deleter.hpp" />
+    <ClInclude Include="DerivableMap.hpp" />
+    <ClInclude Include="Dictionary.hpp" />
+    <ClInclude Include="DictionaryWord.hpp" />
+    <ClInclude Include="dnsOsResolver.hpp" />
+    <ClInclude Include="Curve25519.hpp" />
+    <ClInclude Include="Editor.hpp" />
+    <ClInclude Include="EditorFile.hpp" />
+    <ClInclude Include="EditorTab.hpp" />
+    <ClInclude Include="EditorText.hpp" />
+    <ClInclude Include="elo.hpp" />
+    <ClInclude Include="Endian.hpp" />
+    <ClInclude Include="ffi.hpp" />
+    <ClInclude Include="Fiber.hpp" />
+    <ClInclude Include="FileWriter.hpp" />
+    <ClInclude Include="FormattedText.hpp" />
+    <ClInclude Include="HttpRequest.hpp" />
+    <ClInclude Include="HttpResponse.hpp" />
+    <ClInclude Include="IntVector.hpp" />
+    <ClInclude Include="ioBase.hpp" />
+    <ClInclude Include="IstreamReader.hpp" />
+    <ClInclude Include="joaat.hpp" />
+    <ClInclude Include="JsonBool.hpp" />
+    <ClInclude Include="JsonFloat.hpp" />
+    <ClInclude Include="JsonNull.hpp" />
+    <ClInclude Include="JsonObject.hpp" />
+    <ClInclude Include="LangDesc.hpp" />
+    <ClInclude Include="LangVm.hpp" />
+    <ClInclude Include="LinkedIterator.hpp" />
+    <ClInclude Include="main.hpp" />
+    <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="MimeType.hpp" />
+    <ClInclude Include="Mixed.hpp" />
+    <ClInclude Include="ModuleHider.hpp" />
+    <ClInclude Include="MysqlStmtExecute.hpp" />
+    <ClInclude Include="MysqlAuthSwitchRequest.hpp" />
+    <ClInclude Include="MysqlCapabilities.hpp" />
+    <ClInclude Include="MysqlColumnDefinition.hpp" />
+    <ClInclude Include="MysqlConnection.hpp" />
+    <ClInclude Include="MysqlFieldType.hpp" />
+    <ClInclude Include="MysqlFrame.hpp" />
+    <ClInclude Include="MysqlHandshake.hpp" />
+    <ClInclude Include="MysqlHandshakeResponse.hpp" />
+    <ClInclude Include="MysqlStmtPrepareOk.hpp" />
+    <ClInclude Include="Notifyable.hpp" />
+    <ClInclude Include="OpaqueString.hpp" />
+    <ClInclude Include="ParserState.hpp" />
+    <ClInclude Include="parse_tree.hpp" />
+    <ClInclude Include="os.hpp" />
+    <ClInclude Include="OstreamWriter.hpp" />
+    <ClInclude Include="ParseError.hpp" />
+    <ClInclude Include="PhpState.hpp" />
+    <ClInclude Include="Plane.hpp" />
+    <ClInclude Include="PointLight.hpp" />
+    <ClInclude Include="PolyVector.hpp" />
+    <ClInclude Include="PoppedNode.hpp" />
+    <ClInclude Include="QrCode.hpp" />
+    <ClInclude Include="RngInterface.hpp" />
+    <ClInclude Include="RangeMap.hpp" />
+    <ClInclude Include="RasterFont.hpp" />
+    <ClInclude Include="Reader.hpp" />
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="JsonArray.hpp" />
+    <ClInclude Include="JsonInt.hpp" />
+    <ClInclude Include="JsonNodeType.hpp" />
+    <ClInclude Include="JsonNode.hpp" />
+    <ClInclude Include="JsonString.hpp" />
+    <ClInclude Include="TrustStore.hpp" />
+    <ClInclude Include="MimeMessage.hpp" />
+    <ClInclude Include="MouseButton.hpp" />
+    <ClInclude Include="NamedCurves.hpp" />
+    <ClInclude Include="branchless.hpp" />
+    <ClInclude Include="pem.hpp" />
+    <ClInclude Include="Promise.hpp" />
+    <ClInclude Include="RenderTarget.hpp" />
+    <ClInclude Include="RenderTargetCanvas.hpp" />
+    <ClInclude Include="RenderTargetWindow.hpp" />
+    <ClInclude Include="BuiltinOp.hpp" />
+    <ClInclude Include="ripemd160.hpp" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="SceneRasterisingRenderer.hpp" />
+    <ClInclude Include="SceneRaytracingRenderer.hpp" />
+    <ClInclude Include="SceneRenderer.hpp" />
+    <ClInclude Include="Scheduler.hpp" />
+    <ClInclude Include="Searchspace.hpp" />
+    <ClInclude Include="SegWitAddress.hpp" />
+    <ClInclude Include="Server.hpp" />
+    <ClInclude Include="ServerService.hpp" />
+    <ClInclude Include="SharedLibrary.hpp" />
+    <ClInclude Include="ShortString.hpp" />
+    <ClInclude Include="signal.hpp" />
+    <ClInclude Include="SourceLocation.hpp" />
+    <ClInclude Include="StringBuilder.hpp" />
+    <ClInclude Include="StringMatch.hpp" />
+    <ClInclude Include="structing.hpp" />
+    <ClInclude Include="StructMap.hpp" />
+    <ClInclude Include="FileRaii.hpp" />
+    <ClInclude Include="Tempfile.hpp" />
+    <ClInclude Include="Stopwatch.hpp" />
+    <ClInclude Include="Matrix.hpp" />
+    <ClInclude Include="console.hpp" />
+    <ClInclude Include="HandleBase.hpp" />
+    <ClInclude Include="AssemblyBuilder.hpp" />
+    <ClInclude Include="IpAddr.hpp" />
+    <ClInclude Include="SocketAddr.hpp" />
+    <ClInclude Include="Oid.hpp" />
+    <ClInclude Include="Packet.hpp" />
+    <ClInclude Include="CompiletimePatternBase.hpp" />
+    <ClInclude Include="CompiletimePatternWithOptBytesBase.hpp" />
+    <ClInclude Include="CompiletimePatternWithOptBytes.hpp" />
+    <ClInclude Include="CompiletimePattern.hpp" />
+    <ClInclude Include="fwd.hpp" />
+    <ClInclude Include="macros.hpp" />
+    <ClInclude Include="pattern_macros.hpp" />
+    <ClInclude Include="Module.hpp" />
+    <ClInclude Include="Pattern.hpp" />
+    <ClInclude Include="HandlePlain.hpp" />
+    <ClInclude Include="Pointer.hpp" />
+    <ClInclude Include="Pointerlike.hpp" />
+    <ClInclude Include="Poly.hpp" />
+    <ClInclude Include="Process.hpp" />
+    <ClInclude Include="HandleRaii.hpp" />
+    <ClInclude Include="Quaternion.hpp" />
+    <ClInclude Include="rand.hpp" />
+    <ClInclude Include="Range.hpp" />
+    <ClInclude Include="Rgb.hpp" />
+    <ClInclude Include="rsa.hpp" />
+    <ClInclude Include="rtti.hpp" />
+    <ClInclude Include="scoped_enum.hpp" />
+    <ClInclude Include="sha1.hpp" />
+    <ClInclude Include="sha256.hpp" />
+    <ClInclude Include="Socket.hpp" />
+    <ClInclude Include="Ray.hpp" />
+    <ClInclude Include="FileReader.hpp" />
+    <ClInclude Include="Sphere.hpp" />
+    <ClInclude Include="string.hpp" />
+    <ClInclude Include="ObfusString.hpp" />
+    <ClInclude Include="StringLiteral.hpp" />
+    <ClInclude Include="StringReader.hpp" />
+    <ClInclude Include="StringWriter.hpp" />
+    <ClInclude Include="Thread.hpp" />
+    <ClInclude Include="Lexeme.hpp" />
+    <ClInclude Include="Token.hpp" />
+    <ClInclude Include="Totp.hpp" />
+    <ClInclude Include="type_traits.hpp" />
+    <ClInclude Include="unit_testing.hpp" />
+    <ClInclude Include="time.hpp" />
+    <ClInclude Include="TlsAlertDescription.hpp" />
+    <ClInclude Include="TlsCertificate.hpp" />
+    <ClInclude Include="TlsCipherSuite.hpp" />
+    <ClInclude Include="TlsClientHello.hpp" />
+    <ClInclude Include="TlsClientHelloExtEllipticCurves.hpp" />
+    <ClInclude Include="TlsClientHelloExtServerName.hpp" />
+    <ClInclude Include="SocketTlsEncrypter.hpp" />
+    <ClInclude Include="TlsContentType.hpp" />
+    <ClInclude Include="TlsEncryptedPreMasterSecret.hpp" />
+    <ClInclude Include="TlsExtensionType.hpp" />
+    <ClInclude Include="TlsHandshake.hpp" />
+    <ClInclude Include="SocketTlsHandshaker.hpp" />
+    <ClInclude Include="TlsHelloExtensions.hpp" />
+    <ClInclude Include="TlsMac.hpp" />
+    <ClInclude Include="TlsRandom.hpp" />
+    <ClInclude Include="TlsRecord.hpp" />
+    <ClInclude Include="TlsProtocolVersion.hpp" />
+    <ClInclude Include="TlsServerHello.hpp" />
+    <ClInclude Include="TlsServerKeyExchange.hpp" />
+    <ClInclude Include="type.hpp" />
+    <ClInclude Include="unicode.hpp" />
+    <ClInclude Include="UniquePtr.hpp" />
+    <ClInclude Include="Uri.hpp" />
+    <ClInclude Include="urlenc.hpp" />
+    <ClInclude Include="UvSphere.hpp" />
+    <ClInclude Include="Vector2.hpp" />
+    <ClInclude Include="Vector3.hpp" />
+    <ClInclude Include="Vector3Base.hpp" />
+    <ClInclude Include="Vector4.hpp" />
+    <ClInclude Include="VectorBase.hpp" />
+    <ClInclude Include="math.hpp" />
+    <ClInclude Include="WebResource.hpp" />
+    <ClInclude Include="ServerWebService.hpp" />
+    <ClInclude Include="WebSocketConnectionEmscripten.hpp" />
+    <ClInclude Include="WebSocketFrameType.hpp" />
+    <ClInclude Include="WebSocketMessage.hpp" />
+    <ClInclude Include="Window.hpp" />
+    <ClInclude Include="WordMeaning.hpp" />
+    <ClInclude Include="WordType.hpp" />
+    <ClInclude Include="Worker.hpp" />
+    <ClInclude Include="Writer.hpp" />
+    <ClInclude Include="X509Certificate.hpp" />
+    <ClInclude Include="X509RelativeDistinguishedName.hpp" />
+    <ClInclude Include="x64.hpp" />
+    <ClInclude Include="xml.hpp" />
+    <ClInclude Include="YubikeyValidator.hpp" />
+    <ClInclude Include="ZipIndexedFile.hpp" />
+    <ClInclude Include="ZipFileCommon.hpp" />
+    <ClInclude Include="ZipReader.hpp" />
+    <ClInclude Include="ZipCentralDirectoryFile.hpp" />
+    <ClInclude Include="ZipEndOfCentralDirectory.hpp" />
+    <ClInclude Include="ZipLocalFileHeader.hpp" />
+    <ClInclude Include="ZipWriter.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="acme.cpp" />
+    <ClCompile Include="adler32.cpp" />
+    <ClCompile Include="aes.cpp" />
+    <ClCompile Include="alloc.cpp" />
+    <ClCompile Include="AnalogueKeyboard.cpp" />
+    <ClCompile Include="Asn1Identifier.cpp" />
+    <ClCompile Include="Asn1Sequence.cpp" />
+    <ClCompile Include="AssemblyBuilder.cpp" />
+    <ClCompile Include="audDevice.cpp" />
+    <ClCompile Include="audMixer.cpp" />
+    <ClCompile Include="audNoteEnvelope.cpp" />
+    <ClCompile Include="audPlayback.cpp" />
+    <ClCompile Include="audSound.cpp" />
+    <ClCompile Include="audWav.cpp" />
+    <ClCompile Include="base.cpp" />
+    <ClCompile Include="base32.cpp" />
+    <ClCompile Include="base58.cpp" />
+    <ClCompile Include="base64.cpp" />
+    <ClCompile Include="BCanvas.cpp" />
+    <ClCompile Include="bcrypt.cpp" />
+    <ClCompile Include="bech32.cpp" />
+    <ClCompile Include="Benchmark.cpp" />
+    <ClCompile Include="Bigfloat.cpp" />
+    <ClCompile Include="Bigint.cpp" />
+    <ClCompile Include="BitReader.cpp" />
+    <ClCompile Include="bitutil.cpp" />
+    <ClCompile Include="BitWriter.cpp" />
+    <ClCompile Include="CallsiteHook.cpp" />
+    <ClCompile Include="CompactDetourHook.cpp" />
+    <ClCompile Include="crc32c.cpp" />
+    <ClCompile Include="DetourHookBase.cpp" />
+    <ClCompile Include="DetourHookNoreg.cpp" />
+    <ClCompile Include="exceptions.cpp" />
+    <ClCompile Include="ffi_call_win_x64.cpp" />
+    <ClCompile Include="GarbageCollector.cpp" />
+    <ClCompile Include="gmBox.cpp" />
+    <ClCompile Include="gmAxisAlignedBox.cpp" />
+    <ClCompile Include="gmBoxCorners.cpp" />
+    <ClCompile Include="Bytepatch.cpp" />
+    <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="Capture.cpp" />
+    <ClCompile Include="cat.cpp" />
+    <ClCompile Include="cbMeasurement.cpp" />
+    <ClCompile Include="Chatbot.cpp" />
+    <ClCompile Include="CidrSubnet6.cpp" />
+    <ClCompile Include="CidrSubnetInterface.cpp" />
+    <ClCompile Include="CpuInfo.cpp" />
+    <ClCompile Include="DetachedScheduler.cpp" />
+    <ClCompile Include="DetourHook.cpp" />
+    <ClCompile Include="dhcp.cpp" />
+    <ClCompile Include="Diff.cpp" />
+    <ClCompile Include="DigitalKeyboard.cpp" />
+    <ClCompile Include="dnsCacheResolver.cpp" />
+    <ClCompile Include="dnsHttpResolver.cpp" />
+    <ClCompile Include="dnsName.cpp" />
+    <ClCompile Include="dnsRawResolver.cpp" />
+    <ClCompile Include="dnsResolver.cpp" />
+    <ClCompile Include="dnsServerService.cpp" />
+    <ClCompile Include="dnsSmartResolver.cpp" />
+    <ClCompile Include="dnsType.cpp" />
+    <ClCompile Include="dnsUdpResolver.cpp" />
+    <ClCompile Include="dns_records.cpp" />
+    <ClCompile Include="drData.cpp" />
+    <ClCompile Include="drDatetime.cpp" />
+    <ClCompile Include="drJsonObject.cpp" />
+    <ClCompile Include="drString.cpp" />
+    <ClCompile Include="ecc.cpp" />
+    <ClCompile Include="FactoriseProofOfWork.cpp" />
+    <ClCompile Include="filesystem.cpp" />
+    <ClCompile Include="HammingCode.cpp" />
+    <ClCompile Include="HardwareRng.cpp" />
+    <ClCompile Include="HidReportDescriptor.cpp" />
+    <ClCompile Include="hotfix.cpp" />
+    <ClCompile Include="IrcServer.cpp" />
+    <ClCompile Include="loc.cpp" />
+    <ClCompile Include="lzf.cpp" />
+    <ClCompile Include="md5.cpp" />
+    <ClCompile Include="Rc4State.cpp" />
+    <ClCompile Include="RegexConstraint.cpp" />
+    <ClCompile Include="RegexGroupConstraint.cpp" />
+    <ClCompile Include="ReplacementHook.cpp" />
+    <ClCompile Include="HookBase.cpp" />
+    <ClCompile Include="HttpRequestTask.cpp" />
+    <ClCompile Include="hwGamepad.cpp" />
+    <ClCompile Include="Hwid.cpp" />
+    <ClCompile Include="InquiryLang.cpp" />
+    <ClCompile Include="IpcSocket.cpp" />
+    <ClCompile Include="irExpression.cpp" />
+    <ClCompile Include="irModule.cpp" />
+    <ClCompile Include="irVm.cpp" />
+    <ClCompile Include="Jokebook.cpp" />
+    <ClCompile Include="kbRgb.cpp" />
+    <ClCompile Include="kbRgbCorsairCue.cpp" />
+    <ClCompile Include="kbRgbRazerChroma.cpp" />
+    <ClCompile Include="kbRgbWooting.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Key.cpp" />
+    <ClCompile Include="laMathFrontend.cpp" />
+    <ClCompile Include="laPlutoFrontend.cpp" />
+    <ClCompile Include="laWasmBackend.cpp" />
+    <ClCompile Include="laX64Backend.cpp" />
+    <ClCompile Include="LcgRng.cpp" />
+    <ClCompile Include="LexemeParser.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="lyoInputElement.cpp" />
+    <ClCompile Include="lyoStyle.cpp" />
+    <ClCompile Include="lyoStylesheet.cpp" />
+    <ClCompile Include="MaintainWebSocketConnectionTask.cpp" />
+    <ClCompile Include="MathExpr.cpp" />
+    <ClCompile Include="memGuard.cpp" />
+    <ClCompile Include="memObject.cpp" />
+    <ClCompile Include="memVft.cpp" />
+    <ClCompile Include="MidiComposition.cpp" />
+    <ClCompile Include="morse.cpp" />
+    <ClCompile Include="NativeString.cpp" />
+    <ClCompile Include="netAdaptor.cpp" />
+    <ClCompile Include="netConfig.cpp" />
+    <ClCompile Include="netConnectTask.cpp" />
+    <ClCompile Include="netIce.cpp" />
+    <ClCompile Include="netInfo.cpp" />
+    <ClCompile Include="MacAddr.cpp" />
+    <ClCompile Include="netIntrospectTask.cpp" />
+    <ClCompile Include="netMesh.cpp" />
+    <ClCompile Include="netMeshService.cpp" />
+    <ClCompile Include="netStatus.cpp" />
+    <ClCompile Include="netStun.cpp" />
+    <ClCompile Include="osInput.cpp" />
+    <ClCompile Include="parallel.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="plist.cpp" />
+    <ClCompile Include="ProcessHandle.cpp" />
+    <ClCompile Include="Promise.cpp" />
+    <ClCompile Include="punycode.cpp" />
+    <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="Regex.cpp" />
+    <ClCompile Include="RegexGroup.cpp" />
+    <ClCompile Include="ResolveIpAddrTask.cpp" />
+    <ClCompile Include="ResponseCurve.cpp" />
+    <ClCompile Include="rflParser.cpp" />
+    <ClCompile Include="Rgba.cpp" />
+    <ClCompile Include="RgbaCanvas.cpp" />
+    <ClCompile Include="SelfDeletingThread.cpp" />
+    <ClCompile Include="sha384.cpp" />
+    <ClCompile Include="sha512.cpp" />
+    <ClCompile Include="SocketAddr.cpp" />
+    <ClCompile Include="soup.cpp" />
+    <ClCompile Include="spaceship.cpp" />
+    <ClCompile Include="Sudoku.cpp" />
+    <ClCompile Include="Svg.cpp" />
+    <ClCompile Include="TarReader.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="textmate_grammar.cpp" />
+    <ClCompile Include="time.cpp" />
+    <ClCompile Include="TinyPngOut.cpp" />
+    <ClCompile Include="TreeReader.cpp" />
+    <ClCompile Include="TreeWriter.cpp" />
+    <ClCompile Include="gmText.cpp" />
+    <ClCompile Include="hwHid.cpp" />
+    <ClCompile Include="Uuid.cpp" />
+    <ClCompile Include="version_compare.cpp" />
+    <ClCompile Include="VirtualFilesystem.cpp" />
+    <ClCompile Include="visKeyboard.cpp" />
+    <ClCompile Include="wasm.cpp" />
+    <ClCompile Include="WebSocket.cpp" />
+    <ClCompile Include="WebSocketConnection.cpp" />
+    <ClCompile Include="whirlpool.cpp" />
+    <ClCompile Include="Writer.cpp" />
+    <ClCompile Include="X509Certchain.cpp" />
+    <ClCompile Include="Chessboard.cpp" />
+    <ClCompile Include="ChessCli.cpp" />
+    <ClCompile Include="ChessSquare.cpp" />
+    <ClCompile Include="CompiledExecutable.cpp" />
+    <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="console.cpp" />
+    <ClCompile Include="ConuiApp.cpp" />
+    <ClCompile Include="ConuiBase.cpp" />
+    <ClCompile Include="ConuiSpan.cpp" />
+    <ClCompile Include="crc32.cpp" />
+    <ClCompile Include="csv.cpp" />
+    <ClCompile Include="deflate.cpp" />
+    <ClCompile Include="Dictionary.cpp" />
+    <ClCompile Include="dnsOsResolver.cpp" />
+    <ClCompile Include="Curve25519.cpp" />
+    <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="EditorTab.cpp" />
+    <ClCompile Include="EditorText.cpp" />
+    <ClCompile Include="ffi.cpp" />
+    <ClCompile Include="Fiber.cpp" />
+    <ClCompile Include="FormattedText.cpp" />
+    <ClCompile Include="huffman_tree.cpp" />
+    <ClCompile Include="IpAddr.cpp" />
+    <ClCompile Include="netAs.cpp" />
+    <ClCompile Include="netIntel.cpp" />
+    <ClCompile Include="Hotp.cpp" />
+    <ClCompile Include="HttpRequest.cpp" />
+    <ClCompile Include="JitModule.cpp" />
+    <ClCompile Include="joaat.cpp" />
+    <ClCompile Include="json.cpp" />
+    <ClCompile Include="JsonArray.cpp" />
+    <ClCompile Include="JsonBool.cpp" />
+    <ClCompile Include="JsonFloat.cpp" />
+    <ClCompile Include="JsonInt.cpp" />
+    <ClCompile Include="JsonNode.cpp" />
+    <ClCompile Include="JsonNull.cpp" />
+    <ClCompile Include="JsonObject.cpp" />
+    <ClCompile Include="JsonString.cpp" />
+    <ClCompile Include="TrustStore.cpp" />
+    <ClCompile Include="LangDesc.cpp" />
+    <ClCompile Include="LangVm.cpp" />
+    <ClCompile Include="lyoContainer.cpp" />
+    <ClCompile Include="lyoDocument.cpp" />
+    <ClCompile Include="lyoElement.cpp" />
+    <ClCompile Include="lyoFlatDocument.cpp" />
+    <ClCompile Include="lyoTextElement.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="MazeGeneratorDepthFirst.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MimeMessage.cpp" />
+    <ClCompile Include="Mixed.cpp" />
+    <ClCompile Include="Module.cpp" />
+    <ClCompile Include="ModuleHider.cpp" />
+    <ClCompile Include="DefaultRngInterface.cpp" />
+    <ClCompile Include="MysqlConnection.cpp" />
+    <ClCompile Include="Oid.cpp" />
+    <ClCompile Include="OpaqueString.cpp" />
+    <ClCompile Include="os.cpp" />
+    <ClCompile Include="ParserState.cpp" />
+    <ClCompile Include="parse_tree.cpp" />
+    <ClCompile Include="pem.cpp" />
+    <ClCompile Include="PhpState.cpp" />
+    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="QrCode.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="rand.cpp" />
+    <ClCompile Include="RasterFont.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTargetCanvas.cpp" />
+    <ClCompile Include="Rgb.cpp" />
+    <ClCompile Include="ripemd160.cpp" />
+    <ClCompile Include="rsa.cpp" />
+    <ClCompile Include="rtti.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneRasterisingRenderer.cpp" />
+    <ClCompile Include="SceneRaytracingRenderer.cpp" />
+    <ClCompile Include="SegWitAddress.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="sha1.cpp" />
+    <ClCompile Include="sha256.cpp" />
+    <ClCompile Include="SharedLibrary.cpp" />
+    <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="Pattern.cpp" />
+    <ClCompile Include="Pointer.cpp" />
+    <ClCompile Include="Poly.cpp" />
+    <ClCompile Include="Process.cpp" />
+    <ClCompile Include="Range.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="SocketTlsEncrypter.cpp" />
+    <ClCompile Include="string.cpp" />
+    <ClCompile Include="FileRaii.cpp" />
+    <ClCompile Include="StringMatch.cpp" />
+    <ClCompile Include="Tempfile.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="SocketTlsHandshaker.cpp" />
+    <ClCompile Include="Totp.cpp" />
+    <ClCompile Include="unicode.cpp" />
+    <ClCompile Include="unit_testing.cpp" />
+    <ClCompile Include="Uri.cpp" />
+    <ClCompile Include="urlenc.cpp" />
+    <ClCompile Include="UvSphere.cpp" />
+    <ClCompile Include="WebResource.cpp" />
+    <ClCompile Include="ServerWebService.cpp" />
+    <ClCompile Include="WebSocketConnectionEmscripten.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Worker.cpp" />
+    <ClCompile Include="X509Certificate.cpp" />
+    <ClCompile Include="X509RelativeDistinguishedName.cpp" />
+    <ClCompile Include="x64.cpp" />
+    <ClCompile Include="xml.cpp" />
+    <ClCompile Include="YubikeyValidator.cpp" />
+    <ClCompile Include="ZipReader.cpp" />
+    <ClCompile Include="ZipWriter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

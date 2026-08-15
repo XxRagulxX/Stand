@@ -1,0 +1,102 @@
+#include "lyoElement.hpp"
+
+#include "lyoContainer.hpp"
+#include "lyoDocument.hpp"
+#include "lyoFlatDocument.hpp"
+#include "RenderTarget.hpp"
+
+NAMESPACE_SOUP
+{
+	lyoDocument& lyoElement::getDocument() noexcept
+	{
+		lyoElement* elm = this;
+		while (elm->parent != nullptr)
+		{
+			elm = static_cast<lyoElement*>(elm->parent);
+		}
+		return *reinterpret_cast<lyoDocument*>(this); // using reinterpret_cast because lyoDocument is not known in this compilation unit
+	}
+
+	void lyoElement::focus() noexcept
+	{
+		getDocument().focus = this;
+	}
+
+	lyoElement::on_click_t lyoElement::getClickHandler() const noexcept
+	{
+		const lyoElement* elm = this;
+		for (; elm->parent != nullptr; elm = elm->parent)
+		{
+			if (elm->on_click != nullptr)
+			{
+				break;
+			}
+		}
+		return elm->on_click;
+	}
+
+	bool lyoElement::matchesSelector(const std::string& selector) const noexcept
+	{
+		return tag_name == selector;
+	}
+
+	void lyoElement::querySelectorAll(std::vector<lyoElement*>& res, const std::string& selector)
+	{
+		if (matchesSelector(selector))
+		{
+			res.emplace_back(this);
+		}
+	}
+
+	void lyoElement::propagateStyle()
+	{
+		style.propagateFromParent(parent->style);
+	}
+
+	void lyoElement::populateFlatDocument(lyoFlatDocument& fdoc)
+	{
+		fdoc.elms.emplace_back(this);
+	}
+
+	void lyoElement::updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
+	{
+		x += style.margin_left;
+		if (style.display_block)
+		{
+			y += style.margin_top;
+		}
+	}
+
+	void lyoElement::setFlatPos(unsigned int x, unsigned int y)
+	{
+		flat_x = x;
+		flat_y = y;
+	}
+
+	void lyoElement::wrapLine(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
+	{
+		lyoContainer* container = parent;
+		while (x == container->flat_x)
+		{
+			container = container->parent;
+			if (!container)
+			{
+				return;
+			}
+		}
+
+		if (x != container->flat_x)
+		{
+			x = container->flat_x;
+			y = wrap_y + 3;
+		}
+	}
+
+	void lyoElement::draw(RenderTarget& rt) const
+	{
+		if (style.background_color.has_value())
+		{
+			rt.drawRect(flat_x, flat_y, flat_width, flat_height, style.background_color.value());
+		}
+	}
+}
