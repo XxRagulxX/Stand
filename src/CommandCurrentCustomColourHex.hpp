@@ -13,7 +13,7 @@ namespace Stand
 
 	public:
 		explicit CommandCurrentCustomColourHex(CommandList* const parent, CommandColourCustom* const colour)
-			: CommandReadonlyValueCopy(parent, LOC("CURRCLRHEX"), {}, CMDFLAGS_READONLY_VALUE_COPY | CMDFLAG_FEATURELIST_SKIP), colour(colour)
+			: CommandReadonlyValueCopy(parent,LOC("CURRCLRHEX"),std::wstring{},CMDFLAGS_READONLY_VALUE_COPY | CMDFLAG_FEATURELIST_SKIP)
 		{
 		}
 
