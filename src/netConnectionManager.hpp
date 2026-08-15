@@ -1,7 +1,7 @@
 #pragma once
 
 #include "struct_base.hpp"
-
+#include "netMessage.hpp"
 #include "atDelegate.hpp"
 #include "inlist.hpp"
 #include "nettypes.hpp"
