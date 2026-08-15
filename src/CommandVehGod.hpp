@@ -34,9 +34,9 @@ namespace Stand
 							&& veh.isOwnerOfVehicleAndDriver()
 							)
 						{
-							if (last_veh != veh)
+							if (!veh.isHandleEquals(last_veh))
 							{
-								last_veh = veh;
+								last_veh = veh.getHandle();
 								veh.repair();
 							}
 

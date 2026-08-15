@@ -184,6 +184,9 @@ target_include_directories(Stand
 
         # DirectXTK
         "${DIRECTXTK_DIR}"
+
+        # Stackwalker
+        "${STAND_DIR}/stackwalker"
 )
 
 # ------------------------------------------------------------
