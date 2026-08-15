@@ -1,7 +1,7 @@
 #include "CNetworkPlayerMgr.hpp"
 
 #include "CNetGamePlayer.hpp"
-#include "hooking.hpp"
+#include "Hooking.hpp"
 
 namespace rage
 {
