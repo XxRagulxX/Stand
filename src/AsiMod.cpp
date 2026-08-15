@@ -189,7 +189,7 @@ namespace Stand
 					{
 						HANDLE th = OpenThread(READ_CONTROL | THREAD_TERMINATE, false, te.th32ThreadID);
 						HMODULE hmod;
-						if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCWSTR)GetThreadStartAddress(th), &hmod) == TRUE && hmod != nullptr)
+						if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,reinterpret_cast<LPCWSTR>(GetThreadStartAddress(th)), &hmod) == TRUE && hmod != nullptr)
 						{
 							if (hmod == asi_h)
 							{
