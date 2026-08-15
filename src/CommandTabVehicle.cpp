@@ -31,7 +31,7 @@
 
 #include "CommandVehDoorOpen.hpp"
 #include "CommandCountermeasures.hpp"
-#include "CommandAutodrive.hpp"
+#include "CommandAutoDrive.hpp"
 #include "CommandLightSignals.hpp"
 #include "CommandFlip.hpp"
 #include "CommandFixVehicle.hpp"

@@ -85,7 +85,7 @@
 #include "CommandListWeaponComponents.hpp"
 #include "CommandListLockWeapons.hpp"
 #include "CommandWeaponTint.hpp"
-#include "CommandAimbot.hpp"
+#include "CommandAimBot.hpp"
 #include "CommandListSelectBonePointer.hpp"
 #include "CommandTriggerBot.hpp"
 #include "CommandProjectileMgr.hpp"

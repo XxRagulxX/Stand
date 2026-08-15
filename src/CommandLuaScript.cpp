@@ -24,7 +24,7 @@
 #include <soup/unicode.hpp>
 #include <soup/Uri.hpp>
 
-#include <soup_lua_bindings.hpp>
+#include <souplua/soup_lua_bindings.hpp>
 
 #include "AbstractEntity.hpp"
 #include "AbstractModel.hpp"
@@ -7675,7 +7675,9 @@ f(link)
 			{
 				luaL_error(L, "FFI call to this function is not allowed without first calling util.i_really_need_manual_access_to_process_apis");
 			}
-			luaS_push(L, soup::ffi::call(func, args));
+			std::vector<soup::ffi::ValueType> types(args.size() + 1, soup::ffi::VT_INTEGRAL);
+			luaS_push(L,soup::ffi::call(func, types.data(), args.data(), args.size())
+			);
 			return 1;
 		});
 	}

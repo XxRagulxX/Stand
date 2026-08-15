@@ -26,7 +26,7 @@ namespace Stand
 	
 	static int EnumFontFamExProc(ENUMLOGFONTEX* lpelfe, NEWTEXTMETRICEX* lpntme, DWORD FontType, LPARAM lParam)
 	{
-		std::wstring name = lpelfe->elfLogFont.lfFaceName;
+		std::wstring name = StringUtils::utf8_to_utf16(lpelfe->elfLogFont.lfFaceName);
 		if (!name.empty())
 		{
 			if (name.at(0) == L'@')

@@ -7,8 +7,7 @@ namespace Stand
 	{
 		uintptr_t offset;
 
-		Offset(MemberType Struct::* offset)
-			: offset(reinterpret_cast<uintptr_t>(&(reinterpret_cast<Struct*>(nullptr)->*offset)))
+		Offset(MemberType Struct::* offset): offset(reinterpret_cast<uintptr_t>(&(reinterpret_cast<Struct*>(static_cast<uintptr_t>(0))->*offset)))
 		{
 		}
 

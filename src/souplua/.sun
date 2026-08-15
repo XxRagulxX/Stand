@@ -1,0 +1,5 @@
+name soup
++*.cpp
+dynamic
+require ../Pluto/src
+require ../Soup/soup include_dir=../Soup

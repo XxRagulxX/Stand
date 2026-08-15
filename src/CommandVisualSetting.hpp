@@ -3,7 +3,7 @@
 #include "CommandSliderFloat.hpp"
 
 #include "CommandExtraInfo.hpp"
-#include "hooking.hpp"
+#include "Hooking.hpp"
 #include "pointers.hpp"
 #include "StringUtils.hpp"
 
