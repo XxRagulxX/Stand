@@ -1,6 +1,6 @@
 ﻿#include "main.hpp"
 
-#include <lib/discord-rpc/include/discord_rpc.h>
+#include <discord-rpc/include/discord_rpc.h>
 
 #include <soup/log.hpp>
 #include <soup/ObfusString.hpp>

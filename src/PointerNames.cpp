@@ -98,7 +98,7 @@ namespace Stand
 		__try
 		{
 			HMODULE hmod;
-			if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCWSTR)addr, &hmod) && hmod != nullptr)
+			if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(addr), &hmod) && hmod != nullptr)
 			{
 				bool use_debug_symbols = true;
 				const std::string file_name = Util::get_module_file_name(hmod);

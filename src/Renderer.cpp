@@ -442,9 +442,9 @@ namespace Stand
 		font.SetDefaultCharacter(L'?');
 	}
 
-#define RELOAD_TEXTURE(filename, varname) g_renderer.reloadTexture(theme_path, L ## filename, g_renderer.varname, bin:: ## varname, sizeof(bin:: ## varname));
-#define RELOAD_TEXTURE_FROM_MEMORY(varname) g_renderer.reloadTextureFromMemory(g_renderer.varname, bin:: ## varname, sizeof(bin:: ## varname));
-#define RELOAD_TEXTURE_CUSTOM(filename, varname, binname) g_renderer.reloadTexture(theme_path, L ## filename, g_renderer.varname, bin:: ## binname, sizeof(bin:: ## binname));
+#define RELOAD_TEXTURE(filename, varname) g_renderer.reloadTexture(theme_path, L##filename, g_renderer.varname, bin::varname, sizeof(bin::varname));
+#define RELOAD_TEXTURE_FROM_MEMORY(varname) g_renderer.reloadTextureFromMemory(g_renderer.varname, bin::varname, sizeof(bin::varname));
+#define RELOAD_TEXTURE_CUSTOM(filename, varname, binname) g_renderer.reloadTexture(theme_path, L##filename, g_renderer.varname, bin::binname, sizeof(bin::binname));
 
 	void Renderer::reloadTextures(std::wstring&& theme_path)
 	{
@@ -2859,19 +2859,16 @@ namespace Stand
 		m_unreleased_menu_key = 0;
 	}
 
-#define PROCESS_MENUKEY(scheme_key, menu_key) \
-if (pressing.overlapsWith(Input::scheme. ## scheme_key ##)) \
-{ \
-	if (pressing.vk() != m_unreleased_menu_key \
-		&& g_gui.keyboard_pressing != menu_key \
-		&& !doesGameplayStateConflictWithVk(pressing.vk()) \
-		) \
-	{ \
-		m_unreleased_menu_key = pressing.vk(); \
-		g_gui.onKeyPressStart(menu_key, INPUTTYPE_INDIFFERENT); \
-	} \
-	return; \
-}
+#define PROCESS_MENUKEY(scheme_key, menu_key)                                  \
+    if (pressing.overlapsWith(Input::scheme.scheme_key)) {                     \
+        if (pressing.vk() != m_unreleased_menu_key &&                          \
+            g_gui.keyboard_pressing != menu_key &&                             \
+            !doesGameplayStateConflictWithVk(pressing.vk())) {                 \
+            m_unreleased_menu_key = pressing.vk();                             \
+            g_gui.onKeyPressStart(menu_key, INPUTTYPE_INDIFFERENT);             \
+        }                                                                       \
+        return;                                                                 \
+    }
 
 	bool Renderer::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{

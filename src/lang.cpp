@@ -158,35 +158,52 @@ namespace Stand
 		return &LangBuiltins::en;
 	}
 
-#define ID_TO_CODE_IMPL(prefix) \
-switch (lang_id) \
-{ \
-	case LANG_DE: return prefix ## "de"; \
-	case LANG_NL: return prefix ## "nl"; \
-	case LANG_LT: return prefix ## "lt"; \
-	case LANG_PT: return prefix ## "pt"; \
-	case LANG_ZH: return prefix ## "zh"; \
-	case LANG_KO: return prefix ## "ko"; \
-	case LANG_RU: return prefix ## "ru"; \
-	case LANG_ES: return prefix ## "es"; \
-	case LANG_FR: return prefix ## "fr"; \
-	case LANG_TR: return prefix ## "tr"; \
-	case LANG_PL: return prefix ## "pl"; \
-	case LANG_IT: return prefix ## "it"; \
-	case LANG_JA: return prefix ## "ja"; \
-	case LANG_VI: return prefix ## "vi"; \
-} \
-return prefix ## "en";
+#define ID_TO_CODE_A_IMPL()                     \
+    switch (lang_id) {                          \
+    case LANG_DE: return "de";                  \
+    case LANG_NL: return "nl";                  \
+    case LANG_LT: return "lt";                  \
+    case LANG_PT: return "pt";                  \
+    case LANG_ZH: return "zh";                  \
+    case LANG_KO: return "ko";                  \
+    case LANG_RU: return "ru";                  \
+    case LANG_ES: return "es";                  \
+    case LANG_FR: return "fr";                  \
+    case LANG_TR: return "tr";                  \
+    case LANG_PL: return "pl";                  \
+    case LANG_IT: return "it";                  \
+    case LANG_JA: return "ja";                  \
+    case LANG_VI: return "vi";                  \
+    }                                           \
+    return "en";
+
+#define ID_TO_CODE_W_IMPL()                     \
+    switch (lang_id) {                          \
+    case LANG_DE: return L"de";                 \
+    case LANG_NL: return L"nl";                 \
+    case LANG_LT: return L"lt";                 \
+    case LANG_PT: return L"pt";                 \
+    case LANG_ZH: return L"zh";                 \
+    case LANG_KO: return L"ko";                 \
+    case LANG_RU: return L"ru";                 \
+    case LANG_ES: return L"es";                 \
+    case LANG_FR: return L"fr";                 \
+    case LANG_TR: return L"tr";                 \
+    case LANG_PL: return L"pl";                 \
+    case LANG_IT: return L"it";                 \
+    case LANG_JA: return L"ja";                 \
+    case LANG_VI: return L"vi";                 \
+    }                                           \
+    return L"en";
 
 	const char* Lang::idToCodeA(const lang_t lang_id) noexcept
 	{
-#define EMPTY_MACRO
-		ID_TO_CODE_IMPL(EMPTY_MACRO); // avoid warning because no parameter to 1-parameter function-like macro
+		ID_TO_CODE_A_IMPL(); // avoid warning because no parameter to 1-parameter function-like macro
 	}
 
 	const wchar_t* Lang::idToCodeW(const lang_t lang_id) noexcept
 	{
-		ID_TO_CODE_IMPL(L);
+		ID_TO_CODE_W_IMPL();
 	}
 
 	const char* Lang::idToApiCode(const lang_t lang_id) noexcept

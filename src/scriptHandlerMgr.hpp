@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gta_fwddecl.hpp"
+#include "netMessage.hpp"
 
 #include "CNetworkPlayerMgr.hpp"
 #include "pointers.hpp"

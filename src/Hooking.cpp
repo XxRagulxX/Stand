@@ -7923,7 +7923,7 @@ to_recover.emplace_back(addr, *addr); \
 		{
 			switch (classIdToVerify->name_hash)
 			{
-			case ATSTRINGHASH("camBaseFrameShaker"):
+			case static_cast<uint32_t>(ATSTRINGHASH("camBaseFrameShaker")):
 				return nullptr;
 			}
 		}
