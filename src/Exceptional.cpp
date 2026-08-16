@@ -25,19 +25,35 @@
 
 namespace Stand
 {
-	void Exceptional::hideThread(HANDLE hThread) noexcept
-	{
-#if false
-		using pNtSetInformationThread = NTSTATUS(NTAPI*)(HANDLE, UINT, PVOID, ULONG);
-		auto NtSIT = (pNtSetInformationThread)GetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), "NtSetInformationThread");
-		if (NtSIT != nullptr)
-		{
-			NtSIT(hThread, 0x11, nullptr, 0);
-		}
-#endif
-	}
+    static int __cdecl StandRtcErrorHandler(
+        int,
+        const wchar_t*,
+        int,
+        const wchar_t*,
+        const wchar_t*,
+        ...)
+    {
+        Exceptional::report("CRT Run-Time Error", {});
+        return 0;
+    }
 
-	HANDLE Exceptional::createThread(std::function<void()>&& func) noexcept
+    void Exceptional::hideThread(HANDLE hThread) noexcept
+    {
+#if false
+        using pNtSetInformationThread = NTSTATUS(NTAPI*)(HANDLE, UINT, PVOID, ULONG);
+        auto NtSIT = (pNtSetInformationThread)GetProcAddress(
+            GetModuleHandle(TEXT("ntdll.dll")),
+            "NtSetInformationThread"
+        );
+
+        if (NtSIT != nullptr)
+        {
+            NtSIT(hThread, 0x11, nullptr, 0);
+        }
+#endif
+    }
+
+    HANDLE Exceptional::createThread(std::function<void()>&& func) noexcept
 	{
 		auto* fp = new std::function<void()>(std::move(func));
 		auto th = CreateThread(nullptr, 0, [](PVOID handover) -> DWORD
@@ -45,11 +61,7 @@ namespace Stand
 			// Set exception handling (This is program-wide, but co-loads exist)
 			setUnhandledExceptionHandler();
 			_set_abort_behavior(0, 0);
-			_RTC_SetErrorFuncW([](int, const wchar_t*, int, const wchar_t*, const wchar_t*, ...)
-			{
-				Exceptional::report("CRT Run-Time Error", {});
-				return 0;
-			});
+			_RTC_SetErrorFuncW(&StandRtcErrorHandler);
 			/*_set_invalid_parameter_handler([](wchar_t const*, wchar_t const*, wchar_t const*, unsigned int, uintptr_t)
 			{
 				Exceptional::report("Invalid Parameter", {});

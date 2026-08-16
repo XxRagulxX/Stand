@@ -11,7 +11,7 @@ struct CExplosionEvent
 	rage::ObjectId m_attachEntityID = 0;
 	rage::ObjectId m_entExplosionOwnerID = 0;
 	rage::ObjectId m_entIgnoreDamageID = 0;
-	CNetFXIdentifier m_projectileIdentifier = 0;
+	CNetFXIdentifier m_particleIdentifier{};
 	Stand::v3 m_dummyPosition = { 0.0f, 0.0f, 0.0f };
 	bool m_bHasProjectile = false;
 	bool m_bEntityExploded = false;

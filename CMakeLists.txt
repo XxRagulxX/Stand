@@ -42,6 +42,10 @@ set(DISCORD_RPC_DIR
     "${STAND_DIR}/discord-rpc"
 )
 
+set(MINHOOK_DIR
+    "${STAND_DIR}/minhook"
+)
+
 # ------------------------------------------------------------
 # Stand C++ sources
 # ------------------------------------------------------------
@@ -103,12 +107,20 @@ file(GLOB_RECURSE DIRECTXTK_CPP CONFIGURE_DEPENDS
     "${DIRECTXTK_DIR}/*.cpp"
 )
 
+file(GLOB MINHOOK_C CONFIGURE_DEPENDS
+    "${MINHOOK_DIR}/src/*.c"
+)
+
 # ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
 
 add_library(DirectXTK STATIC
     ${DIRECTXTK_CPP}
+)
+
+add_library(MinHook STATIC
+    ${MINHOOK_C}
 )
 
 target_include_directories(DirectXTK
@@ -144,6 +156,13 @@ target_include_directories(DiscordRPC
     PRIVATE
         "${DISCORD_RPC_DIR}/src"
         "${STAND_DIR}"
+)
+
+target_include_directories(MinHook
+    PUBLIC
+        "${MINHOOK_DIR}/include"
+    PRIVATE
+        "${MINHOOK_DIR}/src"
 )
 
 # ------------------------------------------------------------
@@ -187,6 +206,7 @@ target_include_directories(Stand
 
         # Stackwalker
         "${STAND_DIR}/stackwalker"
+        
 )
 
 # ------------------------------------------------------------
@@ -210,6 +230,9 @@ target_link_libraries(Stand
 
         # Discord RPC
         DiscordRPC
+
+        #MinHook
+        MinHook
 )
 
 # ------------------------------------------------------------

@@ -26,14 +26,14 @@ namespace Stand
 				{
 					switch (ctx.getArg<Hash>(0))
 					{
-					case -65181770: // ATSTRINGHASH("spPreorder") - Pre-order bonus
+					case static_cast<Hash>(-65181770): // ATSTRINGHASH("spPreorder") - Pre-order bonus
 						if (preorder_bonus_override != 0)
 						{
 							return ctx.setReturnValue<BOOL>(preorder_bonus_override - 1);
 						}
 						break;
 
-					case 2532323046: // ATSTRINGHASH("XX_I$RAWKST4H_D3V_XX") - Admin DLC
+					case static_cast<Hash>(2532323046u): // ATSTRINGHASH("XX_I$RAWKST4H_D3V_XX") - Admin DLC
 						return ctx.setReturnValue<BOOL>(admin_dlc);
 					}
 					return NativeTableHooks::og(0x812595A0644CE1DE)(ctx);

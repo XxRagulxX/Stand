@@ -430,7 +430,7 @@ namespace Stand
 		NativeTableHooks::createNativeEntrypointOverride(0x3882114BDE571AD4, [](rage::scrNativeCallContext& ctx)
 		{
 			//Util::toast(fmt::format("SET_ENTITY_INVINCIBLE: {} -> {}", ctx.getArg<Entity>(0), ctx.getArg<BOOL>(1)));
-			if (g_player_ped == ctx.getArg<Entity>(0))
+			if (g_player_ped.getHandle() == ctx.getArg<Entity>(0))
 			{
 				g_hooking.have_legit_invincible = ctx.getArg<BOOL>(1);
 			}
@@ -441,7 +441,7 @@ namespace Stand
 		NativeTableHooks::createNativeEntrypointOverride(0x1760FFA8AB074D66, [](rage::scrNativeCallContext& ctx)
 		{
 			//Util::toast(fmt::format("SET_ENTITY_CAN_BE_DAMAGED: {} -> {}", ctx.getArg<Entity>(0), ctx.getArg<BOOL>(1)));
-			if (g_player_ped == ctx.getArg<Entity>(0))
+			if (g_player_ped.getHandle() == ctx.getArg<Entity>(0))
 			{
 				g_hooking.have_legit_invincible = !ctx.getArg<BOOL>(1);
 			}
@@ -451,7 +451,7 @@ namespace Stand
 		// SET_ENTITY_PROOFS
 		NativeTableHooks::createNativeEntrypointOverride(0xFAEE099C6F890BB8, [](rage::scrNativeCallContext& ctx)
 		{
-			if (g_player_ped == ctx.getArg<Entity>(0))
+			if (g_player_ped.getHandle() == ctx.getArg<Entity>(0))
 			{
 				g_hooking.have_legit_bullet_proof = ctx.getArg<BOOL>(1);
 				g_hooking.have_legit_flame_proof = ctx.getArg<BOOL>(2);

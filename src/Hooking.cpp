@@ -1880,10 +1880,10 @@ namespace Stand::hooks
 				{
 					switch (label_hash)
 					{
-					case ATSTRINGHASH("MP_CHAT_ALL"):
-					case ATSTRINGHASH("MP_CHAT_TEAM"):
-					case ATSTRINGHASH("GB_PC_TEXT"): // Organization
-					case ATSTRINGHASH("PI_BIK_0_T"): // MC
+					case static_cast<uint32_t>(ATSTRINGHASH("MP_CHAT_ALL")):
+					case static_cast<uint32_t>(ATSTRINGHASH("MP_CHAT_TEAM")):
+					case static_cast<uint32_t>(ATSTRINGHASH("GB_PC_TEXT")): // Organization
+					case static_cast<uint32_t>(ATSTRINGHASH("PI_BIK_0_T")): // MC
 						if (g_hooking.can_modify_chat_labels)
 						{
 							timestamp_label_buf = OG(CTextFile_GetInternal)(a1, label_hash);
@@ -7612,7 +7612,7 @@ to_recover.emplace_back(addr, *addr); \
 			auto event_type = gm_evt[soup::ObfusString("e").c_str()].GetString();
 			switch (rage::atStringHash(event_type))
 			{
-			case ATSTRINGHASH("ginv"):
+			case static_cast<uint32_t>(ATSTRINGHASH("ginv")):
 				{
 					if (g_hooking.block_job_invites)
 					{
