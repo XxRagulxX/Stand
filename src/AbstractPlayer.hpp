@@ -14,7 +14,6 @@
 
 #include "atStringHash.hpp"
 #include "BiString.hpp"
-#include "netIpAddress.hpp"
 #include "PlayerScope.hpp"
 
 #define HAVE_BREAKUP_KICK false
@@ -338,7 +337,7 @@ namespace Stand
 		[[nodiscard]] bool isKnownAdvertiser() const;
 		[[nodiscard]] uint8_t getMessageAdLevel(const std::string& text) const;
 		[[nodiscard]] uint8_t getMessageAdLevel(std::wstring text) const;
-		[[nodiscard]] static void normaliseForAdFilters(std::wstring& str) noexcept;
+		static void normaliseForAdFilters(std::wstring& str) noexcept;
 		[[nodiscard]] static bool checkKnownAggressiveSpammer(const std::wstring& msg) noexcept;
 		[[nodiscard]] static bool nameIsCallToAction(const std::wstring& name);
 		[[nodiscard]] static bool messageHasCallToAction(const std::wstring& msg);
