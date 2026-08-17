@@ -9,9 +9,8 @@
 
 #include "AbstractPlayer.hpp"
 #include "PlayerExcludes.hpp"
-#include "StringUtils.hpp"
 
-#define PC_PTR this->resolveParent(COMMAND_LIST_PLAYER)->as<CommandListPlayer>()
+#define PC_PTR this->resolveParent(COMMAND_LIST_PLAYER)->template as<CommandListPlayer>()
 #define PC_PTR_SINGLE this->resolveParent(COMMAND_LIST_PLAYER)->as<CommandPlayer>()
 #define PP_PTR PC_PTR->pp
 #define PP_PTR_SINGLE ((PlayerProviderSingle*)PC_PTR->pp)

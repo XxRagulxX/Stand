@@ -3,10 +3,12 @@
 #include <functional>
 #include <optional>
 #include <array>
+#include "vector.hpp"
 
 #include <soup/Optional.hpp>
 #include <soup/ShortString.hpp>
 
+#include "natives_decl.hpp"
 #include "fwddecl.hpp"
 #include "gta_fwddecl.hpp"
 #include "gta_player.hpp"
