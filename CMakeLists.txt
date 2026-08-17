@@ -71,6 +71,10 @@ list(FILTER STAND_CPP EXCLUDE REGEX
     "/discord-rpc/"
 )
 
+list(FILTER STAND_CPP EXCLUDE REGEX
+    "/minhook/"
+)
+
 # ------------------------------------------------------------
 # Stand ASM sources
 # ------------------------------------------------------------
@@ -107,8 +111,13 @@ file(GLOB_RECURSE DIRECTXTK_CPP CONFIGURE_DEPENDS
     "${DIRECTXTK_DIR}/*.cpp"
 )
 
+# ------------------------------------------------------------
+# MinHook sources
+# ------------------------------------------------------------
+
 file(GLOB MINHOOK_C CONFIGURE_DEPENDS
     "${MINHOOK_DIR}/src/*.c"
+    "${MINHOOK_DIR}/src/hde/*.c"
 )
 
 # ------------------------------------------------------------
@@ -117,10 +126,6 @@ file(GLOB MINHOOK_C CONFIGURE_DEPENDS
 
 add_library(DirectXTK STATIC
     ${DIRECTXTK_CPP}
-)
-
-add_library(MinHook STATIC
-    ${MINHOOK_C}
 )
 
 target_include_directories(DirectXTK
@@ -137,7 +142,23 @@ target_link_libraries(DirectXTK
 )
 
 # ------------------------------------------------------------
-# Discord RPC sources
+# MinHook library
+# ------------------------------------------------------------
+
+add_library(MinHook STATIC
+    ${MINHOOK_C}
+)
+
+target_include_directories(MinHook
+    PUBLIC
+        "${MINHOOK_DIR}/include"
+
+    PRIVATE
+        "${MINHOOK_DIR}/src"
+)
+
+# ------------------------------------------------------------
+# Discord RPC library
 # ------------------------------------------------------------
 
 add_library(DiscordRPC STATIC
@@ -158,12 +179,30 @@ target_include_directories(DiscordRPC
         "${STAND_DIR}"
 )
 
-target_include_directories(MinHook
-    PUBLIC
-        "${MINHOOK_DIR}/include"
-    PRIVATE
-        "${MINHOOK_DIR}/src"
+# ------------------------------------------------------------
+# Pluto / Lua library
+# ------------------------------------------------------------
+
+add_library(Pluto STATIC
+
+    ${PLUTO_C}
+    ${PLUTO_CPP}
 )
+
+target_include_directories(Pluto
+    PUBLIC
+        "${PLUTO_DIR}"
+)
+
+# IMPORTANT:
+# Pluto has its own vendored Soup implementation under:
+#
+#     src/pluto/vendor/Soup/soup/
+#
+# Therefore Pluto must not inherit Stand's PCH.
+#
+# Stand's PCH is attached only to the Stand target below,
+# so no SKIP_PRECOMPILE_HEADERS is required here.
 
 # ------------------------------------------------------------
 # Stand target
@@ -176,10 +215,6 @@ add_library(Stand SHARED
 
     # Stand ASM
     ${STAND_ASM}
-
-    # Pluto / Lua
-    ${PLUTO_C}
-    ${PLUTO_CPP}
 
     # fmt
     ${FMT_CPP}
@@ -198,7 +233,7 @@ target_include_directories(Stand
         # fmt
         "${FMT_DIR}"
 
-        # Pluto / Lua
+        # Pluto / Lua public headers
         "${PLUTO_DIR}"
 
         # DirectXTK
@@ -206,7 +241,6 @@ target_include_directories(Stand
 
         # Stackwalker
         "${STAND_DIR}/stackwalker"
-        
 )
 
 # ------------------------------------------------------------
@@ -225,14 +259,19 @@ target_precompile_headers(Stand
 target_link_libraries(Stand
     PRIVATE
 
+        # Pluto / Lua
+        Pluto
+
         # DirectXTK
         DirectXTK
 
         # Discord RPC
         DiscordRPC
 
-        #MinHook
+        # MinHook
         MinHook
+
+        dbghelp
 )
 
 # ------------------------------------------------------------

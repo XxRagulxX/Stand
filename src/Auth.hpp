@@ -99,7 +99,7 @@ namespace Stand
 
 	public:
 		static void logOutManual(Click& click);
-		__forceinline void logOut(bool retry_activation);
+		void logOut(bool retry_activation);
 	};
 #pragma pack(pop)
 
