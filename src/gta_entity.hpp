@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+
 #include <soup/Matrix.hpp>
 
 #include "struct_base.hpp"
@@ -29,7 +31,7 @@ namespace rage
 
 		[[nodiscard]] bool IsInLevel() const noexcept
 		{
-			return m_LevelIndex != -1;
+			return m_LevelIndex != std::numeric_limits<uint16_t>::max();
 		}
 
 		[[nodiscard]] CPhysical* getPhysical() const noexcept
