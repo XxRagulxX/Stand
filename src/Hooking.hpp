@@ -2,7 +2,6 @@
 
 #include <optional>
 #include <unordered_map>
-#include <unordered_set>
 
 #include <windows.h>
 
@@ -16,16 +15,12 @@
 
 #include "Blamer.hpp"
 #include "rlclancommon.hpp"
-#include "dx_common.hpp"
 #include "DetourHook.hpp"
 #include "FlowEvent.hpp"
 #include "FlowEventReaction.hpp"
 #include "GamerIdentifier.hpp"
 #include "gta_entity.hpp"
 #include "AssociatedWhitelist.hpp"
-#include "netIpAddress.hpp"
-#include "NetworkObjectTypes.hpp"
-#include "rlGamerId.hpp"
 #include "rlSessionInfo.hpp"
 #include "rl_matching.hpp"
 #include "NetworkedSound.hpp"
