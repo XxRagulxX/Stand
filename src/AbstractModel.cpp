@@ -9,7 +9,6 @@
 #include "natives.hpp"
 #include "PedModel.hpp"
 #include "Util.hpp"
-#include "VehicleColour.hpp"
 
 namespace Stand
 {
@@ -205,6 +204,8 @@ namespace Stand
 		case VEHICLE_TYPE_BLIMP:
 		case VEHICLE_TYPE_PLANE:
 			return true;
+		default:
+		    break;
 		}
 		return false;
 	}
@@ -216,6 +217,8 @@ namespace Stand
 		case VEHICLE_TYPE_BOAT:
 		case VEHICLE_TYPE_SUBMARINE:
 			return true;
+		default:
+		    break;
 		}
 		return false;
 	}

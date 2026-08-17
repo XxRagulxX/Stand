@@ -95,7 +95,11 @@ namespace Stand
 
 			case VEHICLE_TYPE_SUBMARINE:
 				return ATSTRINGHASH("kosatka");
+
+			default:
+			   break;
 			}
+			
 		}
 
 		return std::nullopt;
