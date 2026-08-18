@@ -7911,79 +7911,85 @@ to_recover.emplace_back(addr, *addr); \
 		return OG(parse_presence_event)(a1, a2, a3, data, source);
 	}
 
+	// Has destructible locals (std::string, HttpRequestBuilder, JSON documents), so this must not itself contain a __try.
+	static bool computeSocialClubPresenceEventAllow(void* a1, const rage::rlScPresenceMessage& msg, void* a3)
+	{
+#ifdef STAND_DEBUG
+		if (g_hooking.log_presence_event_scdll)
+		{
+			g_logger.log(fmt::format("SC DLL Presence Event: {}", msg.m_Contents));
+			// "ros.gamer.online":"SC 64157314"
+			// "ros.gamer.textmessage":{"h":"SC 111509622","n":"quake_1337"}
+			// "ros.publish":{"channel":"self","msg":{"gm.evt":{"e":"ginv","d":{"v":5,"s":"RqNCxhGraxOAwdl3h0AAAAAAFcnCDU+AgncWbFgRgCjtwf6rEW0WCGOfOH2csS04u6j2Do7n9/9glltpU2X3AR9pyq2PkjolVKiMP2bk/c4+Wf36uS6SL9Z+3wBebh0/////wAA/////wAAQGvBopEatrE4a8GilRq2sTg==","h":"OrzLDgAAAAADAAAAAAAAAA==","n":"_llisenok_","gm":0,"c":"F1aMI4_RjkqGufccGa-48A","cc":"AAAAAAAAAAAAAAAAAAAAAA==","mid":"","if":0,"it":0,"l":0,"p":0,"f":32808,"ed":3901228386,"gd":1516504418,"u":1434550707,"cr":53096025}}}}
+		}
+#endif
+		const char* i = msg.m_Contents;
+		if (auto jr = soup::json::decode(i))
+		{
+			std::string name = std::move(jr->asStr().value);
+			if (rage::atStringHash(name) == ATSTRINGHASH("ros.gamer.textmessage"))
+			{
+				++i; // skip ':'
+				jr = soup::json::decode(i);
+				if (jr)
+				{
+					const int64_t sender_rid = rage::rlGamerHandle::fromString(jr->asObj().at("h").asStr().value.c_str()).rockstar_id;
+					std::string sender_name = std::move(jr->asObj().at("n").asStr().value);
+					std::string contents = msg.m_Contents;
+
+					auto b = HttpRequestBuilder{ HttpRequestBuilder::POST, "scui.rockstargames.com", "/api/messaging/getmessages" }
+					.addHeader("Authorization", ScAccount::getAuthorizationHeaderValue())
+					.addHeader("X-Requested-With", "XMLHttpRequest") // needed to avoid "CSRF" error
+					.addHeader("Content-Type", "application/json");
+					b.setPayload(std::move(std::string(R"({"env":"prod","title":"gta5","version":11,"senderRockstarId":")").append(fmt::to_string(sender_rid)).append(R"(","pageIndex":0})")));
+					b.setResponseCallback([sender_rid, sender_name{ std::move(sender_name) }, contents{ std::move(contents) }](soup::HttpResponse&& resp)
+					{
+						bool should_block = false;
+						std::string msg_contents{};
+						if (auto jr = soup::json::decode(resp.body); jr && jr->isObj())
+						{
+							if (auto MessageList = jr->asObj().find("MessageList"); MessageList && MessageList->isObj())
+							{
+								if (auto Messages = MessageList->asObj().find("Messages"); Messages && Messages->isArr() && !Messages->asArr().children.empty())
+								{
+									if (BgScript::hasFunction("dm"))
+									{
+										msg_contents = Messages->asArr().children.at(0)->asObj().at("Text").asStr().value;
+										should_block = BgScript::query("dm", sender_rid, msg_contents, /* since 114.2 */ sender_name);
+									}
+								}
+							}
+						}
+						if (!should_block)
+						{
+							// This is not an ad; trigger notifications now.
+							if (g_hooking.scdm_scnotify || msg_contents.empty())
+							{
+								rage::rlScPresenceMessage presmsg{ 0, contents.c_str() };
+								OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(nullptr, presmsg, nullptr);
+							}
+							if (!msg_contents.empty())
+							{
+								if (auto tf = g_hooking.scdm_toasts.getToastFlags())
+								{
+									Util::toast(LANG_FMT("SCDMT_T", FMT_ARG("sender", sender_name), FMT_ARG("text", msg_contents)), tf);
+								}
+							}
+						}
+					})
+					.dispatch();
+					return false; // Swallow this event. If this is not an ad, we will show the SC notification later.
+				}
+			}
+		}
+		return OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(a1, msg, a3);
+	}
+
 	bool __fastcall rgsc_RgscPresenceManager_OnSocialClubEvent(void* a1, const rage::rlScPresenceMessage& msg, void* a3)
 	{
 		__try
 		{
-#ifdef STAND_DEBUG
-			if (g_hooking.log_presence_event_scdll)
-			{
-				g_logger.log(fmt::format("SC DLL Presence Event: {}", msg.m_Contents));
-				// "ros.gamer.online":"SC 64157314"
-				// "ros.gamer.textmessage":{"h":"SC 111509622","n":"quake_1337"}
-				// "ros.publish":{"channel":"self","msg":{"gm.evt":{"e":"ginv","d":{"v":5,"s":"RqNCxhGraxOAwdl3h0AAAAAAFcnCDU+AgncWbFgRgCjtwf6rEW0WCGOfOH2csS04u6j2Do7n9/9glltpU2X3AR9pyq2PkjolVKiMP2bk/c4+Wf36uS6SL9Z+3wBebh0/////wAA/////wAAQGvBopEatrE4a8GilRq2sTg==","h":"OrzLDgAAAAADAAAAAAAAAA==","n":"_llisenok_","gm":0,"c":"F1aMI4_RjkqGufccGa-48A","cc":"AAAAAAAAAAAAAAAAAAAAAA==","mid":"","if":0,"it":0,"l":0,"p":0,"f":32808,"ed":3901228386,"gd":1516504418,"u":1434550707,"cr":53096025}}}}
-			}
-#endif
-			const char* i = msg.m_Contents;
-			if (auto jr = soup::json::decode(i))
-			{
-				std::string name = std::move(jr->asStr().value);
-				if (rage::atStringHash(name) == ATSTRINGHASH("ros.gamer.textmessage"))
-				{
-					++i; // skip ':'
-					jr = soup::json::decode(i);
-					if (jr)
-					{
-						const int64_t sender_rid = rage::rlGamerHandle::fromString(jr->asObj().at("h").asStr().value.c_str()).rockstar_id;
-						std::string sender_name = std::move(jr->asObj().at("n").asStr().value);
-						std::string contents = msg.m_Contents;
-
-						auto b = HttpRequestBuilder{ HttpRequestBuilder::POST, "scui.rockstargames.com", "/api/messaging/getmessages" }
-						.addHeader("Authorization", ScAccount::getAuthorizationHeaderValue())
-						.addHeader("X-Requested-With", "XMLHttpRequest") // needed to avoid "CSRF" error
-						.addHeader("Content-Type", "application/json");
-						b.setPayload(std::move(std::string(R"({"env":"prod","title":"gta5","version":11,"senderRockstarId":")").append(fmt::to_string(sender_rid)).append(R"(","pageIndex":0})")));
-						b.setResponseCallback([sender_rid, sender_name{ std::move(sender_name) }, contents{ std::move(contents) }](soup::HttpResponse&& resp)
-						{
-							bool should_block = false;
-							std::string msg_contents{};
-							if (auto jr = soup::json::decode(resp.body); jr && jr->isObj())
-							{
-								if (auto MessageList = jr->asObj().find("MessageList"); MessageList && MessageList->isObj())
-								{
-									if (auto Messages = MessageList->asObj().find("Messages"); Messages && Messages->isArr() && !Messages->asArr().children.empty())
-									{
-										if (BgScript::hasFunction("dm"))
-										{
-											msg_contents = Messages->asArr().children.at(0)->asObj().at("Text").asStr().value;
-											should_block = BgScript::query("dm", sender_rid, msg_contents, /* since 114.2 */ sender_name);
-										}
-									}
-								}
-							}
-							if (!should_block)
-							{
-								// This is not an ad; trigger notifications now.
-								if (g_hooking.scdm_scnotify || msg_contents.empty())
-								{
-									rage::rlScPresenceMessage presmsg{ 0, contents.c_str() };
-									OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(nullptr, presmsg, nullptr);
-								}
-								if (!msg_contents.empty())
-								{
-									if (auto tf = g_hooking.scdm_toasts.getToastFlags())
-									{
-										Util::toast(LANG_FMT("SCDMT_T", FMT_ARG("sender", sender_name), FMT_ARG("text", msg_contents)), tf);
-									}
-								}
-							}
-						})
-						.dispatch();
-						return false; // Swallow this event. If this is not an ad, we will show the SC notification later.
-					}
-				}
-			}
-			return OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(a1, msg, a3);
+			return computeSocialClubPresenceEventAllow(a1, msg, a3);
 		}
 		__EXCEPTIONAL()
 		{
