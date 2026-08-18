@@ -618,9 +618,9 @@ namespace Stand
 		return getExceptionName(data->exp);
 	}
 
-	long Exceptional::handleExceptionInErrorReporting(_EXCEPTION_POINTERS* exp, std::string msg) noexcept
+	long handleExceptionInErrorReporting(_EXCEPTION_POINTERS* exp, std::string msg) noexcept
 	{
-		msg.append(getExceptionName(exp));
+		msg.append(Exceptional::getExceptionName(exp));
 		g_logger.log(std::move(msg));
 
 		return EXCEPTION_EXECUTE_HANDLER;
