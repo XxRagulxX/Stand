@@ -2887,6 +2887,78 @@ namespace Stand
 		}
 	}
 
+	// No __try here, so it's safe to construct the LANG_FMT() temporary in this frame.
+	static void showControllerOpenCloseHelp()
+	{
+		Util::show_corner_help(LANG_FMT("HLP_CTRLLR", ControllerInputConfig::getOpenCloseStringForGame()), true);
+	}
+
+	// No __try here, so it's safe to use the checked iterator produced by this range-for in this frame.
+	static void moveExtrasBufferIntoExtras()
+	{
+		for (auto&& entry : g_renderer.extras_buffer)
+		{
+			g_renderer.extras.push_back(std::move(entry));
+		}
+	}
+
+	// No __try here, so it's safe to own the getPlayers() temporary and use the checked iterator produced by this range-for in this frame.
+	static void updateFocusedPlayerBeacons(const Command* const command, CommandListPlayer* const focused_player_command)
+	{
+		g_gui.focused_players = focused_player_command->pp->getPlayers(focused_player_command->pp->single);
+		if (command == focused_player_command ? g_gui.focused_player_beacon_in_list_of_all_players : g_gui.focused_player_beacon_in_list_belonging_to_player)
+		{
+			for (const AbstractPlayer p : g_gui.focused_players)
+			{
+				if (!g_gui.focused_player_beacon_exclude_me || (p.hasPed() &&  p.getPed() != g_cam_ped))
+				{
+					DrawUtil3d::draw_ar_beacon(p.getPos());
+				}
+			}
+		}
+	}
+
+	// No __try here, so it's safe to construct the std::wstring temporary in this frame.
+	static void saveAutoSaveState()
+	{
+		g_gui.saveState(std::wstring(g_gui.auto_save_state));
+	}
+
+	// No __try here, so it's safe to use the checked iterator produced by this loop in this frame.
+	static void tickCommandsInGameViewport(CommandList* const list)
+	{
+		cursor_t draw_cursor = 0;
+		cursor_t emul_cursor = list->m_offset;
+		for (std::vector<std::unique_ptr<Command>>::const_iterator i; i = list->children.cbegin() + emul_cursor, emul_cursor < (cursor_t)list->children.size(); ++emul_cursor)
+		{
+			auto* cmd = i->get()->getPhysical();
+			if (cmd != nullptr
+				&& !cmd->isConcealed()
+				)
+			{
+				cmd->onTickInGameViewport();
+			}
+			if (++draw_cursor == g_gui.getCommandsOnScreenLimit())
+			{
+				break;
+			}
+			i++;
+		}
+	}
+
+	// No __try here, so it's safe to use the checked iterator produced by this range-for in this frame.
+	static void tickCommandsInWebViewport(CommandList* const list)
+	{
+		for (const auto& command : list->children)
+		{
+			auto* cmd = command->getPhysical();
+			if (!cmd->isConcealed())
+			{
+				cmd->onTickInWebViewport();
+			}
+		}
+	}
+
 	void Gui::onTick()
 	{
 		//drawDebugText(g_gta_module.range.base.as<void*>());
@@ -2946,7 +3018,7 @@ namespace Stand
 						&& !user_understands_controller_open_close
 						)
 					{
-						Util::show_corner_help(LANG_FMT("HLP_CTRLLR", ControllerInputConfig::getOpenCloseStringForGame()), true);
+						showControllerOpenCloseHelp();
 					}
 				}
 				else
@@ -2959,10 +3031,7 @@ namespace Stand
 		EXCEPTIONAL_LOCK(g_renderer.extras_mtx)
 		SOUP_IF_UNLIKELY (no_extra_clear)
 		{
-			for (auto&& entry : g_renderer.extras_buffer)
-			{
-				g_renderer.extras.push_back(std::move(entry));
-			}
+			moveExtrasBufferIntoExtras();
 		}
 		else
 		{
@@ -3255,17 +3324,7 @@ namespace Stand
 				auto* const focused_player_command = (CommandListPlayer*)command->resolveParent(COMMAND_LIST_PLAYER);
 				if(focused_player_command != nullptr)
 				{
-					focused_players = focused_player_command->pp->getPlayers(focused_player_command->pp->single);
-					if (command == focused_player_command ? focused_player_beacon_in_list_of_all_players : focused_player_beacon_in_list_belonging_to_player)
-					{
-						for (const AbstractPlayer p : focused_players)
-						{
-							if (!focused_player_beacon_exclude_me || (p.hasPed() &&  p.getPed() != g_cam_ped))
-							{
-								DrawUtil3d::draw_ar_beacon(p.getPos());
-							}
-						}
-					}
+					updateFocusedPlayerBeacons(command, focused_player_command);
 				}
 				else
 				{
@@ -3281,7 +3340,7 @@ namespace Stand
 			if (command_state_change_save.has_value() && command_state_change_save.value() < get_current_time_millis())
 			{
 				command_state_change_save = std::nullopt;
-				saveState(std::wstring(auto_save_state));
+				saveAutoSaveState();
 			}
 
 			// Track Waypoint
@@ -3345,23 +3404,7 @@ namespace Stand
 						auto* list = getCurrentUiList();
 						if (list->canDispatchOnTickInViewportForChildren())
 						{
-							cursor_t draw_cursor = 0;
-							cursor_t emul_cursor = list->m_offset;
-							for (std::vector<std::unique_ptr<Command>>::const_iterator i; i = list->children.cbegin() + emul_cursor, emul_cursor < (cursor_t)list->children.size(); ++emul_cursor)
-							{
-								auto* cmd = i->get()->getPhysical();
-								if (cmd != nullptr
-									&& !cmd->isConcealed()
-									)
-								{
-									cmd->onTickInGameViewport();
-								}
-								if (++draw_cursor == getCommandsOnScreenLimit())
-								{
-									break;
-								}
-								i++;
-							}
+							tickCommandsInGameViewport(list);
 						}
 						EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 					}
@@ -3377,14 +3420,7 @@ namespace Stand
 				)
 			{
 				EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-				for (const auto& command : web_focus->children)
-				{
-					auto* cmd = command->getPhysical();
-					if (!cmd->isConcealed())
-					{
-						cmd->onTickInWebViewport();
-					}
-				}
+				tickCommandsInWebViewport(web_focus);
 				EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 			}
 		}
