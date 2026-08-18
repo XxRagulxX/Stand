@@ -30,17 +30,83 @@ namespace Stand
 		add_impl(name, std::move(range), std::move(pattern), callback, fail_callback);
 	}
 
-	void PatternBatch::add_impl(const Codename& name, soup::Range&& range, soup::Pattern&& pattern, pattern_callback_t callback, pattern_fail_callback_t fail_callback)
+	// name.toString() constructs a temporary std::string, so this can't run inside add_impl's EXCEPTIONAL_LOCK __try.
+	static void addPatternEntry(PatternBatch& self, const Codename& name, soup::Range&& range, soup::Pattern&& pattern, pattern_callback_t callback, pattern_fail_callback_t fail_callback)
 	{
-		EXCEPTIONAL_LOCK(mtx)
 #ifdef STAND_DEBUG
-		if (entry_names.contains(name.toString()))
+		if (self.entry_names.contains(name.toString()))
 		{
 			Exceptional::report("Duplicate pattern name");
 		}
-		entry_names.emplace(name.toString());
+		self.entry_names.emplace(name.toString());
 #endif
-		entries.emplace(name.toString(), std::move(range), std::move(pattern), callback, fail_callback);
+		self.entries.emplace(name.toString(), std::move(range), std::move(pattern), callback, fail_callback);
+	}
+
+	void PatternBatch::add_impl(const Codename& name, soup::Range&& range, soup::Pattern&& pattern, pattern_callback_t callback, pattern_fail_callback_t fail_callback)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+		addPatternEntry(*this, name, std::move(range), std::move(pattern), callback, fail_callback);
+		EXCEPTIONAL_UNLOCK(mtx)
+	}
+
+	// cache_i is an unordered_map iterator (non-trivially destructible under the debug CRT), so it must not exist inside a __try.
+	static void updatePatternCache(PatternBatch* inst, const std::string& name, uintptr_t offset)
+	{
+		auto cache_i = inst->cache->find(name);
+		if (cache_i == inst->cache->end())
+		{
+			inst->cache->emplace(name, std::move(offset));
+		}
+		else
+		{
+			cache_i->second = std::move(offset);
+		}
+	}
+
+	// entry, owned by threadPatternScan below, has a non-trivial destructor, so the __try must live in a function that doesn't own it.
+	static void updatePatternCacheLocked(PatternBatch* inst, const std::string& name, uintptr_t offset)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+		updatePatternCache(inst, name, offset);
+		EXCEPTIONAL_UNLOCK(mtx)
+	}
+
+	// list_append's parameter is const StringCastable& (owns a std::string), so
+	// passing a std::string into it still implicitly constructs a StringCastable
+	// temporary at the call site - kept out of invokePatternFailCallbackLocked's __try below.
+	static void appendAllowedFail(PatternBatch* inst, const std::string& name)
+	{
+		StringUtils::list_append(inst->allowed_fails, name);
+	}
+
+	// entry, owned by threadPatternScan below, has a non-trivial destructor, so the __try must live in a function that doesn't own it.
+	static void invokePatternFailCallbackLocked(PatternBatch* inst, const PatternBatch::Entry& entry)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+		appendAllowedFail(inst, entry.name);
+		entry.fail_callback(*inst);
+		EXCEPTIONAL_UNLOCK(mtx)
+	}
+
+	// building this message constructs ObfusString/std::string temporaries, so it can't run inside the __try below.
+	static void appendPatternFailureMessage(PatternBatch* inst, const std::string& name)
+	{
+		if (inst->error_message.empty())
+		{
+			inst->error_message = soup::ObfusString("Failed to find pattern(s): ").str().append(name);
+		}
+		else
+		{
+			inst->error_message.append(", ").append(name);
+		}
+	}
+
+	// entry, owned by threadPatternScan below, has a non-trivial destructor, so the __try must live in a function that doesn't own it.
+	static void appendPatternFailureMessageLocked(PatternBatch* inst, const PatternBatch::Entry& entry)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+		appendPatternFailureMessage(inst, entry.name);
 		EXCEPTIONAL_UNLOCK(mtx)
 	}
 
@@ -98,39 +164,17 @@ namespace Stand
 					uintptr_t offset = (result.as<uintptr_t>() - entry.range.base.as<uintptr_t>());
 					if (inst->cache)
 					{
-						EXCEPTIONAL_LOCK(mtx)
-						auto cache_i = inst->cache->find(entry.name);
-						if (cache_i == inst->cache->end())
-						{
-							inst->cache->emplace(entry.name, std::move(offset));
-						}
-						else
-						{
-							cache_i->second = std::move(offset);
-						}
-						EXCEPTIONAL_UNLOCK(mtx)
+						updatePatternCacheLocked(inst, entry.name, offset);
 					}
 				}
 			}
 			else if (entry.fail_callback != nullptr)
 			{
-				EXCEPTIONAL_LOCK(mtx)
-				StringUtils::list_append(inst->allowed_fails, entry.name);
-				entry.fail_callback(*inst);
-				EXCEPTIONAL_UNLOCK(mtx)
+				invokePatternFailCallbackLocked(inst, entry);
 			}
 			else
 			{
-				EXCEPTIONAL_LOCK(mtx)
-				if (inst->error_message.empty())
-				{
-					inst->error_message = soup::ObfusString("Failed to find pattern(s): ").str().append(entry.name);
-				}
-				else
-				{
-					inst->error_message.append(", ").append(entry.name);
-				}
-				EXCEPTIONAL_UNLOCK(mtx)
+				appendPatternFailureMessageLocked(inst, entry);
 			}
 		} while (true);
 	}
