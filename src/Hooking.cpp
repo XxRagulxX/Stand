@@ -7653,9 +7653,29 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 #if CLEAR_BONUS_ON_DL
-	void __fastcall CTunables_OnCloudEvent(uintptr_t a1, CloudEvent* evt)
+	// Has a destructible JSON document local, so this must not itself contain a __try.
+	static void decryptAndModifyCloudEventBonus(CloudEvent* evt, std::string& buf)
 	{
-		std::string buf;
+		auto jt = soup::json::decodeForDedicatedVariable(evt->data.data);
+
+		jt->asObj().at(soup::ObfusString("bonus").str()).asArr().children.clear();
+		jt->asObj().at(soup::ObfusString("tunables")).asObj().erase(soup::ObfusString("8B7D3320").str());
+
+		buf = jt->encode();
+
+		evt->data.data = buf.data();
+		evt->data.size = (unsigned int)buf.size();
+
+		pointers::rage_AES_Encrypt(
+			*pointers::rage_AES_ms_cloudAes,
+			evt->data.data,
+			evt->data.size
+		);
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryDecryptAndModifyCloudEvent(uintptr_t a1, CloudEvent* evt, std::string& buf)
+	{
 		__try
 		{
 			auto tunables = reinterpret_cast<CTunables*>(a1 - 8);
@@ -7673,21 +7693,7 @@ to_recover.emplace_back(addr, *addr); \
 						evt->data.size
 					))
 					{
-						auto jt = soup::json::decodeForDedicatedVariable(evt->data.data);
-
-						jt->asObj().at(soup::ObfusString("bonus").str()).asArr().children.clear();
-						jt->asObj().at(soup::ObfusString("tunables")).asObj().erase(soup::ObfusString("8B7D3320").str());
-
-						buf = jt->encode();
-
-						evt->data.data = buf.data();
-						evt->data.size = (unsigned int)buf.size();
-
-						pointers::rage_AES_Encrypt(
-							*pointers::rage_AES_ms_cloudAes,
-							evt->data.data,
-							evt->data.size
-						);
+						decryptAndModifyCloudEventBonus(evt, buf);
 					}
 				}
 			}
@@ -7695,13 +7701,25 @@ to_recover.emplace_back(addr, *addr); \
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	// No destructible locals here: only pointers, so it's safe to __try in this function.
+	static void tryCallOgCloudEvent(uintptr_t a1, CloudEvent* evt)
+	{
 		__try
 		{
-			return OG(CTunables_OnCloudEvent)(a1, evt);
+			OG(CTunables_OnCloudEvent)(a1, evt);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	void __fastcall CTunables_OnCloudEvent(uintptr_t a1, CloudEvent* evt)
+	{
+		std::string buf;
+		tryDecryptAndModifyCloudEvent(a1, evt, buf);
+		tryCallOgCloudEvent(a1, evt);
 		buf.clear();
 	}
 #endif
@@ -7720,6 +7738,14 @@ to_recover.emplace_back(addr, *addr); \
 		}
 	}
 
+#ifdef STAND_DEBUG
+	// fmt::format() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void toastNetworkBailReason(int reason)
+	{
+		Util::toast(fmt::format("CNetwork::Bail, reason = {}", reason), TOAST_ALL);
+	}
+#endif
+
 	// CNetwork::Bail, ARXAN CHECKED
 	// Something about just hooking this function causes the game to not bail when it normally should (because BE is disabled).
 	// When Stand is injected late, however, we do need to be more active and block the bail.
@@ -7730,7 +7756,7 @@ to_recover.emplace_back(addr, *addr); \
 			if (*reinterpret_cast<int*>(bailParams) != BAIL__NO_BATTLEYE__MEGAMIND_EMOJI)
 			{
 #ifdef STAND_DEBUG
-				Util::toast(fmt::format("CNetwork::Bail, reason = {}", *reinterpret_cast<int*>(bailParams)), TOAST_ALL);
+				toastNetworkBailReason(*reinterpret_cast<int*>(bailParams));
 #endif
 				OG(network_bail)(bailParams, bSendScriptEvent);
 			}
@@ -7818,55 +7844,65 @@ to_recover.emplace_back(addr, *addr); \
 		return true;
 	}
 
+	// Has destructible locals (rapidjson::Document, std::string), so this must not itself contain a __try.
+	static std::optional<bool> computePresenceEventAllow(rage::rlGamerInfo* a2, const char** data, const char* source)
+	{
+#ifdef STAND_DEBUG
+		if (g_hooking.log_presence_event_game)
+		{
+			g_logger.log(fmt::format("Game Presence Event: {}, {}, {}", source, a2->toString(), *data));
+		}
+#endif
+		rapidjson::Document d;
+		if (d.Parse(*data).HasParseError() || !d.IsObject())
+		{
+#ifdef STAND_DEBUG
+			Util::toast(fmt::format("Blocked presence event with bad json: {}", *data), TOAST_ALL);
+#endif
+			return false;
+		}
+		auto gm_evt = d[soup::ObfusString("gm.evt").c_str()].GetObj();
+		auto event_type = gm_evt[soup::ObfusString("e").c_str()].GetString();
+		switch (rage::atStringHash(event_type))
+		{
+		case static_cast<uint32_t>(ATSTRINGHASH("ginv")):
+			{
+				if (g_hooking.block_job_invites)
+				{
+					return false;
+				}
+
+				auto event_data = gm_evt[soup::ObfusString("d").c_str()].GetObj();
+				auto flags = event_data[soup::ObfusString("f").c_str()].GetUint64();
+				if (flags >= 0x5000000000000000)
+				{
+//#ifdef STAND_DEBUG
+//						Util::toast("blocked invite with bad flags", TOAST_ALL);
+//#endif
+					return false;
+				}
+			}
+			break;
+
+			// Letter Scraps: {"gm.evt":{"e":"StatUpdate","d":{"stat":-2044299740,"from":"MKII_Griefer","ival":50}}}
+		case ATSTRINGHASH("StatUpdate"):
+			if (g_hooking.block_friend_stat_notifications)
+			{
+				return false;
+			}
+			break;
+		}
+		return std::nullopt;
+	}
+
 	bool __fastcall parse_presence_event(CGamePresenceEventDispatcher* a1, rage::rlGamerInfo* a2, __int64 a3, const char** data, const char* source)
 	{
 		// observed values for source: "self", "inbox"
 		__try
 		{
-#ifdef STAND_DEBUG
-			if (g_hooking.log_presence_event_game)
+			if (auto res = computePresenceEventAllow(a2, data, source))
 			{
-				g_logger.log(fmt::format("Game Presence Event: {}, {}, {}", source, a2->toString(), *data));
-			}
-#endif
-			rapidjson::Document d;
-			if (d.Parse(*data).HasParseError() || !d.IsObject())
-			{
-#ifdef STAND_DEBUG
-				Util::toast(fmt::format("Blocked presence event with bad json: {}", *data), TOAST_ALL);
-#endif
-				return false;
-			}
-			auto gm_evt = d[soup::ObfusString("gm.evt").c_str()].GetObj();
-			auto event_type = gm_evt[soup::ObfusString("e").c_str()].GetString();
-			switch (rage::atStringHash(event_type))
-			{
-			case static_cast<uint32_t>(ATSTRINGHASH("ginv")):
-				{
-					if (g_hooking.block_job_invites)
-					{
-						return false;
-					}
-
-					auto event_data = gm_evt[soup::ObfusString("d").c_str()].GetObj();
-					auto flags = event_data[soup::ObfusString("f").c_str()].GetUint64();
-					if (flags >= 0x5000000000000000)
-					{
-//#ifdef STAND_DEBUG
-//						Util::toast("blocked invite with bad flags", TOAST_ALL);
-//#endif
-						return false;
-					}
-				}
-				break;
-
-				// Letter Scraps: {"gm.evt":{"e":"StatUpdate","d":{"stat":-2044299740,"from":"MKII_Griefer","ival":50}}}
-			case ATSTRINGHASH("StatUpdate"):
-				if (g_hooking.block_friend_stat_notifications)
-				{
-					return false;
-				}
-				break;
+				return *res;
 			}
 		}
 		__EXCEPTIONAL()
