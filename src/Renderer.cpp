@@ -666,11 +666,20 @@ namespace Stand
 		leaveDrawContext();
 	}
 
+	// SpriteBatch::Begin's 6th parameter (setCustomShaders) is a
+	// std::function with a default value, constructed at the call site even
+	// though it's omitted here; kept out of enterSpriteDrawContext() below,
+	// which holds a __try.
+	static void beginSpriteBatch(SpriteBatch* spriteBatch, ID3D11BlendState* blendState, ID3D11RasterizerState* rasterizerState)
+	{
+		spriteBatch->Begin(SpriteSortMode::SpriteSortMode_Deferred, blendState, nullptr, nullptr, rasterizerState);
+	}
+
 	void Renderer::enterSpriteDrawContext(ID3D11BlendState* blendState) const
 	{
 		__try
 		{
-			m_pSpriteBatch->Begin(SpriteSortMode::SpriteSortMode_Deferred, blendState, nullptr, nullptr, m_pCommonState->CullNone());
+			beginSpriteBatch(m_pSpriteBatch.get(), blendState, m_pCommonState->CullNone());
 		}
 		__EXCEPTIONAL() // "Cannot nest Begin calls on a single SpriteBatch"
 		{
