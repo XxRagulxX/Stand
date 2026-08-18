@@ -193,6 +193,14 @@ NAMESPACE_SOUP
 #endif
 
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+	// exception_name is taken by rvalue reference (the caller's static, not
+	// owned by this function), so this function's __try never shares a stack
+	// frame with an object requiring unwinding.
+	[[noreturn]] static void throwOsException(std::string&& exception_name)
+	{
+		SOUP_THROW(osException(std::move(exception_name)));
+	}
+
 	static void isolateNoUnwind(void(*f)(void*, void*, void*), void* a1, void* a2, void* a3)
 	{
 		bool is_stk_oflw;
@@ -206,7 +214,7 @@ NAMESPACE_SOUP
 			{
 				_resetstkoflw();
 			}
-			SOUP_THROW(osException(std::move(exception_name)));
+			throwOsException(std::move(exception_name));
 		}
 	}
 #endif

@@ -5547,6 +5547,21 @@ namespace Stand::hooks
 	}
 
 #ifdef STAND_DEV
+#if DEBUG_SYNCTREE_BUFFER_OVERRUNS
+	// fmt::format()/soup::ObfusString(...).str() produce std::string temporaries, so this is kept out of the __try'ing function below.
+	static void toastSyncDataNodeStssRestored(rage::netSyncDataNode* _this)
+	{
+		Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): stss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+	}
+#endif
+#if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
+	// fmt::format()/soup::ObfusString(...).str() produce std::string temporaries, so this is kept out of the __try'ing function below.
+	static void toastSyncDataNodeNopssRestored(rage::netSyncDataNode* _this)
+	{
+		Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): nopss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+	}
+#endif
+
 	bool __fastcall rage_netSyncDataNode_Read(rage::netSyncDataNode* _this, unsigned int serMode, unsigned int actFlags, rage::datBitBuffer* bitBuffer, rage::netLoggingInterface* pLog)
 	{
 		bool ret = OG(rage_netSyncDataNode_Read)(_this, serMode, actFlags, bitBuffer, pLog);
@@ -5555,13 +5570,13 @@ namespace Stand::hooks
 #if DEBUG_SYNCTREE_BUFFER_OVERRUNS
 			if (stss.checkAndRestore(current_sync_tree))
 			{
-				Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): stss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+				toastSyncDataNodeStssRestored(_this);
 			}
 #endif
 #if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
 			if (nopss.checkAndRestore())
 			{
-				Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): nopss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+				toastSyncDataNodeNopssRestored(_this);
 			}
 #endif
 		}
@@ -7201,174 +7216,182 @@ to_recover.emplace_back(addr, *addr); \
 	}
 #endif
 
+	// Has destructible locals (std::string), so this must not itself contain a __try.
+	static bool computeTelemetryExportAllow(rage::rlMetric* metric)
+	{
+		bool allow = true;
+		std::string metric_name = metric->getName();
+		switch (rage::atStringHash(metric_name))
+		{
+		case ATSTRINGHASH("CHEAT"): // MetricCHEAT, related to SP cheat box
+		case ATSTRINGHASH("AUX_DEUX"): // MetricTamper
+		case ATSTRINGHASH("CCF_UPDATE"): // MetricInfoChange
+		case ATSTRINGHASH("BENCHMARK_Q"): // was only in 2699 build "TODO: <File description>"
+		case ATSTRINGHASH("REPORTER"):
+		case ATSTRINGHASH("MEM_NEW"):
+		case ATSTRINGHASH("DEBUGGER_ATTACH"):
+		case ATSTRINGHASH("XP_LOSS"):
+		case ATSTRINGHASH("WEATHER"):
+		case ATSTRINGHASH("CASH_CREATED"):
+		case ATSTRINGHASH("DR_PS"):
+		case ATSTRINGHASH("GARAGE_TAMPER"):
+		case ATSTRINGHASH("FAIL_SERV"):
+		case ATSTRINGHASH("CODE_CRC"):
+		//case ATSTRINGHASH("COLLECTIBLE"): // Whenever we collect a collectible
+		case ATSTRINGHASH("DUPE_DETECT"):
+		//case ATSTRINGHASH("MISMATCH"): // added in 3095, seems to be related to remote peers doing shit
+		case ATSTRINGHASH("MISMATCH_TRIGGERED_EVENT"): // added in 3095
+		case ATSTRINGHASH("BLAST"):
+#ifdef STAND_DEBUG
+			onAcTriggered(metric_name);
+#endif
+			[[fallthrough]];
+		case ATSTRINGHASH("AWARD_XP"): // earning XP
+		case ATSTRINGHASH("EARN"): // doing transactions, apparently better to block this for modded money methods
+		case ATSTRINGHASH("W_L"): // wanted level
+		case ATSTRINGHASH("FLOW_LOW"): // also related to wanted level
+		case ATSTRINGHASH("ESVCS"): // emergency service called
+		case ATSTRINGHASH("IDLEKICK"): // whenever the game calls PLAYSTATS_IDLE_KICK, which is a lot, not desirable with "Disable Idle Kick" I guess
+		case ATSTRINGHASH("REPORT_INVALIDMODEL"): // also used to report remote peers so a bit spammy
+		case ATSTRINGHASH("FIRST_VEH"): // also used to report remote peers so a bit spammy
+		case ATSTRINGHASH("LAST_VEH"): // also used to report remote peers so a bit spammy
+			allow = false;
+			break;
+
+		case ATSTRINGHASH("MM"): // loaded modules delta
+			{
+				std::string data = metric->getLogData();
+				if (data.find(soup::ObfusString("=534C5F").str()) != std::string::npos
+					|| data.find(soup::ObfusString("|534C5F").str()) != std::string::npos
+					)
+				{
+					allow = false; // a module starts with "SL_", that shouldn't happen
+				}
+				else
+				{
+#if false
+					// MM metric was submitted, now we can kill this AC thing, because this thing can leak memory and eventually crash the game.
+					// Unfortunately, killing this thing will cause a ban within 1-2 days when the user earns ton of money.
+					if (auto update_element = pointers::game_skeleton->findUpdateElement(0xA0F39FB6))
+					{
+						update_element->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
+					}
+#endif
+				}
+			}
+			break;
+		}
+
+		// This _should_ be fully handled in CommandPlayer, but just in case...
+		const bool is_remote_cheat = (soup::ObfusString("DIG") == metric_name);
+		if (is_remote_cheat)
+		{
+			std::string sub_name = static_cast<MetricRemoteCheat*>(metric)->getSubName();
+			//metric_name.push_back(':');
+			//metric_name.append(sub_name);
+			auto gamer_handle = rage::rlGamerHandle::fromString(reinterpret_cast<MetricRemoteCheat*>(metric)->gamer_handle_string);
+			if (gamer_handle.isValid())
+			{
+				auto p = AbstractPlayer::fromRockstarId(gamer_handle.rockstar_id);
+				if (auto cngp = p.getCNetGamePlayer())
+				{
+					int id = -1;
+					switch (rage::atStringHash(sub_name))
+					{
+					case ATSTRINGHASH("SCRIPT"): // MetricCheatScript
+						id = 64;
+						break;
+
+					case ATSTRINGHASH("CF"): // MetricCheatCRCRequestFlood
+						id = 0;
+						break;
+
+					case ATSTRINGHASH("CC"): // MetricCheatCRCCompromised
+						id = 1;
+						break;
+
+					case ATSTRINGHASH("CNR"): // MetricCheatCRCNotReplied
+						id = 2;
+						break;
+
+					case ATSTRINGHASH("CCF"): // MetricRemoteInfoChange
+						id = 4;
+						break;
+
+					case ATSTRINGHASH("CCT"): // MetricRemoteInfoChange2
+						id = 5;
+						break;
+
+					case ATSTRINGHASH("RTB"): // MetricRemoteInfoChange3
+						id = 6;
+						break;
+
+					case ATSTRINGHASH("GSCW"): // MetricRemoteInfoChange4
+						id = 7;
+						break;
+
+					case ATSTRINGHASH("GSCB"): // MetricRemoteInfoChange5
+						id = 8;
+						break;
+
+					case ATSTRINGHASH("GSINV"): // MetricRemoteInfoChange6
+						id = 9;
+						break;
+
+					case ATSTRINGHASH("GSINT"): // MetricRemoteInfoChange7
+						id = 10;
+						break;
+					}
+
+					if (id == -1 || id >= 16 || !((cngp->m_cheatsNotified >> id) & 1))
+					{
+						if (id != 64) // This is only triggered by bad sport leave stuff, which isn't really what we're interested in.
+						{
+							std::string str = fmt::to_string(id);
+							str.push_back('*');
+							p.triggerDetection(FlowEvent::MOD_RAC, std::move(str), 50);
+						}
+					}
+				}
+			}
+		}
+
+#ifdef STAND_DEBUG
+		if (g_hooking.log_metrics
+			&& metric_name != "WALKMODE"
+			)
+		{
+			/*__try
+			{
+				std::string rtti_name = soup::rtti::object::fromInstance(metric)->getTypeInfo()->getName();
+				name.append(" (");
+				name.append(rtti_name);
+				name.push_back(')');
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER)
+			{
+			}*/
+			if (!allow)
+			{
+				metric_name.append(" [blocked]");
+			}
+			metric_name.append(": ");
+			metric_name.push_back('{');
+			metric_name.append(metric->getLogData());
+			metric_name.push_back('}');
+			g_logger.log(std::move(metric_name));
+			//GENERATE_STACK_TRACE;
+		}
+#endif
+		return allow;
+	}
+
 	bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, void* a2, void* a3, uint64_t metricTime, rage::rlMetric* metric)
 	{
 		bool allow = true;
 		__try
 		{
-			std::string metric_name = metric->getName();
-			switch (rage::atStringHash(metric_name))
-			{
-			case ATSTRINGHASH("CHEAT"): // MetricCHEAT, related to SP cheat box
-			case ATSTRINGHASH("AUX_DEUX"): // MetricTamper
-			case ATSTRINGHASH("CCF_UPDATE"): // MetricInfoChange
-			case ATSTRINGHASH("BENCHMARK_Q"): // was only in 2699 build "TODO: <File description>"
-			case ATSTRINGHASH("REPORTER"):
-			case ATSTRINGHASH("MEM_NEW"):
-			case ATSTRINGHASH("DEBUGGER_ATTACH"):
-			case ATSTRINGHASH("XP_LOSS"):
-			case ATSTRINGHASH("WEATHER"):
-			case ATSTRINGHASH("CASH_CREATED"):
-			case ATSTRINGHASH("DR_PS"):
-			case ATSTRINGHASH("GARAGE_TAMPER"):
-			case ATSTRINGHASH("FAIL_SERV"):
-			case ATSTRINGHASH("CODE_CRC"):
-			//case ATSTRINGHASH("COLLECTIBLE"): // Whenever we collect a collectible
-			case ATSTRINGHASH("DUPE_DETECT"):
-			//case ATSTRINGHASH("MISMATCH"): // added in 3095, seems to be related to remote peers doing shit
-			case ATSTRINGHASH("MISMATCH_TRIGGERED_EVENT"): // added in 3095
-			case ATSTRINGHASH("BLAST"):
-#ifdef STAND_DEBUG
-				onAcTriggered(metric_name);
-#endif
-				[[fallthrough]];
-			case ATSTRINGHASH("AWARD_XP"): // earning XP
-			case ATSTRINGHASH("EARN"): // doing transactions, apparently better to block this for modded money methods
-			case ATSTRINGHASH("W_L"): // wanted level
-			case ATSTRINGHASH("FLOW_LOW"): // also related to wanted level
-			case ATSTRINGHASH("ESVCS"): // emergency service called
-			case ATSTRINGHASH("IDLEKICK"): // whenever the game calls PLAYSTATS_IDLE_KICK, which is a lot, not desirable with "Disable Idle Kick" I guess
-			case ATSTRINGHASH("REPORT_INVALIDMODEL"): // also used to report remote peers so a bit spammy
-			case ATSTRINGHASH("FIRST_VEH"): // also used to report remote peers so a bit spammy
-			case ATSTRINGHASH("LAST_VEH"): // also used to report remote peers so a bit spammy
-				allow = false;
-				break;
-
-			case ATSTRINGHASH("MM"): // loaded modules delta
-				{
-					std::string data = metric->getLogData();
-					if (data.find(soup::ObfusString("=534C5F").str()) != std::string::npos
-						|| data.find(soup::ObfusString("|534C5F").str()) != std::string::npos
-						)
-					{
-						allow = false; // a module starts with "SL_", that shouldn't happen
-					}
-					else
-					{
-#if false
-						// MM metric was submitted, now we can kill this AC thing, because this thing can leak memory and eventually crash the game.
-						// Unfortunately, killing this thing will cause a ban within 1-2 days when the user earns ton of money.
-						if (auto update_element = pointers::game_skeleton->findUpdateElement(0xA0F39FB6))
-						{
-							update_element->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
-						}
-#endif
-					}
-				}
-				break;
-			}
-
-			// This _should_ be fully handled in CommandPlayer, but just in case...
-			const bool is_remote_cheat = (soup::ObfusString("DIG") == metric_name);
-			if (is_remote_cheat)
-			{
-				std::string sub_name = static_cast<MetricRemoteCheat*>(metric)->getSubName();
-				//metric_name.push_back(':');
-				//metric_name.append(sub_name);
-				auto gamer_handle = rage::rlGamerHandle::fromString(reinterpret_cast<MetricRemoteCheat*>(metric)->gamer_handle_string);
-				if (gamer_handle.isValid())
-				{
-					auto p = AbstractPlayer::fromRockstarId(gamer_handle.rockstar_id);
-					if (auto cngp = p.getCNetGamePlayer())
-					{
-						int id = -1;
-						switch (rage::atStringHash(sub_name))
-						{
-						case ATSTRINGHASH("SCRIPT"): // MetricCheatScript
-							id = 64;
-							break;
-
-						case ATSTRINGHASH("CF"): // MetricCheatCRCRequestFlood
-							id = 0;
-							break;
-
-						case ATSTRINGHASH("CC"): // MetricCheatCRCCompromised
-							id = 1;
-							break;
-
-						case ATSTRINGHASH("CNR"): // MetricCheatCRCNotReplied
-							id = 2;
-							break;
-
-						case ATSTRINGHASH("CCF"): // MetricRemoteInfoChange
-							id = 4;
-							break;
-
-						case ATSTRINGHASH("CCT"): // MetricRemoteInfoChange2
-							id = 5;
-							break;
-
-						case ATSTRINGHASH("RTB"): // MetricRemoteInfoChange3
-							id = 6;
-							break;
-
-						case ATSTRINGHASH("GSCW"): // MetricRemoteInfoChange4
-							id = 7;
-							break;
-
-						case ATSTRINGHASH("GSCB"): // MetricRemoteInfoChange5
-							id = 8;
-							break;
-
-						case ATSTRINGHASH("GSINV"): // MetricRemoteInfoChange6
-							id = 9;
-							break;
-
-						case ATSTRINGHASH("GSINT"): // MetricRemoteInfoChange7
-							id = 10;
-							break;
-						}
-
-						if (id == -1 || id >= 16 || !((cngp->m_cheatsNotified >> id) & 1))
-						{
-							if (id != 64) // This is only triggered by bad sport leave stuff, which isn't really what we're interested in.
-							{
-								std::string str = fmt::to_string(id);
-								str.push_back('*');
-								p.triggerDetection(FlowEvent::MOD_RAC, std::move(str), 50);
-							}
-						}
-					}
-				}
-			}
-
-#ifdef STAND_DEBUG
-			if (g_hooking.log_metrics
-				&& metric_name != "WALKMODE"
-				)
-			{
-				/*__try
-				{
-					std::string rtti_name = soup::rtti::object::fromInstance(metric)->getTypeInfo()->getName();
-					name.append(" (");
-					name.append(rtti_name);
-					name.push_back(')');
-				}
-				__except (EXCEPTION_EXECUTE_HANDLER)
-				{
-				}*/
-				if (!allow)
-				{
-					metric_name.append(" [blocked]");
-				}
-				metric_name.append(": ");
-				metric_name.push_back('{');
-				metric_name.append(metric->getLogData());
-				metric_name.push_back('}');
-				g_logger.log(std::move(metric_name));
-				//GENERATE_STACK_TRACE;
-			}
-#endif
+			allow = computeTelemetryExportAllow(metric);
 		}
 		__EXCEPTIONAL()
 		{
@@ -7387,35 +7410,32 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 #if HTTP_HOOK
-	char __fastcall rage_netHttpRequest_Update(rage::netHttpRequest* a1)
-	{
 #ifdef STAND_DEBUG
-		if (g_hooking.log_http_requests)
+	// Has a destructible std::string local, so this must not itself contain a __try.
+	static void logHttpRequestDebug(rage::netHttpRequest* a1)
+	{
+		auto msg = fmt::format("{}://{}{}", a1->Scheme, a1->Host, a1->Path);
+		if constexpr (false)
 		{
-			__try
+			if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
 			{
-				auto msg = fmt::format("{}://{}{}", a1->Scheme, a1->Host, a1->Path);
-				if constexpr (false)
-				{
-					if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
-					{
-						msg.append(" - ").append((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
-					}
-				}
-				static std::unordered_set<std::string> dedup{};
-				if (!dedup.contains(msg)
-					|| false
-					)
-				{
-					dedup.emplace(msg);
-					g_logger.log(std::move(msg));
-				}
-			}
-			__EXCEPTIONAL()
-			{
+				msg.append(" - ").append((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
 			}
 		}
+		static std::unordered_set<std::string> dedup{};
+		if (!dedup.contains(msg)
+			|| false
+			)
+		{
+			dedup.emplace(msg);
+			g_logger.log(std::move(msg));
+		}
+	}
 #endif
+
+	// Has destructible locals (std::string, JSON document), so this must not itself contain a __try.
+	static bool computeHttpRequestBlock(rage::netHttpRequest* a1)
+	{
 		std::string path(a1->Path);
 		bool block = false;
 #if BLOCK_ALL_METRICS
@@ -7427,66 +7447,120 @@ to_recover.emplace_back(addr, *addr); \
 #endif
 			if (path.find(soup::ObfusString("GameTransactions.asmx").str()) != std::string::npos)
 		{
-			__try
+			const bool is_bonus = (path.find(soup::ObfusString("GameTransactions.asmx/Bonus").str()) != std::string::npos);
+			if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
 			{
-				const bool is_bonus = (path.find(soup::ObfusString("GameTransactions.asmx/Bonus").str()) != std::string::npos);
-				if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
+				auto inst = soup::json::decode((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
+				if (auto items = inst->asObj().find(soup::ObfusString("items").str()))
 				{
-					auto inst = soup::json::decode((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
-					if (auto items = inst->asObj().find(soup::ObfusString("items").str()))
+					for (const auto& item : items->asArr())
 					{
-						for (const auto& item : items->asArr())
+						const auto itemId = item.asObj().at(soup::ObfusString("itemId").str()).asInt().value;
+						switch (itemId)
 						{
-							const auto itemId = item.asObj().at(soup::ObfusString("itemId").str()).asInt().value;
-							switch (itemId)
+						default:
+							if (!is_bonus)
 							{
-							default:
-								if (!is_bonus)
-								{
-									break;
-								}
-								[[fallthrough]];
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_SE"): // -1862553257
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_FALL"): // 1604862494
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NOT_SEEN"): // -1454779202
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_DEATH"): // -2114390367
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_1"): // -1807935122
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_2"): // 2026037878
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_3"): // 1794983659
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_4"): // 612415999
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_MODEL"): // -782113305
-#ifdef STAND_DEBUG
-								onAcTriggered(fmt::to_string(itemId));
-#endif
-								[[fallthrough]];
-							case 1354049168:
-								block = true;
 								break;
 							}
+							[[fallthrough]];
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_SE"): // -1862553257
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_FALL"): // 1604862494
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NOT_SEEN"): // -1454779202
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_DEATH"): // -2114390367
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_1"): // -1807935122
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_2"): // 2026037878
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_3"): // 1794983659
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_4"): // 612415999
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_MODEL"): // -782113305
+#ifdef STAND_DEBUG
+							onAcTriggered(fmt::to_string(itemId));
+#endif
+							[[fallthrough]];
+						case 1354049168:
+							block = true;
+							break;
 						}
 					}
 				}
-				else if (is_bonus)
-				{
-					block = true;
+			}
+			else if (is_bonus)
+			{
+				block = true;
 #ifdef STAND_DEBUG
-					onAcTriggered("Bonus");
+				onAcTriggered("Bonus");
 #endif
-				}
+			}
+		}
+		return block;
+	}
+
+	// soup::ObfusString(...).str() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void redirectHttpRequest(rage::netHttpRequest* a1)
+	{
+		if (g_hooking.redir_host.empty())
+		{
+			g_hooking.redir_host = soup::ObfusString("hcaptcha.com").str();
+		}
+		a1->Host = g_hooking.redir_host.c_str();
+	}
+
+	char __fastcall rage_netHttpRequest_Update(rage::netHttpRequest* a1)
+	{
+#ifdef STAND_DEBUG
+		if (g_hooking.log_http_requests)
+		{
+			__try
+			{
+				logHttpRequestDebug(a1);
 			}
 			__EXCEPTIONAL()
 			{
 			}
 		}
+#endif
+		bool block = false;
+		__try
+		{
+			block = computeHttpRequestBlock(a1);
+		}
+		__EXCEPTIONAL()
+		{
+		}
 		if (block)
 		{
-			if (g_hooking.redir_host.empty())
-			{
-				g_hooking.redir_host = soup::ObfusString("hcaptcha.com").str();
-			}
-			a1->Host = g_hooking.redir_host.c_str();
+			redirectHttpRequest(a1);
 		}
 		return OG(rage_netHttpRequest_Update)(a1);
+	}
+#endif
+
+#ifdef STAND_DEBUG
+	// Has destructible locals (std::vector, std::string), so this must not itself contain a __try.
+	static void logNetEventSend(rage::netGameEvent* evt)
+	{
+		std::vector<CNetGamePlayer*> targets{};
+		for (const auto& p : AbstractPlayer::listExcept(true))
+		{
+			if (CNetGamePlayer* ngp = p.getCNetGamePlayer(); evt->IsInScope(ngp))
+			{
+				targets.emplace_back(ngp);
+			}
+		}
+
+		std::string msg = "Sending ";
+		msg.append(get_net_event_name(evt->type).getEnglishUtf8());
+		msg.append(" to ");
+		if (targets.size() == 1)
+		{
+			msg.append(targets.at(0)->GetLogName());
+		}
+		else
+		{
+			msg.append(std::to_string(targets.size()));
+			msg.append(" players");
+		}
+		Util::toast(std::move(msg));
 	}
 #endif
 
@@ -7497,28 +7571,7 @@ to_recover.emplace_back(addr, *addr); \
 #ifdef STAND_DEBUG
 			if (g_hooking.log_net_event_send)
 			{
-				std::vector<CNetGamePlayer*> targets{};
-				for (const auto& p : AbstractPlayer::listExcept(true))
-				{
-					if (CNetGamePlayer* ngp = p.getCNetGamePlayer(); evt->IsInScope(ngp))
-					{
-						targets.emplace_back(ngp);
-					}
-				}
-
-				std::string msg = "Sending ";
-				msg.append(get_net_event_name(evt->type).getEnglishUtf8());
-				msg.append(" to ");
-				if (targets.size() == 1)
-				{
-					msg.append(targets.at(0)->GetLogName());
-				}
-				else
-				{
-					msg.append(std::to_string(targets.size()));
-					msg.append(" players");
-				}
-				Util::toast(std::move(msg));
+				logNetEventSend(evt);
 			}
 #endif
 		}

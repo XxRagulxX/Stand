@@ -116,6 +116,27 @@ namespace Stand
 		g_cam_ent = g_cam_veh.isValid() ? g_cam_veh : g_cam_ped;
 	}
 
+	// No __try here, so this is free to have destructible locals (ObfusString::str()/fmt::format produce std::string temporaries).
+	static void logDroppedControlRequestEndOfExistence(Entity entity)
+	{
+		g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Dropping control request for entity {} due to end of existence.").str()), entity));
+	}
+
+	// No __try here, so this is free to have destructible locals (ObfusString::str()/fmt::format/getName produce std::string temporaries).
+	static void reportControlRequestTimeout(Entity entity)
+	{
+		const auto p = AbstractEntity::get(entity).getOwner();
+		g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Dropping control request for entity {} from {} due to timeout.").str()), entity, p.getName()));
+		if (p.isInTimeout())
+		{
+			g_logger.log(soup::ObfusString("Note: Player has been timed out. This wound is a self-inflicted one."));
+		}
+		else
+		{
+			p.triggerDetection(FlowEvent::MOD_NONET, {}, 75);
+		}
+	}
+
 	void AbstractEntity::onTick()
 	{
 		updatePlayerPedVehAndEnt();
@@ -147,23 +168,14 @@ namespace Stand
 				}
 				else
 				{
-					g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Dropping control request for entity {} due to end of existence.").str()), entry.first));
+					logDroppedControlRequestEndOfExistence(entry.first);
 				}
 			}
 			else
 			{
 				__try
 				{
-					const auto p = AbstractEntity::get(entry.first).getOwner();
-					g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Dropping control request for entity {} from {} due to timeout.").str()), entry.first, p.getName()));
-					if (p.isInTimeout())
-					{
-						g_logger.log(soup::ObfusString("Note: Player has been timed out. This wound is a self-inflicted one."));
-					}
-					else
-					{
-						p.triggerDetection(FlowEvent::MOD_NONET, {}, 75);
-					}
+					reportControlRequestTimeout(entry.first);
 				}
 				__EXCEPTIONAL()
 				{

@@ -1643,6 +1643,89 @@ namespace Stand
 		active_profile.setSaveNoLongerNeeded();
 	}
 
+	// No __try here, so it's safe to construct this toast message temporary in this frame.
+	static void reportApplyStateFailure(const std::string& name)
+	{
+		Util::toast(std::move(std::string("Failed to set state for ").append(name)), TOAST_ALL);
+	}
+
+#if GUI_DEBUG
+	// No __try here, so it's safe to build this debug string in this frame.
+	static void setPersistentDebugTextForState(const std::string& name, const std::string& value)
+	{
+		g_gui.persistent_debug_text = std::string(name).append(": ").append(value);
+	}
+
+	// No __try here, so it's safe to build this debug string in this frame.
+	static void setPersistentDebugTextForStateDefault(const std::string& name)
+	{
+		g_gui.persistent_debug_text = std::string(name).append(": [Default]");
+	}
+#endif
+
+#if PROFILE_STATE
+	// No __try here, so it's safe to construct the fmt::format() temporary in this frame.
+	static void logRecursivelyApplyStateTiming(uint64_t ms, uint64_t fraction, const std::string& name)
+	{
+		g_logger.log(fmt::format("{}.{:0>5} ms for {}", ms, fraction, name));
+	}
+#endif
+
+	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
+	static void tryApplyStateToCommand(std::unordered_map<std::string, std::string>& state, CommandPhysical* const command, std::string& name, Click& click)
+	{
+		__try
+		{
+			if (command->supportsStateOperations()
+				&& command->supportsSavedState()
+				)
+			{
+				const auto state_i = state.find(name);
+				if (state_i != state.end())
+				{
+#if GUI_DEBUG
+					setPersistentDebugTextForState(name, state_i->second);
+#endif
+					command->setState(click, state_i->second);
+				}
+				else
+				{
+#if GUI_DEBUG
+					setPersistentDebugTextForStateDefault(name);
+#endif
+					command->applyDefaultState();
+				}
+			}
+			if (command->isListNonAction())
+			{
+				name.push_back('>');
+
+#if PROFILE_STATE
+				uint64_t ticks;
+				QueryPerformanceCounter((LARGE_INTEGER*)&ticks);
+#endif
+
+				g_gui.recursivelyApplyState(state, (CommandList*)command, name);
+
+#if PROFILE_STATE
+				uint64_t ticks2;
+				QueryPerformanceCounter((LARGE_INTEGER*)&ticks2);
+
+				ticks2 -= ticks;
+
+				auto ms = (ticks2 / 10000);
+				auto fraction = (ticks2 % 10000);
+
+				logRecursivelyApplyStateTiming(ms, fraction, name);
+#endif
+			}
+		}
+		__EXCEPTIONAL()
+		{
+			reportApplyStateFailure(name);
+		}
+	}
+
 	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix /*= {}*/)
 	{
 		Click click(CLICK_BULK, TC_SCRIPT_NOYIELD);
@@ -1658,56 +1741,7 @@ namespace Stand
 				return;
 			}
 			std::string name = std::string(prefix).append(command->getNameForConfig());
-			__try
-			{
-				if (command->supportsStateOperations()
-					&& command->supportsSavedState()
-					)
-				{
-					const auto state_i = state.find(name);
-					if (state_i != state.end())
-					{
-#if GUI_DEBUG
-						persistent_debug_text = std::string(name).append(": ").append(state_i->second);
-#endif
-						command->setState(click, state_i->second);
-					}
-					else
-					{
-#if GUI_DEBUG
-						persistent_debug_text = std::string(name).append(": [Default]");
-#endif
-						command->applyDefaultState();
-					}
-				}
-				if (command->isListNonAction())
-				{
-					name.push_back('>');
-
-#if PROFILE_STATE
-					uint64_t ticks;
-					QueryPerformanceCounter((LARGE_INTEGER*)&ticks);
-#endif
-
-					recursivelyApplyState(state, (CommandList*)command, name);
-
-#if PROFILE_STATE
-					uint64_t ticks2;
-					QueryPerformanceCounter((LARGE_INTEGER*)&ticks2);
-
-					ticks2 -= ticks;
-
-					auto ms = (ticks2 / 10000);
-					auto fraction = (ticks2 % 10000);
-
-					g_logger.log(fmt::format("{}.{:0>5} ms for {}", ms, fraction, name));
-#endif
-				}
-			}
-			__EXCEPTIONAL()
-			{
-				Util::toast(std::move(std::string("Failed to set state for ").append(name)), TOAST_ALL);
-			}
+			tryApplyStateToCommand(state, command, name, click);
 		}
 #if GUI_DEBUG
 		persistent_debug_text.clear();
@@ -1904,13 +1938,19 @@ namespace Stand
 		return web_focus != nullptr;
 	}
 
+	// No __try here, so it's safe to construct the temporary std::string in this frame.
+	static void sendRootListTabLine(const Command* const command)
+	{
+		g_relay.sendLine(std::move(std::string("b ").append(command->getPhysical()->menu_name.getWebString())));
+	}
+
 	void Gui::sendRootListToWeb() const
 	{
 		EXCEPTIONAL_LOCK(g_relay.send_mtx)
 		g_relay.sendRaw("tabs\n");
 		for (const auto& command : root_list->children)
 		{
-			g_relay.sendLine(std::move(std::string("b ").append(command->getPhysical()->menu_name.getWebString())));
+			sendRootListTabLine(command.get());
 		}
 		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 	}

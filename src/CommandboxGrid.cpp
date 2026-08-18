@@ -40,6 +40,88 @@ namespace Stand
 			: items_draft.emplace_back(std::make_unique<GridItemTextBigCentre>(std::move(text), width, height, priority, alignment_relative_to_last, force_alignment_to)).get());
 	}
 
+	// No __try in this function, so the std::vector<soup::WeakRef<CommandIssuable>>
+	// local ("data") is fine; called from a callback lambda that itself must
+	// not construct that vector directly (its own body contains a __try).
+	static bool refreshCommandboxCacheOnce()
+	{
+#if COMPACT_COMMAND_NAMES
+		auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(StringUtils::utf16_to_utf8(g_commandbox_grid.cacheupdate_input));
+#else
+		auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(g_commandbox_grid.cacheupdate_input);
+#endif
+		bool loop;
+		g_commandbox_grid.cache_mtx.lock();
+		{
+			g_commandbox_grid.cache_data = std::move(data);
+			g_commandbox_grid.cache_input = std::move(g_commandbox_grid.cacheupdate_input);
+			g_commandbox_grid.cache_hasData = true;
+
+			loop = !g_commandbox_grid.cacheupdate_next_input.empty();
+			g_commandbox_grid.cacheupdate_running = loop;
+			if (loop)
+			{
+				g_commandbox_grid.cacheupdate_input = std::move(g_commandbox_grid.cacheupdate_next_input);
+				g_commandbox_grid.cacheupdate_next_input.clear();
+			}
+		}
+		g_commandbox_grid.cache_mtx.unlock();
+		return loop;
+	}
+
+	struct CompletionHintFetch
+	{
+		std::wstring* hint = nullptr; // heap-allocated; caller must delete it once done
+		bool cmd_was_null = false;
+	};
+
+	// command is a reference and the result only carries a pointer/bool, so
+	// it's safe for this function to itself contain a __try; the wstring from
+	// getCompletionHint() is constructed directly into freshly new'd storage
+	// (construction, not assignment), so no destructible temporary of its own
+	// persists in this frame.
+	static CompletionHintFetch tryGetCompletionHint(const soup::WeakRef<CommandIssuable>& command) noexcept
+	{
+		CompletionHintFetch result;
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		if (auto cmd = command.getPointer())
+		{
+			result.hint = new std::wstring(cmd->getCompletionHint());
+		}
+		else
+		{
+			result.cmd_was_null = true;
+		}
+		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		return result;
+	}
+
+	struct ExtraInfoFetch
+	{
+		bool got_info = false;
+		bool cmd_was_null = false;
+	};
+
+	// info and args are references (owned by the caller, populate(), which
+	// doesn't contain a __try of its own), so this function's __try never
+	// shares a stack frame with an object requiring unwinding.
+	static ExtraInfoFetch tryGetExtraInfo(CommandExtraInfo& info, std::wstring& args, const soup::WeakRef<CommandIssuable>& command) noexcept
+	{
+		ExtraInfoFetch result;
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		if (auto cmd = command.getPointer())
+		{
+			cmd->getExtraInfo(info, args);
+			result.got_info = true;
+		}
+		else
+		{
+			result.cmd_was_null = true;
+		}
+		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		return result;
+	}
+
 	void CommandboxGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		items_draft.emplace_back(std::make_unique<GridItemPrimaryText>(width, 24, LANG_GET_W("CMDPRMPT")));
@@ -85,30 +167,10 @@ namespace Stand
 								{
 									__try
 									{
-										bool loop = false;
+										bool loop;
 										do
 										{
-#if COMPACT_COMMAND_NAMES
-											auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(StringUtils::utf16_to_utf8(g_commandbox_grid.cacheupdate_input));
-#else
-											auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(g_commandbox_grid.cacheupdate_input);
-#endif
-											//Sleep(1000);
-											g_commandbox_grid.cache_mtx.lock();
-											{
-												g_commandbox_grid.cache_data = std::move(data);
-												g_commandbox_grid.cache_input = std::move(g_commandbox_grid.cacheupdate_input);
-												g_commandbox_grid.cache_hasData = true;
-
-												loop = !g_commandbox_grid.cacheupdate_next_input.empty();
-												g_commandbox_grid.cacheupdate_running = loop;
-												if (loop)
-												{
-													g_commandbox_grid.cacheupdate_input = std::move(g_commandbox_grid.cacheupdate_next_input);
-													g_commandbox_grid.cacheupdate_next_input.clear();
-												}
-											}
-											g_commandbox_grid.cache_mtx.unlock();
+											loop = refreshCommandboxCacheOnce();
 											g_commandbox_grid.update();
 										} while (loop);
 									}
@@ -142,16 +204,16 @@ namespace Stand
 								size_t shown = 0;
 								for (const auto& command : commands)
 								{
-									EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-									if (auto cmd = command.getPointer())
+									auto fetch = tryGetCompletionHint(command);
+									if (fetch.hint)
 									{
-										items_draft.emplace_back(std::make_unique<GridItemText>(cmd->getCompletionHint(), width, 0, 3));
+										items_draft.emplace_back(std::make_unique<GridItemText>(std::move(*fetch.hint), width, 0, 3));
+										delete fetch.hint;
 									}
-									else
+									else if (fetch.cmd_was_null)
 									{
 										items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("NPHYS"), width, 0, 3));
 									}
-									EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 									if (++shown == max_shown_matching_commands)
 									{
 										break;
@@ -173,16 +235,10 @@ namespace Stand
 						else
 						{
 							CommandExtraInfo info{};
-							EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-							if (auto cmd = commands.at(0).getPointer())
-							{
-								cmd->getExtraInfo(info, args);
-							}
-							else
+							if (tryGetExtraInfo(info, args, commands.at(0)).cmd_was_null)
 							{
 								info.completed_hint = LANG_GET_W("NPHYS");
 							}
-							EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 							if (info.collapse && !collapsed)
 							{
 								auto space_off = current_command.find(' ');

@@ -805,26 +805,40 @@ namespace Stand
 		dedsec_target.reset();
 	}
 
-	void AllEntitiesEveryTick::onTickEraseObjectsWithNoModelInfo()
+	// Passing the lambda to getAllObjects' const std::function<...>& parameter
+	// materialises a temporary std::function (which has a non-trivial
+	// destructor, regardless of what it wraps), so this call is kept out of
+	// onTickEraseObjectsWithNoModelInfo's __try below.
+	static void eraseObjectsWithNoModelInfoImpl()
 	{
-		__try
+		AbstractEntity::getAllObjects([](AbstractEntity&& ent)
 		{
-			AbstractEntity::getAllObjects([](AbstractEntity&& ent)
+			auto k = ent.getModelHash();
+			switch (k)
 			{
-				auto k = ent.getModelHash();
-				switch (k)
+			case 0x00000000:
+			case 0x0E3A2DE0:
+			case hash_from_u32(0x84A79D0B):
+			case hash_from_u32(0xFA272290):
+			case hash_from_u32(0xFA272890):
+				CONSUMER_CONTINUE;
+			}
+			auto mi = g_hooking.getModelInfo(k);
+			if (mi == nullptr)
+			{
+				Util::toast(LANG_FMT("PTX_DELSTALE_T", joaatToString(k)), g_hooking.erase_objects_with_no_mi_notify.getToastFlags());
+				if (!ent.removeFromPlaneOfExistenceForce())
 				{
-				case 0x00000000:
-				case 0x0E3A2DE0:
-				case hash_from_u32(0x84A79D0B):
-				case hash_from_u32(0xFA272290):
-				case hash_from_u32(0xFA272890):
-					CONSUMER_CONTINUE;
+#ifdef STAND_DEBUG
+					Util::toast("Failed to delete.");
+#endif
 				}
-				auto mi = g_hooking.getModelInfo(k);
-				if (mi == nullptr)
+			}
+			else if (ent.getPointer()->m_nFlags.bIsFrag)
+			{
+				if (pointers::rage_fwArchetype_GetFragType(mi) == nullptr)
 				{
-					Util::toast(LANG_FMT("PTX_DELSTALE_T", joaatToString(k)), g_hooking.erase_objects_with_no_mi_notify.getToastFlags());
+					Util::toast(LANG_FMT("PTX_DELSTALE_T_2", joaatToString(k)), g_hooking.erase_objects_with_no_mi_notify.getToastFlags());
 					if (!ent.removeFromPlaneOfExistenceForce())
 					{
 #ifdef STAND_DEBUG
@@ -832,32 +846,27 @@ namespace Stand
 #endif
 					}
 				}
-				else if (ent.getPointer()->m_nFlags.bIsFrag)
+			}
+			/*else if (ent.getPointer()->type == ENTITY_TYPE_LIGHT)
+			{
+				auto lightent = reinterpret_cast<CLightEntity*>(ent.getPointer());
+				if (lightent->m_parentEntity.m_p == nullptr
+					&& lightent->Get2dEffectType() == ET_LIGHT
+					)
 				{
-					if (pointers::rage_fwArchetype_GetFragType(mi) == nullptr)
-					{
-						Util::toast(LANG_FMT("PTX_DELSTALE_T_2", joaatToString(k)), g_hooking.erase_objects_with_no_mi_notify.getToastFlags());
-						if (!ent.removeFromPlaneOfExistenceForce())
-						{
-#ifdef STAND_DEBUG
-							Util::toast("Failed to delete.");
-#endif
-						}
-					}
+					Util::toast("Light entity without parent, deleting.");
+					ent.removeFromPlaneOfExistenceForce();
 				}
-				/*else if (ent.getPointer()->type == ENTITY_TYPE_LIGHT)
-				{
-					auto lightent = reinterpret_cast<CLightEntity*>(ent.getPointer());
-					if (lightent->m_parentEntity.m_p == nullptr
-						&& lightent->Get2dEffectType() == ET_LIGHT
-						)
-					{
-						Util::toast("Light entity without parent, deleting.");
-						ent.removeFromPlaneOfExistenceForce();
-					}
-				}*/
-				CONSUMER_CONTINUE;
-			});
+			}*/
+			CONSUMER_CONTINUE;
+		});
+	}
+
+	void AllEntitiesEveryTick::onTickEraseObjectsWithNoModelInfo()
+	{
+		__try
+		{
+			eraseObjectsWithNoModelInfoImpl();
 		}
 		__EXCEPTIONAL()
 		{
