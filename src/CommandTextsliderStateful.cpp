@@ -57,6 +57,17 @@ namespace Stand
 		this->value = default_value;
 	}
 
+	// Kept out of the lambda below, which holds EXCEPTIONAL_LOCK's __try: the
+	// e_line/s_line std::string objects can't be built or destroyed in a frame
+	// that also has a __try, so this only takes references to already-built ones.
+	static void sendTextsliderStatefulLines(std::string& e_line, std::string& s_line)
+	{
+		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		g_relay.sendLine(std::move(e_line));
+		g_relay.sendLine(std::move(s_line));
+		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+	}
+
 	void CommandTextsliderStateful::processValueChange(const Click& click) const
 	{
 		CommandTextslider::processValueChange(click);
@@ -74,10 +85,9 @@ namespace Stand
 		{
 			Exceptional::createManagedExceptionalThread(__FUNCTION__, [this]
 			{
-				EXCEPTIONAL_LOCK(g_relay.send_mtx)
-				g_relay.sendLine(std::move(std::string("e ").append(menu_name.getWebString())));
-				g_relay.sendLine(std::move(std::string("s ").append(getWebState())));
-				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+				auto e_line = std::string("e ").append(menu_name.getWebString());
+				auto s_line = std::string("s ").append(getWebState());
+				sendTextsliderStatefulLines(e_line, s_line);
 			});
 		}
 	}
