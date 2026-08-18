@@ -90,6 +90,21 @@ namespace Stand
 
 namespace Stand
 {
+	/*
+	 * Keep the EXCEPTIONAL_LOCK_READ/__try frame tiny.
+	 *
+	 * The actual operation is performed by the callable supplied by
+	 * the caller. This keeps objects requiring C++ unwinding out of
+	 * the same function frame as __try.
+	 */
+	template <typename Function>
+	static void exceptionalRootReadLock(Function& function)
+	{
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+			function();
+		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+	}
+
 	std::vector<std::wstring> CommandNameTabCompletionProvider::getCompletions(std::wstring&& prefix)
 	{
 		StringUtils::to_lower(prefix);
@@ -104,13 +119,13 @@ namespace Stand
 		{
 			size_t offset = 0;
 			g_commandbox_grid.cache_mtx.lock();
-			auto commands{ g_commandbox_grid.cache_data };
+			auto commands{g_commandbox_grid.cache_data};
 			if (g_commandbox_grid.cache_input.length() > prefix.length()
 				&& g_commandbox_grid.cache_input.substr(g_commandbox_grid.cache_input.length() - prefix.length()) == prefix
 				)
 			{
 				// Handle CommandIssuable::collapse_command_names, e.g. for "t g", offset = 1.
-				offset = (g_commandbox_grid.cache_input.length() - prefix.length());
+				offset = g_commandbox_grid.cache_input.length() - prefix.length();
 			}
 			g_commandbox_grid.cache_mtx.unlock();
 
@@ -119,14 +134,17 @@ namespace Stand
 			{
 				CommandExtraInfo info{};
 				CommandName command_name;
-				EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-				if (auto cmd = commands.at(0).getPointer())
-				{
-					command_name = cmd->command_names.at(0);
-					std::wstring args = prefix;
-					cmd->getExtraInfo(info, args);
-				}
-				EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+				auto process_command_info = [&]
+					{
+						if (auto cmd = commands.at(0).getPointer())
+						{
+							command_name = cmd->command_names.at(0);
+							std::wstring args = prefix;
+							cmd->getExtraInfo(info, args);
+						}
+					};
+				exceptionalRootReadLock(process_command_info);
+
 				if (info.collapse)
 				{
 					offset = command_name.size();
