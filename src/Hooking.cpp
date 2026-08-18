@@ -1110,6 +1110,24 @@ namespace Stand::hooks
 		return res;
 	}
 
+	// No __try here, so this is free to construct the std::function temporary needed by spoofAs().
+	static void spoofAsAndTickScriptMgr(GtaThread* run_as)
+	{
+		run_as->spoofAs([]
+		{
+			g_script_mgr.tick();
+		});
+	}
+
+	// No __try here, so this is free to construct the std::function temporary needed by spoofAs().
+	static void spoofAsAndRunGuiPostTick(GtaThread* run_as)
+	{
+		run_as->spoofAs([]
+		{
+			g_gui.onPostTick();
+		});
+	}
+
 	bool __fastcall rage_scrThread_UpdateAll(uint32_t insnCount)
 	{
 		if (g_running)
@@ -1138,10 +1156,7 @@ namespace Stand::hooks
 			{
 				__try
 				{
-					run_as->spoofAs([]
-					{
-						g_script_mgr.tick();
-					});
+					spoofAsAndTickScriptMgr(run_as);
 				}
 				__EXCEPTIONAL()
 				{
@@ -1182,10 +1197,7 @@ namespace Stand::hooks
 				}
 				__try
 				{
-					run_as->spoofAs([]
-					{
-						g_gui.onPostTick();
-					});
+					spoofAsAndRunGuiPostTick(run_as);
 				}
 				__EXCEPTIONAL()
 				{
@@ -2242,6 +2254,13 @@ namespace Stand::hooks
 		msg->setText(StringUtils::owoify(msg->text).c_str());
 	}
 
+	// AbstractPlayer::onComm() takes a std::string, so passing msg->text (a char array) would
+	// construct a temporary, so this is kept out of the __try'ing function below.
+	static void reportCommText(const char* text, rage::netPeerId recipient_startup_id)
+	{
+		AbstractPlayer::onComm(text, recipient_startup_id);
+	}
+
 	bool __fastcall send_CMsgTextMessage(rage::netConnectionManager* mgr, int32_t con_id, rage::CMsgTextMessage* msg, uint32_t a4, uint64_t a5)
 	{
 		__try
@@ -2256,7 +2275,7 @@ namespace Stand::hooks
 			{
 				if (cxn && cxn->endpoint)
 				{
-					AbstractPlayer::onComm(msg->text, cxn->endpoint->GetPeerId());
+					reportCommText(msg->text, cxn->endpoint->GetPeerId());
 				}
 			}
 
@@ -5121,6 +5140,13 @@ namespace Stand::hooks
 	static EventTally sync_tally{};
 	static int aborting_sync = 0;
 
+	// EventTally's constructor produces a temporary with a non-trivial destructor
+	// (std::vector member), so this is kept out of the __try'ing functions below.
+	static void resetSyncTally(AbstractPlayer p, flowevent_t init)
+	{
+		sync_tally = EventTally(p, init);
+	}
+
 	// CNetworkObjectMgr::ProcessCloneCreateData
 	void __fastcall received_clone_create(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, rage::NetworkObjectType object_type, uint16_t object_id, uint32_t sync_flags, rage::datBitBuffer* buffer, uint32_t timestamp)
 	{
@@ -5128,7 +5154,7 @@ namespace Stand::hooks
 
 		sync_src = sender->player_id;
 
-		sync_tally = EventTally(sync_src, FlowEvent::SYNCIN_CLONE_CREATE);
+		resetSyncTally(sync_src, FlowEvent::SYNCIN_CLONE_CREATE);
 		if (!(sync_tally.reactions & REACTION_BLOCK))
 		{
 			if (object_type >= NUM_NET_OBJ_TYPES)
@@ -5190,7 +5216,7 @@ namespace Stand::hooks
 		sync_src = sender->player_id;
 
 		__int64 ret = 1;
-		sync_tally = EventTally(sync_src, FlowEvent::SYNCIN_CLONE_UPDATE);
+		resetSyncTally(sync_src, FlowEvent::SYNCIN_CLONE_UPDATE);
 		rage::netObject* netObject = mgr->find_object_by_id(object_id, true);
 		if (!(sync_tally.reactions & REACTION_BLOCK))
 		{
@@ -5587,6 +5613,13 @@ namespace Stand::hooks
 	}
 #endif
 
+	// getAndApplyReactionsIn() takes a std::string, so passing a string literal would construct
+	// a temporary with a non-trivial destructor, so this is kept out of the __try'ing function below.
+	static void reportSyncCanApplyCrashT6(AbstractPlayer p)
+	{
+		p.getAndApplyReactionsIn(FlowEvent::SE_CRASH, "T6");
+	}
+
 	// rage::netSyncTree::CanApplyNodeData
 	bool sync_can_apply(rage::netSyncTree* tree, rage::netObject* netObject)
 		// called in received_clone_create, received_clone_sync, & CGiveControlEvent::handle_extra_data
@@ -5660,14 +5693,14 @@ namespace Stand::hooks
 		{
 			if (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_t6_when_coloading)
 			{
-				sync_src.getAndApplyReactionsIn(FlowEvent::SE_CRASH, "T6");
+				reportSyncCanApplyCrashT6(sync_src);
 			}
 			return false;
 		}
 
 		if (current_sync_type == rage::SyncType::CONTROL)
 		{
-			sync_tally = EventTally(sync_src, FlowEvent::SYNCIN_CONTROL);
+			resetSyncTally(sync_src, FlowEvent::SYNCIN_CONTROL);
 		}
 		bool ret = process_tree_for_tally(tree, current_sync_type, netObject->object_type, netObject->object_id, netObject->GetEntity());
 		if (current_sync_type == rage::SyncType::CONTROL)
@@ -7999,29 +8032,35 @@ to_recover.emplace_back(addr, *addr); \
 
 	// When a rope is being deleted, inform vehicle gadgets that store ropeInstance pointers.
 	// This prevents various nasty things when spawning a towtruck and then using "Delete All Ropes".
+	// No __try here, so this is free to construct the std::function temporary needed by getAllVehicles().
+	static void informVehicleGadgetsRopeInstanceRemoved(rage::ropeInstance* pInst)
+	{
+		AbstractEntity::getAllVehicles([pInst](AbstractEntity&& ent)
+		{
+			auto veh = ent.getCVehicle();
+			for (const auto& gadget : veh->m_pVehicleGadgets)
+			{
+				switch (gadget->GetType())
+				{
+				case VGT_PICK_UP_ROPE:
+				case VGT_PICK_UP_ROPE_MAGNET:
+					static_cast<CVehicleGadgetPickUpRope*>(gadget)->processRopeInstanceBeingRemoved(pInst);
+					break;
+
+				case VGT_TOW_TRUCK_ARM:
+					static_cast<CVehicleGadgetTowArm*>(gadget)->processRopeInstanceBeingRemoved(pInst);
+					break;
+				}
+			}
+			CONSUMER_CONTINUE;
+		});
+	}
+
 	void __fastcall rage_ropeManager_Remove(rage::ropeManager* _this, rage::ropeInstance* pInst)
 	{
 		__try
 		{
-			AbstractEntity::getAllVehicles([pInst](AbstractEntity&& ent)
-			{
-				auto veh = ent.getCVehicle();
-				for (const auto& gadget : veh->m_pVehicleGadgets)
-				{
-					switch (gadget->GetType())
-					{
-					case VGT_PICK_UP_ROPE:
-					case VGT_PICK_UP_ROPE_MAGNET:
-						static_cast<CVehicleGadgetPickUpRope*>(gadget)->processRopeInstanceBeingRemoved(pInst);
-						break;
-
-					case VGT_TOW_TRUCK_ARM:
-						static_cast<CVehicleGadgetTowArm*>(gadget)->processRopeInstanceBeingRemoved(pInst);
-						break;
-					}
-				}
-				CONSUMER_CONTINUE;
-			});
+			informVehicleGadgetsRopeInstanceRemoved(pInst);
 		}
 		__EXCEPTIONAL()
 		{
