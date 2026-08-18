@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PlayerProvider.hpp"
+#include "StringUtils.hpp"
 
 namespace Stand
 {
