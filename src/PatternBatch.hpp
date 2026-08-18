@@ -40,12 +40,14 @@ inline std::string existing_hooks = {};
 
 // Kept out of CHECK_EXISTING_HOOK_IMPL below: this macro expands inline into
 // countless pattern-hook lambdas across the codebase, so if it constructed
-// the std::string itself while also holding the __try, every single one of
-// those lambdas would violate C2712 (a __try can't share a frame with a
-// non-trivially-destructible object). Callers build the string themselves
-// (fine, since that happens in their own frame, which has no __try of its
-// own once this one is out of the picture) and just pass it in by reference.
-inline void recordExistingHookName(const std::string& name)
+// anything non-trivially-destructible itself while also holding the __try,
+// every single one of those lambdas would violate C2712. The parameter type
+// here must match StringUtils::list_append's exactly (const StringCastable&),
+// otherwise passing a std::string would still implicitly construct a
+// StringCastable temporary right here - i.e. still inside the __try. The
+// caller (which has no __try of its own once this one is out of the
+// picture) does that conversion instead, at the call site.
+inline void recordExistingHookName(const StringCastable& name)
 {
 	EXCEPTIONAL_LOCK(existing_hooks_mtx)
 	StringUtils::list_append(existing_hooks, name);

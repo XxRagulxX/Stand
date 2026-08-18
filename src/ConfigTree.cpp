@@ -27,6 +27,16 @@ namespace Stand
 			;
 	}
 
+	// Kept out of saveToFileNow() below, which holds EXCEPTIONAL_LOCK_READ's __try:
+	// the actual buffer-building logic runs via this callback, so the __try's own
+	// frame doesn't need any non-trivial locals (buf, the {} temporaries, etc.).
+	static void withConfigTreeReadLock(const std::function<void()>& fn)
+	{
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		fn();
+		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+	}
+
 	void ConfigTree::saveToFileNow()
 	{
 		if (!canSaveNow() || g_gui.unload_state > UnloadState::SAVE_PENDING_CONFIGS)
@@ -34,12 +44,13 @@ namespace Stand
 			return;
 		}
 		auto buf = std::string();
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-		buf.append("Tree Compatibility Version: ");
-		buf.append(fmt::to_string(Util::menu_names_version));
-		buf.push_back('\n');
-		saveImpl(buf, {}, {}, g_gui.root_list.get(), &nullsub<>);
-		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		withConfigTreeReadLock([this, &buf]
+		{
+			buf.append("Tree Compatibility Version: ");
+			buf.append(fmt::to_string(Util::menu_names_version));
+			buf.push_back('\n');
+			saveImpl(buf, {}, {}, g_gui.root_list.get(), &nullsub<>);
+		});
 		std::ofstream file_out(getPath());
 		file_out << std::move(buf);
 		file_out.close();
