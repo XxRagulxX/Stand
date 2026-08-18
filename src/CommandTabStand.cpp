@@ -179,6 +179,14 @@ namespace Stand
 		overflow_the_stack(&dummy[*param]);
 	}
 
+	// Contains a destructible temporary (an empty std::function; invoking it
+	// throws std::bad_function_call), so this is a plain function rather than
+	// living directly inside a __try.
+	static void invokeEmptyStdFunction()
+	{
+		std::function<void()>{}();
+	}
+
 	CommandTabStand::CommandTabStand(CommandList* const parent)
 		: CommandTab(parent, TAB_STAND, LIT("Stand"), { CMDNAME("tstand"), CMDNAME("stand") })
 	{
@@ -658,7 +666,7 @@ namespace Stand
 					{
 						__try
 						{
-							(std::function<void()>{})();
+							invokeEmptyStdFunction();
 						}
 						__EXCEPTIONAL()
 						{
@@ -999,13 +1007,20 @@ namespace Stand
 		this->createChild<CommandUnload>();
 	}
 
+	// Contains a destructible local (std::unordered_map<CommandName, std::string>),
+	// so this is kept out of rootCheckThread's __try frame.
+	static void performRootCheckWithFreshMap()
+	{
+		std::unordered_map<CommandName, std::string> command_names_map = {};
+		g_gui.performRootCheck(g_gui.root_list.get(), command_names_map);
+	}
+
 	void rootCheckThread()
 	{
 		g_gui.root_check_in_progress = true;
 		__try
 		{
-			std::unordered_map<CommandName, std::string> command_names_map = {};
-			g_gui.performRootCheck(g_gui.root_list.get(), command_names_map);
+			performRootCheckWithFreshMap();
 		}
 		__EXCEPTIONAL()
 		{

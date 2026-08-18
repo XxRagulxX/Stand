@@ -2417,17 +2417,15 @@ namespace Stand
 		centred_text_this_frame.push_back(L'\n');
 	}
 
-	void Renderer::draw()
+	// No __try here, so this is free to construct the Label temporary.
+	static void reportStillDrawing()
 	{
-		SOUP_IF_UNLIKELY (drawing)
-		{
-			Util::toast(LIT_OBF("Still drawing but asked to draw again?!"), TOAST_ALL);
-			return;
-		}
-		drawing = true;
+		Util::toast(LIT_OBF("Still drawing but asked to draw again?!"), TOAST_ALL);
+	}
 
-		++Metrics::draws_this_second;
-
+	// No destructible locals here, so it's safe to __try in this function.
+	static void presentAntiAntiCheat()
+	{
 		__try
 		{
 			AntiAntiCheat::onPresent();
@@ -2435,39 +2433,355 @@ namespace Stand
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	// Only a reference parameter here (not owned by this frame), so it's safe to __try in this function.
+	static void emplaceScriptTextureLocked(int id, Texture&& t)
+	{
+		EXCEPTIONAL_LOCK(g_renderer.script_textures_mtx)
+		g_renderer.script_textures.emplace(id, std::move(t));
+		EXCEPTIONAL_UNLOCK(g_renderer.script_textures_mtx)
+	}
+
+	// No __try here, so this is free to have destructible locals (Texture owns a ComPtr, and the failure path builds a std::string).
+	static void createOneScriptTexture(int id, const std::wstring& path)
+	{
+		Texture t;
+		ID3D11Resource* rsrc = nullptr;
+		if (SUCCEEDED(CreateWICTextureFromFile(g_renderer.m_pDevice, path.c_str(), &rsrc, t.srv.ReleaseAndGetAddressOf(), 0)))
+		{
+			t.measure(rsrc);
+			emplaceScriptTextureLocked(id, std::move(t));
+			g_renderer.ReloadArray.emplace_back(ReloadTex(id, path));
+		}
+		else
+		{
+			Util::toast(std::move(std::string("Failed to load texture ").append(fmt::to_string(id)).append(" from ").append  (StringUtils::utf16_to_utf8(path))), TOAST_ALL);
+		}
+	}
+
+	// Only a reference-bound loop variable here (no destructible locals of its own), so it's safe to __try in this function.
+	static void createQueuedScriptTextures()
+	{
+		EXCEPTIONAL_LOCK(g_renderer.create_sprite_mtx)
+		for (auto it = g_renderer.CreateTextureArray.begin(); it != g_renderer.CreateTextureArray.end(); ++it)
+		{
+			createOneScriptTexture(it->first, it->second);
+		}
+		g_renderer.CreateTextureArray.clear();
+		EXCEPTIONAL_UNLOCK(g_renderer.create_sprite_mtx)
+		g_renderer.creating_textures = false;
+	}
+
+	// No __try here, so this is free to construct the std::function temporary needed by createManagedThread.
+	static void maybeStartTextureCreationThread()
+	{
+		if (!g_renderer.CreateTextureArray.empty())
+		{
+			g_renderer.creating_textures = true;
+			Exceptional::createManagedThread(&createQueuedScriptTextures);
+		}
+	}
+
+	// No destructible locals here (delegates to maybeStartTextureCreationThread), so it's safe to __try in this function.
+	static void maybeStartTextureCreationThreadLocked(Spinlock& create_sprite_mtx)
+	{
+		EXCEPTIONAL_LOCK(create_sprite_mtx)
+		maybeStartTextureCreationThread();
+		EXCEPTIONAL_UNLOCK(create_sprite_mtx)
+	}
+
+	// No __try here, so this is free to construct the std::wstring temporary from LANG_GET_W.
+	static void drawTutorialLoadingText()
+	{
+		g_renderer.drawTextC(g_renderer.client_size.x * 0.5f, g_renderer.client_size.y * 0.5f, LANG_GET_W("TUT_LD"), ALIGN_CENTRE, g_renderer.info_scale * g_renderer.resolution_text_scale, g_renderer.hudColour, g_renderer.m_font_user);
+	}
+
+	// No destructible locals here, so it's safe to __try in this function.
+	static void evaluateKeyboardInputGuarded()
+	{
+		__try
+		{
+			g_gui.evaluateKeyboardInput(TC_RENDERER);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// Only a reference-bound iterator here (no destructible locals of its own), so it's safe to __try in this function.
+	static void drawTimedSpritesLocked(Spinlock& timed_sprites_mtx, std::vector<TimedSprite>& timed_sprites)
+	{
+		EXCEPTIONAL_LOCK(timed_sprites_mtx)
+		for (auto i = timed_sprites.begin(); i != timed_sprites.end(); )
+		{
+			i->draw_data.draw();
+			if (IS_DEADLINE_REACHED(i->deadline))
+			{
+				i = timed_sprites.erase(i);
+			}
+			else
+			{
+				++i;
+			}
+		}
+		EXCEPTIONAL_UNLOCK(timed_sprites_mtx)
+	}
+
+	// Only pointer locals here, so it's safe to __try in this function.
+	static void drawExtraSprite(const DrawSpriteData* data)
+	{
+		g_renderer.leaveDrawContext();
+		g_renderer.enterSpriteDrawContextNonPremultiplied();
+		__try
+		{
+			data->draw();
+		}
+		__EXCEPTIONAL()
+		{
+		}
+		g_renderer.leaveSpriteDrawContextNonPremultiplied();
+		g_renderer.enterDrawContext();
+	}
+
+	// Only pointer locals here, so it's safe to __try in this function.
+	static void drawExtraSpriteByPoints(const DrawSpriteByPointsData* data)
+	{
+		g_renderer.leaveDrawContext();
+		g_renderer.enterSpriteDrawContextNonPremultiplied();
+		__try
+		{
+			if (auto tex = g_renderer.getScriptTexture(data->tex_id))
+			{
+				g_renderer.drawSpriteByPointsH(*tex, data->x1, data->y1, data->x2, data->y2, data->colour);
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+		g_renderer.leaveSpriteDrawContextNonPremultiplied();
+		g_renderer.enterDrawContext();
+	}
+
+	// No __try here (delegates the two cases that need it to drawExtraSprite/drawExtraSpriteByPoints), so this is free to have destructible locals (std::wstring copies, HTML document temporaries).
+	static void drawExtra(const DrawData* extra, DirectX::PrimitiveBatch<DirectX::VertexPositionColor>* batch)
+	{
+		switch (extra->type)
+		{
+		case DrawData::TEXT:
+		{
+			auto text = static_cast<const DrawTextData*>(extra);
+			float xC = text->client_x;
+			float yC = text->client_y;
+			SOUP_IF_UNLIKELY (!text->draw_origin_3d.isNull())
+			{
+				auto drawOriginCP = text->draw_origin_3d.getScreenPos();
+				auto drawOriginC = g_renderer.CP2C(drawOriginCP.x, drawOriginCP.y);
+				xC += drawOriginC.x;
+				yC += drawOriginC.y;
+			}
+			for (auto i = text->drop_shadow; i; --i)
+			{
+				const float f = 0.5f * (1.0f - (((float)i + 1.0f) / ((float)text->drop_shadow + 1.0f)));
+				g_renderer.drawTextC(xC + i, yC + i, std::wstring(text->text), text->alignment, text->client_scale, DirectX::SimpleMath::Color(text->colour.R() * f, text->colour.G() * f, text->colour.B() * f), text->font, false);
+			}
+			g_renderer.drawTextC(xC, yC, std::wstring(text->text), text->alignment, text->client_scale, text->colour, text->font, text->force_in_bounds);
+		}
+		break;
+
+		case DrawData::CENTRED_TEXT:
+			g_renderer.drawCentredTextThisFrame(static_cast<const DrawCentredTextData*>(extra)->text);
+			break;
+
+		case DrawData::LINE:
+		{
+			auto line = static_cast<const DrawLineData*>(extra);
+			g_renderer.drawLineCP(line->x1, line->y1, line->x2, line->y2, line->colour1, line->colour2);
+		}
+		break;
+
+		case DrawData::RECT:
+		{
+			auto rect = static_cast<const DrawRectData*>(extra);
+			g_renderer.drawRectByPointsS(rect->pos1S, rect->pos2S, rect->colour);
+		}
+		break;
+
+		case DrawData::TRIANGLE:
+		{
+			auto triangle = static_cast<const DrawTriangleData*>(extra);
+			batch->DrawTriangle(
+				g_renderer.S2VPC(triangle->pos1S.x, triangle->pos1S.y, triangle->colour),
+				g_renderer.S2VPC(triangle->pos2S.x, triangle->pos2S.y, triangle->colour),
+				g_renderer.S2VPC(triangle->pos3S.x, triangle->pos3S.y, triangle->colour)
+			);
+		}
+		break;
+
+		case DrawData::SPRITE:
+			drawExtraSprite(static_cast<const DrawSpriteData*>(extra));
+			break;
+
+		case DrawData::SPRITE_BY_POINTS:
+			drawExtraSpriteByPoints(static_cast<const DrawSpriteByPointsData*>(extra));
+			break;
+
+		case DrawData::CIRCLE:
+			{
+				auto data = static_cast<const DrawCircleData*>(extra);
+				Circle::inst_100.setRadius(data->radius);
+				if (data->part < 0 || data->part >= 4)
+				{
+					g_renderer.drawCircleS(data->x, data->y, Circle::inst_100, data->colour);
+				}
+				else
+				{
+					g_renderer.drawCornerCircleS(data->x, data->y, Circle::inst_100, data->part, data->colour);
+				}
+			}
+			break;
+
+		case DrawData::BGBLUR:
+			{
+				auto data = static_cast<const DrawBgBlurData*>(extra);
+				if (auto bgblur = data->wr.getPointer())
+				{
+					bgblur->drawC(data->x, data->y, data->width, data->height, data->passes);
+				}
+			}
+			break;
+
+#if DRAW_HTML
+		case DrawData::HTML:
+			{
+				auto data = static_cast<const DrawHtmlData*>(extra);
+				RenderTargetWithOffsetH rt(data->x, data->y);
+				auto doc = soup::lyoDocument::fromMarkup(data->html);
+				doc->flatten(data->width, data->height).draw(rt);
+			}
+			break;
+#endif
+		}
+	}
+
+	// Only a reference-bound loop variable here (no destructible locals of its own), so it's safe to __try in this function.
+	static void drawExtrasLocked(Spinlock& extras_mtx, std::vector<std::unique_ptr<DrawData>>& extras, DirectX::PrimitiveBatch<DirectX::VertexPositionColor>* batch)
+	{
+		EXCEPTIONAL_LOCK(extras_mtx)
+		for (const auto& extra : extras)
+		{
+			drawExtra(extra.get(), batch);
+		}
+		EXCEPTIONAL_UNLOCK(extras_mtx)
+	}
+
+	// No destructible locals here, so it's safe to __try in this function.
+	static void drawNotifyGridGuarded()
+	{
+		__try
+		{
+			if (!g_tb_screenshot_mode.isEnabled())
+			{
+				g_notify_grid.draw();
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No __try here, so this is free to construct the std::wstring temporaries from LANG_GET_W.
+	static void doDrawMainUi()
+	{
+		Pong::onPresent();
+		rePresentEvent::trigger();
+		SOUP_IF_UNLIKELY (g_renderer.throttling_rendering)
+		{
+			g_renderer.drawCentredTextThisFrame(LANG_GET_W("PTX_DRAW_T"));
+			g_renderer.throttling_rendering = false;
+		}
+		if (g_gui.opened)
+		{
+			SOUP_IF_UNLIKELY (is_session_transition_active(false))
+			{
+				if (!g_gui.status_text.empty())
+				{
+					g_renderer.drawCentredTextThisFrame(g_gui.status_text);
+				}
+			}
+			g_renderer.drawCentredText();
+			g_menu_grid.draw();
+			SOUP_IF_UNLIKELY (Tutorial::state != TUT_DONE)
+			{
+				g_tutorial_grid.draw();
+			}
+		}
+		else
+		{
+			SOUP_IF_UNLIKELY (is_session_transition_active(false))
+			{
+				if (!g_gui.status_text.empty())
+				{
+					g_renderer.drawCentredTextThisFrame(g_gui.status_text);
+				}
+				if (!g_gui.status_message.empty() && g_gui.show_status_message)
+				{
+					g_renderer.drawCentredTextThisFrame(g_gui.status_message);
+				}
+			}
+			g_renderer.drawCentredText();
+			SOUP_IF_UNLIKELY (Tutorial::state == TUT_OPEN)
+			{
+				g_tutorial_grid.draw();
+			}
+		}
+		SOUP_IF_UNLIKELY (g_commandbox.active)
+		{
+			g_commandbox_grid.draw();
+		}
+	}
+
+	// No destructible locals here (delegates to doDrawMainUi), so it's safe to __try in this function.
+	static void drawMainUiGuarded()
+	{
+		__try
+		{
+			doDrawMainUi();
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here, so it's safe to __try in this function.
+	static void leaveDrawContextGuarded()
+	{
+		// Wrap this in a try-except so in the case it does throw, we still restore the state.
+		__try
+		{
+			g_renderer.leaveDrawContext();
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	void Renderer::draw()
+	{
+		SOUP_IF_UNLIKELY (drawing)
+		{
+			reportStillDrawing();
+			return;
+		}
+		drawing = true;
+
+		++Metrics::draws_this_second;
+
+		presentAntiAntiCheat();
 
 		if (!creating_textures)
 		{
-			EXCEPTIONAL_LOCK(create_sprite_mtx)
-			if (!CreateTextureArray.empty())
-			{
-				creating_textures = true;
-				Exceptional::createManagedThread([]
-				{
-					EXCEPTIONAL_LOCK(g_renderer.create_sprite_mtx)
-					for (auto it = g_renderer.CreateTextureArray.begin(); it != g_renderer.CreateTextureArray.end(); ++it)
-					{
-						Texture t;
-						ID3D11Resource* rsrc = nullptr;
-						if (SUCCEEDED(CreateWICTextureFromFile(g_renderer.m_pDevice, it->second.c_str(), &rsrc, t.srv.ReleaseAndGetAddressOf(), 0)))
-						{
-							t.measure(rsrc);
-							EXCEPTIONAL_LOCK(g_renderer.script_textures_mtx)
-							g_renderer.script_textures.emplace(it->first, std::move(t));
-							EXCEPTIONAL_UNLOCK(g_renderer.script_textures_mtx)
-							g_renderer.ReloadArray.emplace_back(ReloadTex(it->first, it->second));
-						}
-						else
-						{
-							Util::toast(std::move(std::string("Failed to load texture ").append(fmt::to_string(it->first)).append(" from ").append  (StringUtils::utf16_to_utf8(it->second))), TOAST_ALL);
-						}
-					}
-					g_renderer.CreateTextureArray.clear();
-					EXCEPTIONAL_UNLOCK(g_renderer.create_sprite_mtx)
-					g_renderer.creating_textures = false;
-				});
-			}
-			EXCEPTIONAL_UNLOCK(create_sprite_mtx)
+			maybeStartTextureCreationThreadLocked(create_sprite_mtx);
 		}
 
 		m_stateSaver->saveCurrentState(m_pDevice, m_pContext);
@@ -2487,7 +2801,7 @@ namespace Stand
 			if (!g_gui.user_understands_navigation)
 			{
 				enterDrawContext();
-				drawTextC(client_size.x * 0.5f, client_size.y * 0.5f, LANG_GET_W("TUT_LD"), ALIGN_CENTRE, info_scale * resolution_text_scale, hudColour, m_font_user);
+				drawTutorialLoadingText();
 				leaveDrawContext();
 			}
 		}
@@ -2495,231 +2809,21 @@ namespace Stand
 		{
 			if (g_gui.root_state != GUI_NONE)
 			{
-				__try
-				{
-					g_gui.evaluateKeyboardInput(TC_RENDERER);
-				}
-				__EXCEPTIONAL()
-				{
-				}
+				evaluateKeyboardInputGuarded();
 			}
 			if (doesGameplayStateAllowRendering() /*&& (!present_callbacks.empty() || !extra_text.empty() || g_gui.m_opened)*/)
 			{
 				enterSpriteDrawContextNonPremultiplied();
-				EXCEPTIONAL_LOCK(timed_sprites_mtx)
-				for (auto i = timed_sprites.begin(); i != timed_sprites.end(); )
-				{
-					i->draw_data.draw();
-					if (IS_DEADLINE_REACHED(i->deadline))
-					{
-						i = timed_sprites.erase(i);
-					}
-					else
-					{
-						++i;
-					}
-				}
-				EXCEPTIONAL_UNLOCK(timed_sprites_mtx)
+				drawTimedSpritesLocked(timed_sprites_mtx, timed_sprites);
 				leaveSpriteDrawContextNonPremultiplied();
 				enterDrawContext();
 				if (doesGameplayStateAllowScriptExecution())
 				{
-					EXCEPTIONAL_LOCK(extras_mtx)
-					for (const auto& extra : extras)
-					{
-						switch (extra->type)
-						{
-						case DrawData::TEXT:
-						{
-							auto text = static_cast<const DrawTextData*>(extra.get());
-							float xC = text->client_x;
-							float yC = text->client_y;
-							SOUP_IF_UNLIKELY (!text->draw_origin_3d.isNull())
-							{
-								auto drawOriginCP = text->draw_origin_3d.getScreenPos();
-								auto drawOriginC = CP2C(drawOriginCP.x, drawOriginCP.y);
-								xC += drawOriginC.x;
-								yC += drawOriginC.y;
-							}
-							for (auto i = text->drop_shadow; i; --i)
-							{
-								const float f = 0.5f * (1.0f - (((float)i + 1.0f) / ((float)text->drop_shadow + 1.0f)));
-								drawTextC(xC + i, yC + i, std::wstring(text->text), text->alignment, text->client_scale, DirectX::SimpleMath::Color(text->colour.R() * f, text->colour.G() * f, text->colour.B() * f), text->font, false);
-							}
-							drawTextC(xC, yC, std::wstring(text->text), text->alignment, text->client_scale, text->colour, text->font, text->force_in_bounds);
-						}
-						break;
-
-						case DrawData::CENTRED_TEXT:
-							drawCentredTextThisFrame(static_cast<const DrawCentredTextData*>(extra.get())->text);
-							break;
-
-						case DrawData::LINE:
-						{
-							auto line = static_cast<const DrawLineData*>(extra.get());
-							drawLineCP(line->x1, line->y1, line->x2, line->y2, line->colour1, line->colour2);
-						}
-						break;
-
-						case DrawData::RECT:
-						{
-							auto rect = static_cast<const DrawRectData*>(extra.get());
-							drawRectByPointsS(rect->pos1S, rect->pos2S, rect->colour);
-						}
-						break;
-
-						case DrawData::TRIANGLE:
-						{
-							auto triangle = static_cast<const DrawTriangleData*>(extra.get());
-							m_batch->DrawTriangle(
-								S2VPC(triangle->pos1S.x, triangle->pos1S.y, triangle->colour),
-								S2VPC(triangle->pos2S.x, triangle->pos2S.y, triangle->colour),
-								S2VPC(triangle->pos3S.x, triangle->pos3S.y, triangle->colour)
-							);
-						}
-						break;
-
-						case DrawData::SPRITE:
-							leaveDrawContext();
-							enterSpriteDrawContextNonPremultiplied();
-							__try
-							{
-								static_cast<const DrawSpriteData*>(extra.get())->draw();
-							}
-							__EXCEPTIONAL()
-							{
-							}
-							leaveSpriteDrawContextNonPremultiplied();
-							enterDrawContext();
-							break;
-
-						case DrawData::SPRITE_BY_POINTS:
-							leaveDrawContext();
-							enterSpriteDrawContextNonPremultiplied();
-							__try
-							{
-								auto data = static_cast<const DrawSpriteByPointsData*>(extra.get());
-								if (auto tex = getScriptTexture(data->tex_id))
-								{
-									drawSpriteByPointsH(*tex, data->x1, data->y1, data->x2, data->y2, data->colour);
-								}
-							}
-							__EXCEPTIONAL()
-							{
-							}
-							leaveSpriteDrawContextNonPremultiplied();
-							enterDrawContext();
-							break;
-
-						case DrawData::CIRCLE:
-							{
-								auto data = static_cast<const DrawCircleData*>(extra.get());
-								Circle::inst_100.setRadius(data->radius);
-								if (data->part < 0 || data->part >= 4)
-								{
-									drawCircleS(data->x, data->y, Circle::inst_100, data->colour);
-								}
-								else
-								{
-									drawCornerCircleS(data->x, data->y, Circle::inst_100, data->part, data->colour);
-								}
-							}
-							break;
-
-						case DrawData::BGBLUR:
-							{
-								auto data = static_cast<const DrawBgBlurData*>(extra.get());
-								if (auto bgblur = data->wr.getPointer())
-								{
-									bgblur->drawC(data->x, data->y, data->width, data->height, data->passes);
-								}
-							}
-							break;
-
-#if DRAW_HTML
-						case DrawData::HTML:
-							{
-								auto data = static_cast<const DrawHtmlData*>(extra.get());
-								RenderTargetWithOffsetH rt(data->x, data->y);
-								auto doc = soup::lyoDocument::fromMarkup(data->html);
-								doc->flatten(data->width, data->height).draw(rt);
-							}
-							break;
-#endif
-						}
-					}
-					EXCEPTIONAL_UNLOCK(extras_mtx)
+					drawExtrasLocked(extras_mtx, extras, m_batch.get());
 				}
-				__try
-				{
-					if (!g_tb_screenshot_mode.isEnabled())
-					{
-						g_notify_grid.draw();
-					}
-				}
-				__EXCEPTIONAL()
-				{
-				}
-				__try
-				{
-					Pong::onPresent();
-					rePresentEvent::trigger();
-					SOUP_IF_UNLIKELY (g_renderer.throttling_rendering)
-					{
-						drawCentredTextThisFrame(LANG_GET_W("PTX_DRAW_T"));
-						g_renderer.throttling_rendering = false;
-					}
-					if (g_gui.opened)
-					{
-						SOUP_IF_UNLIKELY (is_session_transition_active(false))
-						{
-							if (!g_gui.status_text.empty())
-							{
-								drawCentredTextThisFrame(g_gui.status_text);
-							}
-						}
-						drawCentredText();
-						g_menu_grid.draw();
-						SOUP_IF_UNLIKELY (Tutorial::state != TUT_DONE)
-						{
-							g_tutorial_grid.draw();
-						}
-					}
-					else
-					{
-						SOUP_IF_UNLIKELY (is_session_transition_active(false))
-						{
-							if (!g_gui.status_text.empty())
-							{
-								drawCentredTextThisFrame(g_gui.status_text);
-							}
-							if (!g_gui.status_message.empty() && g_gui.show_status_message)
-							{
-								drawCentredTextThisFrame(g_gui.status_message);
-							}
-						}
-						drawCentredText();
-						SOUP_IF_UNLIKELY (Tutorial::state == TUT_OPEN)
-						{
-							g_tutorial_grid.draw();
-						}
-					}
-					SOUP_IF_UNLIKELY (g_commandbox.active)
-					{
-						g_commandbox_grid.draw();
-					}
-				}
-				__EXCEPTIONAL()
-				{
-				}
-				// Wrap this in a try-except so in the case it does throw, we still restore the state.
-				__try
-				{
-					leaveDrawContext();
-				}
-				__EXCEPTIONAL()
-				{
-				}
+				drawNotifyGridGuarded();
+				drawMainUiGuarded();
+				leaveDrawContextGuarded();
 			}
 		}
 		m_stateSaver->restoreSavedState();

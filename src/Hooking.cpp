@@ -3790,225 +3790,223 @@ namespace Stand::hooks
 		}
 	}
 
-	void __fastcall CEventGroupScriptNetwork_DispatchEvent(CEventGroupScriptNetwork* thisptr, CEventNetwork* event)
+	// Has destructible locals per case (std::string, Label temporaries from LOC/LANG_GET/LANG_FMT, std::shared_ptr<int[]>, etc.), so this must not itself contain a __try.
+	static bool dispatchScriptNetworkEvent(CEventNetwork* event)
 	{
-		__try
+		const auto type_id = event->GetEventType();
+		switch (type_id)
 		{
-			const auto type_id = event->GetEventType();
-			switch (type_id)
-			{
 #ifdef STAND_DEBUG
-			case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_STALL:
-				Util::toast("Interesting: CEventNetworkRemovedFromSessionDueToStall");
-				break;
+		case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_STALL:
+			Util::toast("Interesting: CEventNetworkRemovedFromSessionDueToStall");
+			break;
 
-			case EVENT_VOICE_SESSION_STARTED:
-				Util::toast("Interesting: CEventNetworkVoiceSessionStarted", TOAST_ALL);
-				break;
+		case EVENT_VOICE_SESSION_STARTED:
+			Util::toast("Interesting: CEventNetworkVoiceSessionStarted", TOAST_ALL);
+			break;
 
-			case EVENT_VOICE_SESSION_ENDED:
-				Util::toast("Interesting: CEventNetworkVoiceSessionEnded", TOAST_ALL);
-				break;
+		case EVENT_VOICE_SESSION_ENDED:
+			Util::toast("Interesting: CEventNetworkVoiceSessionEnded", TOAST_ALL);
+			break;
 
-			case EVENT_VOICE_CONNECTION_REQUESTED:
-				Util::toast("Interesting: CEventNetworkVoiceConnectionRequested", TOAST_ALL);
-				break;
+		case EVENT_VOICE_CONNECTION_REQUESTED:
+			Util::toast("Interesting: CEventNetworkVoiceConnectionRequested", TOAST_ALL);
+			break;
 
-			case EVENT_VOICE_CONNECTION_TERMINATED:
-				Util::toast("Interesting: CEventNetworkVoiceConnectionTerminated", TOAST_ALL);
-				break;
+		case EVENT_VOICE_CONNECTION_TERMINATED:
+			Util::toast("Interesting: CEventNetworkVoiceConnectionTerminated", TOAST_ALL);
+			break;
 
-			case EVENT_NETWORK_FOLLOW_INVITE_RECEIVED:
-				Util::toast("Interesting: CEventNetworkFollowInviteReceived", TOAST_ALL);
-				break;
+		case EVENT_NETWORK_FOLLOW_INVITE_RECEIVED:
+			Util::toast("Interesting: CEventNetworkFollowInviteReceived", TOAST_ALL);
+			break;
 #endif
 
-			case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_COMPLAINTS:
-				if (g_hooking.toast_love_letter_kick
-					&& !is_session_transition_active(true)
-					)
-				{
-					Util::toast(LOC("LLKT_T"), TOAST_ALL);
-				}
-				break;
-
-			case EVENT_NETWORK_CONNECTION_TIMEOUT:
-				{
-					int args[1 * 2]{};
-					event->RetrieveData(args, sizeof(args));
-					if (auto gamer_info = AbstractPlayer(args[0]).getGamerInfoNoFallback())
-					{
-						LeaveReasons::onTimedOut(*gamer_info);
-					}
-				}
-				break;
-
-			case EVENT_NETWORK_PLAYER_COLLECTED_AMBIENT_PICKUP:
+		case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_COMPLAINTS:
+			if (g_hooking.toast_love_letter_kick
+				&& !is_session_transition_active(true)
+				)
 			{
-				int args[9 * 2]{};
-				event->RetrieveData(args, sizeof(args)); // Within the function we are calling here, it has a size check. If it doesn't match, we don't get the data.
+				Util::toast(LOC("LLKT_T"), TOAST_ALL);
+			}
+			break;
 
-				if (args[4] != g_player)
+		case EVENT_NETWORK_CONNECTION_TIMEOUT:
+			{
+				int args[1 * 2]{};
+				event->RetrieveData(args, sizeof(args));
+				if (auto gamer_info = AbstractPlayer(args[0]).getGamerInfoNoFallback())
 				{
-					break;
-				}
-				std::string pickup_toast{};
-				floweventreaction_t reactions = g_hooking.flow_event_reactions[FlowEvent::PUP_ANY].getReactions();
-				switch (args[0])
-				{
-				case ATSTRINGHASH("pickup_money_variable"):
-				case ATSTRINGHASH("PICKUP_VEHICLE_MONEY_VARIABLE"):
-				case ATSTRINGHASH("pickup_money_case"):
-				case ATSTRINGHASH("pickup_money_wallet"):
-				case ATSTRINGHASH("pickup_money_purse"):
-				case ATSTRINGHASH("pickup_money_dep_bag"):
-				case ATSTRINGHASH("pickup_money_med_bag"):
-				case ATSTRINGHASH("pickup_money_paper_bag"):
-				case ATSTRINGHASH("pickup_money_security_case"):
-				case ATSTRINGHASH("pickup_gang_attack_money"):
-					// Cash
-					pickup_toast = LANG_GET("PTX_CASHPUP_T");
-					reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_CASH].getReactions();
-					break;
-
-				case ATSTRINGHASH("pickup_custom_script"):
-				case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_FIXED_INCAR"):
-				case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_SMALL"):
-				case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_WITH_PASSENGERS"):
-					if (args[6] == ATSTRINGHASH("bkr_prop_coke_boxeddoll") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_sasquatch") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_beast") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrgeneric") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrcomm") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_pogo") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_prbubble") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_imporage") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_alien"))
-					{
-						if (((unsigned int)args[2]) > 99)
-						{
-							// Invalid
-							pickup_toast = LANG_GET("PTX_IPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
-						}
-						else
-						{
-							// RP
-							pickup_toast = LANG_GET("PTX_RPPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
-						}
-						break;
-					}
-					if (args[6] == ATSTRINGHASH("vw_prop_vw_lux_card_01a"))
-					{
-						if (((unsigned int)args[2]) > 53)
-						{
-							// Invalid
-							pickup_toast = LANG_GET("PTX_IPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
-						}
-						else
-						{
-							// RP
-							pickup_toast = LANG_GET("PTX_RPPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
-						}
-						break;
-					}
-					[[fallthrough]];
-				default:
-					// Any
-					if (reactions & REACTION_TOAST)
-					{
-						Util::toast(LANG_FMT("PTX_APUP_T", joaatToString(args[6])), TOAST_DEFAULT);
-					}
-					break;
-				}
-				if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
-				{
-					Util::toast(std::move(std::string(pickup_toast.empty() ? LANG_GET("PTX_APUP_L") : pickup_toast).append(fmt::format(": {}, {}, {}, {}, {}, {}, {}", args[0], args[1], args[2], args[3], args[4], args[5], joaatToString(args[6])))), tf);
-				}
-				if (!pickup_toast.empty())
-				{
-					if (auto tf = flow_event_reactions_to_toast_flags(reactions))
-					{
-						Util::toast(std::move(pickup_toast), tf);
-					}
-				}
-				if (reactions & REACTION_BLOCK)
-				{
-					return;
+					LeaveReasons::onTimedOut(*gamer_info);
 				}
 			}
 			break;
 
-			case EVENT_NETWORK_DAMAGE_ENTITY:
-				if (!is_session_transition_active(true))
+		case EVENT_NETWORK_PLAYER_COLLECTED_AMBIENT_PICKUP:
+		{
+			int args[9 * 2]{};
+			event->RetrieveData(args, sizeof(args)); // Within the function we are calling here, it has a size check. If it doesn't match, we don't get the data.
+
+			if (args[4] != g_player)
+			{
+				break;
+			}
+			std::string pickup_toast{};
+			floweventreaction_t reactions = g_hooking.flow_event_reactions[FlowEvent::PUP_ANY].getReactions();
+			switch (args[0])
+			{
+			case ATSTRINGHASH("pickup_money_variable"):
+			case ATSTRINGHASH("PICKUP_VEHICLE_MONEY_VARIABLE"):
+			case ATSTRINGHASH("pickup_money_case"):
+			case ATSTRINGHASH("pickup_money_wallet"):
+			case ATSTRINGHASH("pickup_money_purse"):
+			case ATSTRINGHASH("pickup_money_dep_bag"):
+			case ATSTRINGHASH("pickup_money_med_bag"):
+			case ATSTRINGHASH("pickup_money_paper_bag"):
+			case ATSTRINGHASH("pickup_money_security_case"):
+			case ATSTRINGHASH("pickup_gang_attack_money"):
+				// Cash
+				pickup_toast = LANG_GET("PTX_CASHPUP_T");
+				reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_CASH].getReactions();
+				break;
+
+			case ATSTRINGHASH("pickup_custom_script"):
+			case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_FIXED_INCAR"):
+			case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_SMALL"):
+			case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_WITH_PASSENGERS"):
+				if (args[6] == ATSTRINGHASH("bkr_prop_coke_boxeddoll") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_sasquatch") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_beast") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrgeneric") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrcomm") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_pogo") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_prbubble") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_imporage") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_alien"))
 				{
-					int args[13 * 2]{};
-					event->RetrieveData(args, sizeof(args));
-
-					if (Hash weapon = args[6 * 2]; weapon != ATSTRINGHASH("WEAPON_EXPLOSION"))
+					if (((unsigned int)args[2]) > 99)
 					{
-#if INVALID_GUID == -1
-						AbstractEntity attacker_ped = AbstractEntity::get(args[1 * 2]);
-#else
-						AbstractEntity attacker_ped = AbstractEntity::invalid();
-						if (args[1 * 2] != -1)
-						{
-							attacker_ped = AbstractEntity::get(args[1 * 2]);
-						}
-#endif
-						if (attacker_ped.isAPlayer())
-						{
-							auto attacker = attacker_ped.getPlayer();
+						// Invalid
+						pickup_toast = LANG_GET("PTX_IPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
+					}
+					else
+					{
+						// RP
+						pickup_toast = LANG_GET("PTX_RPPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
+					}
+					break;
+				}
+				if (args[6] == ATSTRINGHASH("vw_prop_vw_lux_card_01a"))
+				{
+					if (((unsigned int)args[2]) > 53)
+					{
+						// Invalid
+						pickup_toast = LANG_GET("PTX_IPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
+					}
+					else
+					{
+						// RP
+						pickup_toast = LANG_GET("PTX_RPPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
+					}
+					break;
+				}
+				[[fallthrough]];
+			default:
+				// Any
+				if (reactions & REACTION_TOAST)
+				{
+					Util::toast(LANG_FMT("PTX_APUP_T", joaatToString(args[6])), TOAST_DEFAULT);
+				}
+				break;
+			}
+			if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
+			{
+				Util::toast(std::move(std::string(pickup_toast.empty() ? LANG_GET("PTX_APUP_L") : pickup_toast).append(fmt::format(": {}, {}, {}, {}, {}, {}, {}", args[0], args[1], args[2], args[3], args[4], args[5], joaatToString(args[6])))), tf);
+			}
+			if (!pickup_toast.empty())
+			{
+				if (auto tf = flow_event_reactions_to_toast_flags(reactions))
+				{
+					Util::toast(std::move(pickup_toast), tf);
+				}
+			}
+			if (reactions & REACTION_BLOCK)
+			{
+				return true;
+			}
+		}
+		break;
 
-							// Attacking While Invulnerable
-							if (attacker_ped.isInvulnerable()
-								&& !attacker_ped.isDead()
-								&& !attacker.isInInterior() // proxmine would be valid for any interior, also missiles like in terrorbyte or kosatka
-								&& !attacker.isUsingRcVehicle()
-								&& !(attacker.getReactions(FlowEvent::SYNCIN_CLONE_UPDATE, false) & REACTION_BLOCK)
+		case EVENT_NETWORK_DAMAGE_ENTITY:
+			if (!is_session_transition_active(true))
+			{
+				int args[13 * 2]{};
+				event->RetrieveData(args, sizeof(args));
+
+				if (Hash weapon = args[6 * 2]; weapon != ATSTRINGHASH("WEAPON_EXPLOSION"))
+				{
+#if INVALID_GUID == -1
+					AbstractEntity attacker_ped = AbstractEntity::get(args[1 * 2]);
+#else
+					AbstractEntity attacker_ped = AbstractEntity::invalid();
+					if (args[1 * 2] != -1)
+					{
+						attacker_ped = AbstractEntity::get(args[1 * 2]);
+					}
+#endif
+					if (attacker_ped.isAPlayer())
+					{
+						auto attacker = attacker_ped.getPlayer();
+
+						// Attacking While Invulnerable
+						if (attacker_ped.isInvulnerable()
+							&& !attacker_ped.isDead()
+							&& !attacker.isInInterior() // proxmine would be valid for any interior, also missiles like in terrorbyte or kosatka
+							&& !attacker.isUsingRcVehicle()
+							&& !(attacker.getReactions(FlowEvent::SYNCIN_CLONE_UPDATE, false) & REACTION_BLOCK)
+							)
+						{
+							auto* attacker_cmd = attacker.getCommand();
+							if (attacker_cmd != nullptr
+								&& GET_MILLIS_SINCE(attacker_cmd->invulnerable_since) > 3000
+								&& GET_MILLIS_SINCE(attacker_cmd->latest_death_at) > 3000
 								)
 							{
-								auto* attacker_cmd = attacker.getCommand();
-								if (attacker_cmd != nullptr
-									&& GET_MILLIS_SINCE(attacker_cmd->invulnerable_since) > 3000
-									&& GET_MILLIS_SINCE(attacker_cmd->latest_death_at) > 3000
+								attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_GODATK, 75);
+							}
+						}
+
+						// Modded Driveby Weapon
+						{
+							// Check if attacker is in a vehicle
+							if (auto model = attacker.getCurrentVehicleModel(); model != 0)
+							{
+								// Ensure weapon is still selected
+								if (auto cped = attacker_ped.getCPed();
+									cped
+									&& cped->weapon_manager
+									&& cped->weapon_manager->selector.selected_weapon_hash == weapon
 									)
 								{
-									attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_GODATK, 75);
-								}
-							}
-
-							// Modded Driveby Weapon
-							{
-								// Check if attacker is in a vehicle
-								if (auto model = attacker.getCurrentVehicleModel(); model != 0)
-								{
-									// Ensure weapon is still selected
-									if (auto cped = attacker_ped.getCPed();
-										cped
-										&& cped->weapon_manager
-										&& cped->weapon_manager->selector.selected_weapon_hash == weapon
-										)
+									if (auto* attacker_cmd = attacker.getCommand())
 									{
-										if (auto* attacker_cmd = attacker.getCommand())
+										// Check if attacker was in vehicle for at least 5 seconds
+										if (GET_MILLIS_SINCE(attacker_cmd->latest_vehicle_entry_at) >= 5000)
 										{
-											// Check if attacker was in vehicle for at least 5 seconds
-											if (GET_MILLIS_SINCE(attacker_cmd->latest_vehicle_entry_at) >= 5000)
+											if (auto w = Weapon::find(weapon))
 											{
-												if (auto w = Weapon::find(weapon))
+												if (auto veh_model = model.getVehicleModelInfo())
 												{
-													if (auto veh_model = model.getVehicleModelInfo())
+													// Finally, check if the weapon is not allow for vehicle
+													if (veh_model->m_pVehicleLayoutInfo
+														&& !veh_model->m_pVehicleLayoutInfo->doesAnySeatAllowWeapon(*w)
+														)
 													{
-														// Finally, check if the weapon is not allow for vehicle
-														if (veh_model->m_pVehicleLayoutInfo
-															&& !veh_model->m_pVehicleLayoutInfo->doesAnySeatAllowWeapon(*w)
-															)
-														{
-															attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_DRIVEB, fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), Weapon::find(weapon)->getName(), model.getLabel().getLiteralUtf8()));
-														}
+														attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_DRIVEB, fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), Weapon::find(weapon)->getName(), model.getLabel().getLiteralUtf8()));
 													}
 												}
 											}
@@ -4018,63 +4016,88 @@ namespace Stand::hooks
 							}
 						}
 					}
-
-					/*Ped attackee_ped = args[0 * 2];
-					Ped attacker_ped = args[1 * 2];
-					if (attackee_ped != attacker_ped)
-					{
-						if (PED::IS_PED_A_PLAYER(attackee_ped) && PED::IS_PED_A_PLAYER(attacker_ped))
-						{
-							Player attackee = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attackee_ped);
-							Player attacker = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attacker_ped);
-
-							// damage (float): args[2 * 2]
-
-							util::toast(fmt::format(
-								"{} damaged {} with {}{}{}",
-								AbstractPlayer(attackee).get_name(),
-								AbstractPlayer(attacker).get_name(),
-								reverseJoaat(args[6 * 2]),
-								args[5 * 2] == 1 ? " fatally" : "",
-								AbstractEntity::get(attacker_ped).is_invulnerable() ? " while invulnerable" : ""
-							), TOAST_ALL, false);
-						}
-					}*/
 				}
-				break;
 
-			case EVENT_NETWORK_PRIMARY_CLAN_CHANGED:
-				if (g_hooking.block_bail_crew)
+				/*Ped attackee_ped = args[0 * 2];
+				Ped attacker_ped = args[1 * 2];
+				if (attackee_ped != attacker_ped)
 				{
-					return;
-				}
-				break;
-
-			case EVENT_TEXT_MESSAGE_RECEIVED:
-				{
-					constexpr auto args_size = (29 * 2);
-					auto args = std::make_shared<int[]>(args_size);
-					event->RetrieveData(args.get(), args_size * sizeof(int));
-
-					AbstractPlayer sender = packet_src;
-					Player blamed_sender = NETWORK::NETWORK_GET_PLAYER_FROM_GAMER_HANDLE((Any*)&args[16 * 2]);
-					if (!packet_src.isValid())
+					if (PED::IS_PED_A_PLAYER(attackee_ped) && PED::IS_PED_A_PLAYER(attacker_ped))
 					{
-						sender = blamed_sender;
-					}
+						Player attackee = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attackee_ped);
+						Player attacker = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attacker_ped);
 
-					if (processSms(sender, (const char*)&args[0]))
-					{
-						return;
+						// damage (float): args[2 * 2]
+
+						util::toast(fmt::format(
+							"{} damaged {} with {}{}{}",
+							AbstractPlayer(attackee).get_name(),
+							AbstractPlayer(attacker).get_name(),
+							reverseJoaat(args[6 * 2]),
+							args[5 * 2] == 1 ? " fatally" : "",
+							AbstractEntity::get(attacker_ped).is_invulnerable() ? " while invulnerable" : ""
+						), TOAST_ALL, false);
 					}
-				}
-				break;
+				}*/
 			}
-			return OG(CEventGroupScriptNetwork_DispatchEvent)(thisptr, event);
+			break;
+
+		case EVENT_NETWORK_PRIMARY_CLAN_CHANGED:
+			if (g_hooking.block_bail_crew)
+			{
+				return true;
+			}
+			break;
+
+		case EVENT_TEXT_MESSAGE_RECEIVED:
+			{
+				constexpr auto args_size = (29 * 2);
+				auto args = std::make_shared<int[]>(args_size);
+				event->RetrieveData(args.get(), args_size * sizeof(int));
+
+				AbstractPlayer sender = packet_src;
+				Player blamed_sender = NETWORK::NETWORK_GET_PLAYER_FROM_GAMER_HANDLE((Any*)&args[16 * 2]);
+				if (!packet_src.isValid())
+				{
+					sender = blamed_sender;
+				}
+
+				if (processSms(sender, (const char*)&args[0]))
+				{
+					return true;
+				}
+			}
+			break;
+		}
+		return false;
+	}
+
+	void __fastcall CEventGroupScriptNetwork_DispatchEvent(CEventGroupScriptNetwork* thisptr, CEventNetwork* event)
+	{
+		bool handled = false;
+		__try
+		{
+			handled = dispatchScriptNetworkEvent(event);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+		if (!handled)
+		{
+			OG(CEventGroupScriptNetwork_DispatchEvent)(thisptr, event);
+		}
+	}
+
+	// Constructs a SessionPlayer (has a std::string member), so this must not itself contain a __try.
+	static void recordPendingObjectIdRequest(const rage::rlGamerInfo& info)
+	{
+		CommandBlockBlockJoin::pending_object_ids.emplace_back(SessionPlayer(info));
+	}
+
+	// Constructs a SessionPlayer (has a std::string member), so this must not itself contain a __try.
+	static void recordPendingScriptJoinAck(const rage::rlGamerInfo& info)
+	{
+		CommandBlockBlockJoin::pending_script_join_acks.emplace_back(SessionPlayer(info));
 	}
 
 	bool __fastcall rage_netPlayerMgrBase_SendBuffer(rage::netPlayerMgrBase* a1, const rage::netPlayer* recipient, const void* data, unsigned int size, unsigned int sendFlags, rage::netSequence* seq, const rage::netPlayer* sender)
@@ -4088,7 +4111,7 @@ namespace Stand::hooks
 			if (id == REQUEST_OBJECT_IDS_MSG)
 			{
 				//g_logger.log(fmt::format("Sending RequestObjectIdsMsg to {}", receiver->GetLogName()));
-				CommandBlockBlockJoin::pending_object_ids.emplace_back(SessionPlayer(*recipient->GetGamerInfoImpl()));
+				recordPendingObjectIdRequest(*recipient->GetGamerInfoImpl());
 			}
 			else if (id == MSG_SCRIPT_JOIN)
 			{
@@ -4102,7 +4125,7 @@ namespace Stand::hooks
 				}
 				else
 				{
-					CommandBlockBlockJoin::pending_script_join_acks.emplace_back(SessionPlayer(*recipient->GetGamerInfoImpl()));
+					recordPendingScriptJoinAck(*recipient->GetGamerInfoImpl());
 				}
 			}
 			return OG(rage_netPlayerMgrBase_SendBuffer)(a1, recipient, data, size, sendFlags, seq, sender);
@@ -4161,6 +4184,16 @@ namespace Stand::hooks
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 
+	// fmt::format()/LANG_FMT() produce std::string temporaries, so this must not itself contain a __try.
+	static void reportScriptFroze(rage::scrProgram* program, rage::scrThreadContext* thread_ctx)
+	{
+#ifdef STAND_DEBUG
+		Util::toast(fmt::format("{} script froze at {} in func_{}", program->m_name, thread_ctx->m_instruction_pointer, program->getFuncIndexByCodeIndex(thread_ctx->m_instruction_pointer) - 1), TOAST_ALL);
+#else
+		Util::toast(LANG_FMT("SVM_FRZ", program->m_name), TOAST_ALL);
+#endif
+	}
+
 	static uint32_t __fastcall execute_script(void** stack, int64_t** script_globals, rage::scrProgram* program, rage::scrThreadContext* thread_ctx)
 	{
 		uint32_t ret = rage::scrThread::ABORTED;
@@ -4192,11 +4225,7 @@ namespace Stand::hooks
 		}
 		if (ret == rage::scrThread::STAND_INFLOOP)
 		{
-#ifdef STAND_DEBUG
-			Util::toast(fmt::format("{} script froze at {} in func_{}", program->m_name, thread_ctx->m_instruction_pointer, program->getFuncIndexByCodeIndex(thread_ctx->m_instruction_pointer) - 1), TOAST_ALL);
-#else
-			Util::toast(LANG_FMT("SVM_FRZ", program->m_name), TOAST_ALL);
-#endif
+			reportScriptFroze(program, thread_ctx);
 
 			thread_ctx->m_state = rage::scrThread::ABORTED;
 			ret = rage::scrThread::ABORTED;
@@ -4400,6 +4429,51 @@ namespace Stand::hooks
 	}
 
 #if RG_HAS_BULK
+	// Has destructible locals (rapidjson::Document, std::string), so this must not itself contain a __try.
+	static void processGamerStateTaskResponse(const char* response)
+	{
+		rapidjson::Document document;
+		if (!document.Parse(response).HasParseError() && document.IsObject())
+		{
+			const auto rid = str2int<uint64_t>(document["_id"].GetString() + 3).value();
+			if (auto* g = RemoteGamer::getSimple(rid))
+			{
+				std::string gsinfo = document.FindMember(soup::ObfusString("gsinfo").c_str())->value.GetString();
+				std::optional<int64_t> gstype{};
+				auto mem_gstype = document.FindMember(soup::ObfusString("gstype").c_str());
+				if (mem_gstype != document.MemberEnd())
+				{
+					gstype = mem_gstype->value.GetInt64();
+				}
+
+				g->response_from_detailed = false;
+				if (gsinfo.empty())
+				{
+					if (!gstype.has_value())
+					{
+						g->processGamerState(false, "", 0); // offline
+					}
+					else
+					{
+						g->processGamerState(true, "", 0); // story mode
+					}
+				}
+				else
+				{
+					SOUP_IF_LIKELY (gstype.has_value())
+					{
+						g->processGamerState(true, std::move(gsinfo), gstype.value());
+					}
+					else
+					{
+						// If no value, default to public. Rare, but can happen.
+						g->processGamerState(true, std::move(gsinfo), GS_PUBLIC);
+					}
+				}
+			}
+		}
+	}
+
 	bool rage_rlGetGamerStateTask_ParseResults(rage::rlGetGamerStateTask* task)
 	{
 		__try
@@ -4412,46 +4486,7 @@ namespace Stand::hooks
 					continue;
 				}
 				//g_logger.log(response);
-				rapidjson::Document document;
-				if (!document.Parse(response).HasParseError() && document.IsObject())
-				{
-					const auto rid = str2int<uint64_t>(document["_id"].GetString() + 3).value();
-					if (auto* g = RemoteGamer::getSimple(rid))
-					{
-						std::string gsinfo = document.FindMember(soup::ObfusString("gsinfo").c_str())->value.GetString();
-						std::optional<int64_t> gstype{};
-						auto mem_gstype = document.FindMember(soup::ObfusString("gstype").c_str());
-						if (mem_gstype != document.MemberEnd())
-						{
-							gstype = mem_gstype->value.GetInt64();
-						}
-
-						g->response_from_detailed = false;
-						if (gsinfo.empty())
-						{
-							if (!gstype.has_value())
-							{
-								g->processGamerState(false, "", 0); // offline
-							}
-							else
-							{
-								g->processGamerState(true, "", 0); // story mode
-							}
-						}
-						else
-						{
-							SOUP_IF_LIKELY (gstype.has_value())
-							{
-								g->processGamerState(true, std::move(gsinfo), gstype.value());
-							}
-							else
-							{
-								// If no value, default to public. Rare, but can happen.
-								g->processGamerState(true, std::move(gsinfo), GS_PUBLIC);
-							}
-						}
-					}
-				}
+				processGamerStateTaskResponse(response);
 			}
 		}
 		__EXCEPTIONAL()
@@ -4774,6 +4809,20 @@ namespace Stand::hooks
 		return OG(CExtraContentManager_GetCRC)(_this, initValue);
 	}
 
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryReceivedCloneCreateAckOriginal(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.received_clone_create_ack_hook.getOriginal<decltype(&received_clone_create_ack)>()(mgr, sender, recipient, object_id, ack_code);
+		}
+		//__except (EXCEPTION_EXECUTE_HANDLER)
+		__EXCEPTIONAL()
+		{
+			//t.add(FlowEvent::SE_CRASH, "CA");
+		}
+	}
+
 	void received_clone_create_ack(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code)
 	{
 		sync_src = sender->player_id;
@@ -4781,17 +4830,22 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCIN_ACK_CLONE_CREATE);
 		if (!(t.reactions & REACTION_BLOCK))
 		{
-			__try
-			{
-				g_hooking.received_clone_create_ack_hook.getOriginal<decltype(&received_clone_create_ack)>()(mgr, sender, recipient, object_id, ack_code);
-			}
-			//__except (EXCEPTION_EXECUTE_HANDLER)
-			__EXCEPTIONAL()
-			{
-				//t.add(FlowEvent::SE_CRASH, "CA");
-			}
+			tryReceivedCloneCreateAckOriginal(mgr, sender, recipient, object_id, ack_code, t);
 		}
 		t.applyReactionsIn();
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryReceivedCloneSyncAckOriginal(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, void* buffer, uint16_t object_id, uint32_t ack_code, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.received_clone_sync_ack_hook.getOriginal<decltype(&received_clone_sync_ack)>()(mgr, sender, recipient, buffer, object_id, ack_code);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			t.add(FlowEvent::SE_CRASH, "UA");
+		}
 	}
 
 	void received_clone_sync_ack(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, void* buffer, uint16_t object_id, uint32_t ack_code)
@@ -4801,16 +4855,22 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCIN_ACK_CLONE_UPDATE);
 		if (!(t.reactions & REACTION_BLOCK))
 		{
-			__try
-			{
-				g_hooking.received_clone_sync_ack_hook.getOriginal<decltype(&received_clone_sync_ack)>()(mgr, sender, recipient, buffer, object_id, ack_code);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				t.add(FlowEvent::SE_CRASH, "UA");
-			}
+			tryReceivedCloneSyncAckOriginal(mgr, sender, recipient, buffer, object_id, ack_code, t);
 		}
 		t.applyReactionsIn();
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryReceivedCloneRemoveAckOriginal(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.received_clone_remove_ack_hook.getOriginal<decltype(&received_clone_remove_ack)>()(mgr, sender, recipient, object_id, ack_code);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			t.add(FlowEvent::SE_CRASH, "DA");
+		}
 	}
 
 	void received_clone_remove_ack(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code)
@@ -4820,36 +4880,35 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCIN_ACK_CLONE_DELETE);
 		if (!(t.reactions & REACTION_BLOCK))
 		{
-			__try
-			{
-				g_hooking.received_clone_remove_ack_hook.getOriginal<decltype(&received_clone_remove_ack)>()(mgr, sender, recipient, object_id, ack_code);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				t.add(FlowEvent::SE_CRASH, "DA");
-			}
+			tryReceivedCloneRemoveAckOriginal(mgr, sender, recipient, object_id, ack_code, t);
 		}
 		t.applyReactionsIn();
+	}
+
+	// Has a destructible std::string local, so this must not itself contain a __try.
+	static void logBlockedSyncBody(floweventreaction_t& reactions, const EventLabel& event_name, rage::netObject* netObject, rage::NetworkObjectType object_type)
+	{
+		if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
+		{
+			std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", event_name.getName()), FMT_ARG("player", sync_src.getName()));
+			if (event_name.hasNonRawName())
+			{
+				message.append(": ").append(event_name.raw_name.getLocalisedUtf8());
+			}
+			message.append(": ").append(NetworkObjectType_toString(object_type));
+			if (netObject != nullptr)
+			{
+				message.append("{id=").append(fmt::to_string(netObject->object_id)).append(", obj_type=").append(NetworkObjectType_names[netObject->object_type]).push_back('}');
+			}
+			Util::toast(std::move(message), tf);
+		}
 	}
 
 	static void logBlockedSync(floweventreaction_t& reactions, const EventLabel& event_name, rage::netObject* netObject, rage::NetworkObjectType object_type)
 	{
 		__try
 		{
-			if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
-			{
-				std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", event_name.getName()), FMT_ARG("player", sync_src.getName()));
-				if (event_name.hasNonRawName())
-				{
-					message.append(": ").append(event_name.raw_name.getLocalisedUtf8());
-				}
-				message.append(": ").append(NetworkObjectType_toString(object_type));
-				if (netObject != nullptr)
-				{
-					message.append("{id=").append(fmt::to_string(netObject->object_id)).append(", obj_type=").append(NetworkObjectType_names[netObject->object_type]).push_back('}');
-				}
-				Util::toast(std::move(message), tf);
-			}
+			logBlockedSyncBody(reactions, event_name, netObject, object_type);
 		}
 		__EXCEPTIONAL()
 		{
@@ -4980,6 +5039,53 @@ namespace Stand::hooks
 	static NetObjPlayerStateSaver nopss;
 #endif
 
+#if DEBUG_SYNCTREE_BUFFER_OVERRUNS
+	// soup::ObfusString(...).str() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void toastSyncTreeStateSaverRestored()
+	{
+		Util::toast(soup::ObfusString("processReceivedSyncTree: stss had to restore data!").str(), TOAST_ALL);
+	}
+#endif
+
+#if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
+	// soup::ObfusString(...).str() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void toastNetObjPlayerStateSaverRestored()
+	{
+		Util::toast(soup::ObfusString("processReceivedSyncTree: nopss had to restore data!").str(), TOAST_ALL);
+	}
+#endif
+
+	// Has a destructible std::string local, so this must not itself contain a __try.
+	static void logBlockedSyncTreeBody(rage::datBitBuffer* buffer, rage::NetworkObjectType object_type, bool is_create, EventTally& t)
+	{
+		if (auto tf = flow_event_reactions_to_logger_toast_flags(t.reactions))
+		{
+			std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", t.label.getName()), FMT_ARG("player", sync_src.getName()));
+			if (t.label.hasNonRawName())
+			{
+				message.append(": ").append(t.label.raw_name.getLocalisedUtf8());
+			}
+			message.append(": ");
+			if (sync_was_read)
+			{
+				message.append(current_sync_tree->dump(object_type, is_create));
+			}
+			else if (current_sync_tree != nullptr
+				&& current_sync_tree->object != nullptr
+				)
+			{
+				message.append(current_sync_tree->object->getTypeName()).append("{id=").append(fmt::to_string(current_sync_tree->object->object_id)).append("}");
+			}
+			else
+			{
+				buffer->seekStart();
+				message.append(bitbufferToBitstring(*buffer));
+				buffer->seekEnd();
+			}
+			Util::toast(std::move(message), tf);
+		}
+	}
+
 	static void processReceivedSyncTree(rage::datBitBuffer* buffer, rage::NetworkObjectType object_type, bool is_create, EventTally& t)
 	{
 		if (current_sync_tree != nullptr)
@@ -4989,13 +5095,13 @@ namespace Stand::hooks
 #if DEBUG_SYNCTREE_BUFFER_OVERRUNS
 				if (stss.checkAndRestore(current_sync_tree))
 				{
-					Util::toast(soup::ObfusString("processReceivedSyncTree: stss had to restore data!").str(), TOAST_ALL);
+					toastSyncTreeStateSaverRestored();
 				}
 #endif
 #if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
 				if (nopss.checkAndRestore())
 				{
-					Util::toast(soup::ObfusString("processReceivedSyncTree: nopss had to restore data!").str(), TOAST_ALL);
+					toastNetObjPlayerStateSaverRestored();
 				}
 #endif
 			}
@@ -5005,32 +5111,7 @@ namespace Stand::hooks
 		}
 		__try
 		{
-			if (auto tf = flow_event_reactions_to_logger_toast_flags(t.reactions))
-			{
-				std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", t.label.getName()), FMT_ARG("player", sync_src.getName()));
-				if (t.label.hasNonRawName())
-				{
-					message.append(": ").append(t.label.raw_name.getLocalisedUtf8());
-				}
-				message.append(": ");
-				if (sync_was_read)
-				{
-					message.append(current_sync_tree->dump(object_type, is_create));
-				}
-				else if (current_sync_tree != nullptr
-					&& current_sync_tree->object != nullptr
-					)
-				{
-					message.append(current_sync_tree->object->getTypeName()).append("{id=").append(fmt::to_string(current_sync_tree->object->object_id)).append("}");
-				}
-				else
-				{
-					buffer->seekStart();
-					message.append(bitbufferToBitstring(*buffer));
-					buffer->seekEnd();
-				}
-				Util::toast(std::move(message), tf);
-			}
+			logBlockedSyncTreeBody(buffer, object_type, is_create, t);
 		}
 		__EXCEPTIONAL()
 		{
@@ -5170,6 +5251,25 @@ namespace Stand::hooks
 		return ret;
 	}
 
+	// Has destructible locals (std::vector, std::string, Label temporaries), so this must not itself contain a __try.
+	static void applyClonePackCrashReaction(floweventreaction_t& reactions)
+	{
+		std::vector<flowevent_t> types{ FlowEvent::SYNCOUT_CLONE_CREATE, FlowEvent::SE_CRASH };
+		sync_src.applyReactions(reactions, std::move(types), LIT(std::move(std::string(LANG_GET("PTX_CRSHE")).append(" (CP)"))));
+	}
+
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryApplyClonePackCrashReaction(floweventreaction_t& reactions)
+	{
+		__try
+		{
+			applyClonePackCrashReaction(reactions);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	// CNetworkObjectMgr::CloneObject
 	void __fastcall clone_pack(CNetworkObjectMgr* mgr, rage::netObject* netObject, CNetGamePlayer* recipient, rage::datBitBuffer* buffer)
 	{
@@ -5186,14 +5286,7 @@ namespace Stand::hooks
 			{
 				buffer->seekEnd();
 
-				__try
-				{
-					std::vector<flowevent_t> types{ FlowEvent::SYNCOUT_CLONE_CREATE, FlowEvent::SE_CRASH };
-					sync_src.applyReactions(reactions, std::move(types), LIT(std::move(std::string(LANG_GET("PTX_CRSHE")).append(" (CP)"))));
-				}
-				__EXCEPTIONAL()
-				{
-				}
+				tryApplyClonePackCrashReaction(reactions);
 			}
 		}
 	}
@@ -5227,6 +5320,50 @@ namespace Stand::hooks
 	}
 
 	// rage::netObjectMgrBase::CloneObject
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryLogCloneCreateCrash(EventTally& t)
+	{
+		__try
+		{
+			if (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_cs_when_coloading)
+			{
+				t.add(FlowEvent::SE_CRASH, "CS");
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void trySendCloneCreate(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer, EventTally& t)
+	{
+		__try
+		{
+			if (process_clone_create(mgr, obj, player, buffer))
+			{
+				OG(send_clone_create)(mgr, obj, player, buffer);
+			}
+		}
+		__EXCEPTIONAL()
+		{
+			buffer->seekEnd();
+			tryLogCloneCreateCrash(t);
+		}
+	}
+
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryApplyCloneCreateReactionsOut(EventTally& t)
+	{
+		__try
+		{
+			t.applyReactionsOut();
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	void __fastcall send_clone_create(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer)
 	{
 		THREAD_NAME("Sync Send?");
@@ -5250,28 +5387,42 @@ namespace Stand::hooks
 		}
 		SOUP_IF_LIKELY (can_send)
 		{
-			__try
-			{
-				if (process_clone_create(mgr, obj, player, buffer))
-				{
-					OG(send_clone_create)(mgr, obj, player, buffer);
-				}
-			}
-			__EXCEPTIONAL()
-			{
-				buffer->seekEnd();
-				__try
-				{
-					if (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_cs_when_coloading)
-					{
-						t.add(FlowEvent::SE_CRASH, "CS");
-					}
-				}
-				__EXCEPTIONAL()
-				{
-				}
-			}
+			trySendCloneCreate(mgr, obj, player, buffer, t);
 		}
+		tryApplyCloneCreateReactionsOut(t);
+	}
+#endif
+
+#if HAVE_SEND_CLONE_SYNC_HOOK
+	// rage::netObjectMgrMessageHandler::SendCloneSync
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryLogCloneSyncCrash(EventTally& t)
+	{
+		__try
+		{
+			t.add(FlowEvent::SE_CRASH, "US");
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void trySendCloneSync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.send_clone_sync_hook.getOriginal<decltype(&send_clone_sync)>()(mgr, player, obj, a4, a5, a6);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			tryLogCloneSyncCrash(t);
+		}
+	}
+
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryApplyCloneSyncReactionsOut(EventTally& t)
+	{
 		__try
 		{
 			t.applyReactionsOut();
@@ -5280,10 +5431,7 @@ namespace Stand::hooks
 		{
 		}
 	}
-#endif
 
-#if HAVE_SEND_CLONE_SYNC_HOOK
-	// rage::netObjectMgrMessageHandler::SendCloneSync
 	void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6)
 	{
 		sync_src = player->player_id;
@@ -5305,28 +5453,9 @@ namespace Stand::hooks
 		}
 		SOUP_IF_LIKELY (can_send)
 		{
-			__try
-			{
-				g_hooking.send_clone_sync_hook.getOriginal<decltype(&send_clone_sync)>()(mgr, player, obj, a4, a5, a6);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				__try
-				{
-					t.add(FlowEvent::SE_CRASH, "US");
-				}
-				__EXCEPTIONAL()
-				{
-				}
-			}
+			trySendCloneSync(mgr, player, obj, a4, a5, a6, t);
 		}
-		__try
-		{
-			t.applyReactionsOut();
-		}
-		__EXCEPTIONAL()
-		{
-		}
+		tryApplyCloneSyncReactionsOut(t);
 	}
 #endif
 

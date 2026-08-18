@@ -175,6 +175,13 @@ namespace Stand
 		return children.size() < max_web_commands;
 	}
 
+	// Contains destructible temporaries (std::string construction/concatenation),
+	// so this is kept out of the __try in CommandList::onClick's lambda.
+	static void sendWebFocusLine(const Label& menu_name)
+	{
+		g_relay.sendLine(std::move(std::string("l ").append(menu_name.getWebString())));
+	}
+
 	void CommandList::onClick(Click& click)
 	{
 		if (!isAttached())
@@ -192,7 +199,7 @@ namespace Stand
 					auto* const prev_focus = g_gui.web_focus;
 					//Util::toast(fmt::format("Updated web_focus to {}", this->getPathConfig()), TOAST_ALL);
 					g_gui.web_focus = this;
-					g_relay.sendLine(std::move(std::string("l ").append(menu_name.getWebString())));
+					sendWebFocusLine(menu_name);
 					updateWebStateImpl();
 					if (prev_focus != nullptr)
 					{
