@@ -37,43 +37,76 @@ namespace Stand
 		return parent != nullptr;
 	}
 
-	std::unique_ptr<Command> Command::detach()
+	// Isolated so the WRITE-lock __try has no non-trivial locals of its own; the matched slot's iterator is passed by reference from the caller.
+	static Command* detachMatchedChild(CommandList* parent, std::vector<std::unique_ptr<Command>>::iterator& i, Command* self)
 	{
-		std::unique_ptr<Command> ret{};
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		Command* raw = nullptr;
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		self->preDetach();
+		raw = i->release();
+		parent->children.erase(i);
+		parent->processChildrenUpdate();
+		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+		return raw;
+	}
+
+	// Iterator over `children` is non-trivially destructible under the Debug CRT; keep it out of any __try frame.
+	static Command* findAndDetachChild(CommandList* parent, Command* self)
+	{
 		for (auto i = parent->children.begin(); i != parent->children.end(); ++i)
 		{
-			if (i->get() == this)
+			if (i->get() == self)
 			{
-				EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-				preDetach();
-				ret = std::move(*i);
-				parent->children.erase(i);
-				parent->processChildrenUpdate();
-				EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+				return detachMatchedChild(parent, i, self);
+			}
+		}
+		return nullptr;
+	}
+
+	// Keeps the READ-lock __try free of non-trivial locals; the unique_ptr is assembled by the caller, outside any __try.
+	static Command* lockAndDetachChild(CommandList* parent, Command* self)
+	{
+		Command* raw = nullptr;
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		raw = findAndDetachChild(parent, self);
+		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		return raw;
+	}
+
+	std::unique_ptr<Command> Command::detach()
+	{
+		std::unique_ptr<Command> ret(lockAndDetachChild(parent, this));
+		ret->parent = nullptr;
+		return std::move(ret);
+	}
+
+	// Isolated so the WRITE-lock __try has no non-trivial locals of its own.
+	static void replaceMatchedChild(CommandList* parent, std::unique_ptr<Command>& slot, std::unique_ptr<Command>&& cmd)
+	{
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		slot->preDelete();
+		slot = std::move(cmd);
+		parent->processChildrenUpdate();
+		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+	}
+
+	// Range-based for over `children` uses a checked (non-trivially destructible) iterator under the Debug CRT; keep it out of any __try frame.
+	static void findAndReplaceChild(CommandList* parent, Command* self, std::unique_ptr<Command>&& cmd)
+	{
+		for (auto& i : parent->children)
+		{
+			if (i.get() == self)
+			{
+				replaceMatchedChild(parent, i, std::move(cmd));
 				break;
 			}
 		}
-		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
-		ret->parent = nullptr;
-		return std::move(ret);
 	}
 
 	void Command::replace(std::unique_ptr<Command>&& cmd)
 	{
 		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-		for (auto& i : parent->children)
-		{
-			if (i.get() == this)
-			{
-				EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-				preDelete();
-				i = std::move(cmd);
-				parent->processChildrenUpdate();
-				EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
-				break;
-			}
-		}
+		findAndReplaceChild(parent, this, std::move(cmd));
 		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 	}
 
