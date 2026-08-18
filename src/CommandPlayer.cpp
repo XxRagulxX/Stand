@@ -652,6 +652,17 @@ namespace Stand
 		}
 	}
 
+	// Kept out of processRediscovery() below, which holds EXCEPTIONAL_LOCK's __try:
+	// processRediscovery has std::string locals (session_name, filtered_name), so
+	// the lock/unlock can't live in that same function.
+	static void updateHistoricPlayerScName(HistoricPlayer* historic_player, const std::string& session_name)
+	{
+		EXCEPTIONAL_LOCK(PlayerHistory::mtx)
+		historic_player->name = session_name;
+		historic_player->flags &= ~HP_SCNAME;
+		EXCEPTIONAL_UNLOCK(PlayerHistory::mtx)
+	}
+
 	void CommandPlayer::processRediscovery(AbstractPlayer p) const
 	{
 		auto session_name = p.getSessionName();
@@ -666,10 +677,7 @@ namespace Stand
 			&& filtered_name == session_name
 			)
 		{
-			EXCEPTIONAL_LOCK(PlayerHistory::mtx)
-			historic_player->name = session_name;
-			historic_player->flags &= ~HP_SCNAME;
-			EXCEPTIONAL_UNLOCK(PlayerHistory::mtx)
+			updateHistoricPlayerScName(historic_player, session_name);
 		}
 
 #if !ASSUME_NO_RID_SPOOFING

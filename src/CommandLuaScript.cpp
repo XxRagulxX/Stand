@@ -8740,6 +8740,21 @@ f(link)
 		return 1;
 	}
 
+	// resp.getHeaderFields() returns a std::unordered_map by value, so this
+	// can't share a frame with the __try in lua_async_http_init() below.
+	static void invokeAsyncHttpSuccessCallback(soup::WeakRef<CommandLuaScript>& weak_ref, int succ_callback, int fail_callback, soup::HttpResponse& resp)
+	{
+		if (auto script = weak_ref.getPointer())
+		{
+			if (fail_callback != LUA_NOREF)
+			{
+				luaS_releaseReference(script->L, fail_callback);
+			}
+			luaS_invoke_void(script->L, succ_callback, resp.body, resp.getHeaderFields(), resp.status_code);
+			luaS_releaseReference(script->L, succ_callback);
+		}
+	}
+
 	int lua_async_http_init(lua_State* L)
 	{
 		if (async_http_builder != nullptr)
@@ -8791,15 +8806,7 @@ f(link)
 				{
 					__try
 					{
-						if (auto script = weak_ref.getPointer())
-						{
-							if (fail_callback != LUA_NOREF)
-							{
-								luaS_releaseReference(script->L, fail_callback);
-							}
-							luaS_invoke_void(script->L, succ_callback, resp.body, resp.getHeaderFields(), resp.status_code);
-							luaS_releaseReference(script->L, succ_callback);
-						}
+						invokeAsyncHttpSuccessCallback(weak_ref, succ_callback, fail_callback, resp);
 					}
 					__EXCEPTIONAL_LUA()
 					{
