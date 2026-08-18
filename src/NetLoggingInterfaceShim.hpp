@@ -11,6 +11,12 @@
 
 namespace Stand
 {
+	// Separate function so the fmt::format() std::string temporary isn't a destructible local in the __try'ing function below.
+	static void logNetLoggingInterfaceMessage(const char* component, const char* label, const char* buffer)
+	{
+		g_logger.log(fmt::format("[{}] {}: {}", component, label, buffer));
+	}
+
 	class NetLoggingInterfaceShim : public rage::netLoggingInterface
 	{
 	private:
@@ -31,7 +37,7 @@ namespace Stand
 				char buffer[256];
 				vsprintf_s(buffer, data_fmt, argp);
 				va_end(argp);
-				g_logger.log(fmt::format("[{}] {}: {}", component, label, (const char*)&buffer[0]));
+				logNetLoggingInterfaceMessage(component, label, (const char*)&buffer[0]);
 			}
 			__EXCEPTIONAL()
 			{

@@ -124,16 +124,33 @@ namespace Stand
 		}
 	}
 
+#ifdef STAND_DEBUG
+	// name is taken by reference (rather than the by-value DebugString the
+	// callers hold) so that the __try inside EXCEPTIONAL_LOCK never shares a
+	// stack frame with a C++ object requiring unwinding.
+	[[nodiscard]] static bool registerCountedThreadName(const std::string& name)
+	{
+		bool contains;
+		EXCEPTIONAL_LOCK(Exceptional::counted_thread_names_mtx)
+			contains = Exceptional::counted_thread_names.contains(name);
+			Exceptional::counted_thread_names.emplace(name);
+		EXCEPTIONAL_UNLOCK(Exceptional::counted_thread_names_mtx)
+		return contains;
+	}
+
+	static void unregisterCountedThreadName(const std::string& name) noexcept
+	{
+		EXCEPTIONAL_LOCK(Exceptional::counted_thread_names_mtx)
+			Exceptional::counted_thread_names.erase(name);
+		EXCEPTIONAL_UNLOCK(Exceptional::counted_thread_names_mtx)
+	}
+#endif
+
 	void Exceptional::createManagedCountedThread(DebugString name, std::function<void()>&& func) noexcept
 	{
 		SOUP_ASSERT(++counted_threads != 0);
 #ifdef STAND_DEBUG
-		bool contains;
-		EXCEPTIONAL_LOCK(counted_thread_names_mtx)
-			contains = counted_thread_names.contains(name.data);
-			counted_thread_names.emplace(name.data);
-		EXCEPTIONAL_UNLOCK(counted_thread_names_mtx)
-		if (contains)
+		if (registerCountedThreadName(name.data))
 		{
 			report(fmt::format("Created thread with duplicate name: {}", name.data));
 		}
@@ -143,9 +160,7 @@ namespace Stand
 			func();
 			--counted_threads;
 #ifdef STAND_DEBUG
-			EXCEPTIONAL_LOCK(counted_thread_names_mtx)
-				counted_thread_names.erase(name.data);
-			EXCEPTIONAL_UNLOCK(counted_thread_names_mtx)
+			unregisterCountedThreadName(name.data);
 #endif
 		});
 	}
@@ -154,12 +169,7 @@ namespace Stand
 	{
 		SOUP_ASSERT(++counted_threads != 0);
 #ifdef STAND_DEBUG
-		bool contains;
-		EXCEPTIONAL_LOCK(counted_thread_names_mtx)
-			contains = counted_thread_names.contains(name.data);
-			counted_thread_names.emplace(name.data);
-		EXCEPTIONAL_UNLOCK(counted_thread_names_mtx)
-		if (contains)
+		if (registerCountedThreadName(name.data))
 		{
 			//report(fmt::format("Created thread with duplicate name: {}", name.data));
 		}
@@ -175,9 +185,7 @@ namespace Stand
 			}
 			--counted_threads;
 #ifdef STAND_DEBUG
-			EXCEPTIONAL_LOCK(counted_thread_names_mtx)
-				counted_thread_names.erase(name.data);
-			EXCEPTIONAL_UNLOCK(counted_thread_names_mtx)
+			unregisterCountedThreadName(name.data);
 #endif
 		});
 	}
@@ -243,6 +251,77 @@ namespace Stand
 		return str;
 	}
 
+	// Kept in a function of its own: it must not share a stack frame with any
+	// __try, and everything it touches (std::string, etc.) requires unwinding.
+	static void logBlockBegin() noexcept
+	{
+		g_logger.log(addSpears(LANG_GET("ERR_L_B")));
+		g_logger.enterBlockMode();
+	}
+
+	static void logBlockEnd() noexcept
+	{
+		g_logger.leaveBlockMode();
+		g_logger.log(addSpears(LANG_GET("ERR_L_E")));
+	}
+
+	// Isolated from reportBody() so that the __try below never shares a stack
+	// frame with a C++ object requiring unwinding (message is a reference, not
+	// an owned local, so it doesn't count).
+	static void safeToast(std::string&& message) noexcept
+	{
+		__try
+		{
+			Util::toast(std::move(message), TOAST_ABOVE_MAP);
+		}
+		__except (handleExceptionInErrorReporting(GetExceptionInformation(), "Failed to make exception toast: "))
+		{
+		}
+	}
+
+	// No __try in this function: it's free to use std::string, AbstractPlayer,
+	// etc. Called from within report()'s __try instead of being inlined there,
+	// so report() itself never mixes __try with objects requiring unwinding.
+	static void reportBody(const std::string& type, std::string& message, const ErrorInfo& err, void custom_footer_info(), ExceptionContext ctx)
+	{
+		g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Type: {}").str()), type));
+		if (!message.empty())
+		{
+			g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Message: {}").str()), message));
+			message.push_back(' ');
+			message.append(LANG_GET("ERR_T_GEN"));
+			safeToast(std::move(message));
+		}
+		if (ctx == ExceptionContext::LUA)
+		{
+			g_logger.log(LANG_GET("ERR_LUA"));
+		}
+		g_logger.log(soup::ObfusString("Stack Trace:").str());
+		MyStackWalker::getInstance()->generateStackTrace(err, "  ");
+
+		const char* script = g_hooking.executing_script_name;
+		if (script != nullptr)
+		{
+			g_logger.log(soup::ObfusString("Script VM:").str());
+			g_logger.log(std::move(soup::ObfusString("  Executing Script: ").str().append(script)));
+			g_logger.log(std::move(soup::ObfusString("  Executing Operation: ").str().append(ScriptVmErrorHandling::getOperationName())));
+			auto event = hooks::getLastScriptEvent(rage::atStringHash(script));
+			if (event.first != 0)
+			{
+				AbstractPlayer sender(event.second[1 * 2]);
+				if (sender.isValid())
+				{
+					g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("  Last Event: from {}: {}").str()), sender.getName(), hooks::dumpScriptEvent(event)));
+				}
+			}
+		}
+
+		if (custom_footer_info != nullptr)
+		{
+			custom_footer_info();
+		}
+	}
+
 	void Exceptional::report(const std::string& type, std::string&& message, const ErrorInfo& err, void custom_footer_info(), ExceptionContext ctx) noexcept
 	{
 		report_mtx.lock();
@@ -250,58 +329,15 @@ namespace Stand
 		{
 			g_logger.init(FileLogger::getMainFilePath());
 		}
-		g_logger.log(addSpears(LANG_GET("ERR_L_B")));
-		g_logger.enterBlockMode();
+		logBlockBegin();
 		__try
 		{
-			g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Type: {}").str()), type));
-			if (!message.empty())
-			{
-				g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Message: {}").str()), message));
-				message.push_back(' ');
-				message.append(LANG_GET("ERR_T_GEN"));
-				__try
-				{
-					Util::toast(std::move(message), TOAST_ABOVE_MAP);
-				}
-				__except (handleExceptionInErrorReporting(GetExceptionInformation(), "Failed to make exception toast: "))
-				{
-				}
-			}
-			if (ctx == ExceptionContext::LUA)
-			{
-				g_logger.log(LANG_GET("ERR_LUA"));
-			}
-			g_logger.log(soup::ObfusString("Stack Trace:").str());
-			MyStackWalker::getInstance()->generateStackTrace(err, "  ");
-
-			const char* script = g_hooking.executing_script_name;
-			if (script != nullptr)
-			{
-				g_logger.log(soup::ObfusString("Script VM:").str());
-				g_logger.log(std::move(soup::ObfusString("  Executing Script: ").str().append(script)));
-				g_logger.log(std::move(soup::ObfusString("  Executing Operation: ").str().append(ScriptVmErrorHandling::getOperationName())));
-				auto event = hooks::getLastScriptEvent(rage::atStringHash(script));
-				if (event.first != 0)
-				{
-					AbstractPlayer sender(event.second[1 * 2]);
-					if (sender.isValid())
-					{
-						g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("  Last Event: from {}: {}").str()), sender.getName(), hooks::dumpScriptEvent(event)));
-					}
-				}
-			}
-
-			if (custom_footer_info != nullptr)
-			{
-				custom_footer_info();
-			}
+			reportBody(type, message, err, custom_footer_info, ctx);
 		}
 		__except (handleExceptionInErrorReporting(GetExceptionInformation()))
 		{
 		}
-		g_logger.leaveBlockMode();
-		g_logger.log(addSpears(LANG_GET("ERR_L_E")));
+		logBlockEnd();
 		report_mtx.unlock();
 	}
 
@@ -454,6 +490,21 @@ namespace Stand
 		}
 	}
 
+	// No local requiring unwinding in this function (only pointers), so it may
+	// freely contain a __try. Reading ->what() on garbage is what can actually
+	// fault here; the string conversion afterwards is done by the caller.
+	[[nodiscard]] static const char* tryGetStdExceptionWhat(_EXCEPTION_POINTERS* exp) noexcept
+	{
+		__try
+		{
+			return reinterpret_cast<std::exception*>(exp->ExceptionRecord->ExceptionInformation[1])->what();
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			return nullptr;
+		}
+	}
+
 	std::string Exceptional::getExceptionName(_EXCEPTION_POINTERS* exp) noexcept
 	{
 		std::string exception_name;
@@ -464,14 +515,13 @@ namespace Stand
 			break;
 
 		case 0xE06D7363:
-			__try
+			if (const char* what = tryGetStdExceptionWhat(exp))
 			{
-				exception_name = reinterpret_cast<std::exception*>(exp->ExceptionRecord->ExceptionInformation[1])->what();
-				exception_name = StringUtils::utf16_to_utf8(soup::unicode::acp_to_utf16(exception_name));
+				exception_name = StringUtils::utf16_to_utf8(soup::unicode::acp_to_utf16(what));
 				exception_name.insert(0, 1, '"');
 				exception_name.push_back('"');
 			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
+			else
 			{
 				exception_name = "C++ exception";
 			}
