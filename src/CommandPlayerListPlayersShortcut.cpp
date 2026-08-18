@@ -1,4 +1,5 @@
 #include "CommandPlayerListPlayersShortcut.hpp"
+#include "StringUtils.hpp"
 
 #include <fmt/core.h>
 
