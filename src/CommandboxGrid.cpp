@@ -75,18 +75,23 @@ namespace Stand
 		bool cmd_was_null = false;
 	};
 
+	// getCompletionHint() returns a std::wstring by value, so the temporary
+	// has to be materialized somewhere before it can be copied into the new'd
+	// storage - kept out of tryGetCompletionHint() below, which holds the __try.
+	[[nodiscard]] static std::wstring* allocateCompletionHint(CommandIssuable* cmd)
+	{
+		return new std::wstring(cmd->getCompletionHint());
+	}
+
 	// command is a reference and the result only carries a pointer/bool, so
-	// it's safe for this function to itself contain a __try; the wstring from
-	// getCompletionHint() is constructed directly into freshly new'd storage
-	// (construction, not assignment), so no destructible temporary of its own
-	// persists in this frame.
+	// it's safe for this function to itself contain a __try.
 	static CompletionHintFetch tryGetCompletionHint(const soup::WeakRef<CommandIssuable>& command) noexcept
 	{
 		CompletionHintFetch result;
 		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
 		if (auto cmd = command.getPointer())
 		{
-			result.hint = new std::wstring(cmd->getCompletionHint());
+			result.hint = allocateCompletionHint(cmd);
 		}
 		else
 		{
