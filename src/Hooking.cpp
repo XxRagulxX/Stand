@@ -8447,13 +8447,19 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 #if STAND_DEBUG
+	// fmt::format() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void logPacketWrite(unsigned int id)
+	{
+		g_logger.log(fmt::format("Writing packet: {}", rage::netMessage_getName(id)));
+	}
+
 	void rage_netMessage_WriteHeader(unsigned int id, rage::datBitBuffer& buf)
 	{
 		__try
 		{
 			if (g_hooking.log_packet_write)
 			{
-				g_logger.log(fmt::format("Writing packet: {}", rage::netMessage_getName(id)));
+				logPacketWrite(id);
 			}
 		}
 		__EXCEPTIONAL()
