@@ -126,6 +126,16 @@ namespace Stand
 		}
 	}
 
+	// line is taken by reference (owned by the caller's lambda frame, not by
+	// this function), so this function's __try never shares a stack frame with
+	// an object requiring unwinding.
+	static void sendToastLine(std::string& line) noexcept
+	{
+		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		g_relay.sendLine(std::move(line));
+		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+	}
+
 	void Util::toast_web(const Label& message)
 	{
 		if (!g_gui.isWebGuiActive())
@@ -140,9 +150,8 @@ namespace Stand
 		{
 			Exceptional::createManagedThread([hash{ message.getLocalisationHash() }]() mutable
 			{
-				EXCEPTIONAL_LOCK(g_relay.send_mtx)
-				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(hash))));
-				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+				std::string line = std::string("toast ").append(Util::to_padded_hex_string(hash));
+				sendToastLine(line);
 			});
 		}
 	}
@@ -161,30 +170,48 @@ namespace Stand
 		{
 			Exceptional::createManagedThread([hash{ message.getLocalisationHash() }]() mutable
 			{
-				EXCEPTIONAL_LOCK(g_relay.send_mtx)
-				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(hash))));
-				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+				std::string line = std::string("toast ").append(Util::to_padded_hex_string(hash));
+				sendToastLine(line);
 			});
 		}
+	}
+
+	// lines and trailing are taken by reference (owned by the caller's lambda
+	// frame, not by this function), so this function's __try never shares a
+	// stack frame with an object requiring unwinding.
+	static void sendToastLinesAndTrailing(std::vector<std::string>& lines, bool has_trailing, std::string& trailing) noexcept
+	{
+		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		for (auto& line : lines)
+		{
+			g_relay.sendRaw(line);
+		}
+		if (has_trailing)
+		{
+			g_relay.sendLine(std::move(trailing));
+		}
+		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 	}
 
 	void Util::toastWebLiteral(std::string&& message)
 	{
 		Exceptional::createManagedThread([message{ std::move(message) }]() mutable
 		{
-			EXCEPTIONAL_LOCK(g_relay.send_mtx)
+			std::vector<std::string> lines;
 			size_t del_pos;
 			while ((del_pos = message.find('\n')) != std::string::npos)
 			{
 				del_pos++;
-				g_relay.sendRaw(std::string("toast ").append(message.substr(0, del_pos)));
+				lines.push_back(std::string("toast ").append(message.substr(0, del_pos)));
 				message.erase(0, del_pos);
 			}
-			if (!message.empty())
+			const bool has_trailing = !message.empty();
+			std::string trailing;
+			if (has_trailing)
 			{
-				g_relay.sendLine(std::move(std::string("toast ").append(message)));
+				trailing = std::string("toast ").append(message);
 			}
-			EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+			sendToastLinesAndTrailing(lines, has_trailing, trailing);
 		});
 	}
 
@@ -270,11 +297,32 @@ namespace Stand
 		onPreventedCrash(LIT(std::move(str)), likely_cause);
 	}
 
+	// type is a reference and the fmt::format/toast() temporaries stay entirely
+	// inside this function, so it's safe for onPreventedCrash() below to call
+	// this from inside a __try without owning any of them itself.
+	static void doToastCrashWarning(const Label& type)
+	{
+		Util::toast(LANG_FMT("CRSH_T", FMT_ARG("type", type.getLocalisedUtf8())), TOAST_ALL);
+	}
+
+	// likely_cause is trivially destructible (just a player_t), so taking it by
+	// value here is fine; the fmt::format/toast() temporaries stay entirely
+	// inside this function.
+	static void doToastCrashWarning(const Label& type, AbstractPlayer likely_cause)
+	{
+		Util::toast(LANG_FMT("CRSH_T_BLM", FMT_ARG("type", type.getLocalisedUtf8()), FMT_ARG("player", likely_cause.getName())), TOAST_ALL);
+
+		if (auto cmd = likely_cause.getCommand())
+		{
+			cmd->aggressive_action_warranted = true;
+		}
+	}
+
 	void Util::onPreventedCrash(const Label& type) noexcept
 	{
 		__try
 		{
-			Util::toast(LANG_FMT("CRSH_T", FMT_ARG("type", type.getLocalisedUtf8())), TOAST_ALL);
+			doToastCrashWarning(type);
 		}
 		__EXCEPTIONAL()
 		{
@@ -290,23 +338,31 @@ namespace Stand
 
 		__try
 		{
-			Util::toast(LANG_FMT("CRSH_T_BLM", FMT_ARG("type", type.getLocalisedUtf8()), FMT_ARG("player", likely_cause.getName())), TOAST_ALL);
-
-			if (auto cmd = likely_cause.getCommand())
-			{
-				cmd->aggressive_action_warranted = true;
-			}
+			doToastCrashWarning(type, likely_cause);
 		}
 		__EXCEPTIONAL()
 		{
 		}
 	}
 
+	// type is a reference and the fmt::format/toast() temporaries stay entirely
+	// inside this function, so it's safe for onPreventedBufferOverrun() below to
+	// call this from inside a __try without owning any of them itself.
+	static void doToastBufferOverrunWarning(const Codename& type)
+	{
+		Util::toast(LANG_FMT("BU_T", FMT_ARG("type", type.toString())), TOAST_ALL);
+	}
+
+	static void doToastBufferOverrunWarning(const Label& type)
+	{
+		Util::toast(LANG_FMT("BU_T", FMT_ARG("type", type.getLocalisedUtf8())), TOAST_ALL);
+	}
+
 	void Util::onPreventedBufferOverrun(const Codename& type) noexcept
 	{
 		__try
 		{
-			Util::toast(LANG_FMT("BU_T", FMT_ARG("type", type.toString())), TOAST_ALL);
+			doToastBufferOverrunWarning(type);
 		}
 		__EXCEPTIONAL()
 		{
@@ -317,7 +373,7 @@ namespace Stand
 	{
 		__try
 		{
-			Util::toast(LANG_FMT("BU_T", FMT_ARG("type", type.getLocalisedUtf8())), TOAST_ALL);
+			doToastBufferOverrunWarning(type);
 		}
 		__EXCEPTIONAL()
 		{

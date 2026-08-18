@@ -19,6 +19,12 @@
 
 namespace Stand
 {
+#if !USE_GAME_GPS
+	class CommandArGps;
+
+	static void calculateArGpsRoute(CommandArGps* self);
+#endif
+
 	class CommandArGps : public CommandToggle
 	{
 	public:
@@ -120,7 +126,7 @@ namespace Stand
 						{
 							__try
 							{
-								route = PathFind::calculateRoute(g_player_ent.getPos(), route_for);
+								calculateArGpsRoute(this);
 							}
 							__EXCEPTIONAL()
 							{
@@ -158,4 +164,12 @@ namespace Stand
 		}
 #endif
 	};
+
+#if !USE_GAME_GPS
+	// No __try in this helper, so it's safe to hold the route vector returned by PathFind::calculateRoute() here.
+	static void calculateArGpsRoute(CommandArGps* self)
+	{
+		self->route = PathFind::calculateRoute(g_player_ent.getPos(), self->route_for);
+	}
+#endif
 }

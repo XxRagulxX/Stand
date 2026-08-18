@@ -64,35 +64,47 @@ namespace rage
 		return str;
 	}
 
-	std::vector<Stand::NuancedEvent> rlGamerInfo::checkDetections(bool is_self)
+	// No destructible locals here (only a bool and a trivial int-struct), so it's safe to __try in this function.
+	static bool checkT2IpDetection(const rlGamerInfo& info, bool is_self)
 	{
-		std::vector<Stand::NuancedEvent> res{};
-
+		bool detected = false;
 		__try
 		{
 			soup::native_u32_t ip_address;
 
 			if (is_self)
 			{
-				ip_address = peer.address.local_only_online.ip.value;
+				ip_address = info.peer.address.local_only_online.ip.value;
 			}
 			else
 			{
-				ip_address = peer.address.getPublicAddress().ip.value;
+				ip_address = info.peer.address.getPublicAddress().ip.value;
 			}
 
-			//Util::toast(fmt::format("{} -> {}", name, soup::IpAddr(ip_address).toString()));
+			//Util::toast(fmt::format("{} -> {}", info.name, soup::IpAddr(ip_address).toString()));
 
 			if (CidrSupernets::take_two.contains(ip_address))
 			{
-				res.emplace_back(FlowEvent::MOD_T2IP);
+				detected = true;
 			}
 		}
 		__EXCEPTIONAL()
 		{
 		}
+		return detected;
+	}
 
-		if (is_admin_rid(peer.address.gamer_handle.rockstar_id))
+	// No __try here, so it's safe to own the res vector in this frame.
+	static std::vector<Stand::NuancedEvent> checkDetectionsBody(const rlGamerInfo& info, bool is_self)
+	{
+		std::vector<Stand::NuancedEvent> res{};
+
+		if (checkT2IpDetection(info, is_self))
+		{
+			res.emplace_back(FlowEvent::MOD_T2IP);
+		}
+
+		if (is_admin_rid(info.peer.address.gamer_handle.rockstar_id))
 		{
 			res.emplace_back(FlowEvent::MOD_ADMINRID);
 		}
@@ -106,9 +118,9 @@ namespace rage
 		// - 207002828 has a really fortunate mac address (DF-0E-FA-14-B9-8D), hashing to 0x001C9204.
 		// - The startup id matches so either it's their actual mac address or it was spoofed really well.
 		// - I also can't find that mac address in any database, so that makes it being real less likely.
-		if (peer.id <= 10000000000000000i64)
+		if (info.peer.id <= 10000000000000000i64)
 		{
-			if (peer.id < 9000000000000000i64)
+			if (info.peer.id < 9000000000000000i64)
 			{
 				res.emplace_back(FlowEvent::MOD_HOSTKN_AGGRESSIVE);
 			}
@@ -117,18 +129,23 @@ namespace rage
 				res.emplace_back(FlowEvent::MOD_HOSTKN_SWEET);
 			}
 		}
-		else if (peer.id >= (0xFFFFFFFFFFFFFFFF - 0xFFFF))
+		else if (info.peer.id >= (0xFFFFFFFFFFFFFFFF - 0xFFFF))
 		{
 			res.emplace_back(FlowEvent::MOD_HOSTKN_HANDICAP);
 		}
-		else if (peer.id < peer.address.startup_id
-			|| (peer.id - peer.address.startup_id) > 0x20000
+		else if (info.peer.id < info.peer.address.startup_id
+			|| (info.peer.id - info.peer.address.startup_id) > 0x20000
 			)
 		{
 			res.emplace_back(FlowEvent::MOD_SPFDHOSTKN);
 		}
 
 		return res;
+	}
+
+	std::vector<Stand::NuancedEvent> rlGamerInfo::checkDetections(bool is_self)
+	{
+		return checkDetectionsBody(*this, is_self);
 	}
 
 	bool rlGamerInfo::isHost() const

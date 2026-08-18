@@ -18,6 +18,57 @@
 namespace Stand
 {
 	static rage::scrNativeHandler SEND_TU_SCRIPT_EVENT_ogfp;
+
+	// No __try here, so this is free to have destructible locals (std::string, std::unordered_map, EventAggregation, etc.). Returns true if the event was handled and the original native must not be called.
+	static bool handleSendTuScriptEvent(int64_t* args, int args_count, unsigned int player_bitflags)
+	{
+		const Player my_player_id = (is_session_transition_active(true) ? MAX_PLAYERS : g_player.operator Player());
+		const bool send_to_self = (my_player_id < MAX_PLAYERS && player_bitflags == (1 << my_player_id));
+		SOUP_ASSERT(args_count > 0);
+		switch ((int32_t)args[0])
+		{
+		case SE_START_TYPING:
+		case SE_STOP_TYPING:
+			if (SharedNativeHooks::block_outgoing_typing_indicator_events)
+			{
+				return true;
+			}
+			break;
+
+#ifdef STAND_DEBUG
+		case SE_PV_KICK:
+			if (send_to_self)
+			{
+				auto thread_ctx = &GtaThread::get()->m_context;
+				auto program = rage::scrProgram::fromHash(thread_ctx->m_script_hash);
+				Util::toast(fmt::format("Kick from vehicle ({}, {}) sent by {} in func_{}", (int32_t)args[4], (float)(int32_t)args[2], program->m_name, program->getFuncIndexByCodeIndex(thread_ctx->m_instruction_pointer) - 1), TOAST_ALL);
+				return true;
+			}
+			break;
+#endif
+		}
+		if (send_to_self)
+		{
+			if (!ScriptEventTaxonomy::isDirectPacket(args, args_count))
+			{
+				std::unordered_map<int32_t, std::string> index_names{};
+				auto res = ScriptEventTaxonomy::dissect(args, args_count, index_names, my_player_id);
+				//#ifndef STAND_DEBUG
+				//					if (res.types.empty()
+				//						|| res.getCanonicalType() != FlowEvent::SE_INVALID
+				//						)
+				//#endif
+				{
+					if (hooks::apply_received_script_event_reactions(g_player, std::move(res), args, args_count, std::move(index_names)))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	static void SEND_TU_SCRIPT_EVENT(rage::scrNativeCallContext& ctx)
 	{
 		__try
@@ -27,52 +78,11 @@ namespace Stand
 			auto& args_count = ctx.getArg<int>(2);
 			auto& player_bitflags = ctx.getArg<unsigned int>(3);
 
-			if (event_group == 1)
+			if (event_group == 1
+				&& handleSendTuScriptEvent(args, args_count, player_bitflags)
+				)
 			{
-				const Player my_player_id = (is_session_transition_active(true) ? MAX_PLAYERS : g_player.operator Player());
-				const bool send_to_self = (my_player_id < MAX_PLAYERS && player_bitflags == (1 << my_player_id));
-				SOUP_ASSERT(args_count > 0);
-				switch ((int32_t)args[0])
-				{
-				case SE_START_TYPING:
-				case SE_STOP_TYPING:
-					if (SharedNativeHooks::block_outgoing_typing_indicator_events)
-					{
-						return;
-					}
-					break;
-
-#ifdef STAND_DEBUG
-				case SE_PV_KICK:
-					if (send_to_self)
-					{
-						auto thread_ctx = &GtaThread::get()->m_context;
-						auto program = rage::scrProgram::fromHash(thread_ctx->m_script_hash);
-						Util::toast(fmt::format("Kick from vehicle ({}, {}) sent by {} in func_{}", (int32_t)args[4], (float)(int32_t)args[2], program->m_name, program->getFuncIndexByCodeIndex(thread_ctx->m_instruction_pointer) - 1), TOAST_ALL);
-						return;
-					}
-					break;
-#endif
-				}
-				if (send_to_self)
-				{
-					if (!ScriptEventTaxonomy::isDirectPacket(args, args_count))
-					{
-						std::unordered_map<int32_t, std::string> index_names{};
-						auto res = ScriptEventTaxonomy::dissect(args, args_count, index_names, my_player_id);
-						//#ifndef STAND_DEBUG
-						//					if (res.types.empty()
-						//						|| res.getCanonicalType() != FlowEvent::SE_INVALID
-						//						)
-						//#endif
-						{
-							if (hooks::apply_received_script_event_reactions(g_player, std::move(res), args, args_count, std::move(index_names)))
-							{
-								return;
-							}
-						}
-					}
-				}
+				return;
 			}
 			return SEND_TU_SCRIPT_EVENT_ogfp(ctx);
 		}

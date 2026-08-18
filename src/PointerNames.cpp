@@ -91,45 +91,57 @@ namespace Stand
 
 	static DWORD64 dwDisplacement = 0;
 
-	std::string PointerNames::format(void* addr)
+	// No __try here, so it's safe to have destructible locals (file_name, name) in this frame.
+	static void appendModuleInfoForAddr(std::string& str, void* addr)
 	{
-		std::string str = Util::to_padded_hex_string((uint64_t)addr);
-		PeHeader::unveil();
+		HMODULE hmod;
+		if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(addr), &hmod) && hmod != nullptr)
+		{
+			bool use_debug_symbols = true;
+			const std::string file_name = Util::get_module_file_name(hmod);
+			auto offset = uint64_t(addr) - uint64_t(hmod);
+			str.append(" (");
+			if (file_name != g_stand_dll_file_name)
+			{
+				str.append(file_name).push_back('+');
+				str.append(Util::to_padded_hex_string(offset));
+			}
+			if (file_name == "GTA5.exe")
+			{
+				str.append(", ").append(Util::to_padded_hex_string(offset + GTA_DUMP_BASE));
+			}
+			else if (file_name == g_stand_dll_file_name)
+			{
+				str.append(soup::ObfusString(STAND_NAMEVERSION).str()).append(", ").append(Util::to_padded_hex_string(offset + 0x180000000));
+#ifndef STAND_DEBUG
+				use_debug_symbols = false;
+#endif
+			}
+			str.push_back(')');
+			if (auto name = PointerNames::getName(addr, use_debug_symbols); !name.empty())
+			{
+				str.append(": ").append(name);
+			}
+		}
+	}
+
+	// No destructible locals here (only a reference and a pointer), so it's safe to __try in this function.
+	static void tryAppendModuleInfoForAddr(std::string& str, void* addr)
+	{
 		__try
 		{
-			HMODULE hmod;
-			if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(addr), &hmod) && hmod != nullptr)
-			{
-				bool use_debug_symbols = true;
-				const std::string file_name = Util::get_module_file_name(hmod);
-				auto offset = uint64_t(addr) - uint64_t(hmod);
-				str.append(" (");
-				if (file_name != g_stand_dll_file_name)
-				{
-					str.append(file_name).push_back('+');
-					str.append(Util::to_padded_hex_string(offset));
-				}
-				if (file_name == "GTA5.exe")
-				{
-					str.append(", ").append(Util::to_padded_hex_string(offset + GTA_DUMP_BASE));
-				}
-				else if (file_name == g_stand_dll_file_name)
-				{
-					str.append(soup::ObfusString(STAND_NAMEVERSION).str()).append(", ").append(Util::to_padded_hex_string(offset + 0x180000000));
-#ifndef STAND_DEBUG
-					use_debug_symbols = false;
-#endif
-				}
-				str.push_back(')');
-				if (auto name = getName(addr, use_debug_symbols); !name.empty())
-				{
-					str.append(": ").append(name);
-				}
-			}
+			appendModuleInfoForAddr(str, addr);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	std::string PointerNames::format(void* addr)
+	{
+		std::string str = Util::to_padded_hex_string((uint64_t)addr);
+		PeHeader::unveil();
+		tryAppendModuleInfoForAddr(str, addr);
 		PeHeader::veil();
 		return str;
 	}

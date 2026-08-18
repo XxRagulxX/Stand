@@ -12,6 +12,40 @@
 
 namespace Stand
 {
+	// No destructible locals here: only references, so it's safe to __try in this function.
+	static void lockAndTakeJobs(Spinlock& jobs_mtx, std::queue<std::function<void()>>& next_jobs, std::queue<std::function<void()>>& jobs)
+	{
+		EXCEPTIONAL_LOCK(jobs_mtx)
+		jobs = std::move(next_jobs);
+		EXCEPTIONAL_UNLOCK(jobs_mtx)
+	}
+
+	// No destructible locals here: only a reference to the job, so it's safe to __try in this function.
+	static void runJob(std::function<void()>& job)
+	{
+		__try
+		{
+			job();
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// Isolated from thread_func() so that the __trys above never share a stack
+	// frame with jobs/job, which are owned locals requiring unwinding.
+	static void processQueuedJobs(Spinlock& jobs_mtx, std::queue<std::function<void()>>& next_jobs)
+	{
+		std::queue<std::function<void()>> jobs;
+		lockAndTakeJobs(jobs_mtx, next_jobs, jobs);
+		while (!jobs.empty())
+		{
+			auto job = std::move(jobs.front());
+			jobs.pop();
+			runJob(job);
+		}
+	}
+
 	void Worker::thread_func()
 	{
 		THREAD_NAME("Worker");
@@ -44,22 +78,7 @@ namespace Stand
 					}
 				}
 
-				std::queue<std::function<void()>> jobs;
-				EXCEPTIONAL_LOCK(jobs_mtx)
-				jobs = std::move(next_jobs);
-				EXCEPTIONAL_UNLOCK(jobs_mtx)
-				while (!jobs.empty())
-				{
-					auto job = std::move(jobs.front());
-					jobs.pop();
-					__try
-					{
-						job();
-					}
-					__EXCEPTIONAL()
-					{
-					}
-				}
+				processQueuedJobs(jobs_mtx, next_jobs);
 
 				soup::os::sleep(30);
 			}

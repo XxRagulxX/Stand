@@ -304,6 +304,21 @@ namespace rage
 
 #define DUMP_ALL_APPLICABLE_NODES true
 
+	// No destructible locals here: only a pointer, an enum, and a trivial Vector3 out-param, so it's safe to __try in this function.
+	static bool trySyncTreeGetPos(netSyncTree* tree, NetworkObjectType object_type, Vector3& out_pos) noexcept
+	{
+		__try
+		{
+			auto pos = tree->getPos(object_type);
+			out_pos = tree->getPos(object_type);
+			return true;
+		}
+		__EXCEPTIONAL()
+		{
+			return false;
+		}
+	}
+
 	std::string netSyncTree::dump(NetworkObjectType object_type, bool is_create)
 	{
 		std::string str(NetworkObjectType_toString(object_type));
@@ -333,13 +348,9 @@ namespace rage
 		}
 		if (posApplies(object_type))
 		{
-			__try
+			if (Vector3 pos; trySyncTreeGetPos(this, object_type, pos))
 			{
-				auto pos = getPos(object_type);
-				str.append(", pos={").append(getPos(object_type)).append("}");
-			}
-			__EXCEPTIONAL()
-			{
+				str.append(", pos={").append(pos).append("}");
 			}
 		}
 		if (attachApplies(object_type))

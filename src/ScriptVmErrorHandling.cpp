@@ -88,6 +88,37 @@ namespace Stand
 		);
 	}
 
+	// No __try in this function, so it's free to use std::string locals (via LANG_FMT/addDevBuildInfoToMsg).
+	static void reportScriptDied(rage::scrThread* thread, bool is_freemode, bool best_effort, uint8_t last_opcode
+#ifdef STAND_DEBUG
+		, const char* not_recovered_reason
+#endif
+	)
+	{
+#ifdef STAND_DEBUG
+		g_logger.log(fmt::format("{} was left for dead because {}", thread->m_name, not_recovered_reason));
+#endif
+		std::string msg = LANG_FMT("SVM_DIE", FMT_ARG("script", thread->m_name), FMT_ARG("operation", ScriptVmErrorHandling::getOperationName()));
+		addDevBuildInfoToMsg(thread, msg);
+		hooks::blameScriptCrash(thread, msg, true);
+		Util::toast(std::move(msg), TOAST_ALL);
+		if (is_freemode
+			&& best_effort
+			&& last_opcode != Return
+			)
+		{
+			ScriptVmErrorHandling::onHadToKillfreemode();
+		}
+	}
+
+	// No __try in this function, so it's free to use std::string locals (via LANG_FMT/addDevBuildInfoToMsg).
+	static void reportScriptCrash(rage::scrThread* thread)
+	{
+		std::string msg = LANG_FMT("SVM_ERR", FMT_ARG("script", thread->m_name), FMT_ARG("operation", ScriptVmErrorHandling::getOperationName()));
+		addDevBuildInfoToMsg(thread, msg);
+		hooks::logScriptScrash(thread, std::move(msg));
+	}
+
 	uint32_t __fastcall ScriptVmErrorHandling::onScriptThreadErrorInternal(uint64_t stack_ptr, uint64_t frame_ptr, bool reimpl)
 	{
 		auto* thread = rage::scrThread::get();
@@ -139,20 +170,11 @@ namespace Stand
 					const bool is_freemode = thread->m_context.m_script_hash == ATSTRINGHASH("freemode");
 					if (last_opcode != Return || is_freemode)
 					{
+						reportScriptDied(thread, is_freemode, best_effort, last_opcode
 #ifdef STAND_DEBUG
-						g_logger.log(fmt::format("{} was left for dead because {}", thread->m_name, not_recovered_reason));
+							, not_recovered_reason
 #endif
-						std::string msg = LANG_FMT("SVM_DIE", FMT_ARG("script", thread->m_name), FMT_ARG("operation", getOperationName()));
-						addDevBuildInfoToMsg(thread, msg);
-						hooks::blameScriptCrash(thread, msg, true);
-						Util::toast(std::move(msg), TOAST_ALL);
-						if (is_freemode
-							&& best_effort
-							&& last_opcode != Return
-							)
-						{
-							onHadToKillfreemode();
-						}
+						);
 					}
 				}
 				return 2;
@@ -204,9 +226,7 @@ namespace Stand
 			case pCall:
 				break;
 			}
-			std::string msg = LANG_FMT("SVM_ERR", FMT_ARG("script", thread->m_name), FMT_ARG("operation", getOperationName()));
-			addDevBuildInfoToMsg(thread, msg);
-			hooks::logScriptScrash(thread, std::move(msg));
+			reportScriptCrash(thread);
 		}
 		__except (hooks::onScriptException(GetExceptionInformation()))
 		{

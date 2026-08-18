@@ -175,6 +175,34 @@ namespace Stand
 		return cursor_border_colour;
 	}
 
+	// No __try here, so this is free to have destructible locals (Texture owns a ComPtr, and the failure path builds a std::string).
+	static void reloadOneScriptTexture(ID3D11Device* device, const ReloadTex& it, std::unordered_map<int, Texture>& script_textures)
+	{
+		Texture t;
+		ID3D11Resource* rsrc = nullptr;
+		if (SUCCEEDED(CreateWICTextureFromFile(device, it.name.c_str(), &rsrc, t.srv.ReleaseAndGetAddressOf(), 0)))
+		{
+			t.measure(rsrc);
+			script_textures.emplace(it.id, std::move(t));
+		}
+		else
+		{
+			g_logger.log(std::move(std::string("Failed to reload texture ").append(fmt::to_string(it.id)).append(" from ").append(StringUtils::utf16_to_utf8(it.name))));
+		}
+	}
+
+	// Only a reference-bound loop variable here (no destructible locals of its own), so it's safe to __try in this function.
+	static void reloadScriptTexturesLocked(ID3D11Device* device, const std::vector<ReloadTex>& reload_array, std::unordered_map<int, Texture>& script_textures, Spinlock& script_textures_mtx)
+	{
+		EXCEPTIONAL_LOCK(script_textures_mtx)
+		script_textures.clear();
+		for (const auto& it : reload_array)
+		{
+			reloadOneScriptTexture(device, it, script_textures);
+		}
+		EXCEPTIONAL_UNLOCK(script_textures_mtx)
+	}
+
 	void Renderer::initialiseDevices()
 	{
 		auto theme_path = getThemePath();
@@ -229,23 +257,7 @@ namespace Stand
 
 			reloadTextures(std::move(theme_path));
 
-			EXCEPTIONAL_LOCK(script_textures_mtx)
-			script_textures.clear();
-			for (const auto& it : ReloadArray)
-			{
-				Texture t;
-				ID3D11Resource* rsrc = nullptr;
-				if (SUCCEEDED(CreateWICTextureFromFile(m_pDevice, it.name.c_str(), &rsrc, t.srv.ReleaseAndGetAddressOf(), 0)))
-				{
-					t.measure(rsrc);
-					script_textures.emplace(it.id, std::move(t));
-				}
-				else
-				{
-					g_logger.log(std::move(std::string("Failed to reload texture ").append(fmt::to_string(it.id)).append(" from ").append(StringUtils::utf16_to_utf8(it.name))));
-				}
-			}
-			EXCEPTIONAL_UNLOCK(script_textures_mtx)
+			reloadScriptTexturesLocked(m_pDevice, ReloadArray, script_textures, script_textures_mtx);
 		}
 		else
 		{
@@ -1102,13 +1114,19 @@ namespace Stand
 		));
 	}
 
+	// No __try here, so this is free to construct the std::wstring temporary from utf8_to_utf16.
+	static void registerCreateTexture(int id, const char* texFileName, std::unordered_map<int, std::wstring>& CreateTextureArray)
+	{
+		CreateTextureArray.emplace(id, StringUtils::utf8_to_utf16(texFileName));
+	}
+
 	int Renderer::createTexture(const char* texFileName)
 	{
 		int id;
 		EXCEPTIONAL_LOCK(create_sprite_mtx)
 		id = ++next_script_texture_id;
 		SOUP_ASSERT(next_script_texture_id != 0); // This being 0 means we rolled over the int, which... by that point we're probably out of VRAM, but whatever.
-		CreateTextureArray.emplace(id, StringUtils::utf8_to_utf16(texFileName));
+		registerCreateTexture(id, texFileName, CreateTextureArray);
 		EXCEPTIONAL_UNLOCK(create_sprite_mtx)
 		return id;
 	}
@@ -1134,9 +1152,9 @@ namespace Stand
 		return res;
 	}
 
-	void Renderer::drawTextureTimedCP(int id, int time, float sizeX, float sizeY, float centerX, float centerY, float posX, float posY, float rotation, float r, float g, float b, float a)
+	// No __try here, so this is free to construct DrawSpriteData/TimedSprite (non-trivial: DrawData has a virtual destructor).
+	static void updateTimedSprite(std::vector<TimedSprite>& timed_sprites, int id, int time, float sizeX, float sizeY, float centerX, float centerY, float posX, float posY, float rotation, float r, float g, float b, float a)
 	{
-		EXCEPTIONAL_LOCK(timed_sprites_mtx)
 		for (auto i = timed_sprites.begin(); i != timed_sprites.end(); )
 		{
 			if (i->draw_data.tex_id == id)
@@ -1150,6 +1168,12 @@ namespace Stand
 			get_current_time_millis() + time,
 			DrawSpriteData(id, sizeX, sizeY, centerX, centerY, posX, posY, rotation, r, g, b, a)
 		});
+	}
+
+	void Renderer::drawTextureTimedCP(int id, int time, float sizeX, float sizeY, float centerX, float centerY, float posX, float posY, float rotation, float r, float g, float b, float a)
+	{
+		EXCEPTIONAL_LOCK(timed_sprites_mtx)
+		updateTimedSprite(timed_sprites, id, time, sizeX, sizeY, centerX, centerY, posX, posY, rotation, r, g, b, a);
 		EXCEPTIONAL_UNLOCK(timed_sprites_mtx)
 	}
 

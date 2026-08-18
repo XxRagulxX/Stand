@@ -120,12 +120,27 @@ namespace Stand
 		insert(rid, 0, std::string(name), 0, 0);
 	}
 
-	HistoricPlayer* PlayerHistory::insert(int64_t rid, uint32_t mac_id, std::string&& name, time_t time, uint8_t flags)
+	// Contains destructible temporaries (soup::UniquePtr from make_unique, and
+	// a std::string{} argument), so this is kept out of any __try frame.
+	static HistoricPlayer* makeAndEmplaceHistoricPlayer(int64_t rid, uint32_t mac_id, std::string&& name, time_t time)
+	{
+		return PlayerHistory::player_history.emplace_back(soup::make_unique<HistoricPlayer>(0, rid, mac_id, std::move(name), time, time, 0, std::string{}, 0)).get();
+	}
+
+	// No destructible locals here: only a pointer, and the only thing done
+	// inside the __try is a plain function call, so it's safe to __try here.
+	static HistoricPlayer* insertHistoricPlayerLocked(int64_t rid, uint32_t mac_id, std::string&& name, time_t time)
 	{
 		HistoricPlayer* entry;
-		EXCEPTIONAL_LOCK(mtx)
-		entry = player_history.emplace_back(soup::make_unique<HistoricPlayer>(0, rid, mac_id, std::move(name), time, time, 0, std::string{}, 0)).get();
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_LOCK(PlayerHistory::mtx)
+		entry = makeAndEmplaceHistoricPlayer(rid, mac_id, std::move(name), time);
+		EXCEPTIONAL_UNLOCK(PlayerHistory::mtx)
+		return entry;
+	}
+
+	HistoricPlayer* PlayerHistory::insert(int64_t rid, uint32_t mac_id, std::string&& name, time_t time, uint8_t flags)
+	{
+		HistoricPlayer* entry = insertHistoricPlayerLocked(rid, mac_id, std::move(name), time);
 		entry->flags = flags;
 		player_history_command->children.emplace(player_history_command->children.begin() + list_offset, std::make_unique<CommandHistoricPlayer>(entry));
 		if (player_history_command->m_cursor > list_offset)
@@ -271,6 +286,28 @@ namespace Stand
 
 #define FORMAT_VERSION 10
 
+	// No destructible locals here: only a reference parameter and references
+	// bound to elements owned by player_history/pack (references don't need
+	// unwinding), so it's safe to __try in this function.
+	static void buildHistoryPacketV10(PlayerHistoryPacket<HistoricPlayerPacketV10>& pack)
+	{
+		EXCEPTIONAL_LOCK(PlayerHistory::mtx)
+		for (auto& entry : PlayerHistory::player_history)
+		{
+			auto& pp = pack.players.emplace_back();
+			pp.rid = entry->rid;
+			pp.name = entry->name;
+			pp.first_seen = entry->first_seen;
+			pp.last_seen = entry->last_seen;
+			pp.note = entry->note;
+			pp.flags = entry->flags;
+			pp.join_reactions = entry->join_reactions;
+			pp.mac_id = entry->mac_id;
+			pp.account_id = entry->account_id;
+		}
+		EXCEPTIONAL_UNLOCK(PlayerHistory::mtx)
+	}
+
 	void PlayerHistory::saveNow()
 	{
 		if (refuse_to_save)
@@ -296,22 +333,7 @@ namespace Stand
 			std::string history_bin{};
 			{
 				PlayerHistoryPacket<HistoricPlayerPacketV10> pack{};
-				EXCEPTIONAL_LOCK(mtx)
-				for (auto& entry : player_history)
-				{
-					HistoricPlayerPacketV10 pp;
-					pp.rid = entry->rid;
-					pp.name = entry->name;
-					pp.first_seen = entry->first_seen;
-					pp.last_seen = entry->last_seen;
-					pp.note = entry->note;
-					pp.flags = entry->flags;
-					pp.join_reactions = entry->join_reactions;
-					pp.mac_id = entry->mac_id;
-					pp.account_id = entry->account_id;
-					pack.players.emplace_back(std::move(pp));
-				}
-				EXCEPTIONAL_UNLOCK(mtx)
+				buildHistoryPacketV10(pack);
 				history_bin = pack.toBinaryString();
 			}
 
@@ -557,15 +579,39 @@ namespace Stand
 		}
 	}
 
-	void PlayerHistory::load()
+	// No destructible locals here: only a function pointer, so it's safe to
+	// __try in this function. (loadData() is private, so the pointer to it
+	// has to be taken by a caller with access - see PlayerHistory::load().)
+	static void tryCallLoadData(void (*load_data)()) noexcept
 	{
 		__try
 		{
-			loadData();
+			load_data();
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	// No destructible locals here: only a reference parameter, a trivial int,
+	// and vector iterators, so it's safe to __try in this function.
+	static void installReplacementChildren(std::vector<std::unique_ptr<Command>>& replacement_children) noexcept
+	{
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		auto offset = 0;
+		for (auto i = PlayerHistory::player_history_command->children.begin(); i != PlayerHistory::player_history_command->children.end(); ++i)
+		{
+			replacement_children.insert(replacement_children.begin() + (offset++), std::move((*i)));
+		}
+		PlayerHistory::player_history_command->children = std::move(replacement_children);
+		PlayerHistory::player_history_command->as<CommandPlayerHistory>()->starred->populate();
+		PlayerHistory::player_history_command->as<CommandPlayerHistory>()->tracked->populate();
+		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+	}
+
+	void PlayerHistory::load()
+	{
+		tryCallLoadData(&loadData);
 		loaded_data.fulfil();
 
 #if LOG_UNUNIQUE_MAC_IDS
@@ -619,16 +665,7 @@ namespace Stand
 #if PROFILE_HISTORY_LOAD
 		});
 #endif
-		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-		auto offset = 0;
-		for (auto i = player_history_command->children.begin(); i != player_history_command->children.end(); ++i)
-		{
-			replacement_children.insert(replacement_children.begin() + (offset++), std::move((*i)));
-		}
-		player_history_command->children = std::move(replacement_children);
-		player_history_command->as<CommandPlayerHistory>()->starred->populate();
-		player_history_command->as<CommandPlayerHistory>()->tracked->populate();
-		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+		installReplacementChildren(replacement_children);
 		inited.fulfil();
 	}
 
