@@ -8029,6 +8029,12 @@ to_recover.emplace_back(addr, *addr); \
 		OG(rage_ropeManager_Remove)(_this, pInst);
 	}
 
+	// Constructs a SessionPlayer (has a std::string member), so this must not itself contain a __try.
+	static void recordBlockJoinSessionPlayer(const rage::rlGamerInfo& gamer)
+	{
+		CommandBlockBlockJoin::session_players.emplace_back(SessionPlayer(gamer));
+	}
+
 	// rage::rlSession::OnSessionEvent in newer rage versions
 	char __fastcall CNetworkSession_OnSessionEvent(CNetworkSession* thisptr, __int64 a2, rage::snEvent* event)
 	{
@@ -8047,7 +8053,7 @@ to_recover.emplace_back(addr, *addr); \
 					{
 						if (ts == TRANSITION_STATE_WAIT_JOIN_FM_SESSION)
 						{
-							CommandBlockBlockJoin::session_players.emplace_back(SessionPlayer(reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer));
+							recordBlockJoinSessionPlayer(reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer);
 						}
 					}
 					else
@@ -8140,16 +8146,22 @@ to_recover.emplace_back(addr, *addr); \
 		}
 	}
 
-	float __fastcall get_visual_config_float(void* config, const char* prop, float fallback)
+	// No destructible locals here: only references, so it's safe to __try in this function.
+	static void tryProcessVisualConfigOverride(float& res, const std::string& name)
 	{
-		float res = OG(get_visual_config_float)(config, prop, fallback);
 		__try
 		{
-			processVisualConfigOverride(res, prop);
+			processVisualConfigOverride(res, name);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	float __fastcall get_visual_config_float(void* config, const char* prop, float fallback)
+	{
+		float res = OG(get_visual_config_float)(config, prop, fallback);
+		tryProcessVisualConfigOverride(res, prop);
 		return res;
 	}
 
@@ -8163,14 +8175,14 @@ to_recover.emplace_back(addr, *addr); \
 	float __fastcall get_visual_config_float_with_directory(void* config, const char* dir, const char* prop, float fallback)
 	{
 		float res = OG(get_visual_config_float_with_directory)(config, dir, prop, fallback);
-		__try
-		{
-			processVisualConfigOverride(res, combineWithDot(dir, prop));
-		}
-		__EXCEPTIONAL()
-		{
-		}
+		tryProcessVisualConfigOverride(res, combineWithDot(dir, prop));
 		return res;
+	}
+
+	// Has a destructible std::string temporary (from combineWithDot), so this must not itself contain a __try.
+	static void processVisualConfigColourChannel(float& res, const char* prop, const char* channel)
+	{
+		processVisualConfigOverride(res, combineWithDot(prop, channel));
 	}
 
 	float* __fastcall get_visual_config_colour(void* config, float* a2, const char* prop)
@@ -8178,9 +8190,9 @@ to_recover.emplace_back(addr, *addr); \
 		float* res = OG(get_visual_config_colour)(config, a2, prop);
 		__try
 		{
-			processVisualConfigOverride(res[0], combineWithDot(prop, "red"));
-			processVisualConfigOverride(res[1], combineWithDot(prop, "green"));
-			processVisualConfigOverride(res[2], combineWithDot(prop, "blue"));
+			processVisualConfigColourChannel(res[0], prop, "red");
+			processVisualConfigColourChannel(res[1], prop, "green");
+			processVisualConfigColourChannel(res[2], prop, "blue");
 		}
 		__EXCEPTIONAL()
 		{
@@ -8220,6 +8232,30 @@ to_recover.emplace_back(addr, *addr); \
 		return 0;
 	}*/
 
+	// Util::to_padded_hex_string() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportPreventedCrashA1(uint32_t hex_value)
+	{
+		Util::onPreventedCrash("A1", Util::to_padded_hex_string(hex_value));
+	}
+
+	// LOC() constructs a Label temporary (has a std::string member), so this is kept out of the __try'ing function below.
+	static void toastInVehicleSeatShuffle()
+	{
+		Util::toast(LOC("INVTASK"));
+	}
+
+	// std::to_string() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportPreventedCrashA2(uint16_t type_id)
+	{
+		Util::onPreventedCrash("A2", std::to_string(type_id));
+	}
+
+	// std::to_string() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportPreventedCrashA0(uint16_t type_id)
+	{
+		Util::onPreventedCrash("A0", std::to_string(type_id));
+	}
+
 	unsigned int __fastcall rage_aiTaskTree_UpdateTask(rage::aiTaskTree* tree, rage::aiTask* task, float timeStep)
 	{
 		__try
@@ -8242,7 +8278,7 @@ to_recover.emplace_back(addr, *addr); \
 					default:
 						if (g_gui.doesRootStateAllowCrashPatches())
 						{
-							Util::onPreventedCrash("A1", Util::to_padded_hex_string(static_cast<CTaskTakeOffPedVariation*>(task)->object_model));
+							reportPreventedCrashA1(static_cast<CTaskTakeOffPedVariation*>(task)->object_model);
 							return 0;
 						}
 					}
@@ -8270,7 +8306,7 @@ to_recover.emplace_back(addr, *addr); \
 					&& g_player_veh.getDriver() == g_player_ped
 					)
 				{
-					Util::toast(LOC("INVTASK"));
+					toastInVehicleSeatShuffle();
 					task->state = 10; // fast-track to finish state
 				}
 			}
@@ -8285,7 +8321,7 @@ to_recover.emplace_back(addr, *addr); \
 				{
 					if (g_gui.doesRootStateAllowCrashPatches())
 					{
-						Util::onPreventedCrash("A2", std::to_string(task->type_id));
+						reportPreventedCrashA2(task->type_id);
 						return 0;
 					}
 				}
@@ -8300,7 +8336,7 @@ to_recover.emplace_back(addr, *addr); \
 				{
 					if (g_gui.doesRootStateAllowCrashPatches())
 					{
-						Util::onPreventedCrash("A2", std::to_string(task->type_id));
+						reportPreventedCrashA2(task->type_id);
 						return 0;
 					}
 				}
@@ -8315,7 +8351,7 @@ to_recover.emplace_back(addr, *addr); \
 		}
 		__except (g_gui.doesRootStateAllowCrashPatches() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 		{
-			Util::onPreventedCrash("A0", std::to_string(task->type_id));
+			reportPreventedCrashA0(task->type_id);
 		}
 		return 0;
 	}

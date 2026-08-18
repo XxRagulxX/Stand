@@ -45,6 +45,54 @@ namespace Stand
 		return AbstractPlayer::invalid();
 	}
 
+	// args is a pointer and script_hash is trivial, so it's safe for the
+	// caller's __try to enclose this call without owning the
+	// std::pair<int, std::unique_ptr<int[]>> that lives entirely in this
+	// function's own frame.
+	static void recordLastScriptEvent(int32_t script_hash, int* args, int args_size)
+	{
+		auto script_i = g_hooking.last_script_event_map.find(script_hash);
+		auto args_copy = new int[args_size * 2];
+		memcpy(args_copy, args, args_size * 8);
+		auto pair = std::pair<int, std::unique_ptr<int[]>>(args_size, args_copy);
+		if (script_i == g_hooking.last_script_event_map.end())
+		{
+			g_hooking.last_script_event_map.emplace(std::move(script_hash), std::move(pair));
+		}
+		else
+		{
+			script_i->second = std::move(pair);
+		}
+	}
+
+	// ctx is a reference (owned by the caller), so this function is free to
+	// use std::string/fmt::format/Util::toast; called from inside the
+	// lambda's __try below.
+	static void handleNetworkBail(rage::scrNativeCallContext& ctx)
+	{
+		const auto a1 = ctx.getArg<int>(0);
+		const auto a2 = ctx.getArg<int>(1);
+		const auto a3 = ctx.getArg<int>(2);
+
+		bool block = g_hooking.block_bail_other;
+		if (a2 == 0 && a3 == 0)
+		{
+			if (a1 == 15 || a1 == 17)
+			{
+				block = g_hooking.block_bail_spectating;
+			}
+			else if (a1 == 26)
+			{
+				block = g_hooking.block_bail_rid;
+			}
+		}
+		Util::toast(LANG_FMT("PTX_NB_T", FMT_ARG("a1", a1), FMT_ARG("a2", a2), FMT_ARG("a3", a3), FMT_ARG("action", block ? LANG_GET("PTX_NB_T_B") : LANG_GET("PTX_NB_T_A"))), TOAST_ALL);
+		if (!block)
+		{
+			NativeTableHooks::og(0x95914459A87EBA28)(ctx);
+		}
+	}
+
 	void NativeTableHooksBuiltin::init()
 	{
 		// START_NEW_SCRIPT_WITH_ARGS
@@ -240,18 +288,7 @@ namespace Stand
 						if (args_size > 1 * 2)
 						{
 							int32_t script_hash = rage::scrThread::get()->m_context.m_script_hash;
-							auto script_i = g_hooking.last_script_event_map.find(script_hash);
-							auto args_copy = new int[args_size * 2];
-							memcpy(args_copy, args, args_size * 8);
-							auto pair = std::pair<int, std::unique_ptr<int[]>>(args_size, args_copy);
-							if (script_i == g_hooking.last_script_event_map.end())
-							{
-								g_hooking.last_script_event_map.emplace(std::move(script_hash), std::move(pair));
-							}
-							else
-							{
-								script_i->second = std::move(pair);
-							}
+							recordLastScriptEvent(script_hash, args, args_size);
 
 							/*if (args[0 * 2] == SE_PV_CLEANUP)
 							{
@@ -272,27 +309,7 @@ namespace Stand
 		{
 			__try
 			{
-				const auto a1 = ctx.getArg<int>(0);
-				const auto a2 = ctx.getArg<int>(1);
-				const auto a3 = ctx.getArg<int>(2);
-
-				bool block = g_hooking.block_bail_other;
-				if (a2 == 0 && a3 == 0)
-				{
-					if (a1 == 15 || a1 == 17)
-					{
-						block = g_hooking.block_bail_spectating;
-					}
-					else if (a1 == 26)
-					{
-						block = g_hooking.block_bail_rid;
-					}
-				}
-				Util::toast(LANG_FMT("PTX_NB_T", FMT_ARG("a1", a1), FMT_ARG("a2", a2), FMT_ARG("a3", a3), FMT_ARG("action", block ? LANG_GET("PTX_NB_T_B") : LANG_GET("PTX_NB_T_A"))), TOAST_ALL);
-				if (!block)
-				{
-					NativeTableHooks::og(0x95914459A87EBA28)(ctx);
-				}
+				handleNetworkBail(ctx);
 			}
 			__EXCEPTIONAL()
 			{
