@@ -60,6 +60,16 @@ namespace Stand
 		return false;
 	}
 
+	// LOC(...) constructs a Label (owns a std::string), so this is kept out of
+	// associate() below, which holds EXCEPTIONAL_LOCK_WRITE's __try.
+	static void ensureBodyguardDivider()
+	{
+		if (!BodyguardMgr::divider)
+		{
+			BodyguardMgr::divider = BodyguardMgr::list->createChild<CommandDivider>(LOC("BDYGUARD"));
+		}
+	}
+
 	void BodyguardMgr::associate(AbstractEntity& ped, Hash weapon, uint8_t group)
 	{
 		if (ped.getModel().isAnimal())
@@ -111,10 +121,7 @@ namespace Stand
 
 		bodyguards.emplace_back(ped);
 		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-		if (!divider)
-		{
-			divider = BodyguardMgr::list->createChild<CommandDivider>(LOC("BDYGUARD"));
-		}
+		ensureBodyguardDivider();
 		BodyguardMgr::list->createChild<CommandBodyguardMember>(ped);
 		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
 	}
@@ -190,14 +197,11 @@ namespace Stand
 		}
 	}
 
-	void BodyguardMgr::clear()
+	// Kept out of clear() below, which holds EXCEPTIONAL_LOCK_WRITE's __try:
+	// under MSVC's debug CRT, std::vector's checked iterators have a
+	// non-trivial destructor, so this loop can't live in the same function.
+	static void removeBodyguardMemberCommands(CommandList* list)
 	{
-		bodyguards.clear();
-
-		removeDivider();
-
-		// Remove CommandBodyguardMember instances
-		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
 		for (auto i = list->children.begin(); i != list->children.end(); )
 		{
 			if ((*i)->type == COMMAND_LIST_CUSTOM_SPECIAL_MEANING)
@@ -209,6 +213,17 @@ namespace Stand
 				++i;
 			}
 		}
+	}
+
+	void BodyguardMgr::clear()
+	{
+		bodyguards.clear();
+
+		removeDivider();
+
+		// Remove CommandBodyguardMember instances
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		removeBodyguardMemberCommands(list);
 		list->processChildrenUpdate();
 		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
 	}
