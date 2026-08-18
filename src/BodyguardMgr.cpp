@@ -61,13 +61,25 @@ namespace Stand
 	}
 
 	// LOC(...) constructs a Label (owns a std::string), so this is kept out of
-	// associate() below, which holds EXCEPTIONAL_LOCK_WRITE's __try.
+	// registerBodyguardCommand() below, which holds EXCEPTIONAL_LOCK_WRITE's
+	// __try.
 	static void ensureBodyguardDivider()
 	{
 		if (!BodyguardMgr::divider)
 		{
 			BodyguardMgr::divider = BodyguardMgr::list->createChild<CommandDivider>(LOC("BDYGUARD"));
 		}
+	}
+
+	// Kept out of associate() below (which has a std::vector temporary from
+	// giveWeapons()), since this holds EXCEPTIONAL_LOCK_WRITE's __try. ped is
+	// taken by reference, so it isn't an object owned by this function either.
+	static void registerBodyguardCommand(AbstractEntity& ped)
+	{
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		ensureBodyguardDivider();
+		BodyguardMgr::list->createChild<CommandBodyguardMember>(ped);
+		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
 	}
 
 	void BodyguardMgr::associate(AbstractEntity& ped, Hash weapon, uint8_t group)
@@ -120,10 +132,7 @@ namespace Stand
 		HUD::SET_BLIP_SCALE(blip, 0.5f);
 
 		bodyguards.emplace_back(ped);
-		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-		ensureBodyguardDivider();
-		BodyguardMgr::list->createChild<CommandBodyguardMember>(ped);
-		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+		registerBodyguardCommand(ped);
 	}
 
 	int BodyguardMgr::getGroup()
