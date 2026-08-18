@@ -86,16 +86,26 @@ namespace Stand
 		}
 	}
 
-	void NotifyGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
+	// std::make_unique<GridItemNotify> constructs a temporary unique_ptr; kept
+	// out of populate() below, which holds a __try later in the function (a
+	// __try can't share a frame with a non-trivially-destructible object
+	// anywhere in the function, even before the __try starts).
+	static void addPersistentNotifyItem(NotifyGrid* self, std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		if (!persistent_notify.empty())
+		if (!self->persistent_notify.empty())
 		{
-			items_draft.emplace_back(std::make_unique<GridItemNotify>(persistent_notify, 0, persistent_notify_flash_until));
+			items_draft.emplace_back(std::make_unique<GridItemNotify>(self->persistent_notify, 0, self->persistent_notify_flash_until));
 		}
-		EXCEPTIONAL_LOCK(notifies_mtx)
+	}
+
+	// notifies' iterator is non-trivially destructible under the Debug CRT,
+	// and std::make_unique<GridItemNotify> constructs a temporary unique_ptr -
+	// both kept out of populate() below, which holds EXCEPTIONAL_LOCK's __try.
+	static void collectLiveNotifies(NotifyGrid* self, std::vector<std::unique_ptr<GridItem>>& items_draft)
+	{
 		const auto time = get_current_time_millis();
 		uint8_t live_notifies = 0;
-		for (auto i = notifies.begin(); i != notifies.end(); )
+		for (auto i = self->notifies.begin(); i != self->notifies.end(); )
 		{
 			if (!i->live)
 			{
@@ -109,9 +119,9 @@ namespace Stand
 			}
 			if (i->expiry_time != 0)
 			{
-				if (isFrozen() ? wasDeadlineReached(i->expiry_time) : IS_DEADLINE_REACHED(i->expiry_time))
+				if (self->isFrozen() ? self->wasDeadlineReached(i->expiry_time) : IS_DEADLINE_REACHED(i->expiry_time))
 				{
-					i = notifies.erase(i);
+					i = self->notifies.erase(i);
 					continue;
 				}
 			}
@@ -127,6 +137,13 @@ namespace Stand
 			++live_notifies;
 			++i;
 		}
+	}
+
+	void NotifyGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
+	{
+		addPersistentNotifyItem(this, items_draft);
+		EXCEPTIONAL_LOCK(notifies_mtx)
+		collectLiveNotifies(this, items_draft);
 		EXCEPTIONAL_UNLOCK(notifies_mtx)
 	}
 

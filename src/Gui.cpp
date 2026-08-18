@@ -1476,6 +1476,19 @@ namespace Stand
 		return commands;
 	}
 
+	// commands' range-for uses a checked (non-trivially destructible under the
+	// Debug CRT) iterator, and getWeakRef<>() returns a WeakRef (owns a
+	// SharedPtr - non-trivial) by value; kept out of
+	// scanCommandsWhereCommandNameStartsWithAsWeakrefs() below, which holds a __try.
+	static void captureWeakrefs(const std::vector<CommandIssuable*>& commands, std::vector<soup::WeakRef<CommandIssuable>>& weakrefs)
+	{
+		weakrefs.reserve(commands.size());
+		for (const auto& inst : commands) // capture weakrefs while we still have the lock
+		{
+			weakrefs.emplace_back(inst->getWeakRef<CommandIssuable>());
+		}
+	}
+
 	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
 	static void scanCommandsWhereCommandNameStartsWithAsWeakrefs(const Gui* const self, std::vector<CommandIssuable*>& commands, std::vector<soup::WeakRef<CommandIssuable>>& weakrefs, const CommandName& command_name_prefix, const CommandPerm perms)
 	{
@@ -1486,11 +1499,7 @@ namespace Stand
 			{
 				self->root_list->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms);
 			}
-			weakrefs.reserve(commands.size());
-			for (const auto& inst : commands) // capture weakrefs while we still have the lock
-			{
-				weakrefs.emplace_back(inst->getWeakRef<CommandIssuable>());
-			}
+			captureWeakrefs(commands, weakrefs);
 		}
 		__EXCEPTIONAL()
 		{
@@ -1726,7 +1735,13 @@ namespace Stand
 		}
 	}
 
-	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix /*= {}*/)
+	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list)
+	{
+		static const std::string empty_prefix;
+		recursivelyApplyState(state, list, empty_prefix);
+	}
+
+	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix)
 	{
 		Click click(CLICK_BULK, TC_SCRIPT_NOYIELD);
 		for (auto& _command : list->children)
@@ -1944,14 +1959,23 @@ namespace Stand
 		g_relay.sendLine(std::move(std::string("b ").append(command->getPhysical()->menu_name.getWebString())));
 	}
 
-	void Gui::sendRootListToWeb() const
+	// sendRaw(const std::string&) constructs a temporary std::string from the
+	// literal, and root_list->children's range-for uses a checked (non-trivially
+	// destructible under the Debug CRT) iterator; kept out of sendRootListToWeb()
+	// below, which holds EXCEPTIONAL_LOCK's __try.
+	static void sendRootListTabs(const CommandList* const root_list)
 	{
-		EXCEPTIONAL_LOCK(g_relay.send_mtx)
 		g_relay.sendRaw("tabs\n");
 		for (const auto& command : root_list->children)
 		{
 			sendRootListTabLine(command.get());
 		}
+	}
+
+	void Gui::sendRootListToWeb() const
+	{
+		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		sendRootListTabs(root_list.get());
 		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 	}
 

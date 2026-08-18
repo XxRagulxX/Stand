@@ -322,13 +322,22 @@ namespace Stand
 		}
 	}
 
-	void Exceptional::report(const std::string& type, std::string&& message, const ErrorInfo& err, void custom_footer_info(), ExceptionContext ctx) noexcept
+	// FileLogger::getMainFilePath() returns a std::wstring by value; kept out
+	// of report() below, which holds a __try, even though this call itself
+	// runs before that __try starts - a __try can't share a frame with a
+	// non-trivially-destructible object anywhere in the function.
+	static void initLoggerIfNeeded() noexcept
 	{
-		report_mtx.lock();
 		if (!g_logger.isInited())
 		{
 			g_logger.init(FileLogger::getMainFilePath());
 		}
+	}
+
+	void Exceptional::report(const std::string& type, std::string&& message, const ErrorInfo& err, void custom_footer_info(), ExceptionContext ctx) noexcept
+	{
+		report_mtx.lock();
+		initLoggerIfNeeded();
 		logBlockBegin();
 		__try
 		{
