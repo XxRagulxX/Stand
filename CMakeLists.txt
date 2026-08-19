@@ -36,10 +36,6 @@ set(PLUTO_DIR
     "${STAND_DIR}/pluto"
 )
 
-set(FMT_DIR
-    "${STAND_DIR}/fmt"
-)
-
 set(DISCORD_RPC_DIR
     "${STAND_DIR}/discord-rpc"
 )
@@ -59,10 +55,6 @@ file(GLOB_RECURSE STAND_CPP CONFIGURE_DEPENDS
 # Third-party libraries are compiled separately.
 list(FILTER STAND_CPP EXCLUDE REGEX
     "/pluto/"
-)
-
-list(FILTER STAND_CPP EXCLUDE REGEX
-    "/fmt/"
 )
 
 list(FILTER STAND_CPP EXCLUDE REGEX
@@ -94,14 +86,6 @@ file(GLOB_RECURSE PLUTO_CPP CONFIGURE_DEPENDS
 )
 
 # ------------------------------------------------------------
-# fmt sources
-# ------------------------------------------------------------
-
-file(GLOB_RECURSE FMT_CPP CONFIGURE_DEPENDS
-    "${FMT_DIR}/*.cc"
-)
-
-# ------------------------------------------------------------
 # MinHook sources
 # ------------------------------------------------------------
 
@@ -117,6 +101,14 @@ file(GLOB MINHOOK_C CONFIGURE_DEPENDS
 # cmake/directxtk.cmake. Defines the DirectXTK target linked below.
 
 include(cmake/directxtk.cmake)
+
+# ------------------------------------------------------------
+# fmt library
+# ------------------------------------------------------------
+# Fetched from GitHub and built from its two .cc files; see cmake/fmt.cmake.
+# Defines the Fmt target linked below.
+
+include(cmake/fmt.cmake)
 
 # ------------------------------------------------------------
 # MinHook library
@@ -192,9 +184,6 @@ add_library(Stand SHARED
 
     # Stand ASM
     ${STAND_ASM}
-
-    # fmt
-    ${FMT_CPP}
 )
 
 # ------------------------------------------------------------
@@ -206,9 +195,6 @@ target_include_directories(Stand
 
         # Stand
         "${STAND_DIR}"
-
-        # fmt
-        "${FMT_DIR}"
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
@@ -238,6 +224,9 @@ target_link_libraries(Stand
 
         # DirectXTK
         DirectXTK
+
+        # fmt
+        Fmt
 
         # Discord RPC
         DiscordRPC
