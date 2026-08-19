@@ -2,11 +2,16 @@
 # Stand - fmt, fetched from fmtlib's GitHub at configure time
 # ============================================================
 #
-# fmt's source used to be committed directly under src/fmt/. Instead, this
-# file fetches it via FetchContent and compiles the two .cc files fmt itself
-# needs (src/format.cc, src/os.cc) - the same pair that used to live at
-# src/fmt/format.cc and src/fmt/os.cc, just sourced from upstream instead of
-# copy-pasted here.
+# fmt's source used to be committed directly under src/fmt/, including
+# src/format.cc and src/os.cc compiled into the build. Neither .cc file is
+# actually needed: fmt fully supports a header-only mode (its own documented
+# way to use it without compiling anything - see FMT_HEADER_ONLY handling at
+# the bottom of fmt/core.h and fmt/format.h), and Stand doesn't call any of
+# the OS-specific functionality os.cc exists for (fmt::file,
+# fmt::buffered_file, fmt::ostream - nothing under src/ references
+# <fmt/os.h> or those types), so there's nothing for either .cc file to
+# provide here. This just fetches fmt's headers and lets FMT_HEADER_ONLY
+# inline the rest, same as if the .cc files had never been vendored.
 #
 # Pinned to the exact release that was previously vendored (9.1.0), so
 # behavior is unchanged: fmt has made API-visible changes across major
@@ -32,38 +37,28 @@ endif()
 
 set(FMT_SOURCE_DIR "${fmt_upstream_SOURCE_DIR}")
 
+if(NOT EXISTS "${FMT_SOURCE_DIR}/include/fmt/format.h")
+    message(FATAL_ERROR
+        "fmt header not found after fetch: ${FMT_SOURCE_DIR}/include/fmt/format.h\n"
+        "Upstream (tag ${FMT_GIT_TAG}) may have restructured its include layout - "
+        "update cmake/fmt.cmake."
+    )
+endif()
+
 message(STATUS "fmt source: ${FMT_SOURCE_DIR}")
 
 # ------------------------------------------------------------
-# fmt library
+# fmt library (header-only)
 # ------------------------------------------------------------
 
-set(FMT_CPP_FILES
-    format.cc
-    os.cc
-)
-
-set(FMT_SOURCES "")
-
-foreach(FMT_CPP_FILE IN LISTS FMT_CPP_FILES)
-    set(FMT_CPP_PATH "${FMT_SOURCE_DIR}/src/${FMT_CPP_FILE}")
-
-    if(NOT EXISTS "${FMT_CPP_PATH}")
-        message(FATAL_ERROR
-            "fmt source file not found after fetch: ${FMT_CPP_PATH}\n"
-            "Upstream (tag ${FMT_GIT_TAG}) may have moved/renamed this file - "
-            "update cmake/fmt.cmake's FMT_CPP_FILES list."
-        )
-    endif()
-
-    list(APPEND FMT_SOURCES "${FMT_CPP_PATH}")
-endforeach()
-
-add_library(Fmt STATIC
-    ${FMT_SOURCES}
-)
+add_library(Fmt INTERFACE)
 
 target_include_directories(Fmt
-    PUBLIC
+    INTERFACE
         "${FMT_SOURCE_DIR}/include"
+)
+
+target_compile_definitions(Fmt
+    INTERFACE
+        FMT_HEADER_ONLY
 )
