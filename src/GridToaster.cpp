@@ -29,35 +29,46 @@ namespace Stand
 		return static_cast<time_t>(num_words * seconds_per_word * 1000.0) + g_grid_toaster.reading_start_delay;
 	}
 
+	// Kept out of GridToaster::toast() below, which holds EXCEPTIONAL_LOCK's
+	// __try through this call: the range-based for loop's hidden iterators are
+	// non-trivially destructible under MSVC's debug CRT, and NotifyData{...} is a
+	// temporary owning a std::wstring -- neither can share a frame with __try.
+	static void withNotifiesLock(const std::function<void()>& fn)
+	{
+		EXCEPTIONAL_LOCK(g_notify_grid.notifies_mtx)
+		fn();
+		EXCEPTIONAL_UNLOCK(g_notify_grid.notifies_mtx)
+	}
+
 	void GridToaster::toast(const std::wstring& message) const
 	{
 		time_t display_time = std::clamp<time_t>(estimate_reading_time(message), notifydur_min, notifydur_max);
 		time_t flash_time = FLASH_MS;
-		EXCEPTIONAL_LOCK(g_notify_grid.notifies_mtx)
-		for (auto& notify : g_notify_grid.notifies)
+		withNotifiesLock([&message, &display_time, &flash_time]
 		{
-			if (notify.text == message)
+			for (auto& notify : g_notify_grid.notifies)
 			{
-				if (notify.live)
+				if (notify.text == message)
 				{
-					flash_time += get_current_time_millis();
+					if (notify.live)
+					{
+						flash_time += get_current_time_millis();
+					}
+					notify.display_time = std::move(display_time);
+					notify.flash_time = std::move(flash_time);
+					if (g_notify_grid.notifies.size() == 1)
+					{
+						notify.expiry_time = 0;
+					}
+					return;
 				}
-				notify.display_time = std::move(display_time);
-				notify.flash_time = std::move(flash_time);
-				if (g_notify_grid.notifies.size() == 1)
-				{
-					notify.expiry_time = 0;
-				}
-				goto finish_toast;
 			}
-		}
-		g_notify_grid.notifies.emplace_back(NotifyData{
-			message,
-			std::move(display_time),
-			std::move(flash_time)
+			g_notify_grid.notifies.emplace_back(NotifyData{
+				message,
+				std::move(display_time),
+				std::move(flash_time)
+			});
 		});
-	finish_toast:;
-		EXCEPTIONAL_UNLOCK(g_notify_grid.notifies_mtx)
 		g_notify_grid.update();
 	}
 

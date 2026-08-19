@@ -12,22 +12,34 @@ namespace Stand
 	{
 	}
 
-	void CommandSaveCommandBoxPreset::onClick(Click& click)
+	// Has destructible locals (std::filesystem::path, temporary std::wstring), so this must not itself contain a __try.
+	static void ensurePresetFolderAndAppend(std::wstring& prefill, const std::wstring& folder_name)
 	{
-		std::wstring prefill{ cmdNameToUtf16(command_names.at(0)) };
-		prefill.push_back(L' ');
+		std::filesystem::path path = get_appdata_path(fmt::format(L"Scripts\\{}\\", folder_name));
+		if (!std::filesystem::exists(path))
+		{
+			std::filesystem::create_directory(path);
+		}
+		prefill.append(folder_name + L"\\");
+	}
+
+	// No destructible locals here: only references, so it's safe to __try in this function.
+	static void tryEnsurePresetFolderAndAppend(std::wstring& prefill, const std::wstring& folder_name)
+	{
 		__try
 		{
-			std::filesystem::path path = get_appdata_path(fmt::format(L"Scripts\\{}\\", folder_name));
-			if (!std::filesystem::exists(path))
-			{
-				std::filesystem::create_directory(path);
-			}
-			prefill.append(folder_name + L"\\");
+			ensurePresetFolderAndAppend(prefill, folder_name);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	void CommandSaveCommandBoxPreset::onClick(Click& click)
+	{
+		std::wstring prefill{ cmdNameToUtf16(command_names.at(0)) };
+		prefill.push_back(L' ');
+		tryEnsurePresetFolderAndAppend(prefill, folder_name);
 		click.showCommandBoxIfPossible(std::move(prefill));
 	}
 

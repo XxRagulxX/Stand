@@ -1318,44 +1318,68 @@ namespace Stand
 		}
 	}
 
+	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
+	static void scanHotkeyDownMatches(const Gui* const self, const Hotkey& hotkey, std::vector<CommandPhysical*>& matches, std::vector<Hotkey>& hold_mode_matches)
+	{
+		g_gui.commands_with_hotkeys_mtx.lock();
+		__try
+		{
+			for (const auto& command : self->commands_with_hotkeys)
+			{
+				auto overlap = hotkey.getOverlap(command->hotkeys);
+				if (overlap != nullptr
+					&& command->canBeTriggeredInCurrentState()
+					)
+				{
+					matches.emplace_back(command);
+					if (overlap->isHoldMode())
+					{
+						hold_mode_matches.emplace_back(*overlap);
+					}
+				}
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+		g_gui.commands_with_hotkeys_mtx.unlock();
+	}
+
 	std::vector<Hotkey> Gui::triggerHotkeyDown(Hotkey hotkey) const
 	{
 		std::vector<CommandPhysical*> matches{};
 		std::vector<Hotkey> hold_mode_matches{};
-		EXCEPTIONAL_LOCK(g_gui.commands_with_hotkeys_mtx)
-		for (const auto& command : commands_with_hotkeys)
+		scanHotkeyDownMatches(this, hotkey, matches, hold_mode_matches);
+		triggerHotkey(std::move(matches));
+		return hold_mode_matches;
+	}
+
+	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
+	static void scanHotkeyUpMatches(const Gui* const self, const Hotkey& hotkey, std::vector<CommandPhysical*>& matches)
+	{
+		g_gui.commands_with_hotkeys_mtx.lock();
+		__try
 		{
-			auto overlap = hotkey.getOverlap(command->hotkeys);
-			if (overlap != nullptr
-				&& command->canBeTriggeredInCurrentState()
-				)
+			for (const auto& command : self->commands_with_hotkeys)
 			{
-				matches.emplace_back(command);
-				if (overlap->isHoldMode())
+				if (hotkey.overlapsWithIncludeHoldMode(command->hotkeys)
+					&& command->canBeTriggeredInCurrentState())
 				{
-					hold_mode_matches.emplace_back(*overlap);
+					matches.emplace_back(command);
 				}
 			}
 		}
-		EXCEPTIONAL_UNLOCK(g_gui.commands_with_hotkeys_mtx)
-		triggerHotkey(std::move(matches));
-		return hold_mode_matches;
+		__EXCEPTIONAL()
+		{
+		}
+		g_gui.commands_with_hotkeys_mtx.unlock();
 	}
 
 	void Gui::triggerHotkeyUp(Hotkey hotkey) const
 	{
 		hotkey.enableHoldMode();
 		std::vector<CommandPhysical*> matches{};
-		EXCEPTIONAL_LOCK(g_gui.commands_with_hotkeys_mtx)
-		for (const auto& command : commands_with_hotkeys)
-		{
-			if (hotkey.overlapsWithIncludeHoldMode(command->hotkeys)
-				&& command->canBeTriggeredInCurrentState())
-			{
-				matches.emplace_back(command);
-			}
-		}
-		EXCEPTIONAL_UNLOCK(g_gui.commands_with_hotkeys_mtx)
+		scanHotkeyUpMatches(this, hotkey, matches);
 		triggerHotkey(std::move(matches));
 	}
 
@@ -1428,41 +1452,66 @@ namespace Stand
 		return false;
 	}
 
+	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
+	static void scanCommandsWhereCommandNameStartsWith(const Gui* const self, std::vector<CommandIssuable*>& commands, const CommandName& command_name_prefix, const CommandPerm perms)
+	{
+		g_gui.root_mtx.lockRead();
+		__try
+		{
+			if (!self->pseudo_commands->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms))
+			{
+				self->root_list->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms);
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+		g_gui.root_mtx.unlockRead();
+	}
+
 	std::vector<CommandIssuable*> Gui::findCommandsWhereCommandNameStartsWith(const CommandName& command_name_prefix, const CommandPerm perms) const
 	{
 		std::vector<CommandIssuable*> commands{};
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-		if (!pseudo_commands->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms))
-		{
-			root_list->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms);
-		}
-		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		scanCommandsWhereCommandNameStartsWith(this, commands, command_name_prefix, perms);
 		return commands;
 	}
 
-	template <typename T>
-	[[nodiscard]] static std::vector<soup::WeakRef<T>> toWeakrefs(const std::vector<T*>& instances)
+	// commands' range-for uses a checked (non-trivially destructible under the
+	// Debug CRT) iterator, and getWeakRef<>() returns a WeakRef (owns a
+	// SharedPtr - non-trivial) by value; kept out of
+	// scanCommandsWhereCommandNameStartsWithAsWeakrefs() below, which holds a __try.
+	static void captureWeakrefs(const std::vector<CommandIssuable*>& commands, std::vector<soup::WeakRef<CommandIssuable>>& weakrefs)
 	{
-		std::vector<soup::WeakRef<T>> weakrefs;
-		weakrefs.reserve(instances.size());
-		for (const auto& inst : instances)
+		weakrefs.reserve(commands.size());
+		for (const auto& inst : commands) // capture weakrefs while we still have the lock
 		{
-			weakrefs.emplace_back(inst->getWeakRef<T>());
+			weakrefs.emplace_back(inst->getWeakRef<CommandIssuable>());
 		}
-		return weakrefs;
+	}
+
+	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
+	static void scanCommandsWhereCommandNameStartsWithAsWeakrefs(const Gui* const self, std::vector<CommandIssuable*>& commands, std::vector<soup::WeakRef<CommandIssuable>>& weakrefs, const CommandName& command_name_prefix, const CommandPerm perms)
+	{
+		g_gui.root_mtx.lockRead();
+		__try
+		{
+			if (!self->pseudo_commands->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms))
+			{
+				self->root_list->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms);
+			}
+			captureWeakrefs(commands, weakrefs);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+		g_gui.root_mtx.unlockRead();
 	}
 
 	std::vector<soup::WeakRef<CommandIssuable>> Gui::findCommandsWhereCommandNameStartsWithAsWeakrefs(const CommandName& command_name_prefix, const CommandPerm perms) const
 	{
 		std::vector<soup::WeakRef<CommandIssuable>> weakrefs;
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
 		std::vector<CommandIssuable*> commands{};
-		if (!pseudo_commands->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms))
-		{
-			root_list->findCommandsWhereCommandNameStartsWith(commands, command_name_prefix, perms);
-		}
-		weakrefs = toWeakrefs<CommandIssuable>(commands); // capture weakrefs while we still have the lock
-		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		scanCommandsWhereCommandNameStartsWithAsWeakrefs(this, commands, weakrefs, command_name_prefix, perms);
 		return weakrefs;
 	}
 
@@ -1562,6 +1611,18 @@ namespace Stand
 		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 	}
 
+	// No __try here, so it's safe to own the ConfigState local in this frame.
+	static void saveStateBody(std::wstring&& name)
+	{
+		ConfigState state(std::move(name));
+		g_gui.saveStateInMemory(state.data);
+		if (state.getName() == g_gui.active_profile.getName())
+		{
+			g_gui.active_profile.data = state.data;
+		}
+		state.saveToFileNow();
+	}
+
 	void Gui::saveState(std::wstring&& name)
 	{
 		Exceptional::createManagedExceptionalThread(__FUNCTION__, [name{ std::move(name) }]() mutable
@@ -1569,13 +1630,7 @@ namespace Stand
 			EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
 			if (g_gui.isRootStateFull())
 			{
-				ConfigState state(std::move(name));
-				g_gui.saveStateInMemory(state.data);
-				if (state.getName() == g_gui.active_profile.getName())
-				{
-					g_gui.active_profile.data = state.data;
-				}
-				state.saveToFileNow();
+				saveStateBody(std::move(name));
 			}
 			EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 			if (g_gui.unload_state == UnloadState::SAVE_PENDING_CONFIGS)
@@ -1597,7 +1652,96 @@ namespace Stand
 		active_profile.setSaveNoLongerNeeded();
 	}
 
-	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix /*= {}*/)
+	// No __try here, so it's safe to construct this toast message temporary in this frame.
+	static void reportApplyStateFailure(const std::string& name)
+	{
+		Util::toast(std::move(std::string("Failed to set state for ").append(name)), TOAST_ALL);
+	}
+
+#if GUI_DEBUG
+	// No __try here, so it's safe to build this debug string in this frame.
+	static void setPersistentDebugTextForState(const std::string& name, const std::string& value)
+	{
+		g_gui.persistent_debug_text = std::string(name).append(": ").append(value);
+	}
+
+	// No __try here, so it's safe to build this debug string in this frame.
+	static void setPersistentDebugTextForStateDefault(const std::string& name)
+	{
+		g_gui.persistent_debug_text = std::string(name).append(": [Default]");
+	}
+#endif
+
+#if PROFILE_STATE
+	// No __try here, so it's safe to construct the fmt::format() temporary in this frame.
+	static void logRecursivelyApplyStateTiming(uint64_t ms, uint64_t fraction, const std::string& name)
+	{
+		g_logger.log(fmt::format("{}.{:0>5} ms for {}", ms, fraction, name));
+	}
+#endif
+
+	// No destructible locals here (only references/pointers), so it's safe to __try in this function.
+	static void tryApplyStateToCommand(std::unordered_map<std::string, std::string>& state, CommandPhysical* const command, std::string& name, Click& click)
+	{
+		__try
+		{
+			if (command->supportsStateOperations()
+				&& command->supportsSavedState()
+				)
+			{
+				const auto state_i = state.find(name);
+				if (state_i != state.end())
+				{
+#if GUI_DEBUG
+					setPersistentDebugTextForState(name, state_i->second);
+#endif
+					command->setState(click, state_i->second);
+				}
+				else
+				{
+#if GUI_DEBUG
+					setPersistentDebugTextForStateDefault(name);
+#endif
+					command->applyDefaultState();
+				}
+			}
+			if (command->isListNonAction())
+			{
+				name.push_back('>');
+
+#if PROFILE_STATE
+				uint64_t ticks;
+				QueryPerformanceCounter((LARGE_INTEGER*)&ticks);
+#endif
+
+				g_gui.recursivelyApplyState(state, (CommandList*)command, name);
+
+#if PROFILE_STATE
+				uint64_t ticks2;
+				QueryPerformanceCounter((LARGE_INTEGER*)&ticks2);
+
+				ticks2 -= ticks;
+
+				auto ms = (ticks2 / 10000);
+				auto fraction = (ticks2 % 10000);
+
+				logRecursivelyApplyStateTiming(ms, fraction, name);
+#endif
+			}
+		}
+		__EXCEPTIONAL()
+		{
+			reportApplyStateFailure(name);
+		}
+	}
+
+	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list)
+	{
+		static const std::string empty_prefix;
+		recursivelyApplyState(state, list, empty_prefix);
+	}
+
+	void Gui::recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix)
 	{
 		Click click(CLICK_BULK, TC_SCRIPT_NOYIELD);
 		for (auto& _command : list->children)
@@ -1612,56 +1756,7 @@ namespace Stand
 				return;
 			}
 			std::string name = std::string(prefix).append(command->getNameForConfig());
-			__try
-			{
-				if (command->supportsStateOperations()
-					&& command->supportsSavedState()
-					)
-				{
-					const auto state_i = state.find(name);
-					if (state_i != state.end())
-					{
-#if GUI_DEBUG
-						persistent_debug_text = std::string(name).append(": ").append(state_i->second);
-#endif
-						command->setState(click, state_i->second);
-					}
-					else
-					{
-#if GUI_DEBUG
-						persistent_debug_text = std::string(name).append(": [Default]");
-#endif
-						command->applyDefaultState();
-					}
-				}
-				if (command->isListNonAction())
-				{
-					name.push_back('>');
-
-#if PROFILE_STATE
-					uint64_t ticks;
-					QueryPerformanceCounter((LARGE_INTEGER*)&ticks);
-#endif
-
-					recursivelyApplyState(state, (CommandList*)command, name);
-
-#if PROFILE_STATE
-					uint64_t ticks2;
-					QueryPerformanceCounter((LARGE_INTEGER*)&ticks2);
-
-					ticks2 -= ticks;
-
-					auto ms = (ticks2 / 10000);
-					auto fraction = (ticks2 % 10000);
-
-					g_logger.log(fmt::format("{}.{:0>5} ms for {}", ms, fraction, name));
-#endif
-				}
-			}
-			__EXCEPTIONAL()
-			{
-				Util::toast(std::move(std::string("Failed to set state for ").append(name)), TOAST_ALL);
-			}
+			tryApplyStateToCommand(state, command, name, click);
 		}
 #if GUI_DEBUG
 		persistent_debug_text.clear();
@@ -1858,14 +1953,29 @@ namespace Stand
 		return web_focus != nullptr;
 	}
 
-	void Gui::sendRootListToWeb() const
+	// No __try here, so it's safe to construct the temporary std::string in this frame.
+	static void sendRootListTabLine(const Command* const command)
 	{
-		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		g_relay.sendLine(std::move(std::string("b ").append(command->getPhysical()->menu_name.getWebString())));
+	}
+
+	// sendRaw(const std::string&) constructs a temporary std::string from the
+	// literal, and root_list->children's range-for uses a checked (non-trivially
+	// destructible under the Debug CRT) iterator; kept out of sendRootListToWeb()
+	// below, which holds EXCEPTIONAL_LOCK's __try.
+	static void sendRootListTabs(const CommandList* const root_list)
+	{
 		g_relay.sendRaw("tabs\n");
 		for (const auto& command : root_list->children)
 		{
-			g_relay.sendLine(std::move(std::string("b ").append(command->getPhysical()->menu_name.getWebString())));
+			sendRootListTabLine(command.get());
 		}
+	}
+
+	void Gui::sendRootListToWeb() const
+	{
+		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		sendRootListTabs(root_list.get());
 		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 	}
 
@@ -2777,6 +2887,78 @@ namespace Stand
 		}
 	}
 
+	// No __try here, so it's safe to construct the LANG_FMT() temporary in this frame.
+	static void showControllerOpenCloseHelp()
+	{
+		Util::show_corner_help(LANG_FMT("HLP_CTRLLR", ControllerInputConfig::getOpenCloseStringForGame()), true);
+	}
+
+	// No __try here, so it's safe to use the checked iterator produced by this range-for in this frame.
+	static void moveExtrasBufferIntoExtras()
+	{
+		for (auto&& entry : g_renderer.extras_buffer)
+		{
+			g_renderer.extras.push_back(std::move(entry));
+		}
+	}
+
+	// No __try here, so it's safe to own the getPlayers() temporary and use the checked iterator produced by this range-for in this frame.
+	static void updateFocusedPlayerBeacons(const Command* const command, CommandListPlayer* const focused_player_command)
+	{
+		g_gui.focused_players = focused_player_command->pp->getPlayers(focused_player_command->pp->single);
+		if (command == focused_player_command ? g_gui.focused_player_beacon_in_list_of_all_players : g_gui.focused_player_beacon_in_list_belonging_to_player)
+		{
+			for (const AbstractPlayer p : g_gui.focused_players)
+			{
+				if (!g_gui.focused_player_beacon_exclude_me || (p.hasPed() &&  p.getPed() != g_cam_ped))
+				{
+					DrawUtil3d::draw_ar_beacon(p.getPos());
+				}
+			}
+		}
+	}
+
+	// No __try here, so it's safe to construct the std::wstring temporary in this frame.
+	static void saveAutoSaveState()
+	{
+		g_gui.saveState(std::wstring(g_gui.auto_save_state));
+	}
+
+	// No __try here, so it's safe to use the checked iterator produced by this loop in this frame.
+	static void tickCommandsInGameViewport(CommandList* const list)
+	{
+		cursor_t draw_cursor = 0;
+		cursor_t emul_cursor = list->m_offset;
+		for (std::vector<std::unique_ptr<Command>>::const_iterator i; i = list->children.cbegin() + emul_cursor, emul_cursor < (cursor_t)list->children.size(); ++emul_cursor)
+		{
+			auto* cmd = i->get()->getPhysical();
+			if (cmd != nullptr
+				&& !cmd->isConcealed()
+				)
+			{
+				cmd->onTickInGameViewport();
+			}
+			if (++draw_cursor == g_gui.getCommandsOnScreenLimit())
+			{
+				break;
+			}
+			i++;
+		}
+	}
+
+	// No __try here, so it's safe to use the checked iterator produced by this range-for in this frame.
+	static void tickCommandsInWebViewport(CommandList* const list)
+	{
+		for (const auto& command : list->children)
+		{
+			auto* cmd = command->getPhysical();
+			if (!cmd->isConcealed())
+			{
+				cmd->onTickInWebViewport();
+			}
+		}
+	}
+
 	void Gui::onTick()
 	{
 		//drawDebugText(g_gta_module.range.base.as<void*>());
@@ -2836,7 +3018,7 @@ namespace Stand
 						&& !user_understands_controller_open_close
 						)
 					{
-						Util::show_corner_help(LANG_FMT("HLP_CTRLLR", ControllerInputConfig::getOpenCloseStringForGame()), true);
+						showControllerOpenCloseHelp();
 					}
 				}
 				else
@@ -2849,10 +3031,7 @@ namespace Stand
 		EXCEPTIONAL_LOCK(g_renderer.extras_mtx)
 		SOUP_IF_UNLIKELY (no_extra_clear)
 		{
-			for (auto&& entry : g_renderer.extras_buffer)
-			{
-				g_renderer.extras.push_back(std::move(entry));
-			}
+			moveExtrasBufferIntoExtras();
 		}
 		else
 		{
@@ -3145,17 +3324,7 @@ namespace Stand
 				auto* const focused_player_command = (CommandListPlayer*)command->resolveParent(COMMAND_LIST_PLAYER);
 				if(focused_player_command != nullptr)
 				{
-					focused_players = focused_player_command->pp->getPlayers(focused_player_command->pp->single);
-					if (command == focused_player_command ? focused_player_beacon_in_list_of_all_players : focused_player_beacon_in_list_belonging_to_player)
-					{
-						for (const AbstractPlayer p : focused_players)
-						{
-							if (!focused_player_beacon_exclude_me || (p.hasPed() &&  p.getPed() != g_cam_ped))
-							{
-								DrawUtil3d::draw_ar_beacon(p.getPos());
-							}
-						}
-					}
+					updateFocusedPlayerBeacons(command, focused_player_command);
 				}
 				else
 				{
@@ -3171,7 +3340,7 @@ namespace Stand
 			if (command_state_change_save.has_value() && command_state_change_save.value() < get_current_time_millis())
 			{
 				command_state_change_save = std::nullopt;
-				saveState(std::wstring(auto_save_state));
+				saveAutoSaveState();
 			}
 
 			// Track Waypoint
@@ -3235,23 +3404,7 @@ namespace Stand
 						auto* list = getCurrentUiList();
 						if (list->canDispatchOnTickInViewportForChildren())
 						{
-							cursor_t draw_cursor = 0;
-							cursor_t emul_cursor = list->m_offset;
-							for (std::vector<std::unique_ptr<Command>>::const_iterator i; i = list->children.cbegin() + emul_cursor, emul_cursor < (cursor_t)list->children.size(); ++emul_cursor)
-							{
-								auto* cmd = i->get()->getPhysical();
-								if (cmd != nullptr
-									&& !cmd->isConcealed()
-									)
-								{
-									cmd->onTickInGameViewport();
-								}
-								if (++draw_cursor == getCommandsOnScreenLimit())
-								{
-									break;
-								}
-								i++;
-							}
+							tickCommandsInGameViewport(list);
 						}
 						EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 					}
@@ -3267,14 +3420,7 @@ namespace Stand
 				)
 			{
 				EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-				for (const auto& command : web_focus->children)
-				{
-					auto* cmd = command->getPhysical();
-					if (!cmd->isConcealed())
-					{
-						cmd->onTickInWebViewport();
-					}
-				}
+				tickCommandsInWebViewport(web_focus);
 				EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 			}
 		}
@@ -3362,6 +3508,87 @@ namespace Stand
 		}
 	}
 
+	// No __try here, so it's safe to construct the evtPlayerLeaveEvent local in this frame.
+	static void queuePlayerLeaveEventForReplacedCommand(const AbstractPlayer p, const std::string& name)
+	{
+		evtPlayerLeaveEvent e(p, name, false);
+		FiberPool::queueJob([e{ std::move(e) }]() mutable
+		{
+			evtPlayerLeaveEvent::trigger(e);
+		});
+	}
+
+	// No destructible locals here (only pointers/values), so it's safe to __try in this function.
+	static void tryQueuePlayerLeaveEventForReplacedCommand(const AbstractPlayer p, CommandPlayer* const command)
+	{
+		__try
+		{
+			queuePlayerLeaveEventForReplacedCommand(p, command->name);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here (only references/pointers/values), so it's safe to __try in this function.
+	static void tryCreatePlayerCommand(const AbstractPlayer p, bool& notify_join, Command*& prev_focus, CommandPlayer*& command)
+	{
+		__try
+		{
+			if (AbstractPlayer::streamer_spoof != 0 && g_player != p)
+			{
+				p.spoofName();
+			}
+			prev_focus = g_gui.player_list->getFocus();
+			notify_join = (p != g_player && g_gui.players_discovered && !is_session_transition_active(true));
+			command = g_gui.player_list->createChild<CommandPlayer>((compactplayer_t)p, notify_join);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here (only a pointer/value), so it's safe to __try in this function.
+	static void tryProcessPlayerListChildrenUpdate(Command* const prev_focus, ThreadContext thread_context)
+	{
+		__try
+		{
+			g_gui.player_list->processChildrenUpdateWithPossibleCursorDisplacement(prev_focus, thread_context);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No __try here, so it's safe to construct the evtPlayerJoinEvent local in this frame.
+	static void queuePlayerJoinEvent(const AbstractPlayer p, bool notify_join)
+	{
+		evtPlayerJoinEvent e(p, notify_join);
+		FiberPool::queueJob([e{ std::move(e) }]() mutable
+		{
+			evtPlayerJoinEvent::trigger(e);
+		});
+	}
+
+	// No destructible locals here (only references/pointers/values), so it's safe to __try in this function.
+	static void tryFinalisePlayerCommand(const AbstractPlayer p, CommandPlayer* const command, bool notify_join, ThreadContext thread_context, bool& update_player_list_web_state)
+	{
+		__try
+		{
+			if (command != nullptr)
+			{
+				g_gui.player_commands[p] = command;
+				command->doWork(thread_context);
+			}
+			queuePlayerJoinEvent(p, notify_join);
+			g_gui.updatePlayerCount();
+			update_player_list_web_state = true;
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	void Gui::populatePlayerList(ThreadContext thread_context)
 	{
 		const bool forced_flag_update = CommandPlayer::force_flag_update;
@@ -3391,17 +3618,7 @@ namespace Stand
 							continue;
 						}
 					}
-					__try
-					{
-						evtPlayerLeaveEvent e(p, command->name, false);
-						FiberPool::queueJob([e{ std::move(e) }]() mutable
-						{
-							evtPlayerLeaveEvent::trigger(e);
-						});
-					}
-					__EXCEPTIONAL()
-					{
-					}
+					tryQueuePlayerLeaveEventForReplacedCommand(p, command);
 					removePlayer(p, command);
 				}
 			}
@@ -3415,45 +3632,10 @@ namespace Stand
 			Command* prev_focus = nullptr;
 			bool notify_join = false;
 			CommandPlayer* command = nullptr;
-			__try
-			{
-				if (AbstractPlayer::streamer_spoof != 0 && g_player != p)
-				{
-					p.spoofName();
-				}
-				prev_focus = player_list->getFocus();
-				notify_join = (p != g_player && players_discovered && !is_session_transition_active(true));
-				command = player_list->createChild<CommandPlayer>((compactplayer_t)p, notify_join);
-			}
-			__EXCEPTIONAL()
-			{
-			}
+			tryCreatePlayerCommand(p, notify_join, prev_focus, command);
 			PlayerListSort::update();
-			__try
-			{
-				player_list->processChildrenUpdateWithPossibleCursorDisplacement(prev_focus, thread_context);
-			}
-			__EXCEPTIONAL()
-			{
-			}
-			__try
-			{
-				if (command != nullptr)
-				{
-					player_commands[p] = command;
-					command->doWork(thread_context);
-				}
-				evtPlayerJoinEvent e(p, notify_join);
-				FiberPool::queueJob([e{ std::move(e) }]() mutable
-				{
-					evtPlayerJoinEvent::trigger(e);
-				});
-				updatePlayerCount();
-				update_player_list_web_state = true;
-			}
-			__EXCEPTIONAL()
-			{
-			}
+			tryProcessPlayerListChildrenUpdate(prev_focus, thread_context);
+			tryFinalisePlayerCommand(p, command, notify_join, thread_context, update_player_list_web_state);
 		}
 		if (managed_to_lock)
 		{

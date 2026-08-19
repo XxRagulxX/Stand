@@ -26,10 +26,16 @@ namespace Stand
 		CommandListWithOnTickAsActiveList::onClick(click);
 	}
 
+	// LOC() constructs a temporary Label; keep it out of the __try frame.
+	static void addWaitingDivider(CommandHistoricPlayerStats* self)
+	{
+		self->createChild<CommandDivider>(LOC("GENWAIT"));
+	}
+
 	void CommandHistoricPlayerStats::onActiveListUpdate()
 	{
 		CommandListWithOnTickAsActiveList::onActiveListUpdate();
-		
+
 		if (!isCurrentMenuListInTab()
 			&& !isCurrentWebList()
 			&& s
@@ -38,8 +44,37 @@ namespace Stand
 		{
 			resetChildren();
 			EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-			createChild<CommandDivider>(LOC("GENWAIT"));
+			addWaitingDivider(this);
 			EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+		}
+	}
+
+	// LOC()/fmt::to_wstring()/etc. construct temporaries (Label, std::wstring); keep them out of the __try frame.
+	static void addPlayerStatsChildren(CommandHistoricPlayerStats* self, RemoteStats* s)
+	{
+		if (s->hasData())
+		{
+			self->createChild<CommandReadonlyValueCopy>(LOC("MNY_B"), StringUtils::toStringWithThousandsSeparatorW(s->getBankBalance()));
+			self->createChild<CommandReadonlyValueCopy>(LOC("KLLS"), fmt::to_wstring(s->getKills()));
+			self->createChild<CommandReadonlyValueCopy>(LOC("DTHS"), fmt::to_wstring(s->getDeaths()));
+			self->createChild<CommandReadonlyValueCopy>(LOC("KD"), fmt::to_wstring(s->getKillDeathRatio()));
+			if (s->getMp0IsActive())
+			{
+				self->createChild<CommandDivider>(s->getLastChar() == 0 ? LOC("CHAR1_ACT") : LOC("CHAR1"));
+				self->createChild<CommandReadonlyValueCopy>(LOC("RNK"), fmt::to_wstring(s->getMp0Rank()));
+				self->createChild<CommandReadonlyValueCopy>(LOC("MNY_W"), StringUtils::toStringWithThousandsSeparatorW(s->getMp0WalletBalance()));
+			}
+			if (s->getMp1IsActive())
+			{
+				self->createChild<CommandDivider>(s->getLastChar() == 1 ? LOC("CHAR2_ACT") : LOC("CHAR2"));
+				self->createChild<CommandReadonlyValueCopy>(LOC("RNK"), fmt::to_wstring(s->getMp1Rank()));
+				self->createChild<CommandReadonlyValueCopy>(LOC("MNY_W"), StringUtils::toStringWithThousandsSeparatorW(s->getMp1WalletBalance()));
+			}
+		}
+		else
+		{
+			// A player who has never played before, e.g. test123
+			self->createChild<CommandDivider>(LOC("NDATA"));
 		}
 	}
 
@@ -52,30 +87,7 @@ namespace Stand
 		{
 			resetChildren();
 			EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-			if (s->hasData())
-			{
-				createChild<CommandReadonlyValueCopy>(LOC("MNY_B"), StringUtils::toStringWithThousandsSeparatorW(s->getBankBalance()));
-				createChild<CommandReadonlyValueCopy>(LOC("KLLS"), fmt::to_wstring(s->getKills()));
-				createChild<CommandReadonlyValueCopy>(LOC("DTHS"), fmt::to_wstring(s->getDeaths()));
-				createChild<CommandReadonlyValueCopy>(LOC("KD"), fmt::to_wstring(s->getKillDeathRatio()));
-				if (s->getMp0IsActive())
-				{
-					createChild<CommandDivider>(s->getLastChar() == 0 ? LOC("CHAR1_ACT") : LOC("CHAR1"));
-					createChild<CommandReadonlyValueCopy>(LOC("RNK"), fmt::to_wstring(s->getMp0Rank()));
-					createChild<CommandReadonlyValueCopy>(LOC("MNY_W"), StringUtils::toStringWithThousandsSeparatorW(s->getMp0WalletBalance()));
-				}
-				if (s->getMp1IsActive())
-				{
-					createChild<CommandDivider>(s->getLastChar() == 1 ? LOC("CHAR2_ACT") : LOC("CHAR2"));
-					createChild<CommandReadonlyValueCopy>(LOC("RNK"), fmt::to_wstring(s->getMp1Rank()));
-					createChild<CommandReadonlyValueCopy>(LOC("MNY_W"), StringUtils::toStringWithThousandsSeparatorW(s->getMp1WalletBalance()));
-				}
-			}
-			else
-			{
-				// A player who has never played before, e.g. test123
-				createChild<CommandDivider>(LOC("NDATA"));
-			}
+			addPlayerStatsChildren(this, s);
 			EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
 			processChildrenUpdate();
 		}

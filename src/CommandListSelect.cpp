@@ -345,6 +345,13 @@ namespace Stand
 		g_relay.sendLine(std::move(std::string("s ").append(getWebState())));
 	}
 
+	// Building the log lines creates temporary std::strings; keep them out of the __try frame.
+	static void sendUpdatedWebState(const CommandListSelect* self)
+	{
+		g_relay.sendLine(std::move(std::string("e ").append(self->menu_name.getWebString())));
+		g_relay.sendLine(std::move(std::string("s ").append(self->getWebState())));
+	}
+
 	void CommandListSelect::updateWebState() const
 	{
 		if (isActiveOnWeb())
@@ -352,8 +359,7 @@ namespace Stand
 			Exceptional::createManagedExceptionalThread(__FUNCTION__, [this]
 			{
 				EXCEPTIONAL_LOCK(g_relay.send_mtx)
-				g_relay.sendLine(std::move(std::string("e ").append(menu_name.getWebString())));
-				g_relay.sendLine(std::move(std::string("s ").append(getWebState())));
+				sendUpdatedWebState(this);
 				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 			});
 		}

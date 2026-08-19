@@ -698,6 +698,12 @@ namespace Stand
 		return std::find(hotkeys.begin(), hotkeys.end(), hotkey) != hotkeys.end();
 	}
 
+	// LANG_FMT()/getActivationName() construct temporary std::string/Label objects; keep them out of the __try frame.
+	static void toastHotkeySetMessage(const CommandPhysical* self)
+	{
+		Util::toast(LANG_FMT("HOTKEY_T", self->getActivationName().getLocalisedUtf8()), TOAST_ABOVE_MAP);
+	}
+
 	void CommandPhysical::modifyHotkeys(bool hotkey_add, const Hotkey hotkey, ClickType type)
 	{
 		if (!hasHotkey(hotkey))
@@ -723,7 +729,7 @@ namespace Stand
 			g_gui.hotkeys.save();
 			if (type == CLICK_MENU)
 			{
-				Util::toast(LANG_FMT("HOTKEY_T", getActivationName().getLocalisedUtf8()), TOAST_ABOVE_MAP);
+				toastHotkeySetMessage(this);
 			}
 		}
 	}
@@ -743,14 +749,20 @@ namespace Stand
 		}
 	}
 
-	void CommandPhysical::removeFromCommandsWithHotkeys() const noexcept
+	// Iterator over `commands_with_hotkeys` is non-trivially destructible under the Debug CRT; keep it out of the __try frame.
+	static void eraseFromCommandsWithHotkeys(const CommandPhysical* self)
 	{
-		EXCEPTIONAL_LOCK(g_gui.commands_with_hotkeys_mtx)
-		auto i = std::find(g_gui.commands_with_hotkeys.begin(), g_gui.commands_with_hotkeys.end(), this);
+		auto i = std::find(g_gui.commands_with_hotkeys.begin(), g_gui.commands_with_hotkeys.end(), self);
 		if (i != g_gui.commands_with_hotkeys.end())
 		{
 			g_gui.commands_with_hotkeys.erase(i);
 		}
+	}
+
+	void CommandPhysical::removeFromCommandsWithHotkeys() const noexcept
+	{
+		EXCEPTIONAL_LOCK(g_gui.commands_with_hotkeys_mtx)
+		eraseFromCommandsWithHotkeys(this);
 		EXCEPTIONAL_UNLOCK(g_gui.commands_with_hotkeys_mtx)
 	}
 

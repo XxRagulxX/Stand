@@ -94,13 +94,21 @@ namespace Stand
 		}
 	};
 
+	// Kept out of ConsoleLogger::write() below, which holds EXCEPTIONAL_LOCK's
+	// __try: sched.add<>(...) returns a SharedPtr (non-trivial destructor), and
+	// even discarded, that temporary can't be materialized in the __try's frame.
+	static void addConsoleWriteTask(soup::DetachedScheduler& sched, std::string&& message)
+	{
+		sched.add<ConsoleWriteTask>(std::move(message));
+	}
+
 	void ConsoleLogger::write(std::string&& message)
 	{
 		if (isInited())
 		{
 			// Moving into DetachedScheduler so an active selection in the console won't block the caller.
 			EXCEPTIONAL_LOCK(sched_mtx)
-			sched.add<ConsoleWriteTask>(std::move(message));
+			addConsoleWriteTask(sched, std::move(message));
 			EXCEPTIONAL_UNLOCK(sched_mtx)
 		}
 	}

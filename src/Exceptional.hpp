@@ -116,8 +116,16 @@ namespace Stand
 
 		[[nodiscard]] static std::string getExceptionName(_EXCEPTION_POINTERS* exp) noexcept;
 		[[nodiscard]] static std::string getExceptionName(const ExceptionData* data) noexcept;
-
-	private:
-		static long handleExceptionInErrorReporting(_EXCEPTION_POINTERS* exp, std::string msg = "Exception in error reporting: ") noexcept;
 	};
+
+	// Free function (not a member of Exceptional) so that free helper functions
+	// in Exceptional.cpp - which don't get implicit access to private members -
+	// can call it too. Only used within Exceptional.cpp.
+	//
+	// msg is a const char* (not std::string): this is called directly as the
+	// operand of __except(...), and a std::string parameter - even with a
+	// literal default argument - would construct a std::string temporary at
+	// every call site, which counts against whatever __try encloses that
+	// __except. A pointer to a string literal needs no construction at all.
+	long handleExceptionInErrorReporting(_EXCEPTION_POINTERS* exp, const char* msg = "Exception in error reporting: ") noexcept;
 }

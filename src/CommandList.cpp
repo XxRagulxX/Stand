@@ -175,6 +175,13 @@ namespace Stand
 		return children.size() < max_web_commands;
 	}
 
+	// Contains destructible temporaries (std::string construction/concatenation),
+	// so this is kept out of the __try in CommandList::onClick's lambda.
+	static void sendWebFocusLine(const Label& menu_name)
+	{
+		g_relay.sendLine(std::move(std::string("l ").append(menu_name.getWebString())));
+	}
+
 	void CommandList::onClick(Click& click)
 	{
 		if (!isAttached())
@@ -192,7 +199,7 @@ namespace Stand
 					auto* const prev_focus = g_gui.web_focus;
 					//Util::toast(fmt::format("Updated web_focus to {}", this->getPathConfig()), TOAST_ALL);
 					g_gui.web_focus = this;
-					g_relay.sendLine(std::move(std::string("l ").append(menu_name.getWebString())));
+					sendWebFocusLine(menu_name);
 					updateWebStateImpl();
 					if (prev_focus != nullptr)
 					{
@@ -807,6 +814,14 @@ namespace Stand
 		}
 	}
 
+	// "j\n" needs an implicit std::string temporary to bind to sendRaw's
+	// const std::string& parameter, so this call is kept out of the __try
+	// in updateWebStateNoCheck's lambda below.
+	static void sendWebStateHeartbeat()
+	{
+		g_relay.sendRaw("j\n");
+	}
+
 	void CommandList::updateWebStateNoCheck()
 	{
 		if (web_state_update_queued)
@@ -821,7 +836,7 @@ namespace Stand
 			EXCEPTIONAL_LOCK(g_relay.send_mtx)
 			if (isActiveOnWeb())
 			{
-				g_relay.sendRaw("j\n");
+				sendWebStateHeartbeat();
 				updateWebStateImpl();
 			}
 			/*else
@@ -832,11 +847,14 @@ namespace Stand
 		});
 	}
 
-	void CommandList::updateWebStateImpl() const
+	// Contains many destructible temporaries (std::string construction/
+	// concatenation for g_relay.sendLine/sendRaw), so this loop is kept out
+	// of updateWebStateImpl's __try below; takes the list by pointer rather
+	// than owning it.
+	static void sendWebStateForChildren(const CommandList* list)
 	{
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
 		cursor_t cap = 0;
-		for (auto& command : children)
+		for (auto& command : list->children)
 		{
 			auto* physical = command->getPhysical();
 			if (physical->flags & CMDFLAG_CONCEALED)
@@ -925,11 +943,17 @@ namespace Stand
 			{
 				g_relay.sendRaw("v\n");
 			}
-			if (++cap == max_web_commands)
+			if (++cap == CommandList::max_web_commands)
 			{
 				break;
 			}
 		}
+	}
+
+	void CommandList::updateWebStateImpl() const
+	{
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		sendWebStateForChildren(this);
 		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
 	}
 

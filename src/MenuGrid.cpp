@@ -89,33 +89,16 @@ namespace Stand
 		}
 	}
 
-	void MenuGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
+	// No __try here, so this is free to have destructible locals (std::vector<std::wstring>, std::wstring, std::unique_ptr<GridItem>, etc.). Returns whether populate() must still call the (private) populateHeader().
+	static bool populateBody(MenuGrid& self, std::vector<std::unique_ptr<GridItem>>& items_draft, CommandList* list, cursor_t children_to_fit, int16_t columns_for_this_list, int16_t full_menu_width)
 	{
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-		root_cursor = g_gui.root_cursor;
-
-		auto* list = g_gui.getCurrentUiList();
-		cursor_t children_to_fit = list ? list->countVisibleChildren() : 0;
-		const int16_t columns_for_this_list = std::clamp<int16_t>((int16_t)ceilf((float)children_to_fit / (float)g_gui.command_rows), 1, g_gui.command_columns);
-
-		int16_t full_menu_width = g_renderer.command_width;
-		if (addressbar_width_affected_by_columns)
-		{
-			full_menu_width *= columns_for_this_list;
-			full_menu_width += (spacer_x * (columns_for_this_list - 1));
-		}
-		if (g_renderer.tabs_pos == LEFT || g_renderer.tabs_pos == RIGHT)
-		{
-			full_menu_width += spacer_x + g_renderer.tabs_width;
-		}
-
 		GridItem* addressbar = nullptr;
 
 		if (g_gui.isUnloadPending())
 		{
 			addressbar = items_draft.emplace_back(std::make_unique<GridItemPrimaryText>(full_menu_width, g_renderer.addressbar_height, StringUtils::utf8_to_utf16(RootNameMgr::stock_root_name))).get();
 
-			main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("UNLD_T"), full_menu_width, info_padding, 2)).get();
+			self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("UNLD_T"), full_menu_width, self.info_padding, 2)).get();
 		}
 		else if (g_gui.root_state == GUI_NONE
 			|| g_gui.isRootUpdatePendingOrInProgress()
@@ -123,13 +106,13 @@ namespace Stand
 		{
 			addressbar = items_draft.emplace_back(std::make_unique<GridItemPrimaryText>(full_menu_width, g_renderer.addressbar_height, StringUtils::utf8_to_utf16(RootNameMgr::stock_root_name))).get();
 
-			main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("GENWAIT"), full_menu_width, info_padding, 2)).get();
+			self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("GENWAIT"), full_menu_width, self.info_padding, 2)).get();
 		}
 		else if (g_gui.isInBadBoyTimeout())
 		{
 			addressbar = items_draft.emplace_back(std::make_unique<GridItemPrimaryText>(full_menu_width, g_renderer.addressbar_height, StringUtils::utf8_to_utf16(RootNameMgr::stock_root_name))).get();
 
-			main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("BADBOY"), full_menu_width, info_padding, 2)).get();
+			self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("BADBOY"), full_menu_width, self.info_padding, 2)).get();
 		}
 		else if (g_gui.isAwaitingSetHotkeyInput())
 		{
@@ -139,7 +122,7 @@ namespace Stand
 			}
 
 			auto* const command = g_gui.getCurrentMenuFocus();
-			main_view = items_draft.emplace_back(std::make_unique<GridItemText>(StringUtils::utf8_to_utf16(LANG_FMT("HOTKEY_U", command->getPhysical()->getActivationName().getLocalisedUtf8())), full_menu_width, info_padding, 2)).get();
+			self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(StringUtils::utf8_to_utf16(LANG_FMT("HOTKEY_U", command->getPhysical()->getActivationName().getLocalisedUtf8())), full_menu_width, self.info_padding, 2)).get();
 		}
 		else if (g_gui.isPromptActive())
 		{
@@ -148,7 +131,7 @@ namespace Stand
 				addressbar = items_draft.emplace_back(std::make_unique<GridItemAddressbar>(full_menu_width)).get();
 			}
 
-			main_view = items_draft.emplace_back(std::make_unique<GridItemText>(std::wstring(g_gui.prompt_text), full_menu_width, info_padding, 2)).get();
+			self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(std::wstring(g_gui.prompt_text), full_menu_width, self.info_padding, 2)).get();
 		}
 		else
 		{
@@ -172,18 +155,18 @@ namespace Stand
 			const auto warning_i = g_gui.warnings.find(g_gui.root_cursor);
 			if (warning_i != g_gui.warnings.end())
 			{
-				main_view = items_draft.emplace_back(std::make_unique<GridItemText>(std::wstring(warning_i->second.text), g_renderer.command_width, info_padding, 3, alignment_relative_to_tabs)).get();
+				self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(std::wstring(warning_i->second.text), g_renderer.command_width, self.info_padding, 3, alignment_relative_to_tabs)).get();
 			}
 			else
 			{
 				if (children_to_fit == 0)
 				{
-					main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("ETYLST"), g_renderer.command_width, info_padding, 3, alignment_relative_to_tabs)).get();
+					self.main_view = items_draft.emplace_back(std::make_unique<GridItemText>(LANG_GET_W("ETYLST"), g_renderer.command_width, self.info_padding, 3, alignment_relative_to_tabs)).get();
 				}
 				else
 				{
 					const int16_t first_column_height = g_renderer.command_height * (int16_t)std::min(children_to_fit, g_gui.command_rows);
-					main_view = items_draft.emplace_back(std::make_unique<GridItemList>(list, first_column_height, 3, alignment_relative_to_tabs, 0)).get();
+					self.main_view = items_draft.emplace_back(std::make_unique<GridItemList>(list, first_column_height, 3, alignment_relative_to_tabs, 0)).get();
 
 					for (int16_t i = 1; i != columns_for_this_list; ++i)
 					{
@@ -194,13 +177,13 @@ namespace Stand
 
 					auto info_text_alignment = g_renderer.info_text_alignment;
 
-					SOUP_IF_UNLIKELY (!qrcode.empty())
+					SOUP_IF_UNLIKELY (!self.qrcode.empty())
 					{
 						info_text_alignment = ALIGN_TOP_LEFT;
-						items_draft.emplace_back(std::make_unique<GridItemQrcode>(g_renderer.command_width, 3, qrcode));
+						items_draft.emplace_back(std::make_unique<GridItemQrcode>(g_renderer.command_width, 3, self.qrcode));
 					}
 
-					switch (scrollbar_mode)
+					switch (self.scrollbar_mode)
 					{
 					case ScrollbarMode::ENABLED_WHEN_NEEDED:
 						if (list->countVisibleChildren() <= size_t(g_gui.getCommandsOnScreenLimit()))
@@ -209,18 +192,18 @@ namespace Stand
 						}
 						[[fallthrough]];
 					case ScrollbarMode::ENABLED:
-						items_draft.emplace_back(std::make_unique<GridItemScrollbar>(list, scrollbar_width, first_column_height, 4));
-						if (addressbar_width_affected_by_scrollbar && addressbar != nullptr)
+						items_draft.emplace_back(std::make_unique<GridItemScrollbar>(list, self.scrollbar_width, first_column_height, 4));
+						if (self.addressbar_width_affected_by_scrollbar && addressbar != nullptr)
 						{
-							addressbar->width += (spacer_x + scrollbar_width);
+							addressbar->width += (self.spacer_x + self.scrollbar_width);
 						}
 						break;
 					}
 
 					std::vector<std::wstring> corner{};
-					if (!untrimmed_menu_name.empty())
+					if (!self.untrimmed_menu_name.empty())
 					{
-						corner.emplace_back(untrimmed_menu_name);
+						corner.emplace_back(self.untrimmed_menu_name);
 					}
 					if (auto* const command = list->getFocus())
 					{
@@ -229,8 +212,8 @@ namespace Stand
 					auto i = corner.begin();
 					if (i != corner.end())
 					{
-						auto* info_text_force_alignment_to = main_view;
-						int16_t info_text_width = info_text_alignment == ALIGN_BOTTOM_LEFT ? g_renderer.command_width : info_width;
+						auto* info_text_force_alignment_to = self.main_view;
+						int16_t info_text_width = info_text_alignment == ALIGN_BOTTOM_LEFT ? g_renderer.command_width : self.info_width;
 						if (info_text_alignment == ALIGN_BOTTOM_RIGHT) // "Below Tabs"
 						{
 							if (g_renderer.tabs_pos == LEFT)
@@ -247,10 +230,10 @@ namespace Stand
 						{
 							info_text_force_alignment_to = nullptr;
 						}
-						items_draft.emplace_back(std::make_unique<GridItemText>(std::move(*i), info_text_width, info_padding, 5, info_text_alignment, info_text_force_alignment_to));
+						items_draft.emplace_back(std::make_unique<GridItemText>(std::move(*i), info_text_width, self.info_padding, 5, info_text_alignment, info_text_force_alignment_to));
 						while (++i != corner.end())
 						{
-							items_draft.emplace_back(std::make_unique<GridItemText>(std::move(*i), info_text_width, info_padding, 5, ALIGN_BOTTOM_LEFT));
+							items_draft.emplace_back(std::make_unique<GridItemText>(std::move(*i), info_text_width, self.info_padding, 5, ALIGN_BOTTOM_LEFT));
 						}
 					}
 				}
@@ -262,9 +245,36 @@ namespace Stand
 			}
 			else if (g_renderer.tabs_pos == BOTTOM)
 			{
-				items_draft.emplace_back(std::make_unique<GridItemTabsHorizontal>(4, ALIGN_BOTTOM_LEFT, main_view));
+				items_draft.emplace_back(std::make_unique<GridItemTabsHorizontal>(4, ALIGN_BOTTOM_LEFT, self.main_view));
 			}
 
+			return true;
+		}
+		return false;
+	}
+
+	void MenuGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
+	{
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		root_cursor = g_gui.root_cursor;
+
+		auto* list = g_gui.getCurrentUiList();
+		cursor_t children_to_fit = list ? list->countVisibleChildren() : 0;
+		const int16_t columns_for_this_list = std::clamp<int16_t>((int16_t)ceilf((float)children_to_fit / (float)g_gui.command_rows), 1, g_gui.command_columns);
+
+		int16_t full_menu_width = g_renderer.command_width;
+		if (addressbar_width_affected_by_columns)
+		{
+			full_menu_width *= columns_for_this_list;
+			full_menu_width += (spacer_x * (columns_for_this_list - 1));
+		}
+		if (g_renderer.tabs_pos == LEFT || g_renderer.tabs_pos == RIGHT)
+		{
+			full_menu_width += spacer_x + g_renderer.tabs_width;
+		}
+
+		if (populateBody(*this, items_draft, list, children_to_fit, columns_for_this_list, full_menu_width))
+		{
 			populateHeader(items_draft, full_menu_width, 255, items_draft.empty() ? nullptr : items_draft.at(0).get());
 		}
 

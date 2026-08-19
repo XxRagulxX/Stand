@@ -922,6 +922,18 @@ f(link)
 
 #define ENABLE_SECURED_CONTENT false
 
+	// No destructible locals here: only a pointer, so it's safe to __try in this function.
+	static void luaCallScriptMain(lua_State* L)
+	{
+		__try
+		{
+			lua_call(L, 1, 0);
+		}
+		__EXCEPTIONAL_LUA()
+		{
+		}
+	}
+
 	void CommandLuaScript::run(bool notify, std::string&& code)
 	{
 		if (L != nullptr)
@@ -1441,13 +1453,7 @@ f(link)
 		running = true;
 		first_ticks = 100;
 		keep_running_implied = false;
-		__try
-		{
-			lua_call(L, 1, 0);
-		}
-		__EXCEPTIONAL_LUA()
-		{
-		}
+		luaCallScriptMain(L);
 		//ExecCtx::get().tc = TC_SCRIPT_NOYIELD;
 		running = false;
 
@@ -1462,6 +1468,26 @@ f(link)
 		stop(true);
 	}
 
+	// No destructible locals here: only a pointer, so it's safe to __try in this function.
+	static void luaCloseSafe(lua_State* L)
+	{
+		__try
+		{
+			lua_close(L);
+		}
+		__EXCEPTIONAL_LUA()
+		{
+		}
+	}
+
+	// No destructible locals here: only references, so it's safe to __try in this function.
+	static void freeAllBgBlurs(Spinlock& mtx, LuaResourceMap<EphemeralBackgroundBlur>& bgblurs)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+		bgblurs.freeAll();
+		EXCEPTIONAL_UNLOCK(mtx)
+	}
+
 	void CommandLuaScript::stop(bool hot)
 	{
 		hold_up_save = false;
@@ -1471,13 +1497,7 @@ f(link)
 		dispatchOnStop();
 		stop_handlers.clear();
 
-		__try
-		{
-			lua_close(L);
-		}
-		__EXCEPTIONAL_LUA()
-		{
-		}
+		luaCloseSafe(L);
 		L = nullptr;
 
 		clearCommands();
@@ -1506,9 +1526,7 @@ f(link)
 			}
 		}
 
-		EXCEPTIONAL_LOCK(g_renderer.extras_mtx)
-		bgblurs.freeAll();
-		EXCEPTIONAL_UNLOCK(g_renderer.extras_mtx)
+		freeAllBgBlurs(g_renderer.extras_mtx, bgblurs);
 		disableArSpinner();
 		disableGracefulLanding();
 
@@ -1608,6 +1626,35 @@ f(link)
 		is_instant_stop = instant;
 	}
 
+	// No destructible locals here: only references/pointers (and map iterators, which are
+	// trivially destructible), so it's safe to __try in this function.
+	static void applyStateToCommand(CommandPhysical* need_state_command, Click& click, const std::string& path)
+	{
+		__try
+		{
+			{
+				auto entry = g_gui.active_profile.data.find(path);
+				if (entry != g_gui.active_profile.data.end())
+				{
+					need_state_command->setState(click, entry->second);
+				}
+			}
+			{
+				auto entry = g_gui.hotkeys.data.find(path);
+				if (entry != g_gui.hotkeys.data.end())
+				{
+					need_state_command->hotkeys = entry->second;
+					need_state_command->checkAddToCommandsWithHotkeys();
+					need_state_command->processVisualUpdate(false);
+					need_state_command->onHotkeysChanged(CLICK_BULK);
+				}
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	void CommandLuaScript::applyCommandStates()
 	{
 		if (!need_state_commands.empty())
@@ -1616,30 +1663,8 @@ f(link)
 			Click click(CLICK_BULK, TC_SCRIPT_NOYIELD);
 			for (auto& need_state_command : need_state_commands)
 			{
-				__try
-				{
-					auto path = need_state_command->getPathConfig();
-					{
-						auto entry = g_gui.active_profile.data.find(path);
-						if (entry != g_gui.active_profile.data.end())
-						{
-							need_state_command->setState(click, entry->second);
-						}
-					}
-					{
-						auto entry = g_gui.hotkeys.data.find(path);
-						if (entry != g_gui.hotkeys.data.end())
-						{
-							need_state_command->hotkeys = entry->second;
-							need_state_command->checkAddToCommandsWithHotkeys();
-							need_state_command->processVisualUpdate(false);
-							need_state_command->onHotkeysChanged(CLICK_BULK);
-						}
-					}
-				}
-				__EXCEPTIONAL()
-				{
-				}
+				auto path = need_state_command->getPathConfig();
+				applyStateToCommand(need_state_command, click, path);
 			}
 			invoke_no_fiber = false;
 			need_state_commands.clear();
@@ -1828,16 +1853,22 @@ f(link)
 		}
 	}
 
+	// No destructible locals here: only references, so it's safe to __try in this function.
+	static void insertBusyCommand(std::vector<std::unique_ptr<Command>>& children, std::unique_ptr<CommandDivider>& cmd)
+	{
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		SOUP_ASSERT(!children.empty());
+		children.emplace(children.begin() + 1, std::move(cmd));
+		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+	}
+
 	void CommandLuaScript::enableBusy()
 	{
 		if (busy++ == 0)
 		{
 			auto cmd = makeChild<CommandDivider>(LOC("GENWAIT"));
 			busy_cmd = cmd.get();
-			EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-			SOUP_ASSERT(!children.empty());
-			children.emplace(children.begin() + 1, std::move(cmd));
-			EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+			insertBusyCommand(children, cmd);
 			if (cmd) // We still own it?
 			{
 				busy_cmd = nullptr; // Reset soon-to-be-stale pointer to it
@@ -3197,6 +3228,15 @@ f(link)
 		lua_setmetatable(L, -2);
 	}
 
+	// No destructible locals here: cmd is a reference (the caller owns the temporary), so
+	// it's safe to __try in this function.
+	static void emplaceVisibleLocked(CommandList* parent_command, std::unique_ptr<Command>&& cmd)
+	{
+		EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
+		parent_command->emplaceVisible(std::move(cmd));
+		EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+	}
+
 	int luaS_returnnewcommand(lua_State* L, CommandLuaScript* thisptr, Command* command)
 	{
 		if (command->isPhysical())
@@ -3218,9 +3258,7 @@ f(link)
 		{
 			thisptr->preAttachOfOwnedCommand(command);
 			luaS_pushCommandRef(L, command);
-			EXCEPTIONAL_LOCK_WRITE(g_gui.root_mtx)
-			command->parent->emplaceVisible(std::unique_ptr<Command>(command));
-			EXCEPTIONAL_UNLOCK_WRITE(g_gui.root_mtx)
+			emplaceVisibleLocked(command->parent, std::unique_ptr<Command>(command));
 			command->parent->processChildrenUpdate();
 		}
 		return 1;
@@ -8702,6 +8740,21 @@ f(link)
 		return 1;
 	}
 
+	// resp.getHeaderFields() returns a std::unordered_map by value, so this
+	// can't share a frame with the __try in lua_async_http_init() below.
+	static void invokeAsyncHttpSuccessCallback(soup::WeakRef<CommandLuaScript>& weak_ref, int succ_callback, int fail_callback, soup::HttpResponse& resp)
+	{
+		if (auto script = weak_ref.getPointer())
+		{
+			if (fail_callback != LUA_NOREF)
+			{
+				luaS_releaseReference(script->L, fail_callback);
+			}
+			luaS_invoke_void(script->L, succ_callback, resp.body, resp.getHeaderFields(), resp.status_code);
+			luaS_releaseReference(script->L, succ_callback);
+		}
+	}
+
 	int lua_async_http_init(lua_State* L)
 	{
 		if (async_http_builder != nullptr)
@@ -8753,15 +8806,7 @@ f(link)
 				{
 					__try
 					{
-						if (auto script = weak_ref.getPointer())
-						{
-							if (fail_callback != LUA_NOREF)
-							{
-								luaS_releaseReference(script->L, fail_callback);
-							}
-							luaS_invoke_void(script->L, succ_callback, resp.body, resp.getHeaderFields(), resp.status_code);
-							luaS_releaseReference(script->L, succ_callback);
-						}
+						invokeAsyncHttpSuccessCallback(weak_ref, succ_callback, fail_callback, resp);
 					}
 					__EXCEPTIONAL_LUA()
 					{

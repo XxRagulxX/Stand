@@ -313,7 +313,9 @@ namespace Stand
 		std::vector<TimedSprite> timed_sprites = {};
 		Spinlock script_textures_mtx = {};
 		std::unordered_map<int, Texture> script_textures = {};
-	private:
+		// Public (not private) because createOneScriptTexture() in Renderer.cpp -
+		// a free function extracted so a __try never shares a frame with the
+		// Texture it builds - needs to append to this from outside the class.
 		std::vector<ReloadTex> ReloadArray = {};
 
 	public:

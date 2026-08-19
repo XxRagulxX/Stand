@@ -383,6 +383,19 @@ namespace Stand
 		return false;
 	}
 
+	// Kept out of GridItemList::draw() below, which holds EXCEPTIONAL_LOCK_READ's
+	// __try through this call: the actual per-command mouse-navigation loop runs
+	// via this callback, since it declares an explicit std::vector iterator
+	// (non-trivially destructible under MSVC's debug CRT) and, in Debug builds,
+	// constructs a DebugString (owning a std::string) for
+	// createManagedExceptionalThread() -- neither can share a frame with __try.
+	static void withGridRootReadLock(const std::function<void()>& fn)
+	{
+		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		fn();
+		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+	}
+
 	void GridItemList::draw()
 	{
 		drawBackgroundEffects();
@@ -390,48 +403,49 @@ namespace Stand
 		auto cursorPosH = g_renderer.getCursorPosH(false);
 		if (g_gui.mouse_mode == MouseMode::NAVIGATE)
 		{
-			EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
-			cursor_t emul_cursor = view->m_offset + this->offset;
-			cursor_t draw_cursor = 0;
-			for (std::vector<std::unique_ptr<Command>>::iterator i; i = view->children.begin() + emul_cursor, i < view->children.end(); ++emul_cursor)
+			withGridRootReadLock([this, &cursorPosH]
 			{
-				LONG x1 = x;
-				LONG y1 = y + (g_renderer.command_height * (LONG)draw_cursor);
-				LONG x2 = x1 + width;
-				LONG y2 = y1 + g_renderer.command_height;
-				if (cursorPosH.x > x1 && x2 >= cursorPosH.x && cursorPosH.y > y1 && y2 >= cursorPosH.y)
+				cursor_t emul_cursor = view->m_offset + this->offset;
+				cursor_t draw_cursor = 0;
+				for (std::vector<std::unique_ptr<Command>>::iterator i; i = view->children.begin() + emul_cursor, i < view->children.end(); ++emul_cursor)
 				{
-					const bool focused = (view->m_cursor == emul_cursor);
-					if (focused)
+					LONG x1 = x;
+					LONG y1 = y + (g_renderer.command_height * (LONG)draw_cursor);
+					LONG x2 = x1 + width;
+					LONG y2 = y1 + g_renderer.command_height;
+					if (cursorPosH.x > x1 && x2 >= cursorPosH.x && cursorPosH.y > y1 && y2 >= cursorPosH.y)
 					{
-						if (g_renderer.mouse_squeaks)
+						const bool focused = (view->m_cursor == emul_cursor);
+						if (focused)
 						{
-							g_renderer.mouse_squeaks = false;
-							Exceptional::createManagedExceptionalThread(__FUNCTION__, []
+							if (g_renderer.mouse_squeaks)
 							{
-								g_gui.last_input_type = INPUTTYPE_MOUSE_CLICK;
-								g_gui.inputClick(TC_OTHER);
-							});
-						}
-					}
-					else
-					{
-						if (auto focus_phys = view->getFocusPhysical(); focus_phys && !focus_phys->isSelectable() && g_gui.last_input_type == INPUTTYPE_INDIFFERENT)
-						{
-							// don't move cursor if we're about to be kicked off this command anyway
+								g_renderer.mouse_squeaks = false;
+								Exceptional::createManagedExceptionalThread(__FUNCTION__, []
+								{
+									g_gui.last_input_type = INPUTTYPE_MOUSE_CLICK;
+									g_gui.inputClick(TC_OTHER);
+								});
+							}
 						}
 						else
 						{
-							view->approachCursor(emul_cursor);
+							if (auto focus_phys = view->getFocusPhysical(); focus_phys && !focus_phys->isSelectable() && g_gui.last_input_type == INPUTTYPE_INDIFFERENT)
+							{
+								// don't move cursor if we're about to be kicked off this command anyway
+							}
+							else
+							{
+								view->approachCursor(emul_cursor);
+							}
 						}
 					}
+					if (++draw_cursor == g_gui.command_rows)
+					{
+						break;
+					}
 				}
-				if (++draw_cursor == g_gui.command_rows)
-				{
-					break;
-				}
-			}
-			EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+			});
 		}
 
 		float focus_y = FLT_MIN;

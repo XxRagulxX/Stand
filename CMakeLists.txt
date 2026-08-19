@@ -7,6 +7,12 @@ include(cmake/cross-compile.cmake)
 
 project(Stand LANGUAGES C CXX ASM_MASM)
 
+# Native Windows build (MSVC or clang-cl, x64, Debug/Release). No-op when
+# cmake/cross-compile.cmake above is already handling the build (Linux ->
+# Windows cross-compilation). Included this early so its MSVC runtime
+# library selection applies before any target below is created.
+include(cmake/windows.cmake)
+
 # ------------------------------------------------------------
 # C / C++ configuration
 # ------------------------------------------------------------
@@ -277,15 +283,12 @@ target_link_libraries(Stand
 # ------------------------------------------------------------
 # Compiler options
 # ------------------------------------------------------------
+# See cmake/windows.cmake (native MSVC/clang-cl build) and
+# cmake/cross-compile.cmake (Linux -> Windows cross build) for where these
+# functions come from.
 
-if(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(Stand
-        PRIVATE
-
-            $<$<COMPILE_LANGUAGE:CXX>:/EHsc>
-            $<$<COMPILE_LANGUAGE:CXX>:/permissive->
-            $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
-            $<$<COMPILE_LANGUAGE:CXX>:/utf-8>
-            $<$<COMPILE_LANGUAGE:CXX>:/bigobj>
-    )
+if(CROSSCOMPILE)
+    stand_apply_common_compile_options(Stand)
+else()
+    stand_apply_native_windows_options(Stand)
 endif()

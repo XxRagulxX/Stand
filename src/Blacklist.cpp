@@ -8,34 +8,46 @@
 
 namespace Stand
 {
+	// Separate from the __try frame: `advertisers`' iterator is non-trivially destructible under the Debug CRT.
+	static bool checkIsAdvertiserV2(const rage::rlGamerInfo& gi)
+	{
+		for (const auto& a : Blacklist::advertisers)
+		{
+			if (a->appliesTo(gi))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool Blacklist::isAdvertiserV2(const rage::rlGamerInfo& gi)
 	{
 		bool ret = false;
 		EXCEPTIONAL_LOCK(mtx)
-		for (const auto& a : advertisers)
-		{
-			if (a->appliesTo(gi))
-			{
-				ret = true;
-				break;
-			}
-		}
+		ret = checkIsAdvertiserV2(gi);
 		EXCEPTIONAL_UNLOCK(mtx)
 		return ret;
+	}
+
+	// Separate from the __try frame: `advertisers`' iterator is non-trivially destructible under the Debug CRT.
+	static bool checkIsAdvertiserByRid(int64_t rid)
+	{
+		for (const auto& a : Blacklist::advertisers)
+		{
+			if (a->appliesTo(rid))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	bool Blacklist::isAdvertiserByRid(int64_t rid)
 	{
 		bool ret = false;
 		EXCEPTIONAL_LOCK(mtx)
-		for (const auto& a : advertisers)
-		{
-			if (a->appliesTo(rid))
-			{
-				ret = true;
-				break;
-			}
-		}
+		ret = checkIsAdvertiserByRid(rid);
 		EXCEPTIONAL_UNLOCK(mtx)
 		return ret;
 	}

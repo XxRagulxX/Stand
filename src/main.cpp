@@ -174,15 +174,51 @@ namespace Stand
 		}
 	}
 
+	// onDllAttach contains a __try, so none of the std::(w)string/UniquePtr/
+	// std::function temporaries these statements build may live in its own
+	// frame; each gets its own small helper instead.
+	static void initLogger()
+	{
+		g_logger.init(FileLogger::getMainFilePath());
+	}
+
+	static void logStartupBanner()
+	{
+		g_logger.log(soup::ObfusString(STAND_NAMEVERSION " reporting for duty!"));
+	}
+
+	static void startManagedThreadFunc() noexcept
+	{
+		Exceptional::createManagedThread(&Exceptional::thread_func);
+	}
+
+	static void logAncientWindowsWarning()
+	{
+		g_logger.log(soup::ObfusString("Detected an ancient Windows version. I'll try my best to adapt by disabling incompatible code, but you're in for a seriously degraded experience.").str());
+	}
+
+	// No destructible locals here: th is a HANDLE (a pointer), so it's safe to
+	// construct the std::function temporary and call SetThreadPriority/CloseHandle
+	// away from onDllAttach's __try.
+	static void startMainThread() noexcept
+	{
+		auto th = Exceptional::createThread(&mainThread);
+		if (th)
+		{
+			SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+			CloseHandle(th);
+		}
+	}
+
 	BOOL onDllAttach(HMODULE hmod) // OBFUS!
 	{
 		// Initialise
-		g_logger.init(FileLogger::getMainFilePath());
-		g_logger.log(soup::ObfusString(STAND_NAMEVERSION " reporting for duty!"));
+		initLogger();
+		logStartupBanner();
 		// Start exception handling
 		g_hmodule = hmod;
 		g_og_unhandled_exception_filter = Exceptional::setUnhandledExceptionHandler();
-		Exceptional::createManagedThread(&Exceptional::thread_func);
+		startManagedThreadFunc();
 		::exceptional_init(&Exceptional::handleCaughtException, &Exceptional::handleUncaughtException);
 		// Initialise CodeIntegrity
 		CodeIntegrity::add(&CommandHistoricPlayer::getStateImpl);
@@ -197,7 +233,7 @@ namespace Stand
 		g_windows_7_or_older = (dwMajorVersion <= 6 && dwMinorVersion <= 1);
 		if (g_windows_7_or_older)
 		{
-			g_logger.log(soup::ObfusString("Detected an ancient Windows version. I'll try my best to adapt by disabling incompatible code, but you're in for a seriously degraded experience."));
+			logAncientWindowsWarning();
 		}
 		// Init main
 		__try
@@ -208,12 +244,7 @@ namespace Stand
 		{
 		}
 		// Init main thread
-		auto th = Exceptional::createThread(&mainThread);
-		if (th)
-		{
-			SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
-			CloseHandle(th);
-		}
+		startMainThread();
 		return TRUE;
 	}
 
@@ -377,164 +408,199 @@ namespace Stand
 		}
 	};
 
+	// UniquePtr<logSink>&& binds a temporary in the caller; kept out of
+	// mainThreadBody() so it never shares a stack frame with a __try.
+	static void setUpLogSink()
+	{
+		soup::logSetSink(soup::make_unique<LogSink>());
+	}
+
+	// No __try in this function, so it's free to use std::wstring, std::string,
+	// PatternBatch, etc.; called from mainThreadBody() from outside any __try.
+	static void mainThreadEarlyInjectSetup(bool& load_aborted)
+	{
+		std::wstring sGrcWindow = StringUtils::utf8_to_utf16(soup::ObfusString("grcWindow").str());
+		std::wstring sSgaWindow = StringUtils::utf8_to_utf16(soup::ObfusString("sgaWindow").str());
+		while (!FindWindowW(sGrcWindow.c_str(), nullptr) && !FindWindowW(sSgaWindow.c_str(), nullptr))
+		{
+			soup::os::sleep(10);
+		}
+
+		if (auto e = g_gui.active_profile.data.find(soup::ObfusString("Game>Early Inject Enhancements>Game Pools Size Multiplier").str()); e != g_gui.active_profile.data.end())
+		{
+			g_hooking.pools_size_multiplier = std::stof(e->second);
+			if (g_hooking.pools_size_multiplier > 2.0f
+				&& !modified_memory_pool_size
+				)
+			{
+				g_hooking.pools_size_multiplier = 2.0f;
+				g_logger.log(soup::ObfusString("Game Pools Size Multiplier: Capping to 2.0 as memory pool size was not modified.").str());
+			}
+			PatternBatch batch;
+			BATCH_ADD("A1", "45 33 DB 44 8B D2 66 44 39 59 10 74 4B 44 0F B7 49 10", [](soup::Pointer p)
+			{
+				STORE_HOOK(rage_fwConfigManager_GetSizeOfPool);
+			});
+			auto scan_time = TimedCall::run([&]
+			{
+				batch.runSingleThread();
+			});
+			if (batch.error_message.empty())
+			{
+				auto hook_time = TimedCall::run([]
+				{
+					g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.createHook();
+					g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.enableHook();
+				});
+				g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Game Pools Size Multiplier: Scanned pattern in {} and hooked in {}").str()), scan_time, hook_time));
+			}
+			else
+			{
+				g_logger.log(soup::ObfusString("Game Pools Size Multiplier: Pattern scan failed."));
+			}
+		}
+
+		std::string message{};
+		if (MapUtil::hasKeyValue(g_gui.active_profile.data, soup::ObfusString("Game>Early Inject Enhancements>Skip Intro & License").str(), soup::ObfusString("Off").str()))
+		{
+			message = soup::ObfusString("Not skipping intro and license: Disabled in state").str();
+		}
+		else
+		{
+			PatternBatch batch;
+			BATCH_ADD("A2", "70 6C 61 74 66 6F 72 6D 3A 2F 6D 6F 76 69 65 73 2F 72 6F 63", [](soup::Pointer p)
+			{
+				pointers::game_logos = p.as<void*>();
+			});
+			BATCH_ADD("A3", "72 1F E8 ? ? ? ? 8B 0D", [](soup::Pointer p)
+			{
+				pointers::game_license = p.as<void*>();
+			});
+			batch.run();
+			if (batch.error_message.empty())
+			{
+				uint8_t value = 0xC3;
+				memcpy(pointers::game_logos, &value, sizeof(value));
+				memset(pointers::game_license, 0x90, 2);
+				message = soup::ObfusString("Skipped intro and license").str();
+			}
+			else
+			{
+				ColoadMgr::coloading_with_any_menu = true;
+				message = soup::ObfusString("Not skipping intro and license: ").str();
+				message.append(batch.error_message);
+			}
+		}
+		message.append(soup::ObfusString(". Waiting for socialclub.").str());
+		g_logger.log(std::move(message));
+
+		while (GetModuleHandleA(soup::ObfusString("socialclub.dll")) == nullptr)
+		{
+			if (is_special_key_being_pressed())
+			{
+				g_logger.log(soup::ObfusString("F1 or F9 pressed, aborting."));
+				load_aborted = true;
+				break;
+			}
+			soup::os::sleep(100);
+		}
+	}
+
+	// No __try in this function, so the std::vector<DetourHook*> local is fine;
+	// called from mainThreadBody() from outside any __try.
+	static void removeLongjumpHooksAndDeinitHooking()
+	{
+		std::vector<DetourHook*> hooks{};
+		Components::collectHooks(hooks);
+		for (const auto& hook : hooks)
+		{
+			if (hook->isHooked() && hook->isLongjump())
+			{
+				hook->removeHook();
+			}
+		}
+
+		g_hooking.deinit();
+	}
+
+	// No destructible locals here: load_aborted is a bool, so it's safe for
+	// this function to itself contain __try blocks.
+	static void mainThreadBody()
+	{
+		if (!early_inject)
+		{
+			mainInitDeferables();
+		}
+
+		setUpLogSink();
+
+		g_hooking.init();
+
+		bool load_aborted = false;
+
+		if (early_inject)
+		{
+			mainThreadEarlyInjectSetup(load_aborted);
+		}
+
+		__try
+		{
+			if (!mainInitPointers())
+			{
+				load_aborted = true;
+			}
+		}
+		__EXCEPTIONAL()
+		{
+			load_aborted = true;
+		}
+
+		if (!load_aborted)
+		{
+			if (!early_inject)
+			{
+				SetForegroundWindow(pointers::hwnd);
+			}
+			__try
+			{
+				mainAfterPointers();
+			}
+			__EXCEPTIONAL()
+			{
+			}
+#if ENABLE_PASSIVE_DLL
+			if (!g_this_dll_is_passive)
+#endif
+			{
+				removeLongjumpHooksAndDeinitHooking();
+			}
+		}
+
+		if (patched_is_explosion_type_valid)
+		{
+#if ENABLE_PASSIVE_DLL
+			*pointers::is_explosion_type_valid_patch = (g_game_has_passive_dll ? CS_PASSIVE : CS_NONE);
+#else
+			*pointers::is_explosion_type_valid_patch = CS_NONE;
+#endif
+		}
+		mainUnpatch();
+		mainStopCountedThreads();
+	}
+
+#if ENABLE_PASSIVE_DLL
+	static void logGoingPassive()
+	{
+		g_logger.log(soup::ObfusString("That's all, folks! Going passive."));
+	}
+#endif
+
 	void mainThread()
 	{
 		THREAD_NAME("Main");
 		__try
 		{
-			if (!early_inject)
-			{
-				mainInitDeferables();
-			}
-
-			soup::logSetSink(soup::make_unique<LogSink>());
-
-			g_hooking.init();
-
-			bool load_aborted = false;
-
-			if (early_inject)
-			{
-				std::wstring sGrcWindow = StringUtils::utf8_to_utf16(soup::ObfusString("grcWindow").str());
-				std::wstring sSgaWindow = StringUtils::utf8_to_utf16(soup::ObfusString("sgaWindow").str());
-				while (!FindWindowW(sGrcWindow.c_str(), nullptr) && !FindWindowW(sSgaWindow.c_str(), nullptr))
-				{
-					soup::os::sleep(10);
-				}
-
-				if (auto e = g_gui.active_profile.data.find(soup::ObfusString("Game>Early Inject Enhancements>Game Pools Size Multiplier").str()); e != g_gui.active_profile.data.end())
-				{
-					g_hooking.pools_size_multiplier = std::stof(e->second);
-					if (g_hooking.pools_size_multiplier > 2.0f
-						&& !modified_memory_pool_size
-						)
-					{
-						g_hooking.pools_size_multiplier = 2.0f;
-						g_logger.log(soup::ObfusString("Game Pools Size Multiplier: Capping to 2.0 as memory pool size was not modified.").str());
-					}
-					PatternBatch batch;
-					BATCH_ADD("A1", "45 33 DB 44 8B D2 66 44 39 59 10 74 4B 44 0F B7 49 10", [](soup::Pointer p)
-					{
-						STORE_HOOK(rage_fwConfigManager_GetSizeOfPool);
-					});
-					auto scan_time = TimedCall::run([&]
-					{
-						batch.runSingleThread();
-					});
-					if (batch.error_message.empty())
-					{
-						auto hook_time = TimedCall::run([]
-						{
-							g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.createHook();
-							g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.enableHook();
-						});
-						g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Game Pools Size Multiplier: Scanned pattern in {} and hooked in {}").str()), scan_time, hook_time));
-					}
-					else
-					{
-						g_logger.log(soup::ObfusString("Game Pools Size Multiplier: Pattern scan failed."));
-					}
-				}
-
-				std::string message{};
-				if (MapUtil::hasKeyValue(g_gui.active_profile.data, soup::ObfusString("Game>Early Inject Enhancements>Skip Intro & License").str(), soup::ObfusString("Off").str()))
-				{
-					message = soup::ObfusString("Not skipping intro and license: Disabled in state").str();
-				}
-				else
-				{
-					PatternBatch batch;
-					BATCH_ADD("A2", "70 6C 61 74 66 6F 72 6D 3A 2F 6D 6F 76 69 65 73 2F 72 6F 63", [](soup::Pointer p)
-					{
-						pointers::game_logos = p.as<void*>();
-					});
-					BATCH_ADD("A3", "72 1F E8 ? ? ? ? 8B 0D", [](soup::Pointer p)
-					{
-						pointers::game_license = p.as<void*>();
-					});
-					batch.run();
-					if (batch.error_message.empty())
-					{
-						uint8_t value = 0xC3;
-						memcpy(pointers::game_logos, &value, sizeof(value));
-						memset(pointers::game_license, 0x90, 2);
-						message = soup::ObfusString("Skipped intro and license").str();
-					}
-					else
-					{
-						ColoadMgr::coloading_with_any_menu = true;
-						message = soup::ObfusString("Not skipping intro and license: ").str();
-						message.append(batch.error_message);
-					}
-				}
-				message.append(soup::ObfusString(". Waiting for socialclub.").str());
-				g_logger.log(std::move(message));
-
-				while (GetModuleHandleA(soup::ObfusString("socialclub.dll")) == nullptr)
-				{
-					if (is_special_key_being_pressed())
-					{
-						g_logger.log(soup::ObfusString("F1 or F9 pressed, aborting."));
-						load_aborted = true;
-						break;
-					}
-					soup::os::sleep(100);
-				}
-			}
-
-			__try
-			{
-				if (!mainInitPointers())
-				{
-					load_aborted = true;
-				}
-			}
-			__EXCEPTIONAL()
-			{
-				load_aborted = true;
-			}
-
-			if (!load_aborted)
-			{
-				if (!early_inject)
-				{
-					SetForegroundWindow(pointers::hwnd);
-				}
-				__try
-				{
-					mainAfterPointers();
-				}
-				__EXCEPTIONAL()
-				{
-				}
-#if ENABLE_PASSIVE_DLL
-				if (!g_this_dll_is_passive)
-#endif
-				{
-					std::vector<DetourHook*> hooks{};
-					Components::collectHooks(hooks);
-					for (const auto& hook : hooks)
-					{
-						if (hook->isHooked() && hook->isLongjump())
-						{
-							hook->removeHook();
-						}
-					}
-
-					g_hooking.deinit();
-				}
-			}
-
-			if (patched_is_explosion_type_valid)
-			{
-#if ENABLE_PASSIVE_DLL
-				*pointers::is_explosion_type_valid_patch = (g_game_has_passive_dll ? CS_PASSIVE : CS_NONE);
-#else
-				*pointers::is_explosion_type_valid_patch = CS_NONE;
-#endif
-			}
-			mainUnpatch();
-			mainStopCountedThreads();
+			mainThreadBody();
 		}
 		__EXCEPTIONAL()
 		{
@@ -543,7 +609,7 @@ namespace Stand
 #if ENABLE_PASSIVE_DLL
 		if (g_this_dll_is_passive)
 		{
-			g_logger.log(soup::ObfusString("That's all, folks! Going passive."));
+			logGoingPassive();
 
 			for (lang_t i = 0; i != LANG_SIZE; ++i)
 			{

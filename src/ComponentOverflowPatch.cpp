@@ -41,6 +41,13 @@ namespace Stand
 	//static DetourHook rage_netObjectIDMgr_GetNewObjectId_hook{ "Y5" };
 	static DetourHook CVehicleVariationInstance_RequestVehicleModFiles_hook{ "Y6" };
 
+	// No __try here, so this is free to construct a Label (non-trivial destructor, owns a std::string) to report the overrun.
+	static void reportPreventedTexOverrun()
+	{
+		// The texId going out of bounds causes a buffer overrun, which can result in all sorts of nasty, indirect crashes. See scripts/invalid-tex.lua.
+		Util::onPreventedBufferOverrun(LOC("BU_TEX"));
+	}
+
 	static bool CPedVariationStream_SetVariation(CPed* ped, CPedPropData* pedPropData, CPedVariationData* pedVarData, ePedVarComp_t slotId, uint32_t drawblId, uint32_t drawablAltId, uint32_t texId, uint32_t paletteId, int32_t streamFlags, bool force)
 	{
 		__try
@@ -51,8 +58,7 @@ namespace Stand
 				{
 					SOUP_IF_LIKELY (g_gui.doesRootStateAllowCrashPatches())
 					{
-						// The texId going out of bounds causes a buffer overrun, which can result in all sorts of nasty, indirect crashes. See scripts/invalid-tex.lua.
-						Util::onPreventedBufferOverrun(LOC("BU_TEX"));
+						reportPreventedTexOverrun();
 						texId = 0;
 					}
 				}
@@ -99,6 +105,12 @@ namespace Stand
 			}
 		}
 		return COMP_OG(rage_fwAltSkeletonExtension_GetOrAddExtension)(entity);
+	}
+
+	// No __try here, so this is free to construct a Label (non-trivial destructor, owns a std::string) to report the overrun.
+	static void reportPreventedVehLightOverrun()
+	{
+		Util::onPreventedBufferOverrun(LOC("BU_VEHLIT"));
 	}
 
 	static bool __fastcall DoVehicleLightsAsync_RunFromDependency(const rage::sysDependency& dependency)
@@ -153,7 +165,7 @@ namespace Stand
 				else
 				{
 					InterlockedExchangeSubtract(reinterpret_cast<uintptr_t volatile*>(pCoronasCurrPtr), ptrdiff_t(sizeof(Corona_t) * localCoronaCount));
-					Util::onPreventedBufferOverrun(LOC("BU_VEHLIT"));
+					reportPreventedVehLightOverrun();
 				}
 			}
 			if (localLightCount > 0)
@@ -167,7 +179,7 @@ namespace Stand
 				else
 				{
 					InterlockedExchangeSubtract(reinterpret_cast<uintptr_t volatile*>(pLightsCurrPtr), ptrdiff_t(sizeof(CLightSource) * localLightCount));
-					Util::onPreventedBufferOverrun(LOC("BU_VEHLIT"));
+					reportPreventedVehLightOverrun();
 				}
 			}
 		}

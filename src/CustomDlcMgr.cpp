@@ -27,11 +27,17 @@ namespace Stand
 		return false;
 	}
 
-	void CustomDlcMgr::loadDlc(const std::string& path)
+	// Extracted so loadDlc() has no destructible locals (e.g. std::string) in the same frame as its __try.
+	static hash_t getDlcRpfPathHash(const std::string& path)
 	{
 		std::string dlc_rpf_path = path;
 		dlc_rpf_path.append(soup::ObfusString("dlc.rpf").str());
-		currently_loading_dlc_rpf_path_hash = rage::atStringHash(dlc_rpf_path);
+		return rage::atStringHash(dlc_rpf_path);
+	}
+
+	void CustomDlcMgr::loadDlc(const std::string& path)
+	{
+		currently_loading_dlc_rpf_path_hash = getDlcRpfPathHash(path);
 		__try
 		{
 			pointers::CExtraContentManager_AddContentFolder(*pointers::extra_content_manager, path.c_str());

@@ -365,6 +365,17 @@ namespace Stand
 		updateState(click);
 	}
 
+	// Kept out of the lambdas below, which hold EXCEPTIONAL_LOCK's __try: the
+	// e_line/s_line std::string objects can't be built or destroyed in a frame
+	// that also has a __try, so this only takes references to already-built ones.
+	static void sendSliderLines(std::string& e_line, std::string& s_line)
+	{
+		EXCEPTIONAL_LOCK(g_relay.send_mtx)
+		g_relay.sendLine(std::move(e_line));
+		g_relay.sendLine(std::move(s_line));
+		EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+	}
+
 	void CommandSlider::updateState(const Click& click)
 	{
 		processVisualUpdate(false);
@@ -376,10 +387,9 @@ namespace Stand
 		{
 			Exceptional::createManagedExceptionalThread(__FUNCTION__, [this]
 			{
-				EXCEPTIONAL_LOCK(g_relay.send_mtx)
-				g_relay.sendLine(std::move(std::string("e ").append(menu_name.getWebString())));
-				g_relay.sendLine(std::move(std::string("s ").append(fmt::to_string(value))));
-				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+				auto e_line = std::string("e ").append(menu_name.getWebString());
+				auto s_line = std::string("s ").append(fmt::to_string(value));
+				sendSliderLines(e_line, s_line);
 			});
 		}
 	}
@@ -427,10 +437,9 @@ namespace Stand
 		{
 			Exceptional::createManagedExceptionalThread(__FUNCTION__, [this]
 			{
-				EXCEPTIONAL_LOCK(g_relay.send_mtx)
-				g_relay.sendLine(std::move(std::string("e ").append(menu_name.getWebString())));
-				g_relay.sendLine(std::move(std::string("m ").append(fmt::to_string(max_value))));
-				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+				auto e_line = std::string("e ").append(menu_name.getWebString());
+				auto m_line = std::string("m ").append(fmt::to_string(max_value));
+				sendSliderLines(e_line, m_line);
 			});
 		}
 	}

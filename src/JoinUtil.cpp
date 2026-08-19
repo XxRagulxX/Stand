@@ -415,6 +415,24 @@ namespace Stand
 		}
 	}
 
+	// menu_ptr is a pointer and contextOption is a trivial hash_t, so it's safe
+	// for this function to itself contain a __try, keeping inviteViaRid()'s
+	// soup::Bytepatch locals out of its frame. fiberOpenFriendsList() is
+	// private to JoinUtil, so the caller (a JoinUtil member function) obtains
+	// menu_ptr and passes it in here.
+	static void tryHandleFriendsListContextOption(CPlayerListMenu* menu_ptr) noexcept
+	{
+		__try
+		{
+			hash_t contextOption = 0xE1E8D5DC;
+			pointers::CPlayerListMenu_HandleContextOption(menu_ptr, &contextOption);
+			Script::current()->yield(50);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	void JoinUtil::inviteViaRid(int64_t rid)
 	{
 		soup::Bytepatch patch_1{};
@@ -429,16 +447,8 @@ namespace Stand
 
 		*pointers::rlGamerHandle_buffer = rid;
 
-		__try
-		{
-			auto menu_ptr = fiberOpenFriendsList();
-			hash_t contextOption = 0xE1E8D5DC;
-			pointers::CPlayerListMenu_HandleContextOption(menu_ptr, &contextOption);
-			Script::current()->yield(50);
-		}
-		__EXCEPTIONAL()
-		{
-		}
+		auto menu_ptr = fiberOpenFriendsList();
+		tryHandleFriendsListContextOption(menu_ptr);
 
 		patch_1.restore();
 		patch_2.restore();

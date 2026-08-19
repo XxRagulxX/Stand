@@ -26,6 +26,23 @@
 
 namespace Stand
 {
+	/*
+	 * EXCEPTIONAL_LOCK expands to a __try block.
+	 *
+	 * Keep the __try frame limited to references. The actual C++ work is
+	 * performed by the callable supplied by the caller.
+	 *
+	 * This prevents objects requiring C++ unwinding from living in the
+	 * same function frame as __try.
+	 */
+	template <typename Mutex, typename Function>
+	static void exceptionalLock(Mutex& mtx, Function& function)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+			function();
+		EXCEPTIONAL_UNLOCK(mtx)
+	}
+
 	Tunables::Tunables()
 	{
 		loadBlobfish(blobfish_builtin);
@@ -34,12 +51,14 @@ namespace Stand
 	soup::Optional<int64_t> Tunables::getOptionalInt(uint32_t hash) const noexcept
 	{
 		soup::Optional<int64_t> ret;
-		EXCEPTIONAL_LOCK(mtx)
-		if (auto e = ints.find(hash); e != ints.end())
-		{
-			ret = e->second;
-		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		auto get_value = [&]
+			{
+				if (auto e = ints.find(hash); e != ints.end())
+				{
+					ret = e->second;
+				}
+			};
+		exceptionalLock(mtx, get_value);
 		return ret;
 	}
 
@@ -51,12 +70,14 @@ namespace Stand
 	soup::Optional<bool> Tunables::getOptionalBool(uint32_t hash) const noexcept
 	{
 		soup::Optional<bool> ret;
-		EXCEPTIONAL_LOCK(mtx)
-		if (auto e = bools.find(hash); e != bools.end())
-		{
-			ret = e->second;
-		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		auto get_value = [&]
+			{
+				if (auto e = bools.find(hash); e != bools.end())
+				{
+					ret = e->second;
+				}
+			};
+		exceptionalLock(mtx, get_value);
 		return ret;
 	}
 
@@ -88,19 +109,19 @@ namespace Stand
 			return;
 		}
 		downloading = true;
-		HttpRequestBuilder{ HttpRequestBuilder::GET, soup::ObfusString("stand.sh"), soup::ObfusString("/api/tuna.json") }
+		HttpRequestBuilder{HttpRequestBuilder::GET, soup::ObfusString("stand.sh"), soup::ObfusString("/api/tuna.json")}
 			.setResponseCallback([](soup::HttpResponse&& resp)
-			{
-				g_tunables.load(resp.body);
-			})
+				{
+					g_tunables.load(resp.body);
+				})
 			.setFailCallback([](std::string&& reason)
 			{
-				std::string msg = soup::ObfusString("Failed to send a request to stand.sh: ").str();
-				msg.append(reason);
-				g_logger.log(std::move(msg));
+					std::string msg = soup::ObfusString("Failed to send a request to stand.sh: ").str();
+					msg.append(reason);
+					g_logger.log(std::move(msg));
 
-				g_tunables.fail();
-			})
+					g_tunables.fail();
+				})
 			.dispatch();
 	}
 
@@ -129,32 +150,38 @@ namespace Stand
 		{
 			if (auto mem = root.find(soup::ObfusString("lnv")))
 			{
-				EXCEPTIONAL_LOCK(mtx)
-				latest_natives_version = mem->asStr();
-				EXCEPTIONAL_UNLOCK(mtx)
+				auto update_latest_native_version = [&]
+					{
+						latest_natives_version = mem->asStr();
+					};
+				exceptionalLock(mtx, update_latest_native_version);
 			}
 		}
 
 		if (auto mem = root.find(soup::ObfusString("cmw")))
 		{
-			EXCEPTIONAL_LOCK(mtx)
-			c_module_whitelist_enabled = true;
-			c_module_whitelist.clear();
-			for (const auto& hash : mem->asArr())
-			{
-				c_module_whitelist.emplace_back(hash.asStr());
-			}
-			EXCEPTIONAL_UNLOCK(mtx)
+			auto update_module_whitelist = [&]
+				{
+					c_module_whitelist_enabled = true;
+					c_module_whitelist.clear();
+					for (const auto& hash : mem->asArr())
+					{
+						c_module_whitelist.emplace_back(hash.asStr());
+					}
+				};
+			exceptionalLock(mtx, update_module_whitelist);
 		}
 		else
 		{
-			EXCEPTIONAL_LOCK(mtx)
-			c_module_whitelist_enabled = false;
-			c_module_whitelist.clear();
-			EXCEPTIONAL_UNLOCK(mtx)
+			auto clear_module_whitelist = [&]
+				{
+					c_module_whitelist_enabled = false;
+					c_module_whitelist.clear();
+				};
+			exceptionalLock(mtx, clear_module_whitelist);
 		}
 
-		if (initial
+		if (initial 
 			&& !g_gui.meta_state.data.contains(soup::ObfusString("Packages Source"))
 			)
 		{
@@ -184,51 +211,62 @@ namespace Stand
 
 		if (auto mem = root.find("ba"))
 		{
-			EXCEPTIONAL_LOCK(Blacklist::mtx)
-			Blacklist::advertisers.clear();
-			for (const auto& a : mem->asArr())
-			{
-				if (auto gi = GamerIdentifier::fromString(a.asStr()))
+			auto update_blacklist = [&]
 				{
-					Blacklist::advertisers.emplace_back(std::move(gi));
-				}
-			}
-			Blacklist::has_remote_data = true;
-			EXCEPTIONAL_UNLOCK(Blacklist::mtx)
-		}
-
-		EXCEPTIONAL_LOCK(mtx)
-		ints.clear();
-		bools.clear();
-		loadBlobfish(blobfish_builtin);
-		if (auto mem = root.find("f"))
-		{
-			loadBlobfish(mem->asStr());
-		}
-
-		addresslists.clear();
-		if (auto mem = root.find("a"))
-		{
-			for (const auto& c : mem->asArr())
-			{
-				std::vector<void*> list{};
-				for (const auto& p : c.asArr().at(1).asArr())
-				{
-					if (auto addr = g_gta_module.range.scan(soup::Pattern(p.asStr().value)))
+					Blacklist::advertisers.clear();
+					for (const auto& a : mem->asArr())
 					{
-						list.emplace_back(addr.as<void*>());
+						if (auto gi = GamerIdentifier::fromString(a.asStr()))
+						{
+							Blacklist::advertisers.emplace_back(std::move(gi));
+						}
 					}
+					Blacklist::has_remote_data = true;
+				};
+			exceptionalLock(Blacklist::mtx, update_blacklist);
+		}
+
+		/*
+		 * Keep the complete tunable/address-list update under the same
+		 * mtx lock as the original implementation.
+		 *
+		 * All C++ objects used by this operation belong to the lambda,
+		 * not to the __try frame.
+		 */
+		auto update_tunables = [&]
+			{
+				ints.clear();
+				bools.clear();
+				loadBlobfish(blobfish_builtin);
+				if (auto mem = root.find("f"))
+				{
+					loadBlobfish(mem->asStr());
+				}
+
+				addresslists.clear();
+				if (auto mem = root.find("a"))
+				{
+					for (const auto& c : mem->asArr())
+					{
+						std::vector<void*> list{};
+						for (const auto& p : c.asArr().at(1).asArr())
+						{
+							if (auto addr = g_gta_module.range.scan(soup::Pattern(p.asStr().value)))
+							{
+								list.emplace_back(addr.as<void*>());
+							}
 #ifdef STAND_DEBUG
-					else
-					{
-						g_logger.log(fmt::format("[Tunables] Pattern scan failed: {}", p.asStr().value));
-					}
+							else
+							{
+								g_logger.log(fmt::format("[Tunables] Pattern scan failed: {}",p.asStr().value));
+							}
 #endif
+						}
+						addresslists.emplace(static_cast<uint32_t>(c.asArr().at(0).asInt().value), std::move(list));
+					}
 				}
-				addresslists.emplace(static_cast<uint32_t>(c.asArr().at(0).asInt().value), std::move(list));
-			}
-		}
-		EXCEPTIONAL_UNLOCK(mtx)
+			};
+		exceptionalLock(mtx, update_tunables);
 
 		if (initial)
 		{

@@ -1110,6 +1110,24 @@ namespace Stand::hooks
 		return res;
 	}
 
+	// No __try here, so this is free to construct the std::function temporary needed by spoofAs().
+	static void spoofAsAndTickScriptMgr(GtaThread* run_as)
+	{
+		run_as->spoofAs([]
+		{
+			g_script_mgr.tick();
+		});
+	}
+
+	// No __try here, so this is free to construct the std::function temporary needed by spoofAs().
+	static void spoofAsAndRunGuiPostTick(GtaThread* run_as)
+	{
+		run_as->spoofAs([]
+		{
+			g_gui.onPostTick();
+		});
+	}
+
 	bool __fastcall rage_scrThread_UpdateAll(uint32_t insnCount)
 	{
 		if (g_running)
@@ -1138,10 +1156,7 @@ namespace Stand::hooks
 			{
 				__try
 				{
-					run_as->spoofAs([]
-					{
-						g_script_mgr.tick();
-					});
+					spoofAsAndTickScriptMgr(run_as);
 				}
 				__EXCEPTIONAL()
 				{
@@ -1182,10 +1197,7 @@ namespace Stand::hooks
 				}
 				__try
 				{
-					run_as->spoofAs([]
-					{
-						g_gui.onPostTick();
-					});
+					spoofAsAndRunGuiPostTick(run_as);
 				}
 				__EXCEPTIONAL()
 				{
@@ -1546,6 +1558,12 @@ namespace Stand::hooks
 		return OG(get_player_card_stat)(a1, a2, statIndex, a4);
 	}
 
+	// Codename(...).toString() produces a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportAccountIdMismatchMisc()
+	{
+		packet_src.triggerDetection(FlowEvent::MOD_MISC, Codename("M2").toString());
+	}
+
 	__int64 __fastcall CPlayerGamerDataNode_Serialise(CPlayerGamerDataNode* node, rage::CSyncDataBase* io_interface)
 	{
 		__try
@@ -1577,7 +1595,7 @@ namespace Stand::hooks
 				}
 				else
 				{
-					packet_src.triggerDetection(FlowEvent::MOD_MISC, Codename("M2").toString());
+					reportAccountIdMismatchMisc();
 				}
 				return ret;
 			}
@@ -1859,61 +1877,71 @@ namespace Stand::hooks
 	static std::string timestamp_label_buf{};
 	static std::unordered_map<Hash, std::string> owo_label_buf{};
 
+	// Has destructible locals (std::string, various temporaries), so this must not itself contain a __try.
+	static std::optional<const char*> computeTextFileGetInternal(CTextFile* a1, uint32_t label_hash)
+	{
+		if (label_hash != ATSTRINGHASH("CELL_EMAIL_BCON"))
+		{
+			if (g_hooking.reveal_labels)
+			{
+				reveal_label_buf = joaatToString(label_hash);
+				return reveal_label_buf.c_str();
+			}
+
+			if (auto e = g_hooking.label_replacements.find(label_hash); e != g_hooking.label_replacements.end())
+			{
+				return e->second.c_str();
+			}
+
+			if (g_hooking.chat_label_timestamps)
+			{
+				switch (label_hash)
+				{
+				case static_cast<uint32_t>(ATSTRINGHASH("MP_CHAT_ALL")):
+				case static_cast<uint32_t>(ATSTRINGHASH("MP_CHAT_TEAM")):
+				case static_cast<uint32_t>(ATSTRINGHASH("GB_PC_TEXT")): // Organization
+				case static_cast<uint32_t>(ATSTRINGHASH("PI_BIK_0_T")): // MC
+					if (g_hooking.can_modify_chat_labels)
+					{
+						timestamp_label_buf = OG(CTextFile_GetInternal)(a1, label_hash);
+						timestamp_label_buf.append(soup::ObfusString(", ").str());
+						timestamp_label_buf.append(StringUtils::utf16_to_utf8(format_time_since_1970_for_user_locale(get_seconds_since_unix_epoch(), true)));
+						return timestamp_label_buf.c_str();
+					}
+					break;
+				}
+			}
+
+			if (g_hooking.owo_labels)
+			{
+				if (auto e = owo_label_buf.find(label_hash); e != owo_label_buf.end())
+				{
+					return e->second.c_str();
+				}
+				if (const char* str = OG(CTextFile_GetInternal)(a1, label_hash))
+				{
+					std::string text = str;
+					if (text.substr(0, 5) != "CHAR_")
+					{
+						text = StringUtils::owoify(text);
+						StringUtils::replace_all(text, "<BW>", "<BR>");
+						//g_logger.log(fmt::format("Replacing text '{}' with '{}'", str, text));
+					}
+					return owo_label_buf.emplace(label_hash, std::move(text)).first->second.c_str();
+				}
+				return nullptr;
+			}
+		}
+		return std::nullopt;
+	}
+
 	const char* CTextFile_GetInternal(CTextFile* a1, uint32_t label_hash)
 	{
 		__try
 		{
-			if (label_hash != ATSTRINGHASH("CELL_EMAIL_BCON"))
+			if (auto res = computeTextFileGetInternal(a1, label_hash))
 			{
-				if (g_hooking.reveal_labels)
-				{
-					reveal_label_buf = joaatToString(label_hash);
-					return reveal_label_buf.c_str();
-				}
-
-				if (auto e = g_hooking.label_replacements.find(label_hash); e != g_hooking.label_replacements.end())
-				{
-					return e->second.c_str();
-				}
-
-				if (g_hooking.chat_label_timestamps)
-				{
-					switch (label_hash)
-					{
-					case static_cast<uint32_t>(ATSTRINGHASH("MP_CHAT_ALL")):
-					case static_cast<uint32_t>(ATSTRINGHASH("MP_CHAT_TEAM")):
-					case static_cast<uint32_t>(ATSTRINGHASH("GB_PC_TEXT")): // Organization
-					case static_cast<uint32_t>(ATSTRINGHASH("PI_BIK_0_T")): // MC
-						if (g_hooking.can_modify_chat_labels)
-						{
-							timestamp_label_buf = OG(CTextFile_GetInternal)(a1, label_hash);
-							timestamp_label_buf.append(soup::ObfusString(", ").str());
-							timestamp_label_buf.append(StringUtils::utf16_to_utf8(format_time_since_1970_for_user_locale(get_seconds_since_unix_epoch(), true)));
-							return timestamp_label_buf.c_str();
-						}
-						break;
-					}
-				}
-
-				if (g_hooking.owo_labels)
-				{
-					if (auto e = owo_label_buf.find(label_hash); e != owo_label_buf.end())
-					{
-						return e->second.c_str();
-					}
-					if (const char* str = OG(CTextFile_GetInternal)(a1, label_hash))
-					{
-						std::string text = str;
-						if (text.substr(0, 5) != "CHAR_")
-						{
-							text = StringUtils::owoify(text);
-							StringUtils::replace_all(text, "<BW>", "<BR>");
-							//g_logger.log(fmt::format("Replacing text '{}' with '{}'", str, text));
-						}
-						return owo_label_buf.emplace(label_hash, std::move(text)).first->second.c_str();
-					}
-					return nullptr;
-				}
+				return *res;
 			}
 		}
 		__EXCEPTIONAL()
@@ -2111,36 +2139,46 @@ namespace Stand::hooks
 		return false;
 	}
 
+	// Has destructible locals (evtChatEvent, std::string buf), so this must not itself contain a __try.
+	static bool submitChatTextBody(const char* text, bool bTeamChat)
+	{
+		SOUP_IF_LIKELY (g_player.isValid()) // can happen during transitions
+		{
+			evtChatEvent::trigger(evtChatEvent(g_player, text, bTeamChat, true, false));
+		}
+
+		if (g_hooking.isCharFilterBypass(text))
+		{
+			g_player.triggerDetection(FlowEvent::CHAT_PROFANITYBYPASS);
+		}
+
+		bool already_censored = false;
+		std::string buf;
+		if (g_hooking.shouldBypassProfanityFilter())
+		{
+			buf = g_hooking.makeUncensoredChatMessage(text);
+			text = buf.c_str();
+			already_censored = true;
+		}
+
+		if (g_hooking.force_send_chat
+#if !FREE_PROTECTIONS
+			&& g_gui.isRootStateNonFree()
+#endif
+			)
+		{
+			Chat::sendMessage(text, bTeamChat, false, true, false, false, already_censored);
+			return true;
+		}
+		return false;
+	}
+
 	bool __fastcall CNetworkTextChat_SubmitText(void* _this, rage::rlGamerInfo* gamerInfo, const char* text, bool bTeamChat)
 	{
-		std::string buf;
 		__try
 		{
-			SOUP_IF_LIKELY (g_player.isValid()) // can happen during transitions
+			if (submitChatTextBody(text, bTeamChat))
 			{
-				evtChatEvent::trigger(evtChatEvent(g_player, text, bTeamChat, true, false));
-			}
-
-			if (g_hooking.isCharFilterBypass(text))
-			{
-				g_player.triggerDetection(FlowEvent::CHAT_PROFANITYBYPASS);
-			}
-
-			bool already_censored = false;
-			if (g_hooking.shouldBypassProfanityFilter())
-			{
-				buf = g_hooking.makeUncensoredChatMessage(text);
-				text = buf.c_str();
-				already_censored = true;
-			}
-
-			if (g_hooking.force_send_chat
-#if !FREE_PROTECTIONS
-				&& g_gui.isRootStateNonFree()
-#endif
-				)
-			{
-				Chat::sendMessage(text, bTeamChat, false, true, false, false, already_censored);
 				return true;
 			}
 		}
@@ -2210,6 +2248,19 @@ namespace Stand::hooks
 		return OG(is_chat_character_valid)(a1);
 	}
 
+	// StringUtils::owoify() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void owoifyMsgText(rage::CMsgTextMessage* msg)
+	{
+		msg->setText(StringUtils::owoify(msg->text).c_str());
+	}
+
+	// AbstractPlayer::onComm() takes a std::string, so passing msg->text (a char array) would
+	// construct a temporary, so this is kept out of the __try'ing function below.
+	static void reportCommText(const char* text, rage::netPeerId recipient_startup_id)
+	{
+		AbstractPlayer::onComm(text, recipient_startup_id);
+	}
+
 	bool __fastcall send_CMsgTextMessage(rage::netConnectionManager* mgr, int32_t con_id, rage::CMsgTextMessage* msg, uint32_t a4, uint64_t a5)
 	{
 		__try
@@ -2224,13 +2275,13 @@ namespace Stand::hooks
 			{
 				if (cxn && cxn->endpoint)
 				{
-					AbstractPlayer::onComm(msg->text, cxn->endpoint->GetPeerId());
+					reportCommText(msg->text, cxn->endpoint->GetPeerId());
 				}
 			}
 
 			if (g_hooking.owoify_my_outgoing_messages)
 			{
-				msg->setText(StringUtils::owoify(msg->text).c_str());
+				owoifyMsgText(msg);
 			}
 
 			return OG(send_CMsgTextMessage)(mgr, con_id, msg, a4, a5);
@@ -2489,174 +2540,1201 @@ namespace Stand::hooks
 		}
 	}
 
-	void __fastcall rage_netEventMgr_ProcessEventData(rage::netEventMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* receiver, netGameEventId_t event_id, int event_index, int event_handled_bitset, __int64 bitbuffer_size, rage::datBitBuffer* buffer)
+	enum class NetEventEarlyExit : uint8_t
 	{
-		AbstractPlayer sender_ap(sender->player_id);
-		floweventreaction_t reactions = 0;
-		__try
-		{
-			if (sender_ap == g_player)
-			{
-				goto allow_net_event;
-			}
-			if (event_id >= NET_EVENTS_END)
-			{
-				sender_ap.getAndApplyReactionsIn(FlowEvent::SE_CRASH, "N9");
-				goto block_net_event;
-			}
-			Label event_name = get_net_event_name(event_id);
-			EventAggregation tally({ FlowEvent::NE_ANY, event_id }, event_name);
-			switch (event_id)
-			{
-			case NETWORK_INCREMENT_STAT_EVENT:
-			{
-				Hash stat_hash = buffer->readU32();
-				buffer->seekStart();
-				if (handle_increment_stat_event(sender, stat_hash))
-				{
-					goto block_net_event;
-				}
-				goto allow_net_event;
-			}
+		NONE,
+		ALLOW,
+		BLOCK,
+	};
 
-			case SCRIPTED_GAME_EVENT:
+	// Has destructible locals (Label, EventAggregation, per-event data structs, std::string, std::stringstream, etc.), so this must not itself contain a __try.
+	static NetEventEarlyExit processNetEventBody(AbstractPlayer sender_ap, CNetGamePlayer* sender, netGameEventId_t event_id, rage::datBitBuffer* buffer, floweventreaction_t& reactions)
+	{
+		if (sender_ap == g_player)
+		{
+			return NetEventEarlyExit::ALLOW;
+		}
+		if (event_id >= NET_EVENTS_END)
+		{
+			sender_ap.getAndApplyReactionsIn(FlowEvent::SE_CRASH, "N9");
+			return NetEventEarlyExit::BLOCK;
+		}
+		Label event_name = get_net_event_name(event_id);
+		EventAggregation tally({ FlowEvent::NE_ANY, event_id }, event_name);
+		switch (event_id)
+		{
+		case NETWORK_INCREMENT_STAT_EVENT:
+		{
+			Hash stat_hash = buffer->readU32();
+			buffer->seekStart();
+			if (handle_increment_stat_event(sender, stat_hash))
 			{
-				uint32_t args_bytes = buffer->readU32();
-				if (args_bytes > 0x1AF)
+				return NetEventEarlyExit::BLOCK;
+			}
+			return NetEventEarlyExit::ALLOW;
+		}
+
+		case SCRIPTED_GAME_EVENT:
+		{
+			uint32_t args_bytes = buffer->readU32();
+			if (args_bytes > 0x1AF)
+			{
+				buffer->seekStart();
+				return NetEventEarlyExit::BLOCK;
+			}
+			const int32_t args_count = args_bytes / 8;
+			if (args_count > 0)
+			{
+				auto args = std::make_unique<int64_t[]>(args_count);
+				buffer->ReadBits(args.get(), args_bytes * 8);
+				if (handle_scripted_game_event(sender, args.get(), args_count))
 				{
 					buffer->seekStart();
-					goto block_net_event;
+					return NetEventEarlyExit::BLOCK;
 				}
-				const int32_t args_count = args_bytes / 8;
-				if (args_count > 0)
+			}
+			buffer->seekStart();
+			return NetEventEarlyExit::ALLOW;
+		}
+
+		case REMOVE_WEAPON_EVENT:
+			{
+				const auto data = CRemoveWeaponEvent(buffer);
+				buffer->seekStart();
+
+				if (is_session_freeroam()
+					&& g_player_ped.isNetObjId(data.m_pedID)
+					)
 				{
-					auto args = std::make_unique<int64_t[]>(args_count);
-					buffer->ReadBits(args.get(), args_bytes * 8);
-					if (handle_scripted_game_event(sender, args.get(), args_count))
+					tally.add(FlowEvent::NE_DISARM);
+				}
+
+				if (!Weapon::isValidHash(data.m_weaponHash)
+					// Gadgets
+					&& data.m_weaponHash != ATSTRINGHASH("GADGET_PARACHUTE")
+					&& data.m_weaponHash != ATSTRINGHASH("GADGET_NIGHTVISION")
+					)
+				{
+					tally.add(FlowEvent::SE_INVALID, "N1");
+				}
+			}
+			break;
+
+		case REMOVE_ALL_WEAPONS_EVENT:
+			{
+				const auto m_pedID = buffer->readU16(13);
+
+				if (is_session_freeroam()
+					&& g_player_ped.isNetObjId(m_pedID)
+					)
+				{
+					tally.add(FlowEvent::NE_DISARM);
+				}
+			}
+			break;
+
+		case GIVE_CONTROL_EVENT:
+			sync_src = sender_ap;
+			current_sync_type = rage::SyncType::CONTROL;
+			break;
+
+		case KICK_VOTES_EVENT:
+			if (is_session_started_and_transition_finished()) // prevent rare "... is voting to kick [user's name]" while joining a session
+			{
+				playerbitset_t bitset = buffer->readU32(MAX_PLAYERS); static_assert(MAX_PLAYERS <= 32);
+				buffer->seekStart();
+				for (compactplayer_t i = 0; i != MAX_PLAYERS; ++i)
+				{
+					if (bitset & (1 << i))
 					{
-						buffer->seekStart();
-						goto block_net_event;
+						const auto target_ap = AbstractPlayer(i);
+						floweventreaction_t vk_reactions = 0;
+						sender_ap.addReactions(vk_reactions, FlowEvent::MISC_VOTEKICK_ANY);
+						if (target_ap == g_player)
+						{
+							sender_ap.addReactions(vk_reactions, FlowEvent::MISC_VOTEKICK_ME);
+						}
+						else
+						{
+							SOUP_IF_LIKELY (auto cmd = target_ap.getCommand())
+							{
+								cmd->vote_kick_history.emplace(sender_ap.getRockstarId());
+							}
+						}
+						if (auto toast_flags = flow_event_reactions_to_toast_flags(vk_reactions))
+						{
+							Util::toast(LANG_FMT("VKR_T", FMT_ARG("player", sender_ap.getName()), FMT_ARG("target", target_ap.getName())), toast_flags);
+						}
+						sender_ap.applyReactions(vk_reactions);
+					}
+				}
+			}
+#ifdef STAND_DEBUG
+			if (buffer->getBitLength() != MAX_PLAYERS + 1)
+			{
+				tally.add(FlowEvent::SE_INVALID, "N7");
+			}
+#endif
+			break;
+
+		case REQUEST_CONTROL_EVENT:
+			{
+				auto object_id = buffer->readU16(13);
+				buffer->seekStart();
+				if (g_player_veh.isNetObjId(object_id) && g_player_veh.isOwnerOfVehicleAndDriver())
+				{
+					tally.add(FlowEvent::NE_VEHTAKEOVER);
+				}
+			}
+			break;
+
+		case MARK_AS_NO_LONGER_NEEDED_EVENT:
+			{
+				uint32_t m_numScriptObjects = buffer->readU32(4);
+				bool m_objectsForDeletion = buffer->readBool();
+				for (uint32_t i = 0; i != m_numScriptObjects; ++i)
+				{
+					auto object_id = buffer->readU16(13);
+
+					if (g_player_veh.isNetObjId(object_id) && g_player_veh.isUserPersonalVehicle())
+					{
+						tally.add(FlowEvent::SE_PVKICK);
+					}
+
+					if (m_objectsForDeletion)
+					{
+						SOUP_UNUSED(buffer->readBool());
 					}
 				}
 				buffer->seekStart();
-				goto allow_net_event;
 			}
+			break;
+
+		case SCRIPT_WORLD_STATE_EVENT:
+			{
+				auto type = buffer->readU8(4);
+				auto change_state = buffer->readBool();
+
+				CGameScriptId id;
+				id.read(*buffer);
+
+				if (type == NET_WORLD_STATE_ROPE)
+				{
+					buffer->SkipBits(9); // rope id
+					buffer->SkipBits(19); // pos x (float!)
+					buffer->SkipBits(19); // pos y (float!)
+					buffer->SkipBits(19); // pos z (float!)
+					buffer->SkipBits(19); // rot x (float!)
+					buffer->SkipBits(19); // rot y (float!)
+					buffer->SkipBits(19); // rot z (float!)
+					float max_length = buffer->readSignedFloat(16, 100.0f);
+					auto type = buffer->readI32(4);
+					float init_length = buffer->readSignedFloat(16, 100.0f);
+					float min_length = buffer->readSignedFloat(16, 100.0f);
+
+					// Legit Events:
+					// {Type: 1, Init Length: 0, Min Length: 0.997955, Max Length: 0.997955}
+
+					// Crash Events:
+					// {Type: 1, Init Length: 98.999, Min Length: 0.997955, Max Length: -100}
+					// {Type: 4, Init Length: 98.999, Min Length: -100, Max Length: -100}
+
+					if (type < 0
+						|| max_length < 0
+						|| max_length < min_length
+						)
+					{
+						tally.add(FlowEvent::SE_CRASH, "N6");
+					}
+				}
+				else if (type == NET_WORLD_STATE_POP_GROUP_OVERRIDE)
+				{
+					auto unk = buffer->readI32(8);
+					auto unk2 = buffer->readU32(32);
+					auto unk3 = buffer->readU32(7);
+					if (unk2 == 0 && (unk3 == 0 || unk3 == 103))
+					{
+						tally.add(FlowEvent::SE_CRASH, "N7");
+					}
+				}
+				else if (type == NET_WORLD_STATE_PTFX)
+				{
+					// If the user wants to block all PTFX, then this should also be blocked.
+					if (auto reactions = sender_ap.getReactions(NETWORK_PTFX_EVENT); reactions & REACTION_BLOCK)
+					{
+						return NetEventEarlyExit::BLOCK;
+					}
+
+					auto data = CNetworkPtFXWorldStateData(buffer);
+
+					if (is_session_freeroam()
+						&& (g_player_ped.isNetObjId(data.m_EntityID)
+							|| g_player_veh.isNetObjId(data.m_EntityID)
+							|| data.m_FxPos.distance(g_player_ped.getPos()) < 3.0f
+							)
+						)
+					{
+#ifdef STAND_DEV
+						Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Receiving a world state PTFX that's likely attached to us.").str())));
+						Util::toast(fmt::format(fmt::runtime(soup::ObfusString("SCRIPT_WORLD_STATE_EVENT: {}").str()), data.toString()), TOAST_FILE);
+#endif
+						if (auto reactions = sender_ap.getReactions(FlowEvent::MISC_PTFX); reactions & REACTION_BLOCK) // Yes, sender is unreliable. This is better than giving the user no control.
+						{
+							return NetEventEarlyExit::BLOCK; // The event does not serialise anything about the original sender.
+						}
+					}
+				}
+
+				buffer->seekStart();
+			}
+			break;
+
+		case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
+			{
+				auto object_id = buffer->readU16(13);
+				auto subevent_id = buffer->readU8(4);
+				if (subevent_id > 9)
+				{
+					tally.add(FlowEvent::SE_CRASH, "N3");
+				}
+				//g_logger.log(fmt::format("SCRIPT_ENTITY_STATE_CHANGE_EVENT: subevent {}", subevent_id));
+				if (subevent_id == 6) // SET_TASK_VEHICLE_TEMP_ACTION (CSettingOfTaskVehicleTempAction)
+				{
+					// This can be used to freeze/take control away from us.
+					if (g_player_ped.isNetObjId(object_id))
+					{
+						tally.add(FlowEvent::SE_FREEZE, "N0");
+					}
+
+					auto time = buffer->readU32();
+					auto object_id_2 = buffer->readU16(13);
+					auto taskId = buffer->readU8();
+					/*uint32_t unk = 0;
+					if (buffer->readBool())
+					{
+						unk = buffer->readU16();
+					}*/
+
+					// In this case, `object_id` refers to the ped and `object_id_2` refers to the vehicle.
+
+					if (auto obj = (*pointers::network_object_mgr)->find_object_by_id(object_id_2, true))
+					{
+						if (auto ent = obj->GetEntity())
+						{
+							if (g_player_veh.isValid() && g_player_veh.getPointer() == ent)
+							{
+								tally.add(FlowEvent::NE_VEHTAKEOVER);
+							}
+						}
+					}
+
+					switch (taskId)
+					{
+					case 15:
+					case 16:
+					case 17:
+					case 18:
+						tally.add(FlowEvent::SE_CRASH, "N4");
+						break;
+					}
+				}
+				else if (subevent_id == 9) // SET_EXCLUSIVE_DRIVER
+				{
+					if (g_player_veh.isNetObjId(object_id))
+					{
+						tally.add(FlowEvent::SE_PVKICK);
+					}
+				}
+				buffer->seekStart();
+			}
+			break;
+
+#if false
+		case REPORT_MYSELF_EVENT:
+			{
+				auto type = buffer->readU32();
+				//auto extra = buffer->readU32();
+				buffer->seekStart();
+				if (type < 5 || type > 10)
+				{
+					sender_ap.markAsModderRac(Codename("U1").toString());
+				}
+			}
+			break;
+#endif
+
+		case NETWORK_PLAY_SOUND_EVENT:
+			{
+				CNetworkPlaySoundEvent data = CNetworkPlaySoundEvent(buffer);
+				buffer->seekStart();
+
+				if (data.m_soundNameHash == ATSTRINGHASH("Remote_Ring"))
+				{
+					tally.add(FlowEvent::NE_INFRING);
+				}
+
+				if (auto sender_cmd = sender_ap.getCommand())
+				{
+					if (sender_cmd->sound_timeout != 0 && GET_MILLIS_SINCE(sender_cmd->sound_timeout) < 60000)
+					{
+						return NetEventEarlyExit::BLOCK;
+					}
+
+					if (sender_cmd->sound_ratelimit.canRequest())
+					{
+						sender_cmd->sound_ratelimit.addRequest();
+					}
+					else
+					{
+						switch (data.m_soundNameHash)
+						{
+						case ATSTRINGHASH("ROUND_ENDING_STINGER_CUSTOM"): // CELEBRATION_SOUNDSET
+						case ATSTRINGHASH("5s"): // MP_MISSION_COUNTDOWN_SOUNDSET
+						case ATSTRINGHASH("10s"): // MP_MISSION_COUNTDOWN_SOUNDSET
+						case ATSTRINGHASH("Oneshot_Final"): // MP_MISSION_COUNTDOWN_SOUNDSET
+						case ATSTRINGHASH("Object_Dropped_Remote"): // GTAO_FM_Events_Soundset
+						case ATSTRINGHASH("Checkpoint_Cash_Hit"): // GTAO_FM_Events_Soundset
+						case ATSTRINGHASH("Event_Start_Text"): // GTAO_FM_Events_Soundset
+						case ATSTRINGHASH("Return_To_Vehicle_Timer"): // GTAO_FM_Events_Soundset
+						case ATSTRINGHASH("event_message_purple"):
+							tally.add(FlowEvent::SE_CRASH, "N5");
+							break;
+
+						default:
+							{
+								if (!data.isSpammySound())
+								{
+									tally.add(FlowEvent::SE_INVALID, "N5");
+								}
+							}
+						}
+					}
+
+					if (data.m_setNameHash == ATSTRINGHASH("dlc_sum20_business_battle_ac_sounds")
+						&& data.m_soundNameHash == ATSTRINGHASH("air_defences_activated")
+						)
+					{
+						if (sender_cmd->uncommon_sound_ratelimit.canRequest())
+						{
+							sender_cmd->uncommon_sound_ratelimit.addRequest();
+						}
+						else
+						{
+							tally.add(FlowEvent::SE_INVALID, "N5");
+						}
+					}
+
+					if (is_session_freeroam())
+					{
+						if (!data.isSpammySound()
+							&& !data.isCloseFreeroamSound()
+							&& !(data.m_setNameHash == ATSTRINGHASH("gtao_biker_modes_soundset") && sender_ap.inOurOrg())
+							)
+						{
+							if (auto sound_entity = AbstractEntity::getNetwork(data.m_EntityID); sound_entity.isValid())
+							{
+								if (sound_entity == g_player_ped) // Attached to us? 
+								{
+									tally.add(FlowEvent::SE_INVALID, "N5");
+								}
+								else if (sound_entity == g_player_veh && !sender_ap.getVehicle().isNetObjId(data.m_EntityID)) // Attached to our vehicle by a non-passenger?
+								{
+									tally.add(FlowEvent::SE_INVALID, "N5");
+								}
+								else if (!sender_ap.inSameInterior(g_player) && sound_entity.getPos().distanceTopdown(g_player_ped.getPos()) <= 1.5f) // Sound spawned on entity too close to us from a player not inside the same interior (or any interior)?
+								{
+									auto sender_ped = sender_ap.getPed();
+									auto sender_veh = sender_ped.getVehicle();
+
+									if (sound_entity != sender_ped && sound_entity != sender_veh)
+									{
+										// This makes us vulnerable to an attacker entering the same interior and attacking us by spawning an object near us and playing a sound on it.
+										// In exchange for this edge-case, we are probably eliminating tons of false-positives that users never bother to report.
+										tally.add(FlowEvent::SE_INVALID, "N5");
+									}
+								}
+							}
+							else
+							{
+								if (data.m_Position.distanceTopdown(g_player_ped.getPos()) <= 1.5f)
+								{
+									tally.add(FlowEvent::SE_INVALID, "N5");
+								}
+							}
+						}
+
+						const bool current_is_blocked = tally.getReactions(FlowEvent::SE_INVALID) & REACTION_BLOCK;
+
+						if (!current_is_blocked)
+						{
+							g_hooking.processed_sounds.emplace_back(NetworkedSound(data.m_soundNameHash, data.m_setNameHash, data.m_SoundID));
+						}
+
+						FiberPool::queueJob([current_data{ std::move(data) }, current_is_blocked]
+						{
+							for (auto i = g_hooking.processed_sounds.begin(); i != g_hooking.processed_sounds.end(); )
+							{
+								const auto& preexisting_sound = *i;
+
+								// Pop old sounds.
+								if (preexisting_sound.m_SoundID == current_data.m_SoundID)
+								{
+									i = g_hooking.processed_sounds.erase(i);
+									continue;
+								}
+
+								if (current_is_blocked && preexisting_sound.isSameSoundData(current_data.m_soundNameHash, current_data.m_setNameHash))
+								{
+									AUDIO::STOP_SOUND(preexisting_sound.m_SoundID);
+									AUDIO::RELEASE_SOUND_ID(preexisting_sound.m_SoundID);
+									i = g_hooking.processed_sounds.erase(i);
+#ifdef STAND_DEBUG
+									Util::toast(fmt::format("N5: Popped a pre-existing sound with identical information as currently-modded sound. ({}, {}, {})", current_data.m_soundNameHash, current_data.m_setNameHash, current_data.m_SoundID), TOAST_ALL);
+#endif
+									continue;
+								}
+
+								++i;
+							}
+						});
+					}
+
+					if (tally.getReactions(sender_ap) & REACTION_BLOCK)
+					{
+						sender_cmd->sound_timeout = get_current_time_millis();
+#ifdef STAND_DEBUG
+						Util::toast(fmt::format("N5: Applied sound timeout to {}.", sender_ap.getName()), TOAST_ALL);
+#endif
+					}
+				}
+			}
+			break;
+
+		case NETWORK_PTFX_EVENT:
+			if (is_session_freeroam()) // Last Dose 4
+			{
+				const auto data = CNetworkPtFXEvent(buffer);
+
+				buffer->seekStart();
+
+				SOUP_IF_LIKELY (auto cmd = sender_ap.getCommand())
+				{
+					const auto distance = g_player_ped.getPos().distance(data.m_FxPos);
+					bool modded = false;
+
+					if (distance <= 1.0f)
+					{
+						if (cmd->very_close_ptfx_ratelimit.canRequest())
+						{
+							cmd->very_close_ptfx_ratelimit.addRequest();
+						}
+						else
+						{
+							modded = true;
+						}
+					}
+					else if (distance <= 50.0f // Can't even see PTFX above ranges like this.
+						|| data.m_bUseEntity // Attachments use relative positions.
+						)
+					{
+						if (cmd->ptfx_ratelimit.canRequest())
+						{
+							cmd->ptfx_ratelimit.addRequest();
+						}
+						else
+						{
+							modded = true;
+						}
+					}
+
+					if (g_player_ped.isNetObjId(data.m_EntityID) || g_player_veh.isNetObjId(data.m_EntityID))
+					{
+						modded = true;
+					}
+
+					if (data.m_PtFXHash == ATSTRINGHASH("scr_xt_trip_rabbit_death")) // This one is broken as fuck. Doesn't look like it was properly implemented, and just causes issues even in low quantities.
+					{
+						modded = true;
+					}
+
+					if (modded)
+					{
+						tally.add(FlowEvent::MISC_PTFX);
+						cmd->ptfx_timeout = get_current_time_millis();
+					}
+					else
+					{
+						if (GET_MILLIS_SINCE(cmd->ptfx_timeout) <= 60000
+							&& (sender_ap.getReactions(FlowEvent::MISC_PTFX) & REACTION_BLOCK)
+							)
+						{
+							return NetEventEarlyExit::BLOCK;
+						}
+					}
+				}
+			}
+			break;
+
+		case RAGDOLL_REQUEST_EVENT:
+			{
+				auto target = buffer->readU16(13);
+
+				if (g_player_ped.isNetObjId(target))
+				{
+					const auto reactions = sender_ap.getReactions(FlowEvent::NE_RAGDOLL);
+
+					SOUP_IF_LIKELY (auto cmd = sender_ap.getCommand())
+					{
+						if (cmd->ragdoll_request_ratelimit.canRequest())
+						{
+							cmd->ragdoll_request_ratelimit.addRequest();
+						}
+						else
+						{
+							sender_ap.applyReactions(reactions, NuancedEventWithExtraData(FlowEvent::NE_RAGDOLL, {}, 25));
+						}
+					}
+					
+					if (reactions & REACTION_BLOCK)
+					{
+						return NetEventEarlyExit::BLOCK;
+					}
+				}
+
+				buffer->seekStart();
+			}
+			break;
+
+		case WEAPON_DAMAGE_EVENT:
+			{
+				const auto data = CWeaponDamageEvent(buffer);
+				const bool is_beast = sender_ap.isBeast();
+
+				if (data.m_weaponType == ATSTRINGHASH("weapon_tranquilizer") // This is what 0xcheat's "make him cry" sends, apparently it's supposed to kill you repeatly, even if you quit to SP: 11001100101010100010001000101111011001000010000100000000010000000000000000000000010000000000000000000000000000000000000000000000000000000000101011010100101001000100010001010100000010 (m_damageType: 3, m_weaponType: weapon_tranquilizer, m_bOverride: true, m_hitEntityWeapon: false, m_hitWeaponAmmoAttachment: false, m_silenced: true, m_damageFlags: 540688, bMeleeDamage: false, m_actionResultId: 0, m_meleeId: 0, m_meleeResultId: 0, m_weaponDamage: 0, m_bIsAggregated: false, m_weaponDamageAggregationCount: 0, m_bVictimPlayer: true, m_hitPosition_x: 0, m_hitPosition_y: 0, m_hitPosition_z: 0, m_damageTime: 2839185, m_willKillPlayer: false, m_hitObjectId: 0, m_playerDistance: 554, m_parentID: 0, m_tyreIndex: 0, m_suspensionIndex: 0, m_component: 0, m_firstBullet: true, hasVehicleData: false, useLargeDistance: false)
+					|| data.m_weaponType == ATSTRINGHASH("weapon_fire") // This can be used to ragdoll us, don't think it's used legit.
+					|| data.m_weaponType == ATSTRINGHASH("weapon_molotov") // Can be used to ragdoll us.
+					|| data.m_weaponType == ATSTRINGHASH("WEAPON_STRICKLER") // This weapon is only half implemented because it's a next gen exclusive... classic L*
+					)
+				{
+					tally.add(FlowEvent::SE_INVALID, "NB");
+				}
+				else if (data.m_weaponType == ATSTRINGHASH("WEAPON_STUNROD")) // Can be used to stunlock us
+				{
+					if (auto cmd = sender_ap.getCommand())
+					{
+						if (cmd->stun_ratelimit.canRequest())
+						{
+							cmd->stun_ratelimit.addRequest();
+						}
+						else
+						{
+							cmd->stun_timeout = get_current_time_millis();
+							tally.add(FlowEvent::SE_INVALID, "NC");
+						}
+
+						if (GET_MILLIS_SINCE(cmd->stun_timeout) < 60'000)
+						{
+							return NetEventEarlyExit::BLOCK;
+						}
+					}
+
+					if (g_gui.grace)
+					{
+						return NetEventEarlyExit::BLOCK;
+					}
+				}
+				else
+				{
+					if (data.isRemoteKill(is_beast))
+					{
+						tally.add(FlowEvent::NE_SUDDENDEATH);
+					}
+					else if (data.isMagicBullet())
+					{
+						tally.addRaw(FlowEvent::NE_SUDDENDEATH, LANG_GET("MAGICB"));
+					}
+					else if (data.bMeleeDamage)
+					{
+						if (auto entity = AbstractEntity::getNetwork(data.m_hitObjectId); entity.isValid())
+						{
+							if (g_player_veh.isNetObjId(data.m_hitObjectId) || g_player_ped.isNetObjId(data.m_hitObjectId))
+							{
+								const auto distance = entity.getPos().distance(sender_ap.getPos());
+
+								if (distance >= 30.0f) // If we suddenly change position after they initiate an attack, we get the event.
+								{
+									tally.add(FlowEvent::NE_SUDDENDEATH);
+								}
+							}
+						}
+					}
+
+					if (!is_beast && data.isDamageExcessive())
+					{
+						sender_ap.triggerDetection(FlowEvent::MOD_DMGMUL, "*");
+					}
+				}
+				
+				buffer->seekStart();
+				break;
+			}
+
+		case EXPLOSION_EVENT:
+			{
+				const auto data = CExplosionEvent(buffer);
+				const auto player_pos = g_player_ped.getPos();
+				const auto player_dist = data.m_explosionArgs.m_explosionPosition.distance(player_pos);
+
+				buffer->seekStart();
+
+				// Camera Shaking Event & Ragoll Event
+				if (data.m_explosionArgs.m_bNoFx)
+				{
+					if (data.m_explosionArgs.m_fCamShake > 0.0f
+						&& player_dist <= 30.0f
+						)
+					{
+						tally.add(FlowEvent::NE_CAMSHAKE);
+					}
+
+					if (data.m_explosionArgs.m_sizeScale > 0.0f
+						&& player_dist <= 10.0f
+						)
+					{
+						tally.add(FlowEvent::NE_RAGDOLL);
+					}
+				}
+				
+				// Explosion Spam
+				SOUP_IF_LIKELY (auto cmd = packet_src.getCommand())
+				{
+					if (player_dist <= 5.0f && !data.m_bHasProjectile && !data.m_shouldAttach)
+					{
+						if (cmd->explosion_nearby_ratelimit.canRequest())
+						{
+							cmd->explosion_nearby_ratelimit.addRequest();
+						}
+						else
+						{
+							auto reactions = sender_ap.getReactions(FlowEvent::NE_EXPSPAM);
+							sender_ap.applyReactionsIn(LOC("EXPSPAM"), { FlowEvent::NE_EXPSPAM }, reactions, 50);
+							if (reactions & REACTION_BLOCK)
+							{
+								return NetEventEarlyExit::BLOCK;
+							}
+						}
+					}
+				}
+
+				// Modded Explosion
+				if (is_session_freeroam())
+				{
+					bool modded = false;
+					std::string extra_data{};
+
+					// Remote Explosion
+					if (!data.m_bHasProjectile
+						&& !data.isProbablyDrone()
+						&& data.isSenderResponsible()
+						&& data.shouldHaveProjectile()
+						&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
+						)
+					{
+						modded = true;
+
+						if (player_dist < 3.0f)
+						{
+							if (auto cmd = sender_ap.getCommand())
+							{
+								cmd->aggressive_action_warranted = true;
+							}
+						}
+					}
+
+					// Camera Shake Mismatch (Stand, 2Take1)
+					if (data.m_explosionArgs.m_fCamShake == 0.0f
+						&& data.isSenderResponsible()
+						&& !data.canHaveZeroCamShake()
+						)
+					{
+						modded = true;
+						// extra_data = LANG_GET("EXPAMMO"); True for explosive ammo, but also their remote explosion.
+					}
+
+					// Explosive Ammo, Dummy Mismatch (All)
+					if (data.shouldHaveDummy()
+						&& !data.m_shouldAttach
+						&& !data.m_hasRelatedDummy
+						)
+					{
+						modded = true;
+						extra_data = LANG_GET("EXPAMMO");
+					}
+
+					// Explosive Ammo, Absent Projectile (Kiddions)
+					if (const auto weapon = Weapon::find(data.m_explosionArgs.m_weaponHash))
+					{
+						if (!data.m_bHasProjectile
+							&& weapon->category != Weapon::MELEE
+							&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUN")
+							&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUNXM3")
+							)
+						{
+							modded = true;
+#ifndef STAND_DEV
+							extra_data = LANG_GET("EXPAMMO");
+#else
+							extra_data = fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), LANG_GET("EXPAMMO"), joaatToString(weapon->hash));
+#endif
+						}
+					}
+
+					// Explosive Ammo, Bullet Effect Mismatch (YimMenu "Special Ammo")
+					if (auto ped = sender_ap.getPed(); ped.isValid())
+					{
+						if (const auto weapon = Weapon::find(ped.getSelectedWeapon())) // Hand-held weapon?
+						{
+							if (data.m_explosionArgs.m_explosionTag == EXP_TAG_EXPLOSIVEAMMO
+								&& weapon->hash != ATSTRINGHASH("WEAPON_HEAVYSNIPER_MK2")
+								&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
+								)
+							{
+								modded = true;
+#ifndef STAND_DEV
+								extra_data = LANG_GET("EXPAMMO");
+#else
+								extra_data = fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), LANG_GET("EXPAMMO"), joaatToString(weapon->hash));
+#endif
+							}
+						}
+					}
+
+					// Explosive Ammo, All
+					if (!data.m_shouldAttach
+						&& !data.m_bHasProjectile
+						&& !data.m_explosionArgs.m_bDetonatingOtherPlayersExplosive
+						)
+					{
+						switch (data.m_explosionArgs.m_explosionTag)
+						{
+						case EXP_TAG_CAR:
+						case EXP_TAG_BIKE:
+						case EXP_TAG_BOAT:
+						case EXP_TAG_PLANE:
+						case EXP_TAG_TRUCK:
+						case EXP_TAG_TRAIN:
+						case EXP_TAG_BLIMP:
+						case EXP_TAG_BLIMP2:
+							modded = true;
+							extra_data = LANG_GET("EXPAMMO");
+							break;
+						}
+					}
+
+					if (modded)
+					{
+						reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, std::move(extra_data), 75);
+					}
+				}
+
+				// Explosion Blaming (patched client-side as of 3095, now detects menus which haven't removed the feature)
+				if (!data.m_bHasProjectile
+					&& data.isSenderResponsible()
+					&& data.m_explodingEntityID == 0
+					)
+				{
+					if (auto n = (*pointers::network_object_mgr)->find_object_by_id(data.m_entExplosionOwnerID, true))
+					{
+						if (auto ent = n->GetEntity())
+						{
+							if (ent->type == ENTITY_TYPE_PED)
+							{
+								auto ped = AbstractEntity::get((CPhysical*)ent);
+								const auto sender_netobj = sender_ap.getPed().getNetObject();
+
+								if (sender_netobj
+									&& ped.isAPlayer()
+									&& data.m_entExplosionOwnerID != sender_netobj->object_id // Indicates a mismatch in explosionOwner from ADD_OWNED_EXPLOSION & sender cped netobj id.
+									)
+								{
+#if HAS_EXPBLAME
+									reactions |= sender_ap.triggerDetection(FlowEvent::MOD_EXPBLAME, LANG_FMT("VICTIM", ped.getPlayer().getName()), 75);
+#else
+									reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, "*", 75);
+#endif
+								}
+							}
+						}
+					}
+				}
+
+				if (reactions & REACTION_BLOCK)
+				{
+					return NetEventEarlyExit::BLOCK;
+				}
+
+				// Same as the other Crash Event (TC), just a different trigger.
+				if (data.m_explosionArgs.m_interiorLocation.as_interiorLocation.m_interiorIndex < -1)
+				{
+					tally.add(FlowEvent::SE_CRASH, "TC");
+				}
+
+				break;
+			}
+
+			case BLOW_UP_VEHICLE_EVENT:
+			case REQUEST_PHONE_EXPLOSION_EVENT:
+				{
+					const auto m_nVehicleID = buffer->readU16(13);
+
+					if (is_session_freeroam() // Just assuming these events have legitimacy in mission vehicles or something.
+						&& !sender_ap.inOurOrg() // See above. I feel like I remember some cargo missions detonatating our user vehicle too. It must be one of these events since it's not a spammed explosion, obv.
+						&& g_player_veh.isNetObjId(m_nVehicleID)
+						&& g_player_veh.isOwnerOfVehicleAndDriver()
+						)
+					{
+						tally.add(FlowEvent::NE_VEHTAKEOVER);
+					}
+
+					buffer->seekStart();
+				}
+				break;
+
+			case ACTIVATE_VEHICLE_SPECIAL_ABILITY_EVENT:
+				{
+					const auto m_vehicleID = buffer->readU16(13);
+
+					if (g_player_veh.isNetObjId(m_vehicleID)
+						&& g_player_veh.isOwnerOfVehicleAndDriver()
+						)
+					{
+						tally.add(FlowEvent::NE_VEHTAKEOVER);
+					}
+
+					buffer->seekStart();
+				}
+				break;
+
+			case CHANGE_RADIO_STATION_EVENT:
+				{
+					const auto m_vehicleID = buffer->readU16(13);
+
+					if (g_player_veh.isNetObjId(m_vehicleID)
+						&& sender_ap.getVehicle().getNetObjId() != m_vehicleID
+						)
+					{
+						tally.add(FlowEvent::NE_VEHTAKEOVER);
+					}
+
+					buffer->seekStart();
+				}
+				break;
+
+			case NETWORK_SOUND_CAR_HORN_EVENT:
+				{
+					const auto m_bIsHornOn = buffer->readBool();
+					const auto m_vehicleID = buffer->readU16(13);
+
+					if (sender_ap.getVehicle().getNetObjId() != m_vehicleID)
+					{
+						if (g_player_veh.isNetObjId(m_vehicleID))
+						{
+							tally.add(FlowEvent::NE_VEHTAKEOVER);
+						}
+						/*else
+						{
+							tally.add(FlowEvent::SE_INVALID, "NA");
+						}*/
+					}
+
+					buffer->seekStart();
+				}
+				break;
+
+			case GIVE_PICKUP_REWARDS_EVENT:
+				if (is_session_freeroam())
+				{
+					const auto m_NumRewards = buffer->readU8(3);
+
+					for (uint8_t i = 0; i < m_NumRewards; ++i)
+					{
+						const auto hash = buffer->readU32();
+
+						if ((g_player_veh.isOwnerOfVehicleAndDriver() && hash == ATSTRINGHASH("REWARD_VEHICLE_FIX")) // Fixing our vehicle?
+							|| (!sender_ap.inOurOrg() && (hash == ATSTRINGHASH("REWARD_HEALTH") || hash == ATSTRINGHASH("REWARD_ARMOUR"))) // Healing us?
+							)
+						{
+							tally.add(FlowEvent::SE_INVALID, "N8");
+							break;
+						}
+					}
+
+					buffer->seekStart();
+				}
+				break;
+
+			case DOOR_BREAK_EVENT:
+				// This event is never sent, so this must be a modder.
+				tally.add(FlowEvent::SE_INVALID, "N9");
+				break;
+
+			case NETWORK_SPECIAL_FIRE_EQUIPPED_WEAPON:
+				{
+					const auto m_entityID = buffer->readU16(13);
+
+					if (auto n = (*pointers::network_object_mgr)->find_object_by_id(m_entityID, false))
+					{
+						if (auto ent = n->GetEntity())
+						{
+							if (ent->type == ENTITY_TYPE_PED)
+							{
+								if (auto weap = static_cast<CPed*>(ent)->weapon_manager->GetEquippedWeapon())
+								{
+									if (!weap->m_pDrawableEntity
+										|| !weap->m_pDrawableEntity->archetype
+										|| weap->m_pDrawableEntity->archetype->GetModelType() != MI_TYPE_WEAPON
+										)
+									{
+										// Game would deref nullptr here. Not exactly bad because we can catch exceptions, but some co-loads can't.
+										tally.add(FlowEvent::SE_CRASH, "NC");
+									}
+								}
+							}
+						}
+					}
+
+					buffer->seekStart();
+				}
+				break;
+
+			case NETWORK_START_SYNCED_SCENE_EVENT: {
+				const unsigned SIZEOF_POSITION = 26;
+				const unsigned SIZEOF_QUAT = 30;
+				const unsigned SIZEOF_ATTACH_BONE = 8;
+				const unsigned SIZEOF_ANIM_HASH = 32;
+				const unsigned SIZEOF_BLEND_IN = 30;
+				const unsigned SIZEOF_BLEND_OUT = 30;
+				const unsigned SIZEOF_ANIM_FLAGS = 32;
+				const unsigned SIZEOF_RAGDOLL_BLOCKING_FLAGS = 32;
+				const unsigned SIZEOF_IK_FLAGS = /*eIkControlFlags_NUM_ENUMS + 1*/ 15;
+				const unsigned SIZEOF_PHASE = 9;
+				const unsigned SIZEOF_RATE = 8;
+				//const unsigned SIZEOF_NAME_HASH = 32;
+				//const float MAX_BLEND_IN_RATE = 1001.0f;
+				//const float MAX_BLEND_OUT_RATE = 1001.0f;
+				const unsigned MAX_PEDS_IN_SCENE = 10;
+				static const unsigned MAX_NON_PED_ENTITIES_IN_SCENE = 5;
+				static const unsigned MAX_MAP_ENTITIES_IN_SCENE = 1;
+
+				buffer->SkipBits(13); // m_SceneID
+				buffer->SkipBits(32); // m_NetworkTimeStarted
+				buffer->SkipBits(1); // sceneActive
+				buffer->SkipBits(SIZEOF_POSITION * 3); // m_ScenePosition
+				buffer->SkipBits(SIZEOF_QUAT * 4); // m_SceneRotation
+				if (buffer->readBool()) // hasAttachEntity
+				{
+					buffer->SkipBits(13); // m_AttachToEntityID
+					buffer->SkipBits(SIZEOF_ATTACH_BONE); // m_AttachToBone
+				}
+				if (!buffer->readBool()) // hasDefaultStopPhase
+				{
+					buffer->SkipBits(SIZEOF_PHASE); // m_PhaseToStopScene
+				}
+				if (!buffer->readBool()) // hasDefaultRate
+				{
+					buffer->SkipBits(SIZEOF_RATE); // m_Rate
+				}
+				buffer->SkipBits(1); // m_HoldLastFrame
+				buffer->SkipBits(1); // m_Looped
+				buffer->SkipBits(SIZEOF_PHASE); // m_Phase
+				if (buffer->readBool()) // m_UseCamera
+				{
+					buffer->SkipBits(SIZEOF_ANIM_HASH); // m_CameraAnim
+				}
+				buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimDict
+				for (unsigned i = 0; i != MAX_PEDS_IN_SCENE; ++i)
+				{
+					if (buffer->readBool())
+					{
+						buffer->SkipBits(13); // m_PedID
+						buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimPartialHash
+						buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
+						buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
+						buffer->SkipBits(SIZEOF_BLEND_IN); // m_MoverBlendIn
+						buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
+						buffer->SkipBits(SIZEOF_RAGDOLL_BLOCKING_FLAGS); // m_RagdollBlockingFlags
+						buffer->SkipBits(SIZEOF_IK_FLAGS); // m_IkFlags
+					}
+				}
+				// Finally, the bit we're interested in...
+				for (unsigned i = 0; i != MAX_NON_PED_ENTITIES_IN_SCENE; ++i)
+				{
+					if (buffer->readBool())
+					{
+						auto objId = buffer->readU16(13);
+						buffer->SkipBits(SIZEOF_ANIM_HASH); // m_Anim
+						buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
+						buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
+						buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
+
+						if (g_player_veh.isNetObjId(objId))
+						{
+							tally.add(FlowEvent::NE_VEHTAKEOVER);
+							break;
+						}
+					}
+				}
+
+				buffer->seekStart();
+				break;
+			}
+
+#if false
+			case NETWORK_TRAIN_REPORT_EVENT:
+			case NETWORK_TRAIN_REQUEST_EVENT:
+				// gTrainTracks happens to overflow into CPropellerCollisionProcessor.
+				// These events are not the same, but both use the first 4 bits for track index.
+				auto traintrack = buffer->readU8(4);
+				if (traintrack >= 12)
+				{
+					tally.add(FlowEvent::SE_CRASH, "NA");
+				}
+				buffer->seekStart();
+				break;
+#endif
+		}
+		// React
+		reactions = tally.getReactions(sender_ap);
+		if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
+		{
+			std::stringstream stream;
+			stream << LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", tally.getFullName().getLocalisedUtf8()), FMT_ARG("player", sender_ap.getName())) << ": ";
+			if (tally.name != event_name)
+			{
+				stream << event_name.getLocalisedUtf8() << ": ";
+			}
+			// assuming cursor is at start
+			stream << bitbufferToBitstring(*buffer);
+			// now cursor is at end
+			switch (event_id)
+			{
+			case GIVE_WEAPON_EVENT:
+				{
+					buffer->seekStart();
+					stream << CGiveWeaponEvent(buffer).toString();
+				}
+				break;
 
 			case REMOVE_WEAPON_EVENT:
 				{
-					const auto data = CRemoveWeaponEvent(buffer);
 					buffer->seekStart();
-
-					if (is_session_freeroam()
-						&& g_player_ped.isNetObjId(data.m_pedID)
-						)
-					{
-						tally.add(FlowEvent::NE_DISARM);
-					}
-
-					if (!Weapon::isValidHash(data.m_weaponHash)
-						// Gadgets
-						&& data.m_weaponHash != ATSTRINGHASH("GADGET_PARACHUTE")
-						&& data.m_weaponHash != ATSTRINGHASH("GADGET_NIGHTVISION")
-						)
-					{
-						tally.add(FlowEvent::SE_INVALID, "N1");
-					}
+					stream << CRemoveWeaponEvent(buffer).toString();
 				}
 				break;
 
 			case REMOVE_ALL_WEAPONS_EVENT:
 				{
-					const auto m_pedID = buffer->readU16(13);
-
-					if (is_session_freeroam()
-						&& g_player_ped.isNetObjId(m_pedID)
-						)
-					{
-						tally.add(FlowEvent::NE_DISARM);
-					}
-				}
-				break;
-
-			case GIVE_CONTROL_EVENT:
-				sync_src = sender_ap;
-				current_sync_type = rage::SyncType::CONTROL;
-				break;
-
-			case KICK_VOTES_EVENT:
-				if (is_session_started_and_transition_finished()) // prevent rare "... is voting to kick [user's name]" while joining a session
-				{
-					playerbitset_t bitset = buffer->readU32(MAX_PLAYERS); static_assert(MAX_PLAYERS <= 32);
 					buffer->seekStart();
-					for (compactplayer_t i = 0; i != MAX_PLAYERS; ++i)
-					{
-						if (bitset & (1 << i))
-						{
-							const auto target_ap = AbstractPlayer(i);
-							floweventreaction_t vk_reactions = 0;
-							sender_ap.addReactions(vk_reactions, FlowEvent::MISC_VOTEKICK_ANY);
-							if (target_ap == g_player)
-							{
-								sender_ap.addReactions(vk_reactions, FlowEvent::MISC_VOTEKICK_ME);
-							}
-							else
-							{
-								SOUP_IF_LIKELY (auto cmd = target_ap.getCommand())
-								{
-									cmd->vote_kick_history.emplace(sender_ap.getRockstarId());
-								}
-							}
-							if (auto toast_flags = flow_event_reactions_to_toast_flags(vk_reactions))
-							{
-								Util::toast(LANG_FMT("VKR_T", FMT_ARG("player", sender_ap.getName()), FMT_ARG("target", target_ap.getName())), toast_flags);
-							}
-							sender_ap.applyReactions(vk_reactions);
-						}
-					}
+					stream << fmt::format(" ({})", g_player_ped.isNetObjId(buffer->readU16(13)));
 				}
-#ifdef STAND_DEBUG
-				if (buffer->getBitLength() != MAX_PLAYERS + 1)
-				{
-					tally.add(FlowEvent::SE_INVALID, "N7");
-				}
-#endif
 				break;
+
+			case GIVE_PICKUP_REWARDS_EVENT:
+			{
+				buffer->SetCursorPos(3);
+				auto reward_hash = buffer->readU32();
+				stream << " {Reward: ";
+				stream << joaatToString(reward_hash);
+				stream << "}";
+			}
+			break;
+
+			case NETWORK_PLAY_SOUND_EVENT:
+				{
+					buffer->seekStart();
+					const auto data = CNetworkPlaySoundEvent(buffer);
+					stream << data.toString();
+				}
+				break;
+
+			case NETWORK_PTFX_EVENT:
+				{
+					buffer->seekStart();
+					const auto data = CNetworkPtFXEvent(buffer);
+					stream << data.toString();
+				}
+				break;
+
+			case WEAPON_DAMAGE_EVENT:
+				{
+					buffer->seekStart();
+					const auto data = CWeaponDamageEvent(buffer);
+					stream << data.toString();
+				}
+				break;
+
+			case EXPLOSION_EVENT:
+			{
+				buffer->seekStart();
+				const auto data = CExplosionEvent(buffer);
+				stream << data.toString();
+			}
+			break;
 
 			case REQUEST_CONTROL_EVENT:
 				{
-					auto object_id = buffer->readU16(13);
 					buffer->seekStart();
-					if (g_player_veh.isNetObjId(object_id) && g_player_veh.isOwnerOfVehicleAndDriver())
-					{
-						tally.add(FlowEvent::NE_VEHTAKEOVER);
-					}
+					auto object_id = buffer->readU16(13);
+					stream << " {Object ID: ";
+					stream << fmt::to_string(object_id);
+					stream << "}";
 				}
 				break;
 
-			case MARK_AS_NO_LONGER_NEEDED_EVENT:
+			case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
 				{
-					uint32_t m_numScriptObjects = buffer->readU32(4);
-					bool m_objectsForDeletion = buffer->readBool();
-					for (uint32_t i = 0; i != m_numScriptObjects; ++i)
-					{
-						auto object_id = buffer->readU16(13);
-
-						if (g_player_veh.isNetObjId(object_id) && g_player_veh.isUserPersonalVehicle())
-						{
-							tally.add(FlowEvent::SE_PVKICK);
-						}
-
-						if (m_objectsForDeletion)
-						{
-							SOUP_UNUSED(buffer->readBool());
-						}
-					}
 					buffer->seekStart();
+					auto object_id = buffer->readU16(13);
+					auto subevent_id = buffer->readU8(4);
+					stream << " {Object ID: ";
+					stream << fmt::to_string(object_id);
+					stream << ", Subevent: ";
+					stream << fmt::to_string(subevent_id);
+					stream << "}";
+				}
+				break;
+
+			case REPORT_MYSELF_EVENT:
+				{
+					buffer->seekStart();
+					auto type = buffer->readU32();
+					auto extra = buffer->readU32();
+					stream << " {Type: ";
+					stream << fmt::to_string(type);
+					stream << ", Extra: ";
+					stream << fmt::to_string(extra);
+					stream << "}";
+				}
+				break;
+
+			case CLEAR_AREA_EVENT:
+				{
+					buffer->seekStart();
+					stream << CClearAreaEvent(buffer).toString();
+				}
+				break;
+
+			case START_PROJECTILE_EVENT:
+				{
+					buffer->seekStart();
+					stream << CStartProjectileEvent(buffer).toString();
 				}
 				break;
 
 			case SCRIPT_WORLD_STATE_EVENT:
 				{
+					buffer->seekStart();
+
 					auto type = buffer->readU8(4);
 					auto change_state = buffer->readBool();
 
@@ -2677,1057 +3755,46 @@ namespace Stand::hooks
 						float init_length = buffer->readSignedFloat(16, 100.0f);
 						float min_length = buffer->readSignedFloat(16, 100.0f);
 
-						// Legit Events:
-						// {Type: 1, Init Length: 0, Min Length: 0.997955, Max Length: 0.997955}
-
-						// Crash Events:
-						// {Type: 1, Init Length: 98.999, Min Length: 0.997955, Max Length: -100}
-						// {Type: 4, Init Length: 98.999, Min Length: -100, Max Length: -100}
-
-						if (type < 0
-							|| max_length < 0
-							|| max_length < min_length
-							)
-						{
-							tally.add(FlowEvent::SE_CRASH, "N6");
-						}
-					}
-					else if (type == NET_WORLD_STATE_POP_GROUP_OVERRIDE)
-					{
-						auto unk = buffer->readI32(8);
-						auto unk2 = buffer->readU32(32);
-						auto unk3 = buffer->readU32(7);
-						if (unk2 == 0 && (unk3 == 0 || unk3 == 103))
-						{
-							tally.add(FlowEvent::SE_CRASH, "N7");
-						}
-					}
-					else if (type == NET_WORLD_STATE_PTFX)
-					{
-						// If the user wants to block all PTFX, then this should also be blocked.
-						if (auto reactions = sender_ap.getReactions(NETWORK_PTFX_EVENT); reactions & REACTION_BLOCK)
-						{
-							goto block_net_event;
-						}
-
-						auto data = CNetworkPtFXWorldStateData(buffer);
-
-						if (is_session_freeroam()
-							&& (g_player_ped.isNetObjId(data.m_EntityID)
-								|| g_player_veh.isNetObjId(data.m_EntityID)
-								|| data.m_FxPos.distance(g_player_ped.getPos()) < 3.0f
-								)
-							)
-						{
-#ifdef STAND_DEV
-							Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Receiving a world state PTFX that's likely attached to us.").str())));
-							Util::toast(fmt::format(fmt::runtime(soup::ObfusString("SCRIPT_WORLD_STATE_EVENT: {}").str()), data.toString()), TOAST_FILE);
-#endif
-							if (auto reactions = sender_ap.getReactions(FlowEvent::MISC_PTFX); reactions & REACTION_BLOCK) // Yes, sender is unreliable. This is better than giving the user no control.
-							{
-								goto block_net_event; // The event does not serialise anything about the original sender.
-							}
-						}
-					}
-
-					buffer->seekStart();
-				}
-				break;
-
-			case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
-				{
-					auto object_id = buffer->readU16(13);
-					auto subevent_id = buffer->readU8(4);
-					if (subevent_id > 9)
-					{
-						tally.add(FlowEvent::SE_CRASH, "N3");
-					}
-					//g_logger.log(fmt::format("SCRIPT_ENTITY_STATE_CHANGE_EVENT: subevent {}", subevent_id));
-					if (subevent_id == 6) // SET_TASK_VEHICLE_TEMP_ACTION (CSettingOfTaskVehicleTempAction)
-					{
-						// This can be used to freeze/take control away from us.
-						if (g_player_ped.isNetObjId(object_id))
-						{
-							tally.add(FlowEvent::SE_FREEZE, "N0");
-						}
-
-						auto time = buffer->readU32();
-						auto object_id_2 = buffer->readU16(13);
-						auto taskId = buffer->readU8();
-						/*uint32_t unk = 0;
-						if (buffer->readBool())
-						{
-							unk = buffer->readU16();
-						}*/
-
-						// In this case, `object_id` refers to the ped and `object_id_2` refers to the vehicle.
-
-						if (auto obj = (*pointers::network_object_mgr)->find_object_by_id(object_id_2, true))
-						{
-							if (auto ent = obj->GetEntity())
-							{
-								if (g_player_veh.isValid() && g_player_veh.getPointer() == ent)
-								{
-									tally.add(FlowEvent::NE_VEHTAKEOVER);
-								}
-							}
-						}
-
-						switch (taskId)
-						{
-						case 15:
-						case 16:
-						case 17:
-						case 18:
-							tally.add(FlowEvent::SE_CRASH, "N4");
-							break;
-						}
-					}
-					else if (subevent_id == 9) // SET_EXCLUSIVE_DRIVER
-					{
-						if (g_player_veh.isNetObjId(object_id))
-						{
-							tally.add(FlowEvent::SE_PVKICK);
-						}
-					}
-					buffer->seekStart();
-				}
-				break;
-
-#if false
-			case REPORT_MYSELF_EVENT:
-				{
-					auto type = buffer->readU32();
-					//auto extra = buffer->readU32();
-					buffer->seekStart();
-					if (type < 5 || type > 10)
-					{
-						sender_ap.markAsModderRac(Codename("U1").toString());
-					}
-				}
-				break;
-#endif
-
-			case NETWORK_PLAY_SOUND_EVENT:
-				{
-					CNetworkPlaySoundEvent data = CNetworkPlaySoundEvent(buffer);
-					buffer->seekStart();
-
-					if (data.m_soundNameHash == ATSTRINGHASH("Remote_Ring"))
-					{
-						tally.add(FlowEvent::NE_INFRING);
-					}
-
-					if (auto sender_cmd = sender_ap.getCommand())
-					{
-						if (sender_cmd->sound_timeout != 0 && GET_MILLIS_SINCE(sender_cmd->sound_timeout) < 60000)
-						{
-							goto block_net_event;
-						}
-
-						if (sender_cmd->sound_ratelimit.canRequest())
-						{
-							sender_cmd->sound_ratelimit.addRequest();
-						}
-						else
-						{
-							switch (data.m_soundNameHash)
-							{
-							case ATSTRINGHASH("ROUND_ENDING_STINGER_CUSTOM"): // CELEBRATION_SOUNDSET
-							case ATSTRINGHASH("5s"): // MP_MISSION_COUNTDOWN_SOUNDSET
-							case ATSTRINGHASH("10s"): // MP_MISSION_COUNTDOWN_SOUNDSET
-							case ATSTRINGHASH("Oneshot_Final"): // MP_MISSION_COUNTDOWN_SOUNDSET
-							case ATSTRINGHASH("Object_Dropped_Remote"): // GTAO_FM_Events_Soundset
-							case ATSTRINGHASH("Checkpoint_Cash_Hit"): // GTAO_FM_Events_Soundset
-							case ATSTRINGHASH("Event_Start_Text"): // GTAO_FM_Events_Soundset
-							case ATSTRINGHASH("Return_To_Vehicle_Timer"): // GTAO_FM_Events_Soundset
-							case ATSTRINGHASH("event_message_purple"):
-								tally.add(FlowEvent::SE_CRASH, "N5");
-								break;
-
-							default:
-								{
-									if (!data.isSpammySound())
-									{
-										tally.add(FlowEvent::SE_INVALID, "N5");
-									}
-								}
-							}
-						}
-
-						if (data.m_setNameHash == ATSTRINGHASH("dlc_sum20_business_battle_ac_sounds")
-							&& data.m_soundNameHash == ATSTRINGHASH("air_defences_activated")
-							)
-						{
-							if (sender_cmd->uncommon_sound_ratelimit.canRequest())
-							{
-								sender_cmd->uncommon_sound_ratelimit.addRequest();
-							}
-							else
-							{
-								tally.add(FlowEvent::SE_INVALID, "N5");
-							}
-						}
-
-						if (is_session_freeroam())
-						{
-							if (!data.isSpammySound()
-								&& !data.isCloseFreeroamSound()
-								&& !(data.m_setNameHash == ATSTRINGHASH("gtao_biker_modes_soundset") && sender_ap.inOurOrg())
-								)
-							{
-								if (auto sound_entity = AbstractEntity::getNetwork(data.m_EntityID); sound_entity.isValid())
-								{
-									if (sound_entity == g_player_ped) // Attached to us? 
-									{
-										tally.add(FlowEvent::SE_INVALID, "N5");
-									}
-									else if (sound_entity == g_player_veh && !sender_ap.getVehicle().isNetObjId(data.m_EntityID)) // Attached to our vehicle by a non-passenger?
-									{
-										tally.add(FlowEvent::SE_INVALID, "N5");
-									}
-									else if (!sender_ap.inSameInterior(g_player) && sound_entity.getPos().distanceTopdown(g_player_ped.getPos()) <= 1.5f) // Sound spawned on entity too close to us from a player not inside the same interior (or any interior)?
-									{
-										auto sender_ped = sender_ap.getPed();
-										auto sender_veh = sender_ped.getVehicle();
-
-										if (sound_entity != sender_ped && sound_entity != sender_veh)
-										{
-											// This makes us vulnerable to an attacker entering the same interior and attacking us by spawning an object near us and playing a sound on it.
-											// In exchange for this edge-case, we are probably eliminating tons of false-positives that users never bother to report.
-											tally.add(FlowEvent::SE_INVALID, "N5");
-										}
-									}
-								}
-								else
-								{
-									if (data.m_Position.distanceTopdown(g_player_ped.getPos()) <= 1.5f)
-									{
-										tally.add(FlowEvent::SE_INVALID, "N5");
-									}
-								}
-							}
-
-							const bool current_is_blocked = tally.getReactions(FlowEvent::SE_INVALID) & REACTION_BLOCK;
-
-							if (!current_is_blocked)
-							{
-								g_hooking.processed_sounds.emplace_back(NetworkedSound(data.m_soundNameHash, data.m_setNameHash, data.m_SoundID));
-							}
-
-							FiberPool::queueJob([current_data{ std::move(data) }, current_is_blocked]
-							{
-								for (auto i = g_hooking.processed_sounds.begin(); i != g_hooking.processed_sounds.end(); )
-								{
-									const auto& preexisting_sound = *i;
-
-									// Pop old sounds.
-									if (preexisting_sound.m_SoundID == current_data.m_SoundID)
-									{
-										i = g_hooking.processed_sounds.erase(i);
-										continue;
-									}
-
-									if (current_is_blocked && preexisting_sound.isSameSoundData(current_data.m_soundNameHash, current_data.m_setNameHash))
-									{
-										AUDIO::STOP_SOUND(preexisting_sound.m_SoundID);
-										AUDIO::RELEASE_SOUND_ID(preexisting_sound.m_SoundID);
-										i = g_hooking.processed_sounds.erase(i);
-#ifdef STAND_DEBUG
-										Util::toast(fmt::format("N5: Popped a pre-existing sound with identical information as currently-modded sound. ({}, {}, {})", current_data.m_soundNameHash, current_data.m_setNameHash, current_data.m_SoundID), TOAST_ALL);
-#endif
-										continue;
-									}
-
-									++i;
-								}
-							});
-						}
-
-						if (tally.getReactions(sender_ap) & REACTION_BLOCK)
-						{
-							sender_cmd->sound_timeout = get_current_time_millis();
-#ifdef STAND_DEBUG
-							Util::toast(fmt::format("N5: Applied sound timeout to {}.", sender_ap.getName()), TOAST_ALL);
-#endif
-						}
-					}
-				}
-				break;
-
-			case NETWORK_PTFX_EVENT:
-				if (is_session_freeroam()) // Last Dose 4
-				{
-					const auto data = CNetworkPtFXEvent(buffer);
-
-					buffer->seekStart();
-
-					SOUP_IF_LIKELY (auto cmd = sender_ap.getCommand())
-					{
-						const auto distance = g_player_ped.getPos().distance(data.m_FxPos);
-						bool modded = false;
-
-						if (distance <= 1.0f)
-						{
-							if (cmd->very_close_ptfx_ratelimit.canRequest())
-							{
-								cmd->very_close_ptfx_ratelimit.addRequest();
-							}
-							else
-							{
-								modded = true;
-							}
-						}
-						else if (distance <= 50.0f // Can't even see PTFX above ranges like this.
-							|| data.m_bUseEntity // Attachments use relative positions.
-							)
-						{
-							if (cmd->ptfx_ratelimit.canRequest())
-							{
-								cmd->ptfx_ratelimit.addRequest();
-							}
-							else
-							{
-								modded = true;
-							}
-						}
-
-						if (g_player_ped.isNetObjId(data.m_EntityID) || g_player_veh.isNetObjId(data.m_EntityID))
-						{
-							modded = true;
-						}
-
-						if (data.m_PtFXHash == ATSTRINGHASH("scr_xt_trip_rabbit_death")) // This one is broken as fuck. Doesn't look like it was properly implemented, and just causes issues even in low quantities.
-						{
-							modded = true;
-						}
-
-						if (modded)
-						{
-							tally.add(FlowEvent::MISC_PTFX);
-							cmd->ptfx_timeout = get_current_time_millis();
-						}
-						else
-						{
-							if (GET_MILLIS_SINCE(cmd->ptfx_timeout) <= 60000
-								&& (sender_ap.getReactions(FlowEvent::MISC_PTFX) & REACTION_BLOCK)
-								)
-							{
-								goto block_net_event;
-							}
-						}
-					}
-				}
-				break;
-
-			case RAGDOLL_REQUEST_EVENT:
-				{
-					auto target = buffer->readU16(13);
-
-					if (g_player_ped.isNetObjId(target))
-					{
-						const auto reactions = sender_ap.getReactions(FlowEvent::NE_RAGDOLL);
-
-						SOUP_IF_LIKELY (auto cmd = sender_ap.getCommand())
-						{
-							if (cmd->ragdoll_request_ratelimit.canRequest())
-							{
-								cmd->ragdoll_request_ratelimit.addRequest();
-							}
-							else
-							{
-								sender_ap.applyReactions(reactions, NuancedEventWithExtraData(FlowEvent::NE_RAGDOLL, {}, 25));
-							}
-						}
-						
-						if (reactions & REACTION_BLOCK)
-						{
-							goto block_net_event;
-						}
-					}
-
-					buffer->seekStart();
-				}
-				break;
-
-			case WEAPON_DAMAGE_EVENT:
-				{
-					const auto data = CWeaponDamageEvent(buffer);
-					const bool is_beast = sender_ap.isBeast();
-
-					if (data.m_weaponType == ATSTRINGHASH("weapon_tranquilizer") // This is what 0xcheat's "make him cry" sends, apparently it's supposed to kill you repeatly, even if you quit to SP: 11001100101010100010001000101111011001000010000100000000010000000000000000000000010000000000000000000000000000000000000000000000000000000000101011010100101001000100010001010100000010 (m_damageType: 3, m_weaponType: weapon_tranquilizer, m_bOverride: true, m_hitEntityWeapon: false, m_hitWeaponAmmoAttachment: false, m_silenced: true, m_damageFlags: 540688, bMeleeDamage: false, m_actionResultId: 0, m_meleeId: 0, m_meleeResultId: 0, m_weaponDamage: 0, m_bIsAggregated: false, m_weaponDamageAggregationCount: 0, m_bVictimPlayer: true, m_hitPosition_x: 0, m_hitPosition_y: 0, m_hitPosition_z: 0, m_damageTime: 2839185, m_willKillPlayer: false, m_hitObjectId: 0, m_playerDistance: 554, m_parentID: 0, m_tyreIndex: 0, m_suspensionIndex: 0, m_component: 0, m_firstBullet: true, hasVehicleData: false, useLargeDistance: false)
-						|| data.m_weaponType == ATSTRINGHASH("weapon_fire") // This can be used to ragdoll us, don't think it's used legit.
-						|| data.m_weaponType == ATSTRINGHASH("weapon_molotov") // Can be used to ragdoll us.
-						|| data.m_weaponType == ATSTRINGHASH("WEAPON_STRICKLER") // This weapon is only half implemented because it's a next gen exclusive... classic L*
-						)
-					{
-						tally.add(FlowEvent::SE_INVALID, "NB");
-					}
-					else if (data.m_weaponType == ATSTRINGHASH("WEAPON_STUNROD")) // Can be used to stunlock us
-					{
-						if (auto cmd = sender_ap.getCommand())
-						{
-							if (cmd->stun_ratelimit.canRequest())
-							{
-								cmd->stun_ratelimit.addRequest();
-							}
-							else
-							{
-								cmd->stun_timeout = get_current_time_millis();
-								tally.add(FlowEvent::SE_INVALID, "NC");
-							}
-
-							if (GET_MILLIS_SINCE(cmd->stun_timeout) < 60'000)
-							{
-								goto block_net_event;
-							}
-						}
-
-						if (g_gui.grace)
-						{
-							goto block_net_event;
-						}
-					}
-					else
-					{
-						if (data.isRemoteKill(is_beast))
-						{
-							tally.add(FlowEvent::NE_SUDDENDEATH);
-						}
-						else if (data.isMagicBullet())
-						{
-							tally.addRaw(FlowEvent::NE_SUDDENDEATH, LANG_GET("MAGICB"));
-						}
-						else if (data.bMeleeDamage)
-						{
-							if (auto entity = AbstractEntity::getNetwork(data.m_hitObjectId); entity.isValid())
-							{
-								if (g_player_veh.isNetObjId(data.m_hitObjectId) || g_player_ped.isNetObjId(data.m_hitObjectId))
-								{
-									const auto distance = entity.getPos().distance(sender_ap.getPos());
-
-									if (distance >= 30.0f) // If we suddenly change position after they initiate an attack, we get the event.
-									{
-										tally.add(FlowEvent::NE_SUDDENDEATH);
-									}
-								}
-							}
-						}
-
-						if (!is_beast && data.isDamageExcessive())
-						{
-							sender_ap.triggerDetection(FlowEvent::MOD_DMGMUL, "*");
-						}
-					}
-					
-					buffer->seekStart();
-					break;
-				}
-
-			case EXPLOSION_EVENT:
-				{
-					const auto data = CExplosionEvent(buffer);
-					const auto player_pos = g_player_ped.getPos();
-					const auto player_dist = data.m_explosionArgs.m_explosionPosition.distance(player_pos);
-
-					buffer->seekStart();
-
-					// Camera Shaking Event & Ragoll Event
-					if (data.m_explosionArgs.m_bNoFx)
-					{
-						if (data.m_explosionArgs.m_fCamShake > 0.0f
-							&& player_dist <= 30.0f
-							)
-						{
-							tally.add(FlowEvent::NE_CAMSHAKE);
-						}
-
-						if (data.m_explosionArgs.m_sizeScale > 0.0f
-							&& player_dist <= 10.0f
-							)
-						{
-							tally.add(FlowEvent::NE_RAGDOLL);
-						}
-					}
-					
-					// Explosion Spam
-					SOUP_IF_LIKELY (auto cmd = packet_src.getCommand())
-					{
-						if (player_dist <= 5.0f && !data.m_bHasProjectile && !data.m_shouldAttach)
-						{
-							if (cmd->explosion_nearby_ratelimit.canRequest())
-							{
-								cmd->explosion_nearby_ratelimit.addRequest();
-							}
-							else
-							{
-								auto reactions = sender_ap.getReactions(FlowEvent::NE_EXPSPAM);
-								sender_ap.applyReactionsIn(LOC("EXPSPAM"), { FlowEvent::NE_EXPSPAM }, reactions, 50);
-								if (reactions & REACTION_BLOCK)
-								{
-									goto block_net_event;
-								}
-							}
-						}
-					}
-
-					// Modded Explosion
-					if (is_session_freeroam())
-					{
-						bool modded = false;
-						std::string extra_data{};
-
-						// Remote Explosion
-						if (!data.m_bHasProjectile
-							&& !data.isProbablyDrone()
-							&& data.isSenderResponsible()
-							&& data.shouldHaveProjectile()
-							&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
-							)
-						{
-							modded = true;
-
-							if (player_dist < 3.0f)
-							{
-								if (auto cmd = sender_ap.getCommand())
-								{
-									cmd->aggressive_action_warranted = true;
-								}
-							}
-						}
-
-						// Camera Shake Mismatch (Stand, 2Take1)
-						if (data.m_explosionArgs.m_fCamShake == 0.0f
-							&& data.isSenderResponsible()
-							&& !data.canHaveZeroCamShake()
-							)
-						{
-							modded = true;
-							// extra_data = LANG_GET("EXPAMMO"); True for explosive ammo, but also their remote explosion.
-						}
-
-						// Explosive Ammo, Dummy Mismatch (All)
-						if (data.shouldHaveDummy()
-							&& !data.m_shouldAttach
-							&& !data.m_hasRelatedDummy
-							)
-						{
-							modded = true;
-							extra_data = LANG_GET("EXPAMMO");
-						}
-
-						// Explosive Ammo, Absent Projectile (Kiddions)
-						if (const auto weapon = Weapon::find(data.m_explosionArgs.m_weaponHash))
-						{
-							if (!data.m_bHasProjectile
-								&& weapon->category != Weapon::MELEE
-								&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUN")
-								&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUNXM3")
-								)
-							{
-								modded = true;
-#ifndef STAND_DEV
-								extra_data = LANG_GET("EXPAMMO");
-#else
-								extra_data = fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), LANG_GET("EXPAMMO"), joaatToString(weapon->hash));
-#endif
-							}
-						}
-
-						// Explosive Ammo, Bullet Effect Mismatch (YimMenu "Special Ammo")
-						if (auto ped = sender_ap.getPed(); ped.isValid())
-						{
-							if (const auto weapon = Weapon::find(ped.getSelectedWeapon())) // Hand-held weapon?
-							{
-								if (data.m_explosionArgs.m_explosionTag == EXP_TAG_EXPLOSIVEAMMO
-									&& weapon->hash != ATSTRINGHASH("WEAPON_HEAVYSNIPER_MK2")
-									&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
-									)
-								{
-									modded = true;
-#ifndef STAND_DEV
-									extra_data = LANG_GET("EXPAMMO");
-#else
-									extra_data = fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), LANG_GET("EXPAMMO"), joaatToString(weapon->hash));
-#endif
-								}
-							}
-						}
-
-						// Explosive Ammo, All
-						if (!data.m_shouldAttach
-							&& !data.m_bHasProjectile
-							&& !data.m_explosionArgs.m_bDetonatingOtherPlayersExplosive
-							)
-						{
-							switch (data.m_explosionArgs.m_explosionTag)
-							{
-							case EXP_TAG_CAR:
-							case EXP_TAG_BIKE:
-							case EXP_TAG_BOAT:
-							case EXP_TAG_PLANE:
-							case EXP_TAG_TRUCK:
-							case EXP_TAG_TRAIN:
-							case EXP_TAG_BLIMP:
-							case EXP_TAG_BLIMP2:
-								modded = true;
-								extra_data = LANG_GET("EXPAMMO");
-								break;
-							}
-						}
-
-						if (modded)
-						{
-							reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, std::move(extra_data), 75);
-						}
-					}
-
-					// Explosion Blaming (patched client-side as of 3095, now detects menus which haven't removed the feature)
-					if (!data.m_bHasProjectile
-						&& data.isSenderResponsible()
-						&& data.m_explodingEntityID == 0
-						)
-					{
-						if (auto n = (*pointers::network_object_mgr)->find_object_by_id(data.m_entExplosionOwnerID, true))
-						{
-							if (auto ent = n->GetEntity())
-							{
-								if (ent->type == ENTITY_TYPE_PED)
-								{
-									auto ped = AbstractEntity::get((CPhysical*)ent);
-									const auto sender_netobj = sender_ap.getPed().getNetObject();
-
-									if (sender_netobj
-										&& ped.isAPlayer()
-										&& data.m_entExplosionOwnerID != sender_netobj->object_id // Indicates a mismatch in explosionOwner from ADD_OWNED_EXPLOSION & sender cped netobj id.
-										)
-									{
-#if HAS_EXPBLAME
-										reactions |= sender_ap.triggerDetection(FlowEvent::MOD_EXPBLAME, LANG_FMT("VICTIM", ped.getPlayer().getName()), 75);
-#else
-										reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, "*", 75);
-#endif
-									}
-								}
-							}
-						}
-					}
-
-					if (reactions & REACTION_BLOCK)
-					{
-						goto block_net_event;
-					}
-
-					// Same as the other Crash Event (TC), just a different trigger.
-					if (data.m_explosionArgs.m_interiorLocation.as_interiorLocation.m_interiorIndex < -1)
-					{
-						tally.add(FlowEvent::SE_CRASH, "TC");
-					}
-
-					break;
-				}
-
-				case BLOW_UP_VEHICLE_EVENT:
-				case REQUEST_PHONE_EXPLOSION_EVENT:
-					{
-						const auto m_nVehicleID = buffer->readU16(13);
-
-						if (is_session_freeroam() // Just assuming these events have legitimacy in mission vehicles or something.
-							&& !sender_ap.inOurOrg() // See above. I feel like I remember some cargo missions detonatating our user vehicle too. It must be one of these events since it's not a spammed explosion, obv.
-							&& g_player_veh.isNetObjId(m_nVehicleID)
-							&& g_player_veh.isOwnerOfVehicleAndDriver()
-							)
-						{
-							tally.add(FlowEvent::NE_VEHTAKEOVER);
-						}
-
-						buffer->seekStart();
-					}
-					break;
-
-				case ACTIVATE_VEHICLE_SPECIAL_ABILITY_EVENT:
-					{
-						const auto m_vehicleID = buffer->readU16(13);
-
-						if (g_player_veh.isNetObjId(m_vehicleID)
-							&& g_player_veh.isOwnerOfVehicleAndDriver()
-							)
-						{
-							tally.add(FlowEvent::NE_VEHTAKEOVER);
-						}
-
-						buffer->seekStart();
-					}
-					break;
-
-				case CHANGE_RADIO_STATION_EVENT:
-					{
-						const auto m_vehicleID = buffer->readU16(13);
-
-						if (g_player_veh.isNetObjId(m_vehicleID)
-							&& sender_ap.getVehicle().getNetObjId() != m_vehicleID
-							)
-						{
-							tally.add(FlowEvent::NE_VEHTAKEOVER);
-						}
-
-						buffer->seekStart();
-					}
-					break;
-
-				case NETWORK_SOUND_CAR_HORN_EVENT:
-					{
-						const auto m_bIsHornOn = buffer->readBool();
-						const auto m_vehicleID = buffer->readU16(13);
-
-						if (sender_ap.getVehicle().getNetObjId() != m_vehicleID)
-						{
-							if (g_player_veh.isNetObjId(m_vehicleID))
-							{
-								tally.add(FlowEvent::NE_VEHTAKEOVER);
-							}
-							/*else
-							{
-								tally.add(FlowEvent::SE_INVALID, "NA");
-							}*/
-						}
-
-						buffer->seekStart();
-					}
-					break;
-
-				case GIVE_PICKUP_REWARDS_EVENT:
-					if (is_session_freeroam())
-					{
-						const auto m_NumRewards = buffer->readU8(3);
-
-						for (uint8_t i = 0; i < m_NumRewards; ++i)
-						{
-							const auto hash = buffer->readU32();
-
-							if ((g_player_veh.isOwnerOfVehicleAndDriver() && hash == ATSTRINGHASH("REWARD_VEHICLE_FIX")) // Fixing our vehicle?
-								|| (!sender_ap.inOurOrg() && (hash == ATSTRINGHASH("REWARD_HEALTH") || hash == ATSTRINGHASH("REWARD_ARMOUR"))) // Healing us?
-								)
-							{
-								tally.add(FlowEvent::SE_INVALID, "N8");
-								break;
-							}
-						}
-
-						buffer->seekStart();
-					}
-					break;
-
-				case DOOR_BREAK_EVENT:
-					// This event is never sent, so this must be a modder.
-					tally.add(FlowEvent::SE_INVALID, "N9");
-					break;
-
-				case NETWORK_SPECIAL_FIRE_EQUIPPED_WEAPON:
-					{
-						const auto m_entityID = buffer->readU16(13);
-
-						if (auto n = (*pointers::network_object_mgr)->find_object_by_id(m_entityID, false))
-						{
-							if (auto ent = n->GetEntity())
-							{
-								if (ent->type == ENTITY_TYPE_PED)
-								{
-									if (auto weap = static_cast<CPed*>(ent)->weapon_manager->GetEquippedWeapon())
-									{
-										if (!weap->m_pDrawableEntity
-											|| !weap->m_pDrawableEntity->archetype
-											|| weap->m_pDrawableEntity->archetype->GetModelType() != MI_TYPE_WEAPON
-											)
-										{
-											// Game would deref nullptr here. Not exactly bad because we can catch exceptions, but some co-loads can't.
-											tally.add(FlowEvent::SE_CRASH, "NC");
-										}
-									}
-								}
-							}
-						}
-
-						buffer->seekStart();
-					}
-					break;
-
-				case NETWORK_START_SYNCED_SCENE_EVENT: {
-					const unsigned SIZEOF_POSITION = 26;
-					const unsigned SIZEOF_QUAT = 30;
-					const unsigned SIZEOF_ATTACH_BONE = 8;
-					const unsigned SIZEOF_ANIM_HASH = 32;
-					const unsigned SIZEOF_BLEND_IN = 30;
-					const unsigned SIZEOF_BLEND_OUT = 30;
-					const unsigned SIZEOF_ANIM_FLAGS = 32;
-					const unsigned SIZEOF_RAGDOLL_BLOCKING_FLAGS = 32;
-					const unsigned SIZEOF_IK_FLAGS = /*eIkControlFlags_NUM_ENUMS + 1*/ 15;
-					const unsigned SIZEOF_PHASE = 9;
-					const unsigned SIZEOF_RATE = 8;
-					//const unsigned SIZEOF_NAME_HASH = 32;
-					//const float MAX_BLEND_IN_RATE = 1001.0f;
-					//const float MAX_BLEND_OUT_RATE = 1001.0f;
-					const unsigned MAX_PEDS_IN_SCENE = 10;
-					static const unsigned MAX_NON_PED_ENTITIES_IN_SCENE = 5;
-					static const unsigned MAX_MAP_ENTITIES_IN_SCENE = 1;
-
-					buffer->SkipBits(13); // m_SceneID
-					buffer->SkipBits(32); // m_NetworkTimeStarted
-					buffer->SkipBits(1); // sceneActive
-					buffer->SkipBits(SIZEOF_POSITION * 3); // m_ScenePosition
-					buffer->SkipBits(SIZEOF_QUAT * 4); // m_SceneRotation
-					if (buffer->readBool()) // hasAttachEntity
-					{
-						buffer->SkipBits(13); // m_AttachToEntityID
-						buffer->SkipBits(SIZEOF_ATTACH_BONE); // m_AttachToBone
-					}
-					if (!buffer->readBool()) // hasDefaultStopPhase
-					{
-						buffer->SkipBits(SIZEOF_PHASE); // m_PhaseToStopScene
-					}
-					if (!buffer->readBool()) // hasDefaultRate
-					{
-						buffer->SkipBits(SIZEOF_RATE); // m_Rate
-					}
-					buffer->SkipBits(1); // m_HoldLastFrame
-					buffer->SkipBits(1); // m_Looped
-					buffer->SkipBits(SIZEOF_PHASE); // m_Phase
-					if (buffer->readBool()) // m_UseCamera
-					{
-						buffer->SkipBits(SIZEOF_ANIM_HASH); // m_CameraAnim
-					}
-					buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimDict
-					for (unsigned i = 0; i != MAX_PEDS_IN_SCENE; ++i)
-					{
-						if (buffer->readBool())
-						{
-							buffer->SkipBits(13); // m_PedID
-							buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimPartialHash
-							buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
-							buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
-							buffer->SkipBits(SIZEOF_BLEND_IN); // m_MoverBlendIn
-							buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
-							buffer->SkipBits(SIZEOF_RAGDOLL_BLOCKING_FLAGS); // m_RagdollBlockingFlags
-							buffer->SkipBits(SIZEOF_IK_FLAGS); // m_IkFlags
-						}
-					}
-					// Finally, the bit we're interested in...
-					for (unsigned i = 0; i != MAX_NON_PED_ENTITIES_IN_SCENE; ++i)
-					{
-						if (buffer->readBool())
-						{
-							auto objId = buffer->readU16(13);
-							buffer->SkipBits(SIZEOF_ANIM_HASH); // m_Anim
-							buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
-							buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
-							buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
-
-							if (g_player_veh.isNetObjId(objId))
-							{
-								tally.add(FlowEvent::NE_VEHTAKEOVER);
-								break;
-							}
-						}
-					}
-
-					buffer->seekStart();
-					break;
-				}
-
-#if false
-				case NETWORK_TRAIN_REPORT_EVENT:
-				case NETWORK_TRAIN_REQUEST_EVENT:
-					// gTrainTracks happens to overflow into CPropellerCollisionProcessor.
-					// These events are not the same, but both use the first 4 bits for track index.
-					auto traintrack = buffer->readU8(4);
-					if (traintrack >= 12)
-					{
-						tally.add(FlowEvent::SE_CRASH, "NA");
-					}
-					buffer->seekStart();
-					break;
-#endif
-			}
-			// React
-			reactions = tally.getReactions(sender_ap);
-			if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
-			{
-				std::stringstream stream;
-				stream << LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", tally.getFullName().getLocalisedUtf8()), FMT_ARG("player", sender_ap.getName())) << ": ";
-				if (tally.name != event_name)
-				{
-					stream << event_name.getLocalisedUtf8() << ": ";
-				}
-				// assuming cursor is at start
-				stream << bitbufferToBitstring(*buffer);
-				// now cursor is at end
-				switch (event_id)
-				{
-				case GIVE_WEAPON_EVENT:
-					{
-						buffer->seekStart();
-						stream << CGiveWeaponEvent(buffer).toString();
-					}
-					break;
-
-				case REMOVE_WEAPON_EVENT:
-					{
-						buffer->seekStart();
-						stream << CRemoveWeaponEvent(buffer).toString();
-					}
-					break;
-
-				case REMOVE_ALL_WEAPONS_EVENT:
-					{
-						buffer->seekStart();
-						stream << fmt::format(" ({})", g_player_ped.isNetObjId(buffer->readU16(13)));
-					}
-					break;
-
-				case GIVE_PICKUP_REWARDS_EVENT:
-				{
-					buffer->SetCursorPos(3);
-					auto reward_hash = buffer->readU32();
-					stream << " {Reward: ";
-					stream << joaatToString(reward_hash);
-					stream << "}";
-				}
-				break;
-
-				case NETWORK_PLAY_SOUND_EVENT:
-					{
-						buffer->seekStart();
-						const auto data = CNetworkPlaySoundEvent(buffer);
-						stream << data.toString();
-					}
-					break;
-
-				case NETWORK_PTFX_EVENT:
-					{
-						buffer->seekStart();
-						const auto data = CNetworkPtFXEvent(buffer);
-						stream << data.toString();
-					}
-					break;
-
-				case WEAPON_DAMAGE_EVENT:
-					{
-						buffer->seekStart();
-						const auto data = CWeaponDamageEvent(buffer);
-						stream << data.toString();
-					}
-					break;
-
-				case EXPLOSION_EVENT:
-				{
-					buffer->seekStart();
-					const auto data = CExplosionEvent(buffer);
-					stream << data.toString();
-				}
-				break;
-
-				case REQUEST_CONTROL_EVENT:
-					{
-						buffer->seekStart();
-						auto object_id = buffer->readU16(13);
-						stream << " {Object ID: ";
-						stream << fmt::to_string(object_id);
+						stream << ", Subtype: Rope, {Type: ";
+						stream << type;
+						stream << ", Init Length: ";
+						stream << init_length;
+						stream << ", Min Length: ";
+						stream << min_length;
+						stream << ", Max Length: ";
+						stream << max_length;
 						stream << "}";
 					}
-					break;
-
-				case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
-					{
-						buffer->seekStart();
-						auto object_id = buffer->readU16(13);
-						auto subevent_id = buffer->readU8(4);
-						stream << " {Object ID: ";
-						stream << fmt::to_string(object_id);
-						stream << ", Subevent: ";
-						stream << fmt::to_string(subevent_id);
-						stream << "}";
-					}
-					break;
-
-				case REPORT_MYSELF_EVENT:
-					{
-						buffer->seekStart();
-						auto type = buffer->readU32();
-						auto extra = buffer->readU32();
-						stream << " {Type: ";
-						stream << fmt::to_string(type);
-						stream << ", Extra: ";
-						stream << fmt::to_string(extra);
-						stream << "}";
-					}
-					break;
-
-				case CLEAR_AREA_EVENT:
-					{
-						buffer->seekStart();
-						stream << CClearAreaEvent(buffer).toString();
-					}
-					break;
-
-				case START_PROJECTILE_EVENT:
-					{
-						buffer->seekStart();
-						stream << CStartProjectileEvent(buffer).toString();
-					}
-					break;
-
-				case SCRIPT_WORLD_STATE_EVENT:
-					{
-						buffer->seekStart();
-
-						auto type = buffer->readU8(4);
-						auto change_state = buffer->readBool();
-
-						CGameScriptId id;
-						id.read(*buffer);
-
-						if (type == NET_WORLD_STATE_ROPE)
-						{
-							buffer->SkipBits(9); // rope id
-							buffer->SkipBits(19); // pos x (float!)
-							buffer->SkipBits(19); // pos y (float!)
-							buffer->SkipBits(19); // pos z (float!)
-							buffer->SkipBits(19); // rot x (float!)
-							buffer->SkipBits(19); // rot y (float!)
-							buffer->SkipBits(19); // rot z (float!)
-							float max_length = buffer->readSignedFloat(16, 100.0f);
-							auto type = buffer->readI32(4);
-							float init_length = buffer->readSignedFloat(16, 100.0f);
-							float min_length = buffer->readSignedFloat(16, 100.0f);
-
-							stream << ", Subtype: Rope, {Type: ";
-							stream << type;
-							stream << ", Init Length: ";
-							stream << init_length;
-							stream << ", Min Length: ";
-							stream << min_length;
-							stream << ", Max Length: ";
-							stream << max_length;
-							stream << "}";
-						}
-					}
-					break;
 				}
-				Util::toast(stream.str(), tf);
-				buffer->seekStart();
+				break;
 			}
-			if (auto tf = flow_event_reactions_to_toast_flags(reactions))
-			{
-				Util::toast(LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", tally.getFullName().getLocalisedUtf8()), FMT_ARG("player", sender_ap.getName())), tf);
-			}
-			sender_ap.applyReactions(reactions, std::move(tally));
+			Util::toast(stream.str(), tf);
+			buffer->seekStart();
+		}
+		if (auto tf = flow_event_reactions_to_toast_flags(reactions))
+		{
+			Util::toast(LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", tally.getFullName().getLocalisedUtf8()), FMT_ARG("player", sender_ap.getName())), tf);
+		}
+		sender_ap.applyReactions(reactions, std::move(tally));
+		return NetEventEarlyExit::NONE;
+	}
+
+	void __fastcall rage_netEventMgr_ProcessEventData(rage::netEventMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* receiver, netGameEventId_t event_id, int event_index, int event_handled_bitset, __int64 bitbuffer_size, rage::datBitBuffer* buffer)
+	{
+		AbstractPlayer sender_ap(sender->player_id);
+		floweventreaction_t reactions = 0;
+		NetEventEarlyExit early_exit = NetEventEarlyExit::NONE;
+		__try
+		{
+			early_exit = processNetEventBody(sender_ap, sender, event_id, buffer, reactions);
 		}
 		__EXCEPTIONAL()
 		{
 		}
-		if (reactions & REACTION_BLOCK)
+		if (early_exit == NetEventEarlyExit::BLOCK
+			|| (early_exit == NetEventEarlyExit::NONE && (reactions & REACTION_BLOCK))
+			)
 		{
-		block_net_event:
 			__try
 			{
 				pointers::send_net_event_ack(mgr, sender, receiver, event_index, event_handled_bitset);
@@ -3738,230 +3805,227 @@ namespace Stand::hooks
 		}
 		else
 		{
-		allow_net_event:
 			allow_net_event_impl(mgr, sender, receiver, event_id, event_index, event_handled_bitset, bitbuffer_size, buffer);
 		}
 	}
 
-	void __fastcall CEventGroupScriptNetwork_DispatchEvent(CEventGroupScriptNetwork* thisptr, CEventNetwork* event)
+	// Has destructible locals per case (std::string, Label temporaries from LOC/LANG_GET/LANG_FMT, std::shared_ptr<int[]>, etc.), so this must not itself contain a __try.
+	static bool dispatchScriptNetworkEvent(CEventNetwork* event)
 	{
-		__try
+		const auto type_id = event->GetEventType();
+		switch (type_id)
 		{
-			const auto type_id = event->GetEventType();
-			switch (type_id)
-			{
 #ifdef STAND_DEBUG
-			case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_STALL:
-				Util::toast("Interesting: CEventNetworkRemovedFromSessionDueToStall");
-				break;
+		case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_STALL:
+			Util::toast("Interesting: CEventNetworkRemovedFromSessionDueToStall");
+			break;
 
-			case EVENT_VOICE_SESSION_STARTED:
-				Util::toast("Interesting: CEventNetworkVoiceSessionStarted", TOAST_ALL);
-				break;
+		case EVENT_VOICE_SESSION_STARTED:
+			Util::toast("Interesting: CEventNetworkVoiceSessionStarted", TOAST_ALL);
+			break;
 
-			case EVENT_VOICE_SESSION_ENDED:
-				Util::toast("Interesting: CEventNetworkVoiceSessionEnded", TOAST_ALL);
-				break;
+		case EVENT_VOICE_SESSION_ENDED:
+			Util::toast("Interesting: CEventNetworkVoiceSessionEnded", TOAST_ALL);
+			break;
 
-			case EVENT_VOICE_CONNECTION_REQUESTED:
-				Util::toast("Interesting: CEventNetworkVoiceConnectionRequested", TOAST_ALL);
-				break;
+		case EVENT_VOICE_CONNECTION_REQUESTED:
+			Util::toast("Interesting: CEventNetworkVoiceConnectionRequested", TOAST_ALL);
+			break;
 
-			case EVENT_VOICE_CONNECTION_TERMINATED:
-				Util::toast("Interesting: CEventNetworkVoiceConnectionTerminated", TOAST_ALL);
-				break;
+		case EVENT_VOICE_CONNECTION_TERMINATED:
+			Util::toast("Interesting: CEventNetworkVoiceConnectionTerminated", TOAST_ALL);
+			break;
 
-			case EVENT_NETWORK_FOLLOW_INVITE_RECEIVED:
-				Util::toast("Interesting: CEventNetworkFollowInviteReceived", TOAST_ALL);
-				break;
+		case EVENT_NETWORK_FOLLOW_INVITE_RECEIVED:
+			Util::toast("Interesting: CEventNetworkFollowInviteReceived", TOAST_ALL);
+			break;
 #endif
 
-			case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_COMPLAINTS:
-				if (g_hooking.toast_love_letter_kick
-					&& !is_session_transition_active(true)
-					)
-				{
-					Util::toast(LOC("LLKT_T"), TOAST_ALL);
-				}
-				break;
-
-			case EVENT_NETWORK_CONNECTION_TIMEOUT:
-				{
-					int args[1 * 2]{};
-					event->RetrieveData(args, sizeof(args));
-					if (auto gamer_info = AbstractPlayer(args[0]).getGamerInfoNoFallback())
-					{
-						LeaveReasons::onTimedOut(*gamer_info);
-					}
-				}
-				break;
-
-			case EVENT_NETWORK_PLAYER_COLLECTED_AMBIENT_PICKUP:
+		case EVENT_NETWORK_REMOVED_FROM_SESSION_DUE_TO_COMPLAINTS:
+			if (g_hooking.toast_love_letter_kick
+				&& !is_session_transition_active(true)
+				)
 			{
-				int args[9 * 2]{};
-				event->RetrieveData(args, sizeof(args)); // Within the function we are calling here, it has a size check. If it doesn't match, we don't get the data.
+				Util::toast(LOC("LLKT_T"), TOAST_ALL);
+			}
+			break;
 
-				if (args[4] != g_player)
+		case EVENT_NETWORK_CONNECTION_TIMEOUT:
+			{
+				int args[1 * 2]{};
+				event->RetrieveData(args, sizeof(args));
+				if (auto gamer_info = AbstractPlayer(args[0]).getGamerInfoNoFallback())
 				{
-					break;
-				}
-				std::string pickup_toast{};
-				floweventreaction_t reactions = g_hooking.flow_event_reactions[FlowEvent::PUP_ANY].getReactions();
-				switch (args[0])
-				{
-				case ATSTRINGHASH("pickup_money_variable"):
-				case ATSTRINGHASH("PICKUP_VEHICLE_MONEY_VARIABLE"):
-				case ATSTRINGHASH("pickup_money_case"):
-				case ATSTRINGHASH("pickup_money_wallet"):
-				case ATSTRINGHASH("pickup_money_purse"):
-				case ATSTRINGHASH("pickup_money_dep_bag"):
-				case ATSTRINGHASH("pickup_money_med_bag"):
-				case ATSTRINGHASH("pickup_money_paper_bag"):
-				case ATSTRINGHASH("pickup_money_security_case"):
-				case ATSTRINGHASH("pickup_gang_attack_money"):
-					// Cash
-					pickup_toast = LANG_GET("PTX_CASHPUP_T");
-					reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_CASH].getReactions();
-					break;
-
-				case ATSTRINGHASH("pickup_custom_script"):
-				case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_FIXED_INCAR"):
-				case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_SMALL"):
-				case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_WITH_PASSENGERS"):
-					if (args[6] == ATSTRINGHASH("bkr_prop_coke_boxeddoll") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_sasquatch") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_beast") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrgeneric") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrcomm") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_pogo") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_prbubble") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_imporage") ||
-						args[6] == ATSTRINGHASH("vw_prop_vw_colle_alien"))
-					{
-						if (((unsigned int)args[2]) > 99)
-						{
-							// Invalid
-							pickup_toast = LANG_GET("PTX_IPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
-						}
-						else
-						{
-							// RP
-							pickup_toast = LANG_GET("PTX_RPPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
-						}
-						break;
-					}
-					if (args[6] == ATSTRINGHASH("vw_prop_vw_lux_card_01a"))
-					{
-						if (((unsigned int)args[2]) > 53)
-						{
-							// Invalid
-							pickup_toast = LANG_GET("PTX_IPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
-						}
-						else
-						{
-							// RP
-							pickup_toast = LANG_GET("PTX_RPPUP_T");
-							reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
-						}
-						break;
-					}
-					[[fallthrough]];
-				default:
-					// Any
-					if (reactions & REACTION_TOAST)
-					{
-						Util::toast(LANG_FMT("PTX_APUP_T", joaatToString(args[6])), TOAST_DEFAULT);
-					}
-					break;
-				}
-				if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
-				{
-					Util::toast(std::move(std::string(pickup_toast.empty() ? LANG_GET("PTX_APUP_L") : pickup_toast).append(fmt::format(": {}, {}, {}, {}, {}, {}, {}", args[0], args[1], args[2], args[3], args[4], args[5], joaatToString(args[6])))), tf);
-				}
-				if (!pickup_toast.empty())
-				{
-					if (auto tf = flow_event_reactions_to_toast_flags(reactions))
-					{
-						Util::toast(std::move(pickup_toast), tf);
-					}
-				}
-				if (reactions & REACTION_BLOCK)
-				{
-					return;
+					LeaveReasons::onTimedOut(*gamer_info);
 				}
 			}
 			break;
 
-			case EVENT_NETWORK_DAMAGE_ENTITY:
-				if (!is_session_transition_active(true))
+		case EVENT_NETWORK_PLAYER_COLLECTED_AMBIENT_PICKUP:
+		{
+			int args[9 * 2]{};
+			event->RetrieveData(args, sizeof(args)); // Within the function we are calling here, it has a size check. If it doesn't match, we don't get the data.
+
+			if (args[4] != g_player)
+			{
+				break;
+			}
+			std::string pickup_toast{};
+			floweventreaction_t reactions = g_hooking.flow_event_reactions[FlowEvent::PUP_ANY].getReactions();
+			switch (args[0])
+			{
+			case ATSTRINGHASH("pickup_money_variable"):
+			case ATSTRINGHASH("PICKUP_VEHICLE_MONEY_VARIABLE"):
+			case ATSTRINGHASH("pickup_money_case"):
+			case ATSTRINGHASH("pickup_money_wallet"):
+			case ATSTRINGHASH("pickup_money_purse"):
+			case ATSTRINGHASH("pickup_money_dep_bag"):
+			case ATSTRINGHASH("pickup_money_med_bag"):
+			case ATSTRINGHASH("pickup_money_paper_bag"):
+			case ATSTRINGHASH("pickup_money_security_case"):
+			case ATSTRINGHASH("pickup_gang_attack_money"):
+				// Cash
+				pickup_toast = LANG_GET("PTX_CASHPUP_T");
+				reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_CASH].getReactions();
+				break;
+
+			case ATSTRINGHASH("pickup_custom_script"):
+			case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_FIXED_INCAR"):
+			case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_SMALL"):
+			case ATSTRINGHASH("PICKUP_PORTABLE_CRATE_UNFIXED_INCAR_WITH_PASSENGERS"):
+				if (args[6] == ATSTRINGHASH("bkr_prop_coke_boxeddoll") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_sasquatch") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_beast") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrgeneric") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_rsrcomm") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_pogo") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_prbubble") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_imporage") ||
+					args[6] == ATSTRINGHASH("vw_prop_vw_colle_alien"))
 				{
-					int args[13 * 2]{};
-					event->RetrieveData(args, sizeof(args));
-
-					if (Hash weapon = args[6 * 2]; weapon != ATSTRINGHASH("WEAPON_EXPLOSION"))
+					if (((unsigned int)args[2]) > 99)
 					{
-#if INVALID_GUID == -1
-						AbstractEntity attacker_ped = AbstractEntity::get(args[1 * 2]);
-#else
-						AbstractEntity attacker_ped = AbstractEntity::invalid();
-						if (args[1 * 2] != -1)
-						{
-							attacker_ped = AbstractEntity::get(args[1 * 2]);
-						}
-#endif
-						if (attacker_ped.isAPlayer())
-						{
-							auto attacker = attacker_ped.getPlayer();
+						// Invalid
+						pickup_toast = LANG_GET("PTX_IPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
+					}
+					else
+					{
+						// RP
+						pickup_toast = LANG_GET("PTX_RPPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
+					}
+					break;
+				}
+				if (args[6] == ATSTRINGHASH("vw_prop_vw_lux_card_01a"))
+				{
+					if (((unsigned int)args[2]) > 53)
+					{
+						// Invalid
+						pickup_toast = LANG_GET("PTX_IPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_INVALID].getReactions();
+					}
+					else
+					{
+						// RP
+						pickup_toast = LANG_GET("PTX_RPPUP_T");
+						reactions |= g_hooking.flow_event_reactions[FlowEvent::PUP_RP].getReactions();
+					}
+					break;
+				}
+				[[fallthrough]];
+			default:
+				// Any
+				if (reactions & REACTION_TOAST)
+				{
+					Util::toast(LANG_FMT("PTX_APUP_T", joaatToString(args[6])), TOAST_DEFAULT);
+				}
+				break;
+			}
+			if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
+			{
+				Util::toast(std::move(std::string(pickup_toast.empty() ? LANG_GET("PTX_APUP_L") : pickup_toast).append(fmt::format(": {}, {}, {}, {}, {}, {}, {}", args[0], args[1], args[2], args[3], args[4], args[5], joaatToString(args[6])))), tf);
+			}
+			if (!pickup_toast.empty())
+			{
+				if (auto tf = flow_event_reactions_to_toast_flags(reactions))
+				{
+					Util::toast(std::move(pickup_toast), tf);
+				}
+			}
+			if (reactions & REACTION_BLOCK)
+			{
+				return true;
+			}
+		}
+		break;
 
-							// Attacking While Invulnerable
-							if (attacker_ped.isInvulnerable()
-								&& !attacker_ped.isDead()
-								&& !attacker.isInInterior() // proxmine would be valid for any interior, also missiles like in terrorbyte or kosatka
-								&& !attacker.isUsingRcVehicle()
-								&& !(attacker.getReactions(FlowEvent::SYNCIN_CLONE_UPDATE, false) & REACTION_BLOCK)
+		case EVENT_NETWORK_DAMAGE_ENTITY:
+			if (!is_session_transition_active(true))
+			{
+				int args[13 * 2]{};
+				event->RetrieveData(args, sizeof(args));
+
+				if (Hash weapon = args[6 * 2]; weapon != ATSTRINGHASH("WEAPON_EXPLOSION"))
+				{
+#if INVALID_GUID == -1
+					AbstractEntity attacker_ped = AbstractEntity::get(args[1 * 2]);
+#else
+					AbstractEntity attacker_ped = AbstractEntity::invalid();
+					if (args[1 * 2] != -1)
+					{
+						attacker_ped = AbstractEntity::get(args[1 * 2]);
+					}
+#endif
+					if (attacker_ped.isAPlayer())
+					{
+						auto attacker = attacker_ped.getPlayer();
+
+						// Attacking While Invulnerable
+						if (attacker_ped.isInvulnerable()
+							&& !attacker_ped.isDead()
+							&& !attacker.isInInterior() // proxmine would be valid for any interior, also missiles like in terrorbyte or kosatka
+							&& !attacker.isUsingRcVehicle()
+							&& !(attacker.getReactions(FlowEvent::SYNCIN_CLONE_UPDATE, false) & REACTION_BLOCK)
+							)
+						{
+							auto* attacker_cmd = attacker.getCommand();
+							if (attacker_cmd != nullptr
+								&& GET_MILLIS_SINCE(attacker_cmd->invulnerable_since) > 3000
+								&& GET_MILLIS_SINCE(attacker_cmd->latest_death_at) > 3000
 								)
 							{
-								auto* attacker_cmd = attacker.getCommand();
-								if (attacker_cmd != nullptr
-									&& GET_MILLIS_SINCE(attacker_cmd->invulnerable_since) > 3000
-									&& GET_MILLIS_SINCE(attacker_cmd->latest_death_at) > 3000
+								attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_GODATK, 75);
+							}
+						}
+
+						// Modded Driveby Weapon
+						{
+							// Check if attacker is in a vehicle
+							if (auto model = attacker.getCurrentVehicleModel(); model != 0)
+							{
+								// Ensure weapon is still selected
+								if (auto cped = attacker_ped.getCPed();
+									cped
+									&& cped->weapon_manager
+									&& cped->weapon_manager->selector.selected_weapon_hash == weapon
 									)
 								{
-									attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_GODATK, 75);
-								}
-							}
-
-							// Modded Driveby Weapon
-							{
-								// Check if attacker is in a vehicle
-								if (auto model = attacker.getCurrentVehicleModel(); model != 0)
-								{
-									// Ensure weapon is still selected
-									if (auto cped = attacker_ped.getCPed();
-										cped
-										&& cped->weapon_manager
-										&& cped->weapon_manager->selector.selected_weapon_hash == weapon
-										)
+									if (auto* attacker_cmd = attacker.getCommand())
 									{
-										if (auto* attacker_cmd = attacker.getCommand())
+										// Check if attacker was in vehicle for at least 5 seconds
+										if (GET_MILLIS_SINCE(attacker_cmd->latest_vehicle_entry_at) >= 5000)
 										{
-											// Check if attacker was in vehicle for at least 5 seconds
-											if (GET_MILLIS_SINCE(attacker_cmd->latest_vehicle_entry_at) >= 5000)
+											if (auto w = Weapon::find(weapon))
 											{
-												if (auto w = Weapon::find(weapon))
+												if (auto veh_model = model.getVehicleModelInfo())
 												{
-													if (auto veh_model = model.getVehicleModelInfo())
+													// Finally, check if the weapon is not allow for vehicle
+													if (veh_model->m_pVehicleLayoutInfo
+														&& !veh_model->m_pVehicleLayoutInfo->doesAnySeatAllowWeapon(*w)
+														)
 													{
-														// Finally, check if the weapon is not allow for vehicle
-														if (veh_model->m_pVehicleLayoutInfo
-															&& !veh_model->m_pVehicleLayoutInfo->doesAnySeatAllowWeapon(*w)
-															)
-														{
-															attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_DRIVEB, fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), Weapon::find(weapon)->getName(), model.getLabel().getLiteralUtf8()));
-														}
+														attacker_cmd->getAndApplyReactions(attacker, FlowEvent::MOD_DRIVEB, fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), Weapon::find(weapon)->getName(), model.getLabel().getLiteralUtf8()));
 													}
 												}
 											}
@@ -3971,63 +4035,88 @@ namespace Stand::hooks
 							}
 						}
 					}
-
-					/*Ped attackee_ped = args[0 * 2];
-					Ped attacker_ped = args[1 * 2];
-					if (attackee_ped != attacker_ped)
-					{
-						if (PED::IS_PED_A_PLAYER(attackee_ped) && PED::IS_PED_A_PLAYER(attacker_ped))
-						{
-							Player attackee = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attackee_ped);
-							Player attacker = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attacker_ped);
-
-							// damage (float): args[2 * 2]
-
-							util::toast(fmt::format(
-								"{} damaged {} with {}{}{}",
-								AbstractPlayer(attackee).get_name(),
-								AbstractPlayer(attacker).get_name(),
-								reverseJoaat(args[6 * 2]),
-								args[5 * 2] == 1 ? " fatally" : "",
-								AbstractEntity::get(attacker_ped).is_invulnerable() ? " while invulnerable" : ""
-							), TOAST_ALL, false);
-						}
-					}*/
 				}
-				break;
 
-			case EVENT_NETWORK_PRIMARY_CLAN_CHANGED:
-				if (g_hooking.block_bail_crew)
+				/*Ped attackee_ped = args[0 * 2];
+				Ped attacker_ped = args[1 * 2];
+				if (attackee_ped != attacker_ped)
 				{
-					return;
-				}
-				break;
-
-			case EVENT_TEXT_MESSAGE_RECEIVED:
-				{
-					constexpr auto args_size = (29 * 2);
-					auto args = std::make_shared<int[]>(args_size);
-					event->RetrieveData(args.get(), args_size * sizeof(int));
-
-					AbstractPlayer sender = packet_src;
-					Player blamed_sender = NETWORK::NETWORK_GET_PLAYER_FROM_GAMER_HANDLE((Any*)&args[16 * 2]);
-					if (!packet_src.isValid())
+					if (PED::IS_PED_A_PLAYER(attackee_ped) && PED::IS_PED_A_PLAYER(attacker_ped))
 					{
-						sender = blamed_sender;
-					}
+						Player attackee = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attackee_ped);
+						Player attacker = NETWORK::NETWORK_GET_PLAYER_INDEX_FROM_PED(attacker_ped);
 
-					if (processSms(sender, (const char*)&args[0]))
-					{
-						return;
+						// damage (float): args[2 * 2]
+
+						util::toast(fmt::format(
+							"{} damaged {} with {}{}{}",
+							AbstractPlayer(attackee).get_name(),
+							AbstractPlayer(attacker).get_name(),
+							reverseJoaat(args[6 * 2]),
+							args[5 * 2] == 1 ? " fatally" : "",
+							AbstractEntity::get(attacker_ped).is_invulnerable() ? " while invulnerable" : ""
+						), TOAST_ALL, false);
 					}
-				}
-				break;
+				}*/
 			}
-			return OG(CEventGroupScriptNetwork_DispatchEvent)(thisptr, event);
+			break;
+
+		case EVENT_NETWORK_PRIMARY_CLAN_CHANGED:
+			if (g_hooking.block_bail_crew)
+			{
+				return true;
+			}
+			break;
+
+		case EVENT_TEXT_MESSAGE_RECEIVED:
+			{
+				constexpr auto args_size = (29 * 2);
+				auto args = std::make_shared<int[]>(args_size);
+				event->RetrieveData(args.get(), args_size * sizeof(int));
+
+				AbstractPlayer sender = packet_src;
+				Player blamed_sender = NETWORK::NETWORK_GET_PLAYER_FROM_GAMER_HANDLE((Any*)&args[16 * 2]);
+				if (!packet_src.isValid())
+				{
+					sender = blamed_sender;
+				}
+
+				if (processSms(sender, (const char*)&args[0]))
+				{
+					return true;
+				}
+			}
+			break;
+		}
+		return false;
+	}
+
+	void __fastcall CEventGroupScriptNetwork_DispatchEvent(CEventGroupScriptNetwork* thisptr, CEventNetwork* event)
+	{
+		bool handled = false;
+		__try
+		{
+			handled = dispatchScriptNetworkEvent(event);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+		if (!handled)
+		{
+			OG(CEventGroupScriptNetwork_DispatchEvent)(thisptr, event);
+		}
+	}
+
+	// Constructs a SessionPlayer (has a std::string member), so this must not itself contain a __try.
+	static void recordPendingObjectIdRequest(const rage::rlGamerInfo& info)
+	{
+		CommandBlockBlockJoin::pending_object_ids.emplace_back(SessionPlayer(info));
+	}
+
+	// Constructs a SessionPlayer (has a std::string member), so this must not itself contain a __try.
+	static void recordPendingScriptJoinAck(const rage::rlGamerInfo& info)
+	{
+		CommandBlockBlockJoin::pending_script_join_acks.emplace_back(SessionPlayer(info));
 	}
 
 	bool __fastcall rage_netPlayerMgrBase_SendBuffer(rage::netPlayerMgrBase* a1, const rage::netPlayer* recipient, const void* data, unsigned int size, unsigned int sendFlags, rage::netSequence* seq, const rage::netPlayer* sender)
@@ -4041,7 +4130,7 @@ namespace Stand::hooks
 			if (id == REQUEST_OBJECT_IDS_MSG)
 			{
 				//g_logger.log(fmt::format("Sending RequestObjectIdsMsg to {}", receiver->GetLogName()));
-				CommandBlockBlockJoin::pending_object_ids.emplace_back(SessionPlayer(*recipient->GetGamerInfoImpl()));
+				recordPendingObjectIdRequest(*recipient->GetGamerInfoImpl());
 			}
 			else if (id == MSG_SCRIPT_JOIN)
 			{
@@ -4055,7 +4144,7 @@ namespace Stand::hooks
 				}
 				else
 				{
-					CommandBlockBlockJoin::pending_script_join_acks.emplace_back(SessionPlayer(*recipient->GetGamerInfoImpl()));
+					recordPendingScriptJoinAck(*recipient->GetGamerInfoImpl());
 				}
 			}
 			return OG(rage_netPlayerMgrBase_SendBuffer)(a1, recipient, data, size, sendFlags, seq, sender);
@@ -4114,6 +4203,16 @@ namespace Stand::hooks
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 
+	// fmt::format()/LANG_FMT() produce std::string temporaries, so this must not itself contain a __try.
+	static void reportScriptFroze(rage::scrProgram* program, rage::scrThreadContext* thread_ctx)
+	{
+#ifdef STAND_DEBUG
+		Util::toast(fmt::format("{} script froze at {} in func_{}", program->m_name, thread_ctx->m_instruction_pointer, program->getFuncIndexByCodeIndex(thread_ctx->m_instruction_pointer) - 1), TOAST_ALL);
+#else
+		Util::toast(LANG_FMT("SVM_FRZ", program->m_name), TOAST_ALL);
+#endif
+	}
+
 	static uint32_t __fastcall execute_script(void** stack, int64_t** script_globals, rage::scrProgram* program, rage::scrThreadContext* thread_ctx)
 	{
 		uint32_t ret = rage::scrThread::ABORTED;
@@ -4145,11 +4244,7 @@ namespace Stand::hooks
 		}
 		if (ret == rage::scrThread::STAND_INFLOOP)
 		{
-#ifdef STAND_DEBUG
-			Util::toast(fmt::format("{} script froze at {} in func_{}", program->m_name, thread_ctx->m_instruction_pointer, program->getFuncIndexByCodeIndex(thread_ctx->m_instruction_pointer) - 1), TOAST_ALL);
-#else
-			Util::toast(LANG_FMT("SVM_FRZ", program->m_name), TOAST_ALL);
-#endif
+			reportScriptFroze(program, thread_ctx);
 
 			thread_ctx->m_state = rage::scrThread::ABORTED;
 			ret = rage::scrThread::ABORTED;
@@ -4353,6 +4448,51 @@ namespace Stand::hooks
 	}
 
 #if RG_HAS_BULK
+	// Has destructible locals (rapidjson::Document, std::string), so this must not itself contain a __try.
+	static void processGamerStateTaskResponse(const char* response)
+	{
+		rapidjson::Document document;
+		if (!document.Parse(response).HasParseError() && document.IsObject())
+		{
+			const auto rid = str2int<uint64_t>(document["_id"].GetString() + 3).value();
+			if (auto* g = RemoteGamer::getSimple(rid))
+			{
+				std::string gsinfo = document.FindMember(soup::ObfusString("gsinfo").c_str())->value.GetString();
+				std::optional<int64_t> gstype{};
+				auto mem_gstype = document.FindMember(soup::ObfusString("gstype").c_str());
+				if (mem_gstype != document.MemberEnd())
+				{
+					gstype = mem_gstype->value.GetInt64();
+				}
+
+				g->response_from_detailed = false;
+				if (gsinfo.empty())
+				{
+					if (!gstype.has_value())
+					{
+						g->processGamerState(false, "", 0); // offline
+					}
+					else
+					{
+						g->processGamerState(true, "", 0); // story mode
+					}
+				}
+				else
+				{
+					SOUP_IF_LIKELY (gstype.has_value())
+					{
+						g->processGamerState(true, std::move(gsinfo), gstype.value());
+					}
+					else
+					{
+						// If no value, default to public. Rare, but can happen.
+						g->processGamerState(true, std::move(gsinfo), GS_PUBLIC);
+					}
+				}
+			}
+		}
+	}
+
 	bool rage_rlGetGamerStateTask_ParseResults(rage::rlGetGamerStateTask* task)
 	{
 		__try
@@ -4365,46 +4505,7 @@ namespace Stand::hooks
 					continue;
 				}
 				//g_logger.log(response);
-				rapidjson::Document document;
-				if (!document.Parse(response).HasParseError() && document.IsObject())
-				{
-					const auto rid = str2int<uint64_t>(document["_id"].GetString() + 3).value();
-					if (auto* g = RemoteGamer::getSimple(rid))
-					{
-						std::string gsinfo = document.FindMember(soup::ObfusString("gsinfo").c_str())->value.GetString();
-						std::optional<int64_t> gstype{};
-						auto mem_gstype = document.FindMember(soup::ObfusString("gstype").c_str());
-						if (mem_gstype != document.MemberEnd())
-						{
-							gstype = mem_gstype->value.GetInt64();
-						}
-
-						g->response_from_detailed = false;
-						if (gsinfo.empty())
-						{
-							if (!gstype.has_value())
-							{
-								g->processGamerState(false, "", 0); // offline
-							}
-							else
-							{
-								g->processGamerState(true, "", 0); // story mode
-							}
-						}
-						else
-						{
-							SOUP_IF_LIKELY (gstype.has_value())
-							{
-								g->processGamerState(true, std::move(gsinfo), gstype.value());
-							}
-							else
-							{
-								// If no value, default to public. Rare, but can happen.
-								g->processGamerState(true, std::move(gsinfo), GS_PUBLIC);
-							}
-						}
-					}
-				}
+				processGamerStateTaskResponse(response);
 			}
 		}
 		__EXCEPTIONAL()
@@ -4727,6 +4828,20 @@ namespace Stand::hooks
 		return OG(CExtraContentManager_GetCRC)(_this, initValue);
 	}
 
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryReceivedCloneCreateAckOriginal(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.received_clone_create_ack_hook.getOriginal<decltype(&received_clone_create_ack)>()(mgr, sender, recipient, object_id, ack_code);
+		}
+		//__except (EXCEPTION_EXECUTE_HANDLER)
+		__EXCEPTIONAL()
+		{
+			//t.add(FlowEvent::SE_CRASH, "CA");
+		}
+	}
+
 	void received_clone_create_ack(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code)
 	{
 		sync_src = sender->player_id;
@@ -4734,17 +4849,22 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCIN_ACK_CLONE_CREATE);
 		if (!(t.reactions & REACTION_BLOCK))
 		{
-			__try
-			{
-				g_hooking.received_clone_create_ack_hook.getOriginal<decltype(&received_clone_create_ack)>()(mgr, sender, recipient, object_id, ack_code);
-			}
-			//__except (EXCEPTION_EXECUTE_HANDLER)
-			__EXCEPTIONAL()
-			{
-				//t.add(FlowEvent::SE_CRASH, "CA");
-			}
+			tryReceivedCloneCreateAckOriginal(mgr, sender, recipient, object_id, ack_code, t);
 		}
 		t.applyReactionsIn();
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryReceivedCloneSyncAckOriginal(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, void* buffer, uint16_t object_id, uint32_t ack_code, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.received_clone_sync_ack_hook.getOriginal<decltype(&received_clone_sync_ack)>()(mgr, sender, recipient, buffer, object_id, ack_code);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			t.add(FlowEvent::SE_CRASH, "UA");
+		}
 	}
 
 	void received_clone_sync_ack(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, void* buffer, uint16_t object_id, uint32_t ack_code)
@@ -4754,16 +4874,22 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCIN_ACK_CLONE_UPDATE);
 		if (!(t.reactions & REACTION_BLOCK))
 		{
-			__try
-			{
-				g_hooking.received_clone_sync_ack_hook.getOriginal<decltype(&received_clone_sync_ack)>()(mgr, sender, recipient, buffer, object_id, ack_code);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				t.add(FlowEvent::SE_CRASH, "UA");
-			}
+			tryReceivedCloneSyncAckOriginal(mgr, sender, recipient, buffer, object_id, ack_code, t);
 		}
 		t.applyReactionsIn();
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryReceivedCloneRemoveAckOriginal(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.received_clone_remove_ack_hook.getOriginal<decltype(&received_clone_remove_ack)>()(mgr, sender, recipient, object_id, ack_code);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			t.add(FlowEvent::SE_CRASH, "DA");
+		}
 	}
 
 	void received_clone_remove_ack(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, uint16_t object_id, uint32_t ack_code)
@@ -4773,36 +4899,35 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCIN_ACK_CLONE_DELETE);
 		if (!(t.reactions & REACTION_BLOCK))
 		{
-			__try
-			{
-				g_hooking.received_clone_remove_ack_hook.getOriginal<decltype(&received_clone_remove_ack)>()(mgr, sender, recipient, object_id, ack_code);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				t.add(FlowEvent::SE_CRASH, "DA");
-			}
+			tryReceivedCloneRemoveAckOriginal(mgr, sender, recipient, object_id, ack_code, t);
 		}
 		t.applyReactionsIn();
+	}
+
+	// Has a destructible std::string local, so this must not itself contain a __try.
+	static void logBlockedSyncBody(floweventreaction_t& reactions, const EventLabel& event_name, rage::netObject* netObject, rage::NetworkObjectType object_type)
+	{
+		if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
+		{
+			std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", event_name.getName()), FMT_ARG("player", sync_src.getName()));
+			if (event_name.hasNonRawName())
+			{
+				message.append(": ").append(event_name.raw_name.getLocalisedUtf8());
+			}
+			message.append(": ").append(NetworkObjectType_toString(object_type));
+			if (netObject != nullptr)
+			{
+				message.append("{id=").append(fmt::to_string(netObject->object_id)).append(", obj_type=").append(NetworkObjectType_names[netObject->object_type]).push_back('}');
+			}
+			Util::toast(std::move(message), tf);
+		}
 	}
 
 	static void logBlockedSync(floweventreaction_t& reactions, const EventLabel& event_name, rage::netObject* netObject, rage::NetworkObjectType object_type)
 	{
 		__try
 		{
-			if (auto tf = flow_event_reactions_to_logger_toast_flags(reactions))
-			{
-				std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", event_name.getName()), FMT_ARG("player", sync_src.getName()));
-				if (event_name.hasNonRawName())
-				{
-					message.append(": ").append(event_name.raw_name.getLocalisedUtf8());
-				}
-				message.append(": ").append(NetworkObjectType_toString(object_type));
-				if (netObject != nullptr)
-				{
-					message.append("{id=").append(fmt::to_string(netObject->object_id)).append(", obj_type=").append(NetworkObjectType_names[netObject->object_type]).push_back('}');
-				}
-				Util::toast(std::move(message), tf);
-			}
+			logBlockedSyncBody(reactions, event_name, netObject, object_type);
 		}
 		__EXCEPTIONAL()
 		{
@@ -4933,6 +5058,53 @@ namespace Stand::hooks
 	static NetObjPlayerStateSaver nopss;
 #endif
 
+#if DEBUG_SYNCTREE_BUFFER_OVERRUNS
+	// soup::ObfusString(...).str() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void toastSyncTreeStateSaverRestored()
+	{
+		Util::toast(soup::ObfusString("processReceivedSyncTree: stss had to restore data!").str(), TOAST_ALL);
+	}
+#endif
+
+#if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
+	// soup::ObfusString(...).str() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void toastNetObjPlayerStateSaverRestored()
+	{
+		Util::toast(soup::ObfusString("processReceivedSyncTree: nopss had to restore data!").str(), TOAST_ALL);
+	}
+#endif
+
+	// Has a destructible std::string local, so this must not itself contain a __try.
+	static void logBlockedSyncTreeBody(rage::datBitBuffer* buffer, rage::NetworkObjectType object_type, bool is_create, EventTally& t)
+	{
+		if (auto tf = flow_event_reactions_to_logger_toast_flags(t.reactions))
+		{
+			std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", t.label.getName()), FMT_ARG("player", sync_src.getName()));
+			if (t.label.hasNonRawName())
+			{
+				message.append(": ").append(t.label.raw_name.getLocalisedUtf8());
+			}
+			message.append(": ");
+			if (sync_was_read)
+			{
+				message.append(current_sync_tree->dump(object_type, is_create));
+			}
+			else if (current_sync_tree != nullptr
+				&& current_sync_tree->object != nullptr
+				)
+			{
+				message.append(current_sync_tree->object->getTypeName()).append("{id=").append(fmt::to_string(current_sync_tree->object->object_id)).append("}");
+			}
+			else
+			{
+				buffer->seekStart();
+				message.append(bitbufferToBitstring(*buffer));
+				buffer->seekEnd();
+			}
+			Util::toast(std::move(message), tf);
+		}
+	}
+
 	static void processReceivedSyncTree(rage::datBitBuffer* buffer, rage::NetworkObjectType object_type, bool is_create, EventTally& t)
 	{
 		if (current_sync_tree != nullptr)
@@ -4942,13 +5114,13 @@ namespace Stand::hooks
 #if DEBUG_SYNCTREE_BUFFER_OVERRUNS
 				if (stss.checkAndRestore(current_sync_tree))
 				{
-					Util::toast(soup::ObfusString("processReceivedSyncTree: stss had to restore data!").str(), TOAST_ALL);
+					toastSyncTreeStateSaverRestored();
 				}
 #endif
 #if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
 				if (nopss.checkAndRestore())
 				{
-					Util::toast(soup::ObfusString("processReceivedSyncTree: nopss had to restore data!").str(), TOAST_ALL);
+					toastNetObjPlayerStateSaverRestored();
 				}
 #endif
 			}
@@ -4958,32 +5130,7 @@ namespace Stand::hooks
 		}
 		__try
 		{
-			if (auto tf = flow_event_reactions_to_logger_toast_flags(t.reactions))
-			{
-				std::string message = LANG_FMT("PTX_NET_R_T_T", FMT_ARG("event", t.label.getName()), FMT_ARG("player", sync_src.getName()));
-				if (t.label.hasNonRawName())
-				{
-					message.append(": ").append(t.label.raw_name.getLocalisedUtf8());
-				}
-				message.append(": ");
-				if (sync_was_read)
-				{
-					message.append(current_sync_tree->dump(object_type, is_create));
-				}
-				else if (current_sync_tree != nullptr
-					&& current_sync_tree->object != nullptr
-					)
-				{
-					message.append(current_sync_tree->object->getTypeName()).append("{id=").append(fmt::to_string(current_sync_tree->object->object_id)).append("}");
-				}
-				else
-				{
-					buffer->seekStart();
-					message.append(bitbufferToBitstring(*buffer));
-					buffer->seekEnd();
-				}
-				Util::toast(std::move(message), tf);
-			}
+			logBlockedSyncTreeBody(buffer, object_type, is_create, t);
 		}
 		__EXCEPTIONAL()
 		{
@@ -4993,6 +5140,13 @@ namespace Stand::hooks
 	static EventTally sync_tally{};
 	static int aborting_sync = 0;
 
+	// EventTally's constructor produces a temporary with a non-trivial destructor
+	// (std::vector member), so this is kept out of the __try'ing functions below.
+	static void resetSyncTally(AbstractPlayer p, flowevent_t init)
+	{
+		sync_tally = EventTally(p, init);
+	}
+
 	// CNetworkObjectMgr::ProcessCloneCreateData
 	void __fastcall received_clone_create(CNetworkObjectMgr* mgr, CNetGamePlayer* sender, CNetGamePlayer* recipient, rage::NetworkObjectType object_type, uint16_t object_id, uint32_t sync_flags, rage::datBitBuffer* buffer, uint32_t timestamp)
 	{
@@ -5000,7 +5154,7 @@ namespace Stand::hooks
 
 		sync_src = sender->player_id;
 
-		sync_tally = EventTally(sync_src, FlowEvent::SYNCIN_CLONE_CREATE);
+		resetSyncTally(sync_src, FlowEvent::SYNCIN_CLONE_CREATE);
 		if (!(sync_tally.reactions & REACTION_BLOCK))
 		{
 			if (object_type >= NUM_NET_OBJ_TYPES)
@@ -5062,7 +5216,7 @@ namespace Stand::hooks
 		sync_src = sender->player_id;
 
 		__int64 ret = 1;
-		sync_tally = EventTally(sync_src, FlowEvent::SYNCIN_CLONE_UPDATE);
+		resetSyncTally(sync_src, FlowEvent::SYNCIN_CLONE_UPDATE);
 		rage::netObject* netObject = mgr->find_object_by_id(object_id, true);
 		if (!(sync_tally.reactions & REACTION_BLOCK))
 		{
@@ -5123,6 +5277,25 @@ namespace Stand::hooks
 		return ret;
 	}
 
+	// Has destructible locals (std::vector, std::string, Label temporaries), so this must not itself contain a __try.
+	static void applyClonePackCrashReaction(floweventreaction_t& reactions)
+	{
+		std::vector<flowevent_t> types{ FlowEvent::SYNCOUT_CLONE_CREATE, FlowEvent::SE_CRASH };
+		sync_src.applyReactions(reactions, std::move(types), LIT(std::move(std::string(LANG_GET("PTX_CRSHE")).append(" (CP)"))));
+	}
+
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryApplyClonePackCrashReaction(floweventreaction_t& reactions)
+	{
+		__try
+		{
+			applyClonePackCrashReaction(reactions);
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	// CNetworkObjectMgr::CloneObject
 	void __fastcall clone_pack(CNetworkObjectMgr* mgr, rage::netObject* netObject, CNetGamePlayer* recipient, rage::datBitBuffer* buffer)
 	{
@@ -5139,14 +5312,7 @@ namespace Stand::hooks
 			{
 				buffer->seekEnd();
 
-				__try
-				{
-					std::vector<flowevent_t> types{ FlowEvent::SYNCOUT_CLONE_CREATE, FlowEvent::SE_CRASH };
-					sync_src.applyReactions(reactions, std::move(types), LIT(std::move(std::string(LANG_GET("PTX_CRSHE")).append(" (CP)"))));
-				}
-				__EXCEPTIONAL()
-				{
-				}
+				tryApplyClonePackCrashReaction(reactions);
 			}
 		}
 	}
@@ -5180,6 +5346,50 @@ namespace Stand::hooks
 	}
 
 	// rage::netObjectMgrBase::CloneObject
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryLogCloneCreateCrash(EventTally& t)
+	{
+		__try
+		{
+			if (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_cs_when_coloading)
+			{
+				t.add(FlowEvent::SE_CRASH, "CS");
+			}
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void trySendCloneCreate(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer, EventTally& t)
+	{
+		__try
+		{
+			if (process_clone_create(mgr, obj, player, buffer))
+			{
+				OG(send_clone_create)(mgr, obj, player, buffer);
+			}
+		}
+		__EXCEPTIONAL()
+		{
+			buffer->seekEnd();
+			tryLogCloneCreateCrash(t);
+		}
+	}
+
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryApplyCloneCreateReactionsOut(EventTally& t)
+	{
+		__try
+		{
+			t.applyReactionsOut();
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
 	void __fastcall send_clone_create(rage::netObjectMgrBase* mgr, rage::netObject* obj, CNetGamePlayer* player, rage::datBitBuffer* buffer)
 	{
 		THREAD_NAME("Sync Send?");
@@ -5203,28 +5413,42 @@ namespace Stand::hooks
 		}
 		SOUP_IF_LIKELY (can_send)
 		{
-			__try
-			{
-				if (process_clone_create(mgr, obj, player, buffer))
-				{
-					OG(send_clone_create)(mgr, obj, player, buffer);
-				}
-			}
-			__EXCEPTIONAL()
-			{
-				buffer->seekEnd();
-				__try
-				{
-					if (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_cs_when_coloading)
-					{
-						t.add(FlowEvent::SE_CRASH, "CS");
-					}
-				}
-				__EXCEPTIONAL()
-				{
-				}
-			}
+			trySendCloneCreate(mgr, obj, player, buffer, t);
 		}
+		tryApplyCloneCreateReactionsOut(t);
+	}
+#endif
+
+#if HAVE_SEND_CLONE_SYNC_HOOK
+	// rage::netObjectMgrMessageHandler::SendCloneSync
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryLogCloneSyncCrash(EventTally& t)
+	{
+		__try
+		{
+			t.add(FlowEvent::SE_CRASH, "US");
+		}
+		__EXCEPTIONAL()
+		{
+		}
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void trySendCloneSync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6, EventTally& t)
+	{
+		__try
+		{
+			g_hooking.send_clone_sync_hook.getOriginal<decltype(&send_clone_sync)>()(mgr, player, obj, a4, a5, a6);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			tryLogCloneSyncCrash(t);
+		}
+	}
+
+	// No destructible locals here: only a reference, so it's safe to __try in this function.
+	static void tryApplyCloneSyncReactionsOut(EventTally& t)
+	{
 		__try
 		{
 			t.applyReactionsOut();
@@ -5233,10 +5457,7 @@ namespace Stand::hooks
 		{
 		}
 	}
-#endif
 
-#if HAVE_SEND_CLONE_SYNC_HOOK
-	// rage::netObjectMgrMessageHandler::SendCloneSync
 	void __fastcall send_clone_sync(rage::netObjectMgrBase* mgr, CNetGamePlayer* player, rage::netObject* obj, __int64 a4, int16_t* a5, char a6)
 	{
 		sync_src = player->player_id;
@@ -5258,28 +5479,9 @@ namespace Stand::hooks
 		}
 		SOUP_IF_LIKELY (can_send)
 		{
-			__try
-			{
-				g_hooking.send_clone_sync_hook.getOriginal<decltype(&send_clone_sync)>()(mgr, player, obj, a4, a5, a6);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				__try
-				{
-					t.add(FlowEvent::SE_CRASH, "US");
-				}
-				__EXCEPTIONAL()
-				{
-				}
-			}
+			trySendCloneSync(mgr, player, obj, a4, a5, a6, t);
 		}
-		__try
-		{
-			t.applyReactionsOut();
-		}
-		__EXCEPTIONAL()
-		{
-		}
+		tryApplyCloneSyncReactionsOut(t);
 	}
 #endif
 
@@ -5371,6 +5573,21 @@ namespace Stand::hooks
 	}
 
 #ifdef STAND_DEV
+#if DEBUG_SYNCTREE_BUFFER_OVERRUNS
+	// fmt::format()/soup::ObfusString(...).str() produce std::string temporaries, so this is kept out of the __try'ing function below.
+	static void toastSyncDataNodeStssRestored(rage::netSyncDataNode* _this)
+	{
+		Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): stss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+	}
+#endif
+#if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
+	// fmt::format()/soup::ObfusString(...).str() produce std::string temporaries, so this is kept out of the __try'ing function below.
+	static void toastSyncDataNodeNopssRestored(rage::netSyncDataNode* _this)
+	{
+		Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): nopss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+	}
+#endif
+
 	bool __fastcall rage_netSyncDataNode_Read(rage::netSyncDataNode* _this, unsigned int serMode, unsigned int actFlags, rage::datBitBuffer* bitBuffer, rage::netLoggingInterface* pLog)
 	{
 		bool ret = OG(rage_netSyncDataNode_Read)(_this, serMode, actFlags, bitBuffer, pLog);
@@ -5379,13 +5596,13 @@ namespace Stand::hooks
 #if DEBUG_SYNCTREE_BUFFER_OVERRUNS
 			if (stss.checkAndRestore(current_sync_tree))
 			{
-				Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): stss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+				toastSyncDataNodeStssRestored(_this);
 			}
 #endif
 #if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
 			if (nopss.checkAndRestore())
 			{
-				Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Read sync node {} ({}): nopss had to restore data!").str()), _this->parent_tree->castAndGetNodeName((rage::NetworkObjectType)_this->parent_tree->object->object_type, _this), (void*)_this), TOAST_ALL);
+				toastSyncDataNodeNopssRestored(_this);
 			}
 #endif
 		}
@@ -5395,6 +5612,13 @@ namespace Stand::hooks
 		return ret;
 	}
 #endif
+
+	// getAndApplyReactionsIn() takes a std::string, so passing a string literal would construct
+	// a temporary with a non-trivial destructor, so this is kept out of the __try'ing function below.
+	static void reportSyncCanApplyCrashT6(AbstractPlayer p)
+	{
+		p.getAndApplyReactionsIn(FlowEvent::SE_CRASH, "T6");
+	}
 
 	// rage::netSyncTree::CanApplyNodeData
 	bool sync_can_apply(rage::netSyncTree* tree, rage::netObject* netObject)
@@ -5469,14 +5693,14 @@ namespace Stand::hooks
 		{
 			if (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_t6_when_coloading)
 			{
-				sync_src.getAndApplyReactionsIn(FlowEvent::SE_CRASH, "T6");
+				reportSyncCanApplyCrashT6(sync_src);
 			}
 			return false;
 		}
 
 		if (current_sync_type == rage::SyncType::CONTROL)
 		{
-			sync_tally = EventTally(sync_src, FlowEvent::SYNCIN_CONTROL);
+			resetSyncTally(sync_src, FlowEvent::SYNCIN_CONTROL);
 		}
 		bool ret = process_tree_for_tally(tree, current_sync_type, netObject->object_type, netObject->object_id, netObject->GetEntity());
 		if (current_sync_type == rage::SyncType::CONTROL)
@@ -7025,174 +7249,182 @@ to_recover.emplace_back(addr, *addr); \
 	}
 #endif
 
+	// Has destructible locals (std::string), so this must not itself contain a __try.
+	static bool computeTelemetryExportAllow(rage::rlMetric* metric)
+	{
+		bool allow = true;
+		std::string metric_name = metric->getName();
+		switch (rage::atStringHash(metric_name))
+		{
+		case ATSTRINGHASH("CHEAT"): // MetricCHEAT, related to SP cheat box
+		case ATSTRINGHASH("AUX_DEUX"): // MetricTamper
+		case ATSTRINGHASH("CCF_UPDATE"): // MetricInfoChange
+		case ATSTRINGHASH("BENCHMARK_Q"): // was only in 2699 build "TODO: <File description>"
+		case ATSTRINGHASH("REPORTER"):
+		case ATSTRINGHASH("MEM_NEW"):
+		case ATSTRINGHASH("DEBUGGER_ATTACH"):
+		case ATSTRINGHASH("XP_LOSS"):
+		case ATSTRINGHASH("WEATHER"):
+		case ATSTRINGHASH("CASH_CREATED"):
+		case ATSTRINGHASH("DR_PS"):
+		case ATSTRINGHASH("GARAGE_TAMPER"):
+		case ATSTRINGHASH("FAIL_SERV"):
+		case ATSTRINGHASH("CODE_CRC"):
+		//case ATSTRINGHASH("COLLECTIBLE"): // Whenever we collect a collectible
+		case ATSTRINGHASH("DUPE_DETECT"):
+		//case ATSTRINGHASH("MISMATCH"): // added in 3095, seems to be related to remote peers doing shit
+		case ATSTRINGHASH("MISMATCH_TRIGGERED_EVENT"): // added in 3095
+		case ATSTRINGHASH("BLAST"):
+#ifdef STAND_DEBUG
+			onAcTriggered(metric_name);
+#endif
+			[[fallthrough]];
+		case ATSTRINGHASH("AWARD_XP"): // earning XP
+		case ATSTRINGHASH("EARN"): // doing transactions, apparently better to block this for modded money methods
+		case ATSTRINGHASH("W_L"): // wanted level
+		case ATSTRINGHASH("FLOW_LOW"): // also related to wanted level
+		case ATSTRINGHASH("ESVCS"): // emergency service called
+		case ATSTRINGHASH("IDLEKICK"): // whenever the game calls PLAYSTATS_IDLE_KICK, which is a lot, not desirable with "Disable Idle Kick" I guess
+		case ATSTRINGHASH("REPORT_INVALIDMODEL"): // also used to report remote peers so a bit spammy
+		case ATSTRINGHASH("FIRST_VEH"): // also used to report remote peers so a bit spammy
+		case ATSTRINGHASH("LAST_VEH"): // also used to report remote peers so a bit spammy
+			allow = false;
+			break;
+
+		case ATSTRINGHASH("MM"): // loaded modules delta
+			{
+				std::string data = metric->getLogData();
+				if (data.find(soup::ObfusString("=534C5F").str()) != std::string::npos
+					|| data.find(soup::ObfusString("|534C5F").str()) != std::string::npos
+					)
+				{
+					allow = false; // a module starts with "SL_", that shouldn't happen
+				}
+				else
+				{
+#if false
+					// MM metric was submitted, now we can kill this AC thing, because this thing can leak memory and eventually crash the game.
+					// Unfortunately, killing this thing will cause a ban within 1-2 days when the user earns ton of money.
+					if (auto update_element = pointers::game_skeleton->findUpdateElement(0xA0F39FB6))
+					{
+						update_element->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
+					}
+#endif
+				}
+			}
+			break;
+		}
+
+		// This _should_ be fully handled in CommandPlayer, but just in case...
+		const bool is_remote_cheat = (soup::ObfusString("DIG") == metric_name);
+		if (is_remote_cheat)
+		{
+			std::string sub_name = static_cast<MetricRemoteCheat*>(metric)->getSubName();
+			//metric_name.push_back(':');
+			//metric_name.append(sub_name);
+			auto gamer_handle = rage::rlGamerHandle::fromString(reinterpret_cast<MetricRemoteCheat*>(metric)->gamer_handle_string);
+			if (gamer_handle.isValid())
+			{
+				auto p = AbstractPlayer::fromRockstarId(gamer_handle.rockstar_id);
+				if (auto cngp = p.getCNetGamePlayer())
+				{
+					int id = -1;
+					switch (rage::atStringHash(sub_name))
+					{
+					case ATSTRINGHASH("SCRIPT"): // MetricCheatScript
+						id = 64;
+						break;
+
+					case ATSTRINGHASH("CF"): // MetricCheatCRCRequestFlood
+						id = 0;
+						break;
+
+					case ATSTRINGHASH("CC"): // MetricCheatCRCCompromised
+						id = 1;
+						break;
+
+					case ATSTRINGHASH("CNR"): // MetricCheatCRCNotReplied
+						id = 2;
+						break;
+
+					case ATSTRINGHASH("CCF"): // MetricRemoteInfoChange
+						id = 4;
+						break;
+
+					case ATSTRINGHASH("CCT"): // MetricRemoteInfoChange2
+						id = 5;
+						break;
+
+					case ATSTRINGHASH("RTB"): // MetricRemoteInfoChange3
+						id = 6;
+						break;
+
+					case ATSTRINGHASH("GSCW"): // MetricRemoteInfoChange4
+						id = 7;
+						break;
+
+					case ATSTRINGHASH("GSCB"): // MetricRemoteInfoChange5
+						id = 8;
+						break;
+
+					case ATSTRINGHASH("GSINV"): // MetricRemoteInfoChange6
+						id = 9;
+						break;
+
+					case ATSTRINGHASH("GSINT"): // MetricRemoteInfoChange7
+						id = 10;
+						break;
+					}
+
+					if (id == -1 || id >= 16 || !((cngp->m_cheatsNotified >> id) & 1))
+					{
+						if (id != 64) // This is only triggered by bad sport leave stuff, which isn't really what we're interested in.
+						{
+							std::string str = fmt::to_string(id);
+							str.push_back('*');
+							p.triggerDetection(FlowEvent::MOD_RAC, std::move(str), 50);
+						}
+					}
+				}
+			}
+		}
+
+#ifdef STAND_DEBUG
+		if (g_hooking.log_metrics
+			&& metric_name != "WALKMODE"
+			)
+		{
+			/*__try
+			{
+				std::string rtti_name = soup::rtti::object::fromInstance(metric)->getTypeInfo()->getName();
+				name.append(" (");
+				name.append(rtti_name);
+				name.push_back(')');
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER)
+			{
+			}*/
+			if (!allow)
+			{
+				metric_name.append(" [blocked]");
+			}
+			metric_name.append(": ");
+			metric_name.push_back('{');
+			metric_name.append(metric->getLogData());
+			metric_name.push_back('}');
+			g_logger.log(std::move(metric_name));
+			//GENERATE_STACK_TRACE;
+		}
+#endif
+		return allow;
+	}
+
 	bool __fastcall rage_rlTelemetry_Export(/* rage::RsonWriter */ void* rw, void* a2, void* a3, uint64_t metricTime, rage::rlMetric* metric)
 	{
 		bool allow = true;
 		__try
 		{
-			std::string metric_name = metric->getName();
-			switch (rage::atStringHash(metric_name))
-			{
-			case ATSTRINGHASH("CHEAT"): // MetricCHEAT, related to SP cheat box
-			case ATSTRINGHASH("AUX_DEUX"): // MetricTamper
-			case ATSTRINGHASH("CCF_UPDATE"): // MetricInfoChange
-			case ATSTRINGHASH("BENCHMARK_Q"): // was only in 2699 build "TODO: <File description>"
-			case ATSTRINGHASH("REPORTER"):
-			case ATSTRINGHASH("MEM_NEW"):
-			case ATSTRINGHASH("DEBUGGER_ATTACH"):
-			case ATSTRINGHASH("XP_LOSS"):
-			case ATSTRINGHASH("WEATHER"):
-			case ATSTRINGHASH("CASH_CREATED"):
-			case ATSTRINGHASH("DR_PS"):
-			case ATSTRINGHASH("GARAGE_TAMPER"):
-			case ATSTRINGHASH("FAIL_SERV"):
-			case ATSTRINGHASH("CODE_CRC"):
-			//case ATSTRINGHASH("COLLECTIBLE"): // Whenever we collect a collectible
-			case ATSTRINGHASH("DUPE_DETECT"):
-			//case ATSTRINGHASH("MISMATCH"): // added in 3095, seems to be related to remote peers doing shit
-			case ATSTRINGHASH("MISMATCH_TRIGGERED_EVENT"): // added in 3095
-			case ATSTRINGHASH("BLAST"):
-#ifdef STAND_DEBUG
-				onAcTriggered(metric_name);
-#endif
-				[[fallthrough]];
-			case ATSTRINGHASH("AWARD_XP"): // earning XP
-			case ATSTRINGHASH("EARN"): // doing transactions, apparently better to block this for modded money methods
-			case ATSTRINGHASH("W_L"): // wanted level
-			case ATSTRINGHASH("FLOW_LOW"): // also related to wanted level
-			case ATSTRINGHASH("ESVCS"): // emergency service called
-			case ATSTRINGHASH("IDLEKICK"): // whenever the game calls PLAYSTATS_IDLE_KICK, which is a lot, not desirable with "Disable Idle Kick" I guess
-			case ATSTRINGHASH("REPORT_INVALIDMODEL"): // also used to report remote peers so a bit spammy
-			case ATSTRINGHASH("FIRST_VEH"): // also used to report remote peers so a bit spammy
-			case ATSTRINGHASH("LAST_VEH"): // also used to report remote peers so a bit spammy
-				allow = false;
-				break;
-
-			case ATSTRINGHASH("MM"): // loaded modules delta
-				{
-					std::string data = metric->getLogData();
-					if (data.find(soup::ObfusString("=534C5F").str()) != std::string::npos
-						|| data.find(soup::ObfusString("|534C5F").str()) != std::string::npos
-						)
-					{
-						allow = false; // a module starts with "SL_", that shouldn't happen
-					}
-					else
-					{
-#if false
-						// MM metric was submitted, now we can kill this AC thing, because this thing can leak memory and eventually crash the game.
-						// Unfortunately, killing this thing will cause a ban within 1-2 days when the user earns ton of money.
-						if (auto update_element = pointers::game_skeleton->findUpdateElement(0xA0F39FB6))
-						{
-							update_element->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
-						}
-#endif
-					}
-				}
-				break;
-			}
-
-			// This _should_ be fully handled in CommandPlayer, but just in case...
-			const bool is_remote_cheat = (soup::ObfusString("DIG") == metric_name);
-			if (is_remote_cheat)
-			{
-				std::string sub_name = static_cast<MetricRemoteCheat*>(metric)->getSubName();
-				//metric_name.push_back(':');
-				//metric_name.append(sub_name);
-				auto gamer_handle = rage::rlGamerHandle::fromString(reinterpret_cast<MetricRemoteCheat*>(metric)->gamer_handle_string);
-				if (gamer_handle.isValid())
-				{
-					auto p = AbstractPlayer::fromRockstarId(gamer_handle.rockstar_id);
-					if (auto cngp = p.getCNetGamePlayer())
-					{
-						int id = -1;
-						switch (rage::atStringHash(sub_name))
-						{
-						case ATSTRINGHASH("SCRIPT"): // MetricCheatScript
-							id = 64;
-							break;
-
-						case ATSTRINGHASH("CF"): // MetricCheatCRCRequestFlood
-							id = 0;
-							break;
-
-						case ATSTRINGHASH("CC"): // MetricCheatCRCCompromised
-							id = 1;
-							break;
-
-						case ATSTRINGHASH("CNR"): // MetricCheatCRCNotReplied
-							id = 2;
-							break;
-
-						case ATSTRINGHASH("CCF"): // MetricRemoteInfoChange
-							id = 4;
-							break;
-
-						case ATSTRINGHASH("CCT"): // MetricRemoteInfoChange2
-							id = 5;
-							break;
-
-						case ATSTRINGHASH("RTB"): // MetricRemoteInfoChange3
-							id = 6;
-							break;
-
-						case ATSTRINGHASH("GSCW"): // MetricRemoteInfoChange4
-							id = 7;
-							break;
-
-						case ATSTRINGHASH("GSCB"): // MetricRemoteInfoChange5
-							id = 8;
-							break;
-
-						case ATSTRINGHASH("GSINV"): // MetricRemoteInfoChange6
-							id = 9;
-							break;
-
-						case ATSTRINGHASH("GSINT"): // MetricRemoteInfoChange7
-							id = 10;
-							break;
-						}
-
-						if (id == -1 || id >= 16 || !((cngp->m_cheatsNotified >> id) & 1))
-						{
-							if (id != 64) // This is only triggered by bad sport leave stuff, which isn't really what we're interested in.
-							{
-								std::string str = fmt::to_string(id);
-								str.push_back('*');
-								p.triggerDetection(FlowEvent::MOD_RAC, std::move(str), 50);
-							}
-						}
-					}
-				}
-			}
-
-#ifdef STAND_DEBUG
-			if (g_hooking.log_metrics
-				&& metric_name != "WALKMODE"
-				)
-			{
-				/*__try
-				{
-					std::string rtti_name = soup::rtti::object::fromInstance(metric)->getTypeInfo()->getName();
-					name.append(" (");
-					name.append(rtti_name);
-					name.push_back(')');
-				}
-				__except (EXCEPTION_EXECUTE_HANDLER)
-				{
-				}*/
-				if (!allow)
-				{
-					metric_name.append(" [blocked]");
-				}
-				metric_name.append(": ");
-				metric_name.push_back('{');
-				metric_name.append(metric->getLogData());
-				metric_name.push_back('}');
-				g_logger.log(std::move(metric_name));
-				//GENERATE_STACK_TRACE;
-			}
-#endif
+			allow = computeTelemetryExportAllow(metric);
 		}
 		__EXCEPTIONAL()
 		{
@@ -7211,35 +7443,32 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 #if HTTP_HOOK
-	char __fastcall rage_netHttpRequest_Update(rage::netHttpRequest* a1)
-	{
 #ifdef STAND_DEBUG
-		if (g_hooking.log_http_requests)
+	// Has a destructible std::string local, so this must not itself contain a __try.
+	static void logHttpRequestDebug(rage::netHttpRequest* a1)
+	{
+		auto msg = fmt::format("{}://{}{}", a1->Scheme, a1->Host, a1->Path);
+		if constexpr (false)
 		{
-			__try
+			if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
 			{
-				auto msg = fmt::format("{}://{}{}", a1->Scheme, a1->Host, a1->Path);
-				if constexpr (false)
-				{
-					if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
-					{
-						msg.append(" - ").append((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
-					}
-				}
-				static std::unordered_set<std::string> dedup{};
-				if (!dedup.contains(msg)
-					|| false
-					)
-				{
-					dedup.emplace(msg);
-					g_logger.log(std::move(msg));
-				}
-			}
-			__EXCEPTIONAL()
-			{
+				msg.append(" - ").append((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
 			}
 		}
+		static std::unordered_set<std::string> dedup{};
+		if (!dedup.contains(msg)
+			|| false
+			)
+		{
+			dedup.emplace(msg);
+			g_logger.log(std::move(msg));
+		}
+	}
 #endif
+
+	// Has destructible locals (std::string, JSON document), so this must not itself contain a __try.
+	static bool computeHttpRequestBlock(rage::netHttpRequest* a1)
+	{
 		std::string path(a1->Path);
 		bool block = false;
 #if BLOCK_ALL_METRICS
@@ -7251,66 +7480,120 @@ to_recover.emplace_back(addr, *addr); \
 #endif
 			if (path.find(soup::ObfusString("GameTransactions.asmx").str()) != std::string::npos)
 		{
-			__try
+			const bool is_bonus = (path.find(soup::ObfusString("GameTransactions.asmx/Bonus").str()) != std::string::npos);
+			if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
 			{
-				const bool is_bonus = (path.find(soup::ObfusString("GameTransactions.asmx/Bonus").str()) != std::string::npos);
-				if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
+				auto inst = soup::json::decode((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
+				if (auto items = inst->asObj().find(soup::ObfusString("items").str()))
 				{
-					auto inst = soup::json::decode((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
-					if (auto items = inst->asObj().find(soup::ObfusString("items").str()))
+					for (const auto& item : items->asArr())
 					{
-						for (const auto& item : items->asArr())
+						const auto itemId = item.asObj().at(soup::ObfusString("itemId").str()).asInt().value;
+						switch (itemId)
 						{
-							const auto itemId = item.asObj().at(soup::ObfusString("itemId").str()).asInt().value;
-							switch (itemId)
+						default:
+							if (!is_bonus)
 							{
-							default:
-								if (!is_bonus)
-								{
-									break;
-								}
-								[[fallthrough]];
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_SE"): // -1862553257
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_FALL"): // 1604862494
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NOT_SEEN"): // -1454779202
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_DEATH"): // -2114390367
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_1"): // -1807935122
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_2"): // 2026037878
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_3"): // 1794983659
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_4"): // 612415999
-							case ATSTRINGHASH("SERVICE_EARN_JBONUS_MODEL"): // -782113305
-#ifdef STAND_DEBUG
-								onAcTriggered(fmt::to_string(itemId));
-#endif
-								[[fallthrough]];
-							case 1354049168:
-								block = true;
 								break;
 							}
+							[[fallthrough]];
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_SE"): // -1862553257
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_FALL"): // 1604862494
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NOT_SEEN"): // -1454779202
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_DEATH"): // -2114390367
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_1"): // -1807935122
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_2"): // 2026037878
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_3"): // 1794983659
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_4"): // 612415999
+						case ATSTRINGHASH("SERVICE_EARN_JBONUS_MODEL"): // -782113305
+#ifdef STAND_DEBUG
+							onAcTriggered(fmt::to_string(itemId));
+#endif
+							[[fallthrough]];
+						case 1354049168:
+							block = true;
+							break;
 						}
 					}
 				}
-				else if (is_bonus)
-				{
-					block = true;
+			}
+			else if (is_bonus)
+			{
+				block = true;
 #ifdef STAND_DEBUG
-					onAcTriggered("Bonus");
+				onAcTriggered("Bonus");
 #endif
-				}
+			}
+		}
+		return block;
+	}
+
+	// soup::ObfusString(...).str() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void redirectHttpRequest(rage::netHttpRequest* a1)
+	{
+		if (g_hooking.redir_host.empty())
+		{
+			g_hooking.redir_host = soup::ObfusString("hcaptcha.com").str();
+		}
+		a1->Host = g_hooking.redir_host.c_str();
+	}
+
+	char __fastcall rage_netHttpRequest_Update(rage::netHttpRequest* a1)
+	{
+#ifdef STAND_DEBUG
+		if (g_hooking.log_http_requests)
+		{
+			__try
+			{
+				logHttpRequestDebug(a1);
 			}
 			__EXCEPTIONAL()
 			{
 			}
 		}
+#endif
+		bool block = false;
+		__try
+		{
+			block = computeHttpRequestBlock(a1);
+		}
+		__EXCEPTIONAL()
+		{
+		}
 		if (block)
 		{
-			if (g_hooking.redir_host.empty())
-			{
-				g_hooking.redir_host = soup::ObfusString("hcaptcha.com").str();
-			}
-			a1->Host = g_hooking.redir_host.c_str();
+			redirectHttpRequest(a1);
 		}
 		return OG(rage_netHttpRequest_Update)(a1);
+	}
+#endif
+
+#ifdef STAND_DEBUG
+	// Has destructible locals (std::vector, std::string), so this must not itself contain a __try.
+	static void logNetEventSend(rage::netGameEvent* evt)
+	{
+		std::vector<CNetGamePlayer*> targets{};
+		for (const auto& p : AbstractPlayer::listExcept(true))
+		{
+			if (CNetGamePlayer* ngp = p.getCNetGamePlayer(); evt->IsInScope(ngp))
+			{
+				targets.emplace_back(ngp);
+			}
+		}
+
+		std::string msg = "Sending ";
+		msg.append(get_net_event_name(evt->type).getEnglishUtf8());
+		msg.append(" to ");
+		if (targets.size() == 1)
+		{
+			msg.append(targets.at(0)->GetLogName());
+		}
+		else
+		{
+			msg.append(std::to_string(targets.size()));
+			msg.append(" players");
+		}
+		Util::toast(std::move(msg));
 	}
 #endif
 
@@ -7321,28 +7604,7 @@ to_recover.emplace_back(addr, *addr); \
 #ifdef STAND_DEBUG
 			if (g_hooking.log_net_event_send)
 			{
-				std::vector<CNetGamePlayer*> targets{};
-				for (const auto& p : AbstractPlayer::listExcept(true))
-				{
-					if (CNetGamePlayer* ngp = p.getCNetGamePlayer(); evt->IsInScope(ngp))
-					{
-						targets.emplace_back(ngp);
-					}
-				}
-
-				std::string msg = "Sending ";
-				msg.append(get_net_event_name(evt->type).getEnglishUtf8());
-				msg.append(" to ");
-				if (targets.size() == 1)
-				{
-					msg.append(targets.at(0)->GetLogName());
-				}
-				else
-				{
-					msg.append(std::to_string(targets.size()));
-					msg.append(" players");
-				}
-				Util::toast(std::move(msg));
+				logNetEventSend(evt);
 			}
 #endif
 		}
@@ -7424,9 +7686,29 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 #if CLEAR_BONUS_ON_DL
-	void __fastcall CTunables_OnCloudEvent(uintptr_t a1, CloudEvent* evt)
+	// Has a destructible JSON document local, so this must not itself contain a __try.
+	static void decryptAndModifyCloudEventBonus(CloudEvent* evt, std::string& buf)
 	{
-		std::string buf;
+		auto jt = soup::json::decodeForDedicatedVariable(evt->data.data);
+
+		jt->asObj().at(soup::ObfusString("bonus").str()).asArr().children.clear();
+		jt->asObj().at(soup::ObfusString("tunables")).asObj().erase(soup::ObfusString("8B7D3320").str());
+
+		buf = jt->encode();
+
+		evt->data.data = buf.data();
+		evt->data.size = (unsigned int)buf.size();
+
+		pointers::rage_AES_Encrypt(
+			*pointers::rage_AES_ms_cloudAes,
+			evt->data.data,
+			evt->data.size
+		);
+	}
+
+	// No destructible locals here: only pointers and a reference, so it's safe to __try in this function.
+	static void tryDecryptAndModifyCloudEvent(uintptr_t a1, CloudEvent* evt, std::string& buf)
+	{
 		__try
 		{
 			auto tunables = reinterpret_cast<CTunables*>(a1 - 8);
@@ -7444,21 +7726,7 @@ to_recover.emplace_back(addr, *addr); \
 						evt->data.size
 					))
 					{
-						auto jt = soup::json::decodeForDedicatedVariable(evt->data.data);
-
-						jt->asObj().at(soup::ObfusString("bonus").str()).asArr().children.clear();
-						jt->asObj().at(soup::ObfusString("tunables")).asObj().erase(soup::ObfusString("8B7D3320").str());
-
-						buf = jt->encode();
-
-						evt->data.data = buf.data();
-						evt->data.size = (unsigned int)buf.size();
-
-						pointers::rage_AES_Encrypt(
-							*pointers::rage_AES_ms_cloudAes,
-							evt->data.data,
-							evt->data.size
-						);
+						decryptAndModifyCloudEventBonus(evt, buf);
 					}
 				}
 			}
@@ -7466,13 +7734,25 @@ to_recover.emplace_back(addr, *addr); \
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	// No destructible locals here: only pointers, so it's safe to __try in this function.
+	static void tryCallOgCloudEvent(uintptr_t a1, CloudEvent* evt)
+	{
 		__try
 		{
-			return OG(CTunables_OnCloudEvent)(a1, evt);
+			OG(CTunables_OnCloudEvent)(a1, evt);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	void __fastcall CTunables_OnCloudEvent(uintptr_t a1, CloudEvent* evt)
+	{
+		std::string buf;
+		tryDecryptAndModifyCloudEvent(a1, evt, buf);
+		tryCallOgCloudEvent(a1, evt);
 		buf.clear();
 	}
 #endif
@@ -7491,6 +7771,14 @@ to_recover.emplace_back(addr, *addr); \
 		}
 	}
 
+#ifdef STAND_DEBUG
+	// fmt::format() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void toastNetworkBailReason(int reason)
+	{
+		Util::toast(fmt::format("CNetwork::Bail, reason = {}", reason), TOAST_ALL);
+	}
+#endif
+
 	// CNetwork::Bail, ARXAN CHECKED
 	// Something about just hooking this function causes the game to not bail when it normally should (because BE is disabled).
 	// When Stand is injected late, however, we do need to be more active and block the bail.
@@ -7501,7 +7789,7 @@ to_recover.emplace_back(addr, *addr); \
 			if (*reinterpret_cast<int*>(bailParams) != BAIL__NO_BATTLEYE__MEGAMIND_EMOJI)
 			{
 #ifdef STAND_DEBUG
-				Util::toast(fmt::format("CNetwork::Bail, reason = {}", *reinterpret_cast<int*>(bailParams)), TOAST_ALL);
+				toastNetworkBailReason(*reinterpret_cast<int*>(bailParams));
 #endif
 				OG(network_bail)(bailParams, bSendScriptEvent);
 			}
@@ -7589,55 +7877,65 @@ to_recover.emplace_back(addr, *addr); \
 		return true;
 	}
 
+	// Has destructible locals (rapidjson::Document, std::string), so this must not itself contain a __try.
+	static std::optional<bool> computePresenceEventAllow(rage::rlGamerInfo* a2, const char** data, const char* source)
+	{
+#ifdef STAND_DEBUG
+		if (g_hooking.log_presence_event_game)
+		{
+			g_logger.log(fmt::format("Game Presence Event: {}, {}, {}", source, a2->toString(), *data));
+		}
+#endif
+		rapidjson::Document d;
+		if (d.Parse(*data).HasParseError() || !d.IsObject())
+		{
+#ifdef STAND_DEBUG
+			Util::toast(fmt::format("Blocked presence event with bad json: {}", *data), TOAST_ALL);
+#endif
+			return false;
+		}
+		auto gm_evt = d[soup::ObfusString("gm.evt").c_str()].GetObj();
+		auto event_type = gm_evt[soup::ObfusString("e").c_str()].GetString();
+		switch (rage::atStringHash(event_type))
+		{
+		case static_cast<uint32_t>(ATSTRINGHASH("ginv")):
+			{
+				if (g_hooking.block_job_invites)
+				{
+					return false;
+				}
+
+				auto event_data = gm_evt[soup::ObfusString("d").c_str()].GetObj();
+				auto flags = event_data[soup::ObfusString("f").c_str()].GetUint64();
+				if (flags >= 0x5000000000000000)
+				{
+//#ifdef STAND_DEBUG
+//						Util::toast("blocked invite with bad flags", TOAST_ALL);
+//#endif
+					return false;
+				}
+			}
+			break;
+
+			// Letter Scraps: {"gm.evt":{"e":"StatUpdate","d":{"stat":-2044299740,"from":"MKII_Griefer","ival":50}}}
+		case ATSTRINGHASH("StatUpdate"):
+			if (g_hooking.block_friend_stat_notifications)
+			{
+				return false;
+			}
+			break;
+		}
+		return std::nullopt;
+	}
+
 	bool __fastcall parse_presence_event(CGamePresenceEventDispatcher* a1, rage::rlGamerInfo* a2, __int64 a3, const char** data, const char* source)
 	{
 		// observed values for source: "self", "inbox"
 		__try
 		{
-#ifdef STAND_DEBUG
-			if (g_hooking.log_presence_event_game)
+			if (auto res = computePresenceEventAllow(a2, data, source))
 			{
-				g_logger.log(fmt::format("Game Presence Event: {}, {}, {}", source, a2->toString(), *data));
-			}
-#endif
-			rapidjson::Document d;
-			if (d.Parse(*data).HasParseError() || !d.IsObject())
-			{
-#ifdef STAND_DEBUG
-				Util::toast(fmt::format("Blocked presence event with bad json: {}", *data), TOAST_ALL);
-#endif
-				return false;
-			}
-			auto gm_evt = d[soup::ObfusString("gm.evt").c_str()].GetObj();
-			auto event_type = gm_evt[soup::ObfusString("e").c_str()].GetString();
-			switch (rage::atStringHash(event_type))
-			{
-			case static_cast<uint32_t>(ATSTRINGHASH("ginv")):
-				{
-					if (g_hooking.block_job_invites)
-					{
-						return false;
-					}
-
-					auto event_data = gm_evt[soup::ObfusString("d").c_str()].GetObj();
-					auto flags = event_data[soup::ObfusString("f").c_str()].GetUint64();
-					if (flags >= 0x5000000000000000)
-					{
-//#ifdef STAND_DEBUG
-//						Util::toast("blocked invite with bad flags", TOAST_ALL);
-//#endif
-						return false;
-					}
-				}
-				break;
-
-				// Letter Scraps: {"gm.evt":{"e":"StatUpdate","d":{"stat":-2044299740,"from":"MKII_Griefer","ival":50}}}
-			case ATSTRINGHASH("StatUpdate"):
-				if (g_hooking.block_friend_stat_notifications)
-				{
-					return false;
-				}
-				break;
+				return *res;
 			}
 		}
 		__EXCEPTIONAL()
@@ -7646,79 +7944,85 @@ to_recover.emplace_back(addr, *addr); \
 		return OG(parse_presence_event)(a1, a2, a3, data, source);
 	}
 
+	// Has destructible locals (std::string, HttpRequestBuilder, JSON documents), so this must not itself contain a __try.
+	static bool computeSocialClubPresenceEventAllow(void* a1, const rage::rlScPresenceMessage& msg, void* a3)
+	{
+#ifdef STAND_DEBUG
+		if (g_hooking.log_presence_event_scdll)
+		{
+			g_logger.log(fmt::format("SC DLL Presence Event: {}", msg.m_Contents));
+			// "ros.gamer.online":"SC 64157314"
+			// "ros.gamer.textmessage":{"h":"SC 111509622","n":"quake_1337"}
+			// "ros.publish":{"channel":"self","msg":{"gm.evt":{"e":"ginv","d":{"v":5,"s":"RqNCxhGraxOAwdl3h0AAAAAAFcnCDU+AgncWbFgRgCjtwf6rEW0WCGOfOH2csS04u6j2Do7n9/9glltpU2X3AR9pyq2PkjolVKiMP2bk/c4+Wf36uS6SL9Z+3wBebh0/////wAA/////wAAQGvBopEatrE4a8GilRq2sTg==","h":"OrzLDgAAAAADAAAAAAAAAA==","n":"_llisenok_","gm":0,"c":"F1aMI4_RjkqGufccGa-48A","cc":"AAAAAAAAAAAAAAAAAAAAAA==","mid":"","if":0,"it":0,"l":0,"p":0,"f":32808,"ed":3901228386,"gd":1516504418,"u":1434550707,"cr":53096025}}}}
+		}
+#endif
+		const char* i = msg.m_Contents;
+		if (auto jr = soup::json::decode(i))
+		{
+			std::string name = std::move(jr->asStr().value);
+			if (rage::atStringHash(name) == ATSTRINGHASH("ros.gamer.textmessage"))
+			{
+				++i; // skip ':'
+				jr = soup::json::decode(i);
+				if (jr)
+				{
+					const int64_t sender_rid = rage::rlGamerHandle::fromString(jr->asObj().at("h").asStr().value.c_str()).rockstar_id;
+					std::string sender_name = std::move(jr->asObj().at("n").asStr().value);
+					std::string contents = msg.m_Contents;
+
+					auto b = HttpRequestBuilder{ HttpRequestBuilder::POST, "scui.rockstargames.com", "/api/messaging/getmessages" }
+					.addHeader("Authorization", ScAccount::getAuthorizationHeaderValue())
+					.addHeader("X-Requested-With", "XMLHttpRequest") // needed to avoid "CSRF" error
+					.addHeader("Content-Type", "application/json");
+					b.setPayload(std::move(std::string(R"({"env":"prod","title":"gta5","version":11,"senderRockstarId":")").append(fmt::to_string(sender_rid)).append(R"(","pageIndex":0})")));
+					b.setResponseCallback([sender_rid, sender_name{ std::move(sender_name) }, contents{ std::move(contents) }](soup::HttpResponse&& resp)
+					{
+						bool should_block = false;
+						std::string msg_contents{};
+						if (auto jr = soup::json::decode(resp.body); jr && jr->isObj())
+						{
+							if (auto MessageList = jr->asObj().find("MessageList"); MessageList && MessageList->isObj())
+							{
+								if (auto Messages = MessageList->asObj().find("Messages"); Messages && Messages->isArr() && !Messages->asArr().children.empty())
+								{
+									if (BgScript::hasFunction("dm"))
+									{
+										msg_contents = Messages->asArr().children.at(0)->asObj().at("Text").asStr().value;
+										should_block = BgScript::query("dm", sender_rid, msg_contents, /* since 114.2 */ sender_name);
+									}
+								}
+							}
+						}
+						if (!should_block)
+						{
+							// This is not an ad; trigger notifications now.
+							if (g_hooking.scdm_scnotify || msg_contents.empty())
+							{
+								rage::rlScPresenceMessage presmsg{ 0, contents.c_str() };
+								OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(nullptr, presmsg, nullptr);
+							}
+							if (!msg_contents.empty())
+							{
+								if (auto tf = g_hooking.scdm_toasts.getToastFlags())
+								{
+									Util::toast(LANG_FMT("SCDMT_T", FMT_ARG("sender", sender_name), FMT_ARG("text", msg_contents)), tf);
+								}
+							}
+						}
+					})
+					.dispatch();
+					return false; // Swallow this event. If this is not an ad, we will show the SC notification later.
+				}
+			}
+		}
+		return OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(a1, msg, a3);
+	}
+
 	bool __fastcall rgsc_RgscPresenceManager_OnSocialClubEvent(void* a1, const rage::rlScPresenceMessage& msg, void* a3)
 	{
 		__try
 		{
-#ifdef STAND_DEBUG
-			if (g_hooking.log_presence_event_scdll)
-			{
-				g_logger.log(fmt::format("SC DLL Presence Event: {}", msg.m_Contents));
-				// "ros.gamer.online":"SC 64157314"
-				// "ros.gamer.textmessage":{"h":"SC 111509622","n":"quake_1337"}
-				// "ros.publish":{"channel":"self","msg":{"gm.evt":{"e":"ginv","d":{"v":5,"s":"RqNCxhGraxOAwdl3h0AAAAAAFcnCDU+AgncWbFgRgCjtwf6rEW0WCGOfOH2csS04u6j2Do7n9/9glltpU2X3AR9pyq2PkjolVKiMP2bk/c4+Wf36uS6SL9Z+3wBebh0/////wAA/////wAAQGvBopEatrE4a8GilRq2sTg==","h":"OrzLDgAAAAADAAAAAAAAAA==","n":"_llisenok_","gm":0,"c":"F1aMI4_RjkqGufccGa-48A","cc":"AAAAAAAAAAAAAAAAAAAAAA==","mid":"","if":0,"it":0,"l":0,"p":0,"f":32808,"ed":3901228386,"gd":1516504418,"u":1434550707,"cr":53096025}}}}
-			}
-#endif
-			const char* i = msg.m_Contents;
-			if (auto jr = soup::json::decode(i))
-			{
-				std::string name = std::move(jr->asStr().value);
-				if (rage::atStringHash(name) == ATSTRINGHASH("ros.gamer.textmessage"))
-				{
-					++i; // skip ':'
-					jr = soup::json::decode(i);
-					if (jr)
-					{
-						const int64_t sender_rid = rage::rlGamerHandle::fromString(jr->asObj().at("h").asStr().value.c_str()).rockstar_id;
-						std::string sender_name = std::move(jr->asObj().at("n").asStr().value);
-						std::string contents = msg.m_Contents;
-
-						auto b = HttpRequestBuilder{ HttpRequestBuilder::POST, "scui.rockstargames.com", "/api/messaging/getmessages" }
-						.addHeader("Authorization", ScAccount::getAuthorizationHeaderValue())
-						.addHeader("X-Requested-With", "XMLHttpRequest") // needed to avoid "CSRF" error
-						.addHeader("Content-Type", "application/json");
-						b.setPayload(std::move(std::string(R"({"env":"prod","title":"gta5","version":11,"senderRockstarId":")").append(fmt::to_string(sender_rid)).append(R"(","pageIndex":0})")));
-						b.setResponseCallback([sender_rid, sender_name{ std::move(sender_name) }, contents{ std::move(contents) }](soup::HttpResponse&& resp)
-						{
-							bool should_block = false;
-							std::string msg_contents{};
-							if (auto jr = soup::json::decode(resp.body); jr && jr->isObj())
-							{
-								if (auto MessageList = jr->asObj().find("MessageList"); MessageList && MessageList->isObj())
-								{
-									if (auto Messages = MessageList->asObj().find("Messages"); Messages && Messages->isArr() && !Messages->asArr().children.empty())
-									{
-										if (BgScript::hasFunction("dm"))
-										{
-											msg_contents = Messages->asArr().children.at(0)->asObj().at("Text").asStr().value;
-											should_block = BgScript::query("dm", sender_rid, msg_contents, /* since 114.2 */ sender_name);
-										}
-									}
-								}
-							}
-							if (!should_block)
-							{
-								// This is not an ad; trigger notifications now.
-								if (g_hooking.scdm_scnotify || msg_contents.empty())
-								{
-									rage::rlScPresenceMessage presmsg{ 0, contents.c_str() };
-									OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(nullptr, presmsg, nullptr);
-								}
-								if (!msg_contents.empty())
-								{
-									if (auto tf = g_hooking.scdm_toasts.getToastFlags())
-									{
-										Util::toast(LANG_FMT("SCDMT_T", FMT_ARG("sender", sender_name), FMT_ARG("text", msg_contents)), tf);
-									}
-								}
-							}
-						})
-						.dispatch();
-						return false; // Swallow this event. If this is not an ad, we will show the SC notification later.
-					}
-				}
-			}
-			return OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(a1, msg, a3);
+			return computeSocialClubPresenceEventAllow(a1, msg, a3);
 		}
 		__EXCEPTIONAL()
 		{
@@ -7728,34 +8032,46 @@ to_recover.emplace_back(addr, *addr); \
 
 	// When a rope is being deleted, inform vehicle gadgets that store ropeInstance pointers.
 	// This prevents various nasty things when spawning a towtruck and then using "Delete All Ropes".
+	// No __try here, so this is free to construct the std::function temporary needed by getAllVehicles().
+	static void informVehicleGadgetsRopeInstanceRemoved(rage::ropeInstance* pInst)
+	{
+		AbstractEntity::getAllVehicles([pInst](AbstractEntity&& ent)
+		{
+			auto veh = ent.getCVehicle();
+			for (const auto& gadget : veh->m_pVehicleGadgets)
+			{
+				switch (gadget->GetType())
+				{
+				case VGT_PICK_UP_ROPE:
+				case VGT_PICK_UP_ROPE_MAGNET:
+					static_cast<CVehicleGadgetPickUpRope*>(gadget)->processRopeInstanceBeingRemoved(pInst);
+					break;
+
+				case VGT_TOW_TRUCK_ARM:
+					static_cast<CVehicleGadgetTowArm*>(gadget)->processRopeInstanceBeingRemoved(pInst);
+					break;
+				}
+			}
+			CONSUMER_CONTINUE;
+		});
+	}
+
 	void __fastcall rage_ropeManager_Remove(rage::ropeManager* _this, rage::ropeInstance* pInst)
 	{
 		__try
 		{
-			AbstractEntity::getAllVehicles([pInst](AbstractEntity&& ent)
-			{
-				auto veh = ent.getCVehicle();
-				for (const auto& gadget : veh->m_pVehicleGadgets)
-				{
-					switch (gadget->GetType())
-					{
-					case VGT_PICK_UP_ROPE:
-					case VGT_PICK_UP_ROPE_MAGNET:
-						static_cast<CVehicleGadgetPickUpRope*>(gadget)->processRopeInstanceBeingRemoved(pInst);
-						break;
-
-					case VGT_TOW_TRUCK_ARM:
-						static_cast<CVehicleGadgetTowArm*>(gadget)->processRopeInstanceBeingRemoved(pInst);
-						break;
-					}
-				}
-				CONSUMER_CONTINUE;
-			});
+			informVehicleGadgetsRopeInstanceRemoved(pInst);
 		}
 		__EXCEPTIONAL()
 		{
 		}
 		OG(rage_ropeManager_Remove)(_this, pInst);
+	}
+
+	// Constructs a SessionPlayer (has a std::string member), so this must not itself contain a __try.
+	static void recordBlockJoinSessionPlayer(const rage::rlGamerInfo& gamer)
+	{
+		CommandBlockBlockJoin::session_players.emplace_back(SessionPlayer(gamer));
 	}
 
 	// rage::rlSession::OnSessionEvent in newer rage versions
@@ -7776,7 +8092,7 @@ to_recover.emplace_back(addr, *addr); \
 					{
 						if (ts == TRANSITION_STATE_WAIT_JOIN_FM_SESSION)
 						{
-							CommandBlockBlockJoin::session_players.emplace_back(SessionPlayer(reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer));
+							recordBlockJoinSessionPlayer(reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer);
 						}
 					}
 					else
@@ -7869,16 +8185,22 @@ to_recover.emplace_back(addr, *addr); \
 		}
 	}
 
-	float __fastcall get_visual_config_float(void* config, const char* prop, float fallback)
+	// No destructible locals here: only references, so it's safe to __try in this function.
+	static void tryProcessVisualConfigOverride(float& res, const std::string& name)
 	{
-		float res = OG(get_visual_config_float)(config, prop, fallback);
 		__try
 		{
-			processVisualConfigOverride(res, prop);
+			processVisualConfigOverride(res, name);
 		}
 		__EXCEPTIONAL()
 		{
 		}
+	}
+
+	float __fastcall get_visual_config_float(void* config, const char* prop, float fallback)
+	{
+		float res = OG(get_visual_config_float)(config, prop, fallback);
+		tryProcessVisualConfigOverride(res, prop);
 		return res;
 	}
 
@@ -7892,14 +8214,14 @@ to_recover.emplace_back(addr, *addr); \
 	float __fastcall get_visual_config_float_with_directory(void* config, const char* dir, const char* prop, float fallback)
 	{
 		float res = OG(get_visual_config_float_with_directory)(config, dir, prop, fallback);
-		__try
-		{
-			processVisualConfigOverride(res, combineWithDot(dir, prop));
-		}
-		__EXCEPTIONAL()
-		{
-		}
+		tryProcessVisualConfigOverride(res, combineWithDot(dir, prop));
 		return res;
+	}
+
+	// Has a destructible std::string temporary (from combineWithDot), so this must not itself contain a __try.
+	static void processVisualConfigColourChannel(float& res, const char* prop, const char* channel)
+	{
+		processVisualConfigOverride(res, combineWithDot(prop, channel));
 	}
 
 	float* __fastcall get_visual_config_colour(void* config, float* a2, const char* prop)
@@ -7907,9 +8229,9 @@ to_recover.emplace_back(addr, *addr); \
 		float* res = OG(get_visual_config_colour)(config, a2, prop);
 		__try
 		{
-			processVisualConfigOverride(res[0], combineWithDot(prop, "red"));
-			processVisualConfigOverride(res[1], combineWithDot(prop, "green"));
-			processVisualConfigOverride(res[2], combineWithDot(prop, "blue"));
+			processVisualConfigColourChannel(res[0], prop, "red");
+			processVisualConfigColourChannel(res[1], prop, "green");
+			processVisualConfigColourChannel(res[2], prop, "blue");
 		}
 		__EXCEPTIONAL()
 		{
@@ -7949,6 +8271,30 @@ to_recover.emplace_back(addr, *addr); \
 		return 0;
 	}*/
 
+	// Util::to_padded_hex_string() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportPreventedCrashA1(uint32_t hex_value)
+	{
+		Util::onPreventedCrash("A1", Util::to_padded_hex_string(hex_value));
+	}
+
+	// LOC() constructs a Label temporary (has a std::string member), so this is kept out of the __try'ing function below.
+	static void toastInVehicleSeatShuffle()
+	{
+		Util::toast(LOC("INVTASK"));
+	}
+
+	// std::to_string() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportPreventedCrashA2(uint16_t type_id)
+	{
+		Util::onPreventedCrash("A2", std::to_string(type_id));
+	}
+
+	// std::to_string() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void reportPreventedCrashA0(uint16_t type_id)
+	{
+		Util::onPreventedCrash("A0", std::to_string(type_id));
+	}
+
 	unsigned int __fastcall rage_aiTaskTree_UpdateTask(rage::aiTaskTree* tree, rage::aiTask* task, float timeStep)
 	{
 		__try
@@ -7971,7 +8317,7 @@ to_recover.emplace_back(addr, *addr); \
 					default:
 						if (g_gui.doesRootStateAllowCrashPatches())
 						{
-							Util::onPreventedCrash("A1", Util::to_padded_hex_string(static_cast<CTaskTakeOffPedVariation*>(task)->object_model));
+							reportPreventedCrashA1(static_cast<CTaskTakeOffPedVariation*>(task)->object_model);
 							return 0;
 						}
 					}
@@ -7999,7 +8345,7 @@ to_recover.emplace_back(addr, *addr); \
 					&& g_player_veh.getDriver() == g_player_ped
 					)
 				{
-					Util::toast(LOC("INVTASK"));
+					toastInVehicleSeatShuffle();
 					task->state = 10; // fast-track to finish state
 				}
 			}
@@ -8014,7 +8360,7 @@ to_recover.emplace_back(addr, *addr); \
 				{
 					if (g_gui.doesRootStateAllowCrashPatches())
 					{
-						Util::onPreventedCrash("A2", std::to_string(task->type_id));
+						reportPreventedCrashA2(task->type_id);
 						return 0;
 					}
 				}
@@ -8029,7 +8375,7 @@ to_recover.emplace_back(addr, *addr); \
 				{
 					if (g_gui.doesRootStateAllowCrashPatches())
 					{
-						Util::onPreventedCrash("A2", std::to_string(task->type_id));
+						reportPreventedCrashA2(task->type_id);
 						return 0;
 					}
 				}
@@ -8044,7 +8390,7 @@ to_recover.emplace_back(addr, *addr); \
 		}
 		__except (g_gui.doesRootStateAllowCrashPatches() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 		{
-			Util::onPreventedCrash("A0", std::to_string(task->type_id));
+			reportPreventedCrashA0(task->type_id);
 		}
 		return 0;
 	}
@@ -8140,13 +8486,19 @@ to_recover.emplace_back(addr, *addr); \
 	}
 
 #if STAND_DEBUG
+	// fmt::format() returns a std::string temporary, so this is kept out of the __try'ing function below.
+	static void logPacketWrite(unsigned int id)
+	{
+		g_logger.log(fmt::format("Writing packet: {}", rage::netMessage_getName(id)));
+	}
+
 	void rage_netMessage_WriteHeader(unsigned int id, rage::datBitBuffer& buf)
 	{
 		__try
 		{
 			if (g_hooking.log_packet_write)
 			{
-				g_logger.log(fmt::format("Writing packet: {}", rage::netMessage_getName(id)));
+				logPacketWrite(id);
 			}
 		}
 		__EXCEPTIONAL()

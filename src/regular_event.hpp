@@ -13,6 +13,18 @@
 
 namespace Stand
 {
+	// No __try here, so it's safe to construct the std::string log message in this frame.
+	static void logStatelessRegularEventHandlerException()
+	{
+		g_logger.log("Unregistering scheduled handler due to exception");
+	}
+
+	// No __try here, so it's safe to construct the fmt::format() std::string temporary in this frame.
+	static void logRegularEventHandlerException(const std::string& name)
+	{
+		g_logger.log(fmt::format("Unregistering scheduled handler for {} due to exception", name));
+	}
+
 	template <class E>
 	struct reRegularEvent
 	{
@@ -33,7 +45,7 @@ namespace Stand
 				}
 				__EXCEPTIONAL()
 				{
-					g_logger.log("Unregistering scheduled handler due to exception");
+					logStatelessRegularEventHandlerException();
 				}
 				i = stateless_handlers.erase(i);
 			}
@@ -49,7 +61,7 @@ namespace Stand
 				}
 				__EXCEPTIONAL()
 				{
-					g_logger.log(fmt::format("Unregistering scheduled handler for {} due to exception", std::move(i->second)));
+					logRegularEventHandlerException(i->second);
 				}
 				i = handlers.erase(i);
 			}

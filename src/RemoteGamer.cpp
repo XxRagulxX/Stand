@@ -77,6 +77,21 @@ namespace Stand
 	static Spinlock queued_mtx;
 	static std::vector<RemoteGamer*> queued{};
 
+	/*
+	 * EXCEPTIONAL_LOCK expands to a __try block.
+	 *
+	 * Keep that __try in this small helper and execute the actual operation
+	 * through a reference to a callable. This prevents C++ objects owned by
+	 * the caller from sharing the same stack frame as __try.
+	 */
+	template <typename Function>
+	static void exceptionalSpinlock(Spinlock& mtx, Function& function)
+	{
+		EXCEPTIONAL_LOCK(mtx)
+			function();
+		EXCEPTIONAL_UNLOCK(mtx)
+	}
+
 	RemoteGamer* RemoteGamer::getSimple(int64_t rid)
 	{
 		RemoteGamer* ret = nullptr;
@@ -135,11 +150,13 @@ namespace Stand
 			if (detailed) // Want a detailed request?
 			{
 				// Remove from bulk queue and do detailed request instead
-				EXCEPTIONAL_LOCK(queued_mtx)
-				auto e = std::find(queued.begin(), queued.end(), this);
-				SOUP_ASSERT(e != queued.end());
-				queued.erase(e);
-				EXCEPTIONAL_UNLOCK(queued_mtx)
+				auto remove_from_queue = [&]
+					{
+						auto e = std::find(queued.begin(), queued.end(), this);
+						SOUP_ASSERT(e != queued.end());
+						queued.erase(e);
+					};
+				exceptionalSpinlock(queued_mtx,remove_from_queue);
 				request(true);
 			}
 			return;
@@ -202,9 +219,11 @@ namespace Stand
 		else
 		{
 			requested_at = -1;
-			EXCEPTIONAL_LOCK(queued_mtx)
-			queued.emplace_back(this);
-			EXCEPTIONAL_UNLOCK(queued_mtx)
+			auto queue_request = [&]
+				{
+					queued.emplace_back(this);
+				};
+			exceptionalSpinlock(queued_mtx,queue_request);
 		}
 	}
 
@@ -217,9 +236,11 @@ namespace Stand
 		rage::rlGamerHandle gh(rid);
 		pointers::rage_rlScPresence_GetAttributesForGamer(0, gh, data->attrs, COUNT(data->attrs), &data->status);
 
-		EXCEPTIONAL_LOCK(active_requests_mtx)
-		active_requests.emplace_back(std::move(data));
-		EXCEPTIONAL_UNLOCK(active_requests_mtx)
+		auto add_request = [&]
+			{
+				active_requests.emplace_back(std::move(data));
+			};
+		exceptionalSpinlock(active_requests_mtx,add_request);
 	}
 
 	void RemoteGamer::onTickUltimate()
@@ -236,57 +257,69 @@ namespace Stand
 
 	void RemoteGamer::onTick() // TC_SCRIPT_NOYIELD
 	{
-		// Individual requests
-		EXCEPTIONAL_LOCK(active_requests_mtx)
-		for (auto i = active_requests.begin(); i != active_requests.end(); )
-		{
-			if ((*i)->status.isPending())
+		/*
+		 * Individual requests.
+		 *
+		 * The vector iterator and all C++ objects stay inside this lambda,
+		 * not inside the function containing EXCEPTIONAL_LOCK.
+		 */
+		auto process_active_requests = [&]
 			{
-				++i;
-			}
-			else
-			{
-				if ((*i)->status.m_StatusCode == rage::netStatus::SUCCEEDED)
+				for (auto i = active_requests.begin(); i != active_requests.end();)
 				{
-					(*i)->g->response_from_detailed = true;
-					(*i)->g->processGamerState(
-						(*i)->peeraddr().string_value,
-						(*i)->gsinfo().string_value,
-						(*i)->gstype().int_value
-					);
-					// is_set seems true for all of these, but sometimes false for "gstype"
+					if ((*i)->status.isPending())
+					{
+						++i;
+					}
+					else
+					{
+						if ((*i)->status.m_StatusCode == rage::netStatus::SUCCEEDED)
+						{
+							(*i)->g->response_from_detailed = true;
+							(*i)->g->processGamerState(
+								(*i)->peeraddr().string_value,
+								(*i)->gsinfo().string_value,
+								(*i)->gstype().int_value
+							);
+							// is_set seems true for all of these, but sometimes false for "gstype"
+						}
+						i = active_requests.erase(i);
+					}
 				}
-				i = active_requests.erase(i);
-			}
-		}
-		EXCEPTIONAL_UNLOCK(active_requests_mtx)
+			};
+		exceptionalSpinlock(active_requests_mtx,process_active_requests);
 
 #if RG_HAS_BULK
-		// Bulk requests
-		EXCEPTIONAL_LOCK(queued_mtx)
-		if (!queued.empty()
-			&& !NETWORK::NETWORK_IS_GETTING_GAMER_STATUS()
-			)
-		{
-			NETWORK::NETWORK_CLEAR_GET_GAMER_STATUS();
-
-			const auto time = get_current_time_millis();
-
-			rage::rlGamerHandle handles[MAX_BULK_REQUESTS]{};
-			unsigned int i = 0;
-			for (const auto& g : queued)
+		/*
+		 * Bulk requests.
+		 *
+		 * Again, all iterators, handles, and local objects are inside
+		 * the lambda rather than the __try frame.
+		 */
+		auto process_queued_requests = [&]
 			{
-				handles[i] = g->rid;
-				g->requested_at = time;
-				if (++i == MAX_BULK_REQUESTS)
+				if (!queued.empty() && !NETWORK::NETWORK_IS_GETTING_GAMER_STATUS())
 				{
-					break;
+					NETWORK::NETWORK_CLEAR_GET_GAMER_STATUS();
+
+					const auto time = get_current_time_millis();
+					
+					rage::rlGamerHandle handles[MAX_BULK_REQUESTS]{};
+						unsigned int i = 0;
+						for (const auto& g : queued)
+						{
+							handles[i] = g->rid;
+							g->requested_at = time;
+							if (++i == MAX_BULK_REQUESTS)
+							{
+								break;
+							}
+						}
+						pointers::send_session_info_request(handles,i);
+						queued.erase(queued.begin(),queued.begin() + i);
 				}
-			}
-			pointers::send_session_info_request(handles, i);
-			queued.erase(queued.begin(), queued.begin() + i);
-		}
-		EXCEPTIONAL_UNLOCK(queued_mtx)
+			};
+		exceptionalSpinlock(queued_mtx,process_queued_requests);
 #endif
 	}
 

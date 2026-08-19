@@ -430,6 +430,14 @@ namespace Stand
 		return 0;
 	}
 
+	// LOC(...) constructs a Label, which owns a std::string and so has a
+	// non-trivial destructor; kept out of CTrain_ValidateLinkedLists' __try
+	// frame by living in its own plain function.
+	static void reportTrainLoopPrevented()
+	{
+		Util::onPreventedCrash(LOC("CRSH_TRNLOOP"), g_hooking.train_sync_blamer.getBlame());
+	}
+
 	static void __fastcall CTrain_ValidateLinkedLists(CTrain* carriage)
 	{
 		__try
@@ -446,7 +454,7 @@ namespace Stand
 				SOUP_IF_LIKELY (g_gui.doesRootStateAllowCrashPatches())
 				{
 					//Util::toast("Recursive backward linkage detected, trying to fix it.", TC_OTHER);
-					Util::onPreventedCrash(LOC("CRSH_TRNLOOP"), g_hooking.train_sync_blamer.getBlame());
+					reportTrainLoopPrevented();
 					carriage->linked_backward.reset();
 				}
 			}
@@ -456,7 +464,7 @@ namespace Stand
 				SOUP_IF_LIKELY (g_gui.doesRootStateAllowCrashPatches())
 				{
 					//Util::toast("Recursive forward linkage detected, trying to fix it.", TC_OTHER);
-					Util::onPreventedCrash(LOC("CRSH_TRNLOOP"), g_hooking.train_sync_blamer.getBlame());
+					reportTrainLoopPrevented();
 					carriage->linked_forward.reset();
 				}
 			}

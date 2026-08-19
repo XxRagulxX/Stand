@@ -12,6 +12,14 @@
 
 namespace Stand
 {
+#if NETINTERFACE_STATS
+	// Not called from within a __try, so it's fine for this to hold a destructible SharedPtr temporary; only the raw pointer escapes to the caller.
+	static soup::SchedulerStats* addNetInterfaceSchedulerStats(soup::DetachedScheduler& sched)
+	{
+		return sched.add<soup::SchedulerStats>().get();
+	}
+#endif
+
 	class NetInterface : public soup::DetachedScheduler
 	{
 #if NETINTERFACE_STATS
@@ -23,7 +31,7 @@ namespace Stand
 		void run() final
 		{
 #if NETINTERFACE_STATS
-			stats = add<soup::SchedulerStats>().get(); ++passive_workers;
+			stats = addNetInterfaceSchedulerStats(*this); ++passive_workers;
 #endif
 			__try
 			{

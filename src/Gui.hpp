@@ -339,7 +339,11 @@ namespace Stand
 		static void saveState(std::wstring&& name);
 		void saveStateInMemory(std::unordered_map<std::string, std::string>& state);
 		void cancelPendingSave();
-		void recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix = {});
+		// Split into two overloads rather than a `prefix = {}` default argument:
+		// a default of non-trivial type is constructed at each call site, and
+		// two call sites omit it from inside a function holding a __try.
+		void recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list);
+		void recursivelyApplyState(std::unordered_map<std::string, std::string>& state, CommandList* list, const std::string& prefix);
 		void recursivelyApplyActiveState();
 		void recursivelyApplyDefaultState();
 		void performRootCheck(const CommandList* const list, std::unordered_map<CommandName, std::string>& command_names_map);

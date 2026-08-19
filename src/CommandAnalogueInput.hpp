@@ -32,6 +32,53 @@ namespace Stand
 		{
 		}
 
+		// soup::AnalogueKeyboard::getAll()/getActiveKeys() return std::vector by
+		// value, so their range-for loops materialize non-trivially-destructible
+		// temporaries. Kept out of onEnable() below, which holds the __try.
+		static void pollAnalogueInput(ThreadData* thread_data)
+		{
+			float arr[256];
+			while (thread_data->running)
+			{
+				for (auto& kbd : soup::AnalogueKeyboard::getAll())
+				{
+					thread_data->pKbd = &kbd;
+					rage_input_helper_set_override(&arr);
+					while (thread_data->running && !kbd.disconnected)
+					{
+						float new_arr[256];
+						memset(new_arr, 0, sizeof(new_arr));
+						if (!kbd.isPoll() || GetForegroundWindow() == pointers::hwnd)
+						{
+							for (const auto& key : kbd.getActiveKeys())
+							{
+								const auto vk = key.getVk();
+								if (vk >= 0 && vk < 256)
+								{
+									new_arr[vk] = std::clamp((key.fvalue - pressure_subtrahend) / pressure_divisior, 0.0f, 1.0f);
+								}
+							}
+						}
+						if (GetForegroundWindow() == pointers::hwnd)
+						{
+							memcpy(arr, new_arr, sizeof(new_arr));
+						}
+						else
+						{
+							memset(arr, 0, sizeof(arr));
+						}
+					}
+					thread_data->pKbd = nullptr;
+				}
+				rage_input_helper_set_override(nullptr);
+				if (!thread_data->running)
+				{
+					break;
+				}
+				soup::os::sleep(100);
+			}
+		}
+
 		void onEnable(Click& click) final
 		{
 			current_thread_data = new ThreadData();
@@ -39,46 +86,7 @@ namespace Stand
 			{
 				__try
 				{
-					float arr[256];
-					while (thread_data->running)
-					{
-						for (auto& kbd : soup::AnalogueKeyboard::getAll())
-						{
-							thread_data->pKbd = &kbd;
-							rage_input_helper_set_override(&arr);
-							while (thread_data->running && !kbd.disconnected)
-							{
-								float new_arr[256];
-								memset(new_arr, 0, sizeof(new_arr));
-								if (!kbd.isPoll() || GetForegroundWindow() == pointers::hwnd)
-								{
-									for (const auto& key : kbd.getActiveKeys())
-									{
-										const auto vk = key.getVk();
-										if (vk >= 0 && vk < 256)
-										{
-											new_arr[vk] = std::clamp((key.fvalue - pressure_subtrahend) / pressure_divisior, 0.0f, 1.0f);
-										}
-									}
-								}
-								if (GetForegroundWindow() == pointers::hwnd)
-								{
-									memcpy(arr, new_arr, sizeof(new_arr));
-								}
-								else
-								{
-									memset(arr, 0, sizeof(arr));
-								}
-							}
-							thread_data->pKbd = nullptr;
-						}
-						rage_input_helper_set_override(nullptr);
-						if (!thread_data->running)
-						{
-							break;
-						}
-						soup::os::sleep(100);
-					}
+					pollAnalogueInput(thread_data);
 				}
 				__EXCEPTIONAL()
 				{
