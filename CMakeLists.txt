@@ -147,6 +147,13 @@ add_library(DiscordRPC STATIC
     "${DISCORD_RPC_DIR}/src/serialization.cpp"
 )
 
+target_link_libraries(DiscordRPC
+    PRIVATE
+        # serialization.h (private header, not part of DiscordRPC's public
+        # API) uses rapidjson/document.h.
+        RapidJSON
+)
+
 target_include_directories(DiscordRPC
     PUBLIC
         "${DISCORD_RPC_DIR}/include"
