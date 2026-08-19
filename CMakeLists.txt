@@ -32,10 +32,6 @@ set(STAND_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
-set(DIRECTXTK_DIR
-    "${STAND_DIR}/directxtk"
-)
-
 set(PLUTO_DIR
     "${STAND_DIR}/pluto"
 )
@@ -61,10 +57,6 @@ file(GLOB_RECURSE STAND_CPP CONFIGURE_DEPENDS
 )
 
 # Third-party libraries are compiled separately.
-list(FILTER STAND_CPP EXCLUDE REGEX
-    "/directxtk/"
-)
-
 list(FILTER STAND_CPP EXCLUDE REGEX
     "/pluto/"
 )
@@ -110,14 +102,6 @@ file(GLOB_RECURSE FMT_CPP CONFIGURE_DEPENDS
 )
 
 # ------------------------------------------------------------
-# DirectXTK sources
-# ------------------------------------------------------------
-
-file(GLOB_RECURSE DIRECTXTK_CPP CONFIGURE_DEPENDS
-    "${DIRECTXTK_DIR}/*.cpp"
-)
-
-# ------------------------------------------------------------
 # MinHook sources
 # ------------------------------------------------------------
 
@@ -129,23 +113,10 @@ file(GLOB MINHOOK_C CONFIGURE_DEPENDS
 # ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
+# Fetched from GitHub and built from a curated file list; see
+# cmake/directxtk.cmake. Defines the DirectXTK target linked below.
 
-add_library(DirectXTK STATIC
-    ${DIRECTXTK_CPP}
-)
-
-target_include_directories(DirectXTK
-    PUBLIC
-        "${DIRECTXTK_DIR}"
-)
-
-target_link_libraries(DirectXTK
-    PUBLIC
-        d3d11
-        dxgi
-        d3dcompiler
-        windowscodecs
-)
+include(cmake/directxtk.cmake)
 
 # ------------------------------------------------------------
 # MinHook library
@@ -241,9 +212,6 @@ target_include_directories(Stand
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
-
-        # DirectXTK
-        "${DIRECTXTK_DIR}"
 
         # Stackwalker
         "${STAND_DIR}/stackwalker"
