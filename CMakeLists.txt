@@ -111,6 +111,14 @@ include(cmake/directxtk.cmake)
 include(cmake/fmt.cmake)
 
 # ------------------------------------------------------------
+# RapidJSON library
+# ------------------------------------------------------------
+# Fetched from GitHub (header-only, nothing to compile); see
+# cmake/rapidjson.cmake. Defines the RapidJSON target linked below.
+
+include(cmake/rapidjson.cmake)
+
+# ------------------------------------------------------------
 # MinHook library
 # ------------------------------------------------------------
 
@@ -237,6 +245,9 @@ target_link_libraries(Stand
 
         # fmt
         Fmt
+
+        # RapidJSON
+        RapidJSON
 
         # Discord RPC
         DiscordRPC
