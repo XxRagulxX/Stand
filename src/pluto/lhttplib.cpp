@@ -3,12 +3,12 @@
 
 #include "lstate.h"
 
-#include "vendor/Soup/soup/DetachedScheduler.hpp"
-#include "vendor/Soup/soup/HttpRequest.hpp"
-#include "vendor/Soup/soup/HttpRequestTask.hpp"
-#include "vendor/Soup/soup/netStatus.hpp"
-#include "vendor/Soup/soup/os.hpp"
-#include "vendor/Soup/soup/Uri.hpp"
+#include "soup/DetachedScheduler.hpp"
+#include "soup/HttpRequest.hpp"
+#include "soup/HttpRequestTask.hpp"
+#include "soup/netStatus.hpp"
+#include "soup/os.hpp"
+#include "soup/Uri.hpp"
 
 static int push_http_response (lua_State *L, soup::HttpRequestTask& task) {
   if (task.result.has_value()) {

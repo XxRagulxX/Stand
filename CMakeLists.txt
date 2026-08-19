@@ -161,14 +161,24 @@ add_library(Pluto STATIC
 target_include_directories(Pluto
     PUBLIC
         "${PLUTO_DIR}"
+
+    PRIVATE
+        # Pluto used to vendor its own copy of Soup under
+        # src/pluto/vendor/Soup/soup/ for its json/regex/crypto/socket/etc.
+        # standard-library extensions. It now includes Stand's own soup/
+        # library directly (the same one Stand's own code uses) instead of
+        # carrying a second, independently-drifting copy.
+        "${STAND_DIR}"
 )
 
 # IMPORTANT:
-# Pluto has its own vendored Soup implementation under:
-#
-#     src/pluto/vendor/Soup/soup/
-#
-# Therefore Pluto must not inherit Stand's PCH.
+# Pluto must not inherit Stand's PCH (common.hpp): that PCH pulls in
+# Stand's GTA-specific/Command headers (CommandPhysical.hpp, natives.hpp,
+# etc.), which have nothing to do with a general-purpose Lua/Pluto library
+# and risk colliding with Pluto's own internal macros - e.g. the
+# `#undef G` / `#undef isLua` in CommandLuaScript.cpp exist precisely
+# because Lua's internals and Stand's own code can't coexist under one set
+# of macros.
 #
 # Stand's PCH is attached only to the Stand target below,
 # so no SKIP_PRECOMPILE_HEADERS is required here.

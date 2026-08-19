@@ -10,15 +10,15 @@
 
 #undef MAX_SIZE
 
-#include "vendor/Soup/soup/CertStore.hpp"
-#include "vendor/Soup/soup/netConnectTask.hpp"
-#include "vendor/Soup/soup/os.hpp"
-#include "vendor/Soup/soup/ResolveIpAddrTask.hpp"
-#include "vendor/Soup/soup/Scheduler.hpp"
-#include "vendor/Soup/soup/Server.hpp"
-#include "vendor/Soup/soup/ServerService.hpp"
-#include "vendor/Soup/soup/Socket.hpp"
-#include "vendor/Soup/soup/TlsExtAlpn.hpp"
+#include "soup/CertStore.hpp"
+#include "soup/netConnectTask.hpp"
+#include "soup/os.hpp"
+#include "soup/ResolveIpAddrTask.hpp"
+#include "soup/Scheduler.hpp"
+#include "soup/Server.hpp"
+#include "soup/ServerService.hpp"
+#include "soup/Socket.hpp"
+#include "soup/TlsExtAlpn.hpp"
 
 struct StandaloneSocket {
   soup::Scheduler sched;

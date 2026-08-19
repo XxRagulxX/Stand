@@ -3,9 +3,9 @@
 #define LUA_LIB
 #include "lualib.h"
 
-#include "vendor/Soup/soup/cat.hpp"
-#include "vendor/Soup/soup/string.hpp"
-#include "vendor/Soup/soup/MemoryRefReader.hpp"
+#include "soup/cat.hpp"
+#include "soup/string.hpp"
+#include "soup/MemoryRefReader.hpp"
 
 static void cat_encode_aux (lua_State *L, std::string& data, const std::string& prefix);
 

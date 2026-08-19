@@ -4,7 +4,7 @@
 #include "lualib.h"
 #include "lstate.h" // luaE_incCstack
 
-#include "vendor/Soup/soup/xml.hpp"
+#include "soup/xml.hpp"
 
 static void check_xml (lua_State *L, int i, soup::UniquePtr<soup::XmlNode>& out) {
   const auto type = lua_type(L, i);

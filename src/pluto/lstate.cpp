@@ -27,7 +27,7 @@
 #include "ltable.h"
 #include "ltm.h"
 
-#include "vendor/Soup/soup/DetachedScheduler.hpp"
+#include "soup/DetachedScheduler.hpp"
 
 
 

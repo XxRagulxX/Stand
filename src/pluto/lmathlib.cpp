@@ -22,7 +22,7 @@
 #include "lualib.h"
 #include "llimits.h"
 
-#include "vendor/Soup/soup/bitutil.hpp"
+#include "soup/bitutil.hpp"
 
 
 #undef PI
