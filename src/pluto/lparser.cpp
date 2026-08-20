@@ -39,7 +39,7 @@
 
 #include "lerrormessage.hpp"
 
-#include "vendor/Soup/soup/version_compare.hpp"
+#include "soup/version_compare.hpp"
 
 
 

@@ -2,9 +2,9 @@
 #include "lualib.h"
 #include "llimits.h" // l_unlikely
 
-#include "vendor/Soup/soup/Canvas.hpp"
-#include "vendor/Soup/soup/MemoryRefReader.hpp"
-#include "vendor/Soup/soup/QrCode.hpp"
+#include "soup/Canvas.hpp"
+#include "soup/MemoryRefReader.hpp"
+#include "soup/QrCode.hpp"
 
 static soup::Canvas* checkcanvas (lua_State *L, int i) {
   return (soup::Canvas*)luaL_checkudata(L, i, "pluto:canvas");

@@ -36,10 +36,6 @@ set(PLUTO_DIR
     "${STAND_DIR}/pluto"
 )
 
-set(FMT_DIR
-    "${STAND_DIR}/fmt"
-)
-
 set(DISCORD_RPC_DIR
     "${STAND_DIR}/discord-rpc"
 )
@@ -55,10 +51,6 @@ file(GLOB_RECURSE STAND_CPP CONFIGURE_DEPENDS
 # Third-party libraries are compiled separately.
 list(FILTER STAND_CPP EXCLUDE REGEX
     "/pluto/"
-)
-
-list(FILTER STAND_CPP EXCLUDE REGEX
-    "/fmt/"
 )
 
 list(FILTER STAND_CPP EXCLUDE REGEX
@@ -102,6 +94,22 @@ file(GLOB_RECURSE FMT_CPP CONFIGURE_DEPENDS
 include(cmake/directxtk.cmake)
 
 # ------------------------------------------------------------
+# fmt library
+# ------------------------------------------------------------
+# Fetched from GitHub and built from its two .cc files; see cmake/fmt.cmake.
+# Defines the Fmt target linked below.
+
+include(cmake/fmt.cmake)
+
+# ------------------------------------------------------------
+# RapidJSON library
+# ------------------------------------------------------------
+# Fetched from GitHub (header-only, nothing to compile); see
+# cmake/rapidjson.cmake. Defines the RapidJSON target linked below.
+
+include(cmake/rapidjson.cmake)
+
+# ------------------------------------------------------------
 # MinHook library
 # ------------------------------------------------------------
 # Fetched from GitHub (master); see cmake/minhook.cmake. Defines the
@@ -131,6 +139,13 @@ add_library(DiscordRPC STATIC
     "${DISCORD_RPC_DIR}/src/serialization.cpp"
 )
 
+target_link_libraries(DiscordRPC
+    PRIVATE
+        # serialization.h (private header, not part of DiscordRPC's public
+        # API) uses rapidjson/document.h.
+        RapidJSON
+)
+
 target_include_directories(DiscordRPC
     PUBLIC
         "${DISCORD_RPC_DIR}/include"
@@ -153,6 +168,14 @@ add_library(Pluto STATIC
 target_include_directories(Pluto
     PUBLIC
         "${PLUTO_DIR}"
+
+    PRIVATE
+        # Pluto used to vendor its own copy of Soup under
+        # src/pluto/vendor/Soup/soup/ for its json/regex/crypto/socket/etc.
+        # standard-library extensions. It now includes Stand's own soup/
+        # library directly (the same one Stand's own code uses) instead of
+        # carrying a second, independently-drifting copy.
+        "${STAND_DIR}"
 )
 
 # Several Lua core functions (luaB_error, luaL_argerror, luaL_typeerror,
@@ -183,11 +206,13 @@ target_compile_definitions(Pluto
 )
 
 # IMPORTANT:
-# Pluto has its own vendored Soup implementation under:
-#
-#     src/pluto/vendor/Soup/soup/
-#
-# Therefore Pluto must not inherit Stand's PCH.
+# Pluto must not inherit Stand's PCH (common.hpp): that PCH pulls in
+# Stand's GTA-specific/Command headers (CommandPhysical.hpp, natives.hpp,
+# etc.), which have nothing to do with a general-purpose Lua/Pluto library
+# and risk colliding with Pluto's own internal macros - e.g. the
+# `#undef G` / `#undef isLua` in CommandLuaScript.cpp exist precisely
+# because Lua's internals and Stand's own code can't coexist under one set
+# of macros.
 #
 # Stand's PCH is attached only to the Stand target below,
 # so no SKIP_PRECOMPILE_HEADERS is required here.
@@ -221,9 +246,6 @@ target_include_directories(Stand
         # Stand
         "${STAND_DIR}"
 
-        # fmt
-        "${FMT_DIR}"
-
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
 
@@ -252,6 +274,12 @@ target_link_libraries(Stand
 
         # DirectXTK
         DirectXTK
+
+        # fmt
+        Fmt
+
+        # RapidJSON
+        RapidJSON
 
         # Discord RPC
         DiscordRPC

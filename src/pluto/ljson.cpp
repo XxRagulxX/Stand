@@ -8,18 +8,18 @@
 #include "ljson.hpp" // isIndexBasedTable
 #include "lstate.h" // luaE_incCstack
 
-#include "vendor/Soup/soup/json.hpp"
-#include "vendor/Soup/soup/JsonArray.hpp"
-#include "vendor/Soup/soup/JsonBool.hpp"
-#include "vendor/Soup/soup/JsonFloat.hpp"
-#include "vendor/Soup/soup/JsonInt.hpp"
-#include "vendor/Soup/soup/JsonNode.hpp"
-#include "vendor/Soup/soup/JsonObject.hpp"
-#include "vendor/Soup/soup/JsonString.hpp"
-#include "vendor/Soup/soup/MemoryRefReader.hpp"
-#include "vendor/Soup/soup/string.hpp"
-#include "vendor/Soup/soup/StringWriter.hpp"
-#include "vendor/Soup/soup/UniquePtr.hpp"
+#include "soup/json.hpp"
+#include "soup/JsonArray.hpp"
+#include "soup/JsonBool.hpp"
+#include "soup/JsonFloat.hpp"
+#include "soup/JsonInt.hpp"
+#include "soup/JsonNode.hpp"
+#include "soup/JsonObject.hpp"
+#include "soup/JsonString.hpp"
+#include "soup/MemoryRefReader.hpp"
+#include "soup/string.hpp"
+#include "soup/StringWriter.hpp"
+#include "soup/UniquePtr.hpp"
 
 
 static void checkJson(lua_State* L, int i, soup::UniquePtr<soup::JsonNode>& out)

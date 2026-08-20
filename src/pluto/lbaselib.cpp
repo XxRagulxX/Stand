@@ -28,7 +28,7 @@
 #include "lobject.h"
 #include "lstate.h"
 
-#include "vendor/Soup/soup/version_compare.hpp"
+#include "soup/version_compare.hpp"
 
 
 static int luaB_print (lua_State *L) {
