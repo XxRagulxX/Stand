@@ -32,13 +32,18 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/microsoft/DirectXTK.git
     GIT_TAG        ${DIRECTXTK_GIT_TAG}
     GIT_SHALLOW    TRUE
+
+    # DirectXTK has its own top-level CMakeLists.txt, which FetchContent
+    # would otherwise add_subdirectory() automatically - building all of
+    # upstream via its own build (including the shader compilation this
+    # file explicitly avoids, see below) rather than the curated file list
+    # below. Pointing SOURCE_SUBDIR at Inc/ (headers only, no CMakeLists.txt
+    # of its own) makes FetchContent fetch the source without building it;
+    # it does not change where DIRECTXTK_SOURCE_DIR points below.
+    SOURCE_SUBDIR "Inc"
 )
 
-FetchContent_GetProperties(directxtk_upstream)
-if(NOT directxtk_upstream_POPULATED)
-    message(STATUS "Fetching DirectXTK (${DIRECTXTK_GIT_TAG}) from https://github.com/microsoft/DirectXTK ...")
-    FetchContent_Populate(directxtk_upstream)
-endif()
+FetchContent_MakeAvailable(directxtk_upstream)
 
 set(DIRECTXTK_SOURCE_DIR "${directxtk_upstream_SOURCE_DIR}")
 
