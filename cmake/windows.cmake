@@ -27,6 +27,17 @@ function(stand_apply_common_compile_options target)
             $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
             $<$<COMPILE_LANGUAGE:CXX>:/utf-8>
             $<$<COMPILE_LANGUAGE:CXX>:/bigobj>
+
+            # Stand's PCH (common.hpp) pulls in soup/ObfusString.hpp, whose
+            # rand.hpp seeds an obfuscation PRNG from __TIME__ - deliberately,
+            # so string literals wrapped in ObfusString get a different
+            # compile-time seed per build. Clang warns that baking
+            # __DATE__/__TIME__ into a PCH means every translation unit
+            # sharing that PCH sees the same frozen value until the PCH
+            # itself is regenerated; true, and an accepted trade-off for the
+            # compile-time win a PCH gives here, not something to fix by
+            # unpicking ObfusString.hpp back out of common.hpp.
+            $<$<CXX_COMPILER_ID:Clang>:-Wno-pch-date-time>
     )
 endfunction()
 

@@ -168,6 +168,20 @@ target_compile_options(Pluto
         $<$<CXX_COMPILER_ID:Clang>:-Wno-invalid-noreturn>
 )
 
+# Pluto's vendored Soup (src/pluto/vendor/Soup/soup/) calls plain CRT
+# functions the Windows SDK headers mark __declspec(deprecated) in favor of
+# the *_s variants (strncpy, fopen, ...). Soup is meant to build the same
+# way outside this project too, so it's not written against the *_s API;
+# rather than patch each call site in vendored code, define the same macro
+# the deprecation messages themselves point to, which drops the
+# __declspec(deprecated) from the SDK headers entirely - same effect on
+# real MSVC (as C4996) and Clang (as -Wdeprecated-declarations), so no
+# compiler-ID gating is needed here.
+target_compile_definitions(Pluto
+    PRIVATE
+        _CRT_SECURE_NO_WARNINGS
+)
+
 # IMPORTANT:
 # Pluto has its own vendored Soup implementation under:
 #
