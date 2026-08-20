@@ -5,7 +5,7 @@
 #include "lstring.h"
 
 #include <string>
-#include "vendor/Soup/soup/base64.hpp"
+#include "soup/base64.hpp"
 
 static int encode(lua_State* L) {
 	size_t len;

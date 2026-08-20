@@ -7,12 +7,12 @@
 
 #include "ldo.h"
 
-#include "vendor/Soup/soup/ffi.hpp"
-#include "vendor/Soup/soup/Notifyable.hpp"
-#include "vendor/Soup/soup/rflFunc.hpp"
-#include "vendor/Soup/soup/rflParser.hpp"
-#include "vendor/Soup/soup/rflStruct.hpp"
-#include "vendor/Soup/soup/SharedLibrary.hpp"
+#include "soup/ffi.hpp"
+#include "soup/Notifyable.hpp"
+#include "soup/rflFunc.hpp"
+#include "soup/rflParser.hpp"
+#include "soup/rflStruct.hpp"
+#include "soup/SharedLibrary.hpp"
 
 static thread_local lua_State* callback_L = nullptr;
 
@@ -82,6 +82,14 @@ enum FfiType : uint8_t {
     }
   }
   return FFI_PTR;
+}
+
+// soup::ffi::call/callbackAlloc need to know which argument slots are
+// floats so they can be routed into the right ABI register class; every
+// other FfiType is passed through soup's calling convention as an
+// integral/pointer-sized value.
+[[nodiscard]] static soup::ffi::ValueType ffi_type_to_value_type (FfiType type) noexcept {
+  return (type == FFI_F32 || type == FFI_F64) ? soup::ffi::VT_FLOAT : soup::ffi::VT_INTEGRAL;
 }
 
 static int push_ffi_value (lua_State *L, FfiType type, const void *value) {
@@ -245,16 +253,19 @@ static int ffi_funcwrapper_call (lua_State *L) {
   }
 #endif
   uintptr_t args[soup::ffi::MAX_ARGS];
+  soup::ffi::ValueType types[soup::ffi::MAX_ARGS + 1];
   int i = 0;
   for (const auto& arg_type : fw->args) {
     lua_assert(i < soup::ffi::MAX_ARGS);
     args[i] = check_ffi_value(L, 1 + i, arg_type);
+    types[i] = ffi_type_to_value_type(arg_type);
     ++i;
   }
+  types[i] = ffi_type_to_value_type(fw->ret); // types[nargs] is the return type
   uintptr_t retval;
   callback_L = L;
   try {
-    retval = soup::ffi::call(fw->addr, args, i);
+    retval = soup::ffi::call(fw->addr, types, args, i);
   }
   catch (const std::exception& e) {
     callback_L = nullptr;
@@ -739,7 +750,13 @@ static int ffi_callback (lua_State *L) {
   for (int i = 0; i != nargs; ++i) {
     cb.args.emplace_back(check_ffi_type(L, 2 + i));
   }
-  cb.trampoline = soup::ffi::callbackAlloc(ffi_callback_trampoline, reinterpret_cast<uintptr_t>(&cb));
+  // callbackAlloc copies the whole fixed-size array (memcpy), so every slot
+  // must be initialised, not just the first nargs.
+  soup::ffi::ValueType types[soup::ffi::MAX_CALLBACK_ARGS] = {};
+  for (int i = 0; i != nargs; ++i) {
+    types[i] = ffi_type_to_value_type(cb.args[i]);
+  }
+  cb.trampoline = soup::ffi::callbackAlloc(ffi_callback_trampoline, reinterpret_cast<uintptr_t>(&cb), types);
   if (!cb.trampoline) {
 #if SOUP_APPLE
     luaL_error(L, "Failed to allocate an FFI callback. Is the 'com.apple.security.cs.allow-jit' entitlement set?");

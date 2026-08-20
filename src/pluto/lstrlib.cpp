@@ -28,10 +28,10 @@
 #include "lstring.h"
 
 
-#include "vendor/Soup/soup/bitutil.hpp"
-#include "vendor/Soup/soup/string.hpp"
-#include "vendor/Soup/soup/unicode.hpp"
-#include "vendor/Soup/soup/urlenc.hpp"
+#include "soup/bitutil.hpp"
+#include "soup/string.hpp"
+#include "soup/unicode.hpp"
+#include "soup/urlenc.hpp"
 
 
 /*

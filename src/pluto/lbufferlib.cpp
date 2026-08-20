@@ -5,7 +5,7 @@
 #include <memory> // destroy_at
 #include <new> // bad_alloc
 
-#include "vendor/Soup/soup/Buffer.hpp"
+#include "soup/Buffer.hpp"
 
 #include "ldo.h"
 #include "lmem.h"

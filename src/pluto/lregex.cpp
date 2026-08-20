@@ -2,7 +2,7 @@
 #include "lualib.h"
 #include "llimits.h"
 
-#include "vendor/Soup/soup/Regex.hpp"
+#include "soup/Regex.hpp"
 
 static soup::Regex* checkregex (lua_State *L, int i) {
   return (soup::Regex*)luaL_checkudata(L, i, "pluto:regex");
