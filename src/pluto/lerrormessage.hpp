@@ -3,7 +3,7 @@
 #include <string>
 
 #include "llex.h"
-#include "vendor/Soup/soup/string.hpp"
+#include "soup/string.hpp"
 
 namespace Pluto {
 	class ErrorMessage {

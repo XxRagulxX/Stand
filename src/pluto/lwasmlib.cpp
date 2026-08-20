@@ -4,8 +4,8 @@
 #include "lualib.h"
 #include "llimits.h"
 
-#include "vendor/Soup/soup/MemoryRefReader.hpp"
-#include "vendor/Soup/soup/wasm.hpp"
+#include "soup/MemoryRefReader.hpp"
+#include "soup/wasm.hpp"
 
 static thread_local lua_State* callback_L = nullptr;
 
