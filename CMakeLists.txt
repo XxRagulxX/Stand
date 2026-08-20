@@ -44,10 +44,6 @@ set(DISCORD_RPC_DIR
     "${STAND_DIR}/discord-rpc"
 )
 
-set(MINHOOK_DIR
-    "${STAND_DIR}/minhook"
-)
-
 # ------------------------------------------------------------
 # Stand C++ sources
 # ------------------------------------------------------------
@@ -67,10 +63,6 @@ list(FILTER STAND_CPP EXCLUDE REGEX
 
 list(FILTER STAND_CPP EXCLUDE REGEX
     "/discord-rpc/"
-)
-
-list(FILTER STAND_CPP EXCLUDE REGEX
-    "/minhook/"
 )
 
 # ------------------------------------------------------------
@@ -102,15 +94,6 @@ file(GLOB_RECURSE FMT_CPP CONFIGURE_DEPENDS
 )
 
 # ------------------------------------------------------------
-# MinHook sources
-# ------------------------------------------------------------
-
-file(GLOB MINHOOK_C CONFIGURE_DEPENDS
-    "${MINHOOK_DIR}/src/*.c"
-    "${MINHOOK_DIR}/src/hde/*.c"
-)
-
-# ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
 # Fetched from GitHub and built from a curated file list; see
@@ -121,18 +104,18 @@ include(cmake/directxtk.cmake)
 # ------------------------------------------------------------
 # MinHook library
 # ------------------------------------------------------------
+# Fetched from GitHub (master); see cmake/minhook.cmake. Defines the
+# MinHook target linked below.
 
-add_library(MinHook STATIC
-    ${MINHOOK_C}
-)
+include(cmake/minhook.cmake)
 
-target_include_directories(MinHook
-    PUBLIC
-        "${MINHOOK_DIR}/include"
+# ------------------------------------------------------------
+# StackWalker library
+# ------------------------------------------------------------
+# Fetched from GitHub (master); see cmake/stackwalker.cmake. Defines the
+# StackWalker target linked below.
 
-    PRIVATE
-        "${MINHOOK_DIR}/src"
-)
+include(cmake/stackwalker.cmake)
 
 # ------------------------------------------------------------
 # Discord RPC library
@@ -212,9 +195,6 @@ target_include_directories(Stand
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
-
-        # Stackwalker
-        "${STAND_DIR}/stackwalker"
 )
 
 # ------------------------------------------------------------
@@ -244,6 +224,9 @@ target_link_libraries(Stand
 
         # MinHook
         MinHook
+
+        # StackWalker
+        StackWalker
 
         dbghelp
 )
