@@ -27,28 +27,18 @@ include(FetchContent)
 
 set(DIRECTXTK_GIT_TAG "oct2025" CACHE STRING "DirectXTK release tag to fetch")
 
-# FetchContent_Declare() + FetchContent_GetProperties() + a bare
-# FetchContent_Populate(<name>) is the classic "fetch source but don't
-# add_subdirectory() it" recipe, but that specific form of Populate() (the
-# one that reuses details from a prior Declare()) is deprecated as of CMake
-# 3.30 (policy CMP0169) in favor of FetchContent_MakeAvailable() - which
-# doesn't fit here, since MakeAvailable() would run DirectXTK's own
-# CMakeLists.txt via add_subdirectory(), which is exactly what this file
-# exists to avoid (see the notes above). CMake's own docs still document
-# and support giving FetchContent_Populate() all the content details
-# directly, with no prior Declare() - that form isn't deprecated, and is
-# used below instead.
-message(STATUS "Fetching DirectXTK (${DIRECTXTK_GIT_TAG}) from https://github.com/microsoft/DirectXTK ...")
-
-FetchContent_Populate(
+FetchContent_Declare(
     directxtk_upstream
     GIT_REPOSITORY https://github.com/microsoft/DirectXTK.git
     GIT_TAG        ${DIRECTXTK_GIT_TAG}
     GIT_SHALLOW    TRUE
-    SOURCE_DIR     "${CMAKE_BINARY_DIR}/_deps/directxtk_upstream-src"
-    SUBBUILD_DIR   "${CMAKE_BINARY_DIR}/_deps/directxtk_upstream-subbuild"
-    BINARY_DIR     "${CMAKE_BINARY_DIR}/_deps/directxtk_upstream-build"
 )
+
+FetchContent_GetProperties(directxtk_upstream)
+if(NOT directxtk_upstream_POPULATED)
+    message(STATUS "Fetching DirectXTK (${DIRECTXTK_GIT_TAG}) from https://github.com/microsoft/DirectXTK ...")
+    FetchContent_Populate(directxtk_upstream)
+endif()
 
 set(DIRECTXTK_SOURCE_DIR "${directxtk_upstream_SOURCE_DIR}")
 

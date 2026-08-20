@@ -118,11 +118,10 @@ include(cmake/rapidjson.cmake)
 include(cmake/minhook.cmake)
 
 # ------------------------------------------------------------
-# StackWalker sources
+# StackWalker library
 # ------------------------------------------------------------
-# Fetched from GitHub (master); see cmake/stackwalker.cmake. Doesn't need
-# its own library - just compiled straight into the Stand target below via
-# STACKWALKER_SOURCES, same as it was when it lived under src/stackwalker/.
+# Fetched from GitHub (master); see cmake/stackwalker.cmake. Defines the
+# StackWalker target linked below.
 
 include(cmake/stackwalker.cmake)
 
@@ -178,33 +177,6 @@ target_include_directories(Pluto
         "${STAND_DIR}"
 )
 
-# Several Lua core functions (luaB_error, luaL_argerror, luaL_typeerror,
-# luaL_error, ...) are declared [[noreturn]] but defined as
-# `return some_other_noreturn_call(...);` - this is Lua's standard
-# never-returns-but-typed-int idiom (so call sites can write
-# `return luaL_error(...)`), and it genuinely never returns since the
-# callee doesn't either. Clang's -Winvalid-noreturn doesn't trace through
-# that and warns anyway. Silenced project-wide for Pluto rather than
-# per-file, since this same idiom recurs throughout Lua's core.
-target_compile_options(Pluto
-    PRIVATE
-        $<$<CXX_COMPILER_ID:Clang>:-Wno-invalid-noreturn>
-)
-
-# Pluto's vendored Soup (src/pluto/vendor/Soup/soup/) calls plain CRT
-# functions the Windows SDK headers mark __declspec(deprecated) in favor of
-# the *_s variants (strncpy, fopen, ...). Soup is meant to build the same
-# way outside this project too, so it's not written against the *_s API;
-# rather than patch each call site in vendored code, define the same macro
-# the deprecation messages themselves point to, which drops the
-# __declspec(deprecated) from the SDK headers entirely - same effect on
-# real MSVC (as C4996) and Clang (as -Wdeprecated-declarations), so no
-# compiler-ID gating is needed here.
-target_compile_definitions(Pluto
-    PRIVATE
-        _CRT_SECURE_NO_WARNINGS
-)
-
 # IMPORTANT:
 # Pluto must not inherit Stand's PCH (common.hpp): that PCH pulls in
 # Stand's GTA-specific/Command headers (CommandPhysical.hpp, natives.hpp,
@@ -228,12 +200,6 @@ add_library(Stand SHARED
 
     # Stand ASM
     ${STAND_ASM}
-
-    # fmt
-    ${FMT_CPP}
-
-    # StackWalker
-    ${STACKWALKER_SOURCES}
 )
 
 # ------------------------------------------------------------
@@ -248,9 +214,6 @@ target_include_directories(Stand
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
-
-        # StackWalker
-        "${STACKWALKER_INCLUDE_DIR}"
 )
 
 # ------------------------------------------------------------
@@ -286,6 +249,9 @@ target_link_libraries(Stand
 
         # MinHook
         MinHook
+
+        # StackWalker
+        StackWalker
 
         dbghelp
 )

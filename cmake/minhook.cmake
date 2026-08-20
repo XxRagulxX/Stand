@@ -12,26 +12,18 @@ include(FetchContent)
 
 set(MINHOOK_GIT_TAG "master" CACHE STRING "MinHook branch/tag to fetch")
 
-# Populated via FetchContent_Populate()'s direct-arguments form (content
-# details passed straight to Populate(), no prior Declare()) rather than the
-# classic Declare()+GetProperties()+Populate(<name>) recipe - the latter's
-# bare Populate(<name>) call is deprecated as of CMake 3.30 (policy
-# CMP0169) in favor of FetchContent_MakeAvailable(), which doesn't apply
-# here since it would add_subdirectory() MinHook's own CMakeLists.txt. The
-# direct-arguments form used below isn't deprecated - see
-# cmake/directxtk.cmake for the fuller explanation (same reasoning applies
-# here).
-message(STATUS "Fetching MinHook (${MINHOOK_GIT_TAG}) from https://github.com/TsudaKageyu/minhook ...")
-
-FetchContent_Populate(
+FetchContent_Declare(
     minhook_upstream
     GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
     GIT_TAG        ${MINHOOK_GIT_TAG}
     GIT_SHALLOW    TRUE
-    SOURCE_DIR     "${CMAKE_BINARY_DIR}/_deps/minhook_upstream-src"
-    SUBBUILD_DIR   "${CMAKE_BINARY_DIR}/_deps/minhook_upstream-subbuild"
-    BINARY_DIR     "${CMAKE_BINARY_DIR}/_deps/minhook_upstream-build"
 )
+
+FetchContent_GetProperties(minhook_upstream)
+if(NOT minhook_upstream_POPULATED)
+    message(STATUS "Fetching MinHook (${MINHOOK_GIT_TAG}) from https://github.com/TsudaKageyu/minhook ...")
+    FetchContent_Populate(minhook_upstream)
+endif()
 
 set(MINHOOK_SOURCE_DIR "${minhook_upstream_SOURCE_DIR}")
 
