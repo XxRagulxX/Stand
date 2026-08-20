@@ -3,11 +3,11 @@
 # ============================================================
 #
 # StackWalker's source is no longer vendored under src/. Instead, this file
-# fetches it via FetchContent and builds it as its own static library, the
-# same way cmake/directxtk.cmake and cmake/minhook.cmake do for those
-# dependencies.
+# fetches it via FetchContent - it doesn't need its own library target,
+# just its header/source made available for the Stand target to compile
+# directly, same as it was when it lived under src/stackwalker/.
 #
-# Stand's own code includes this library as `<stackwalker/StackWalker.h>`
+# Stand's own code includes this as `<stackwalker/StackWalker.h>`
 # (lowercase directory), but upstream keeps the header/source pair under
 # `Main/StackWalker` (capitalized, and nested inside a "Main" folder that's
 # just how that repo is laid out - not part of anything Stand depends on).
@@ -16,6 +16,10 @@
 # tree so the include resolves exactly like it used to - including on
 # case-sensitive filesystems, which matters when cross-compiling from Linux
 # (see cmake/cross-compile.cmake).
+#
+# This file defines two variables for CMakeLists.txt to consume:
+#   STACKWALKER_INCLUDE_DIR - add to the Stand target's include directories
+#   STACKWALKER_SOURCES     - add to the Stand target's source list
 
 include(FetchContent)
 
@@ -49,26 +53,17 @@ endif()
 # `#include <stackwalker/StackWalker.h>` keeps resolving unchanged.
 # ------------------------------------------------------------
 
-set(STACKWALKER_INCLUDE_ROOT "${CMAKE_BINARY_DIR}/_deps/stackwalker-include")
+set(STACKWALKER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/stackwalker-include")
 
-file(MAKE_DIRECTORY "${STACKWALKER_INCLUDE_ROOT}/stackwalker")
+file(MAKE_DIRECTORY "${STACKWALKER_INCLUDE_DIR}/stackwalker")
 
 file(COPY
         "${STACKWALKER_UPSTREAM_DIR}/StackWalker.h"
         "${STACKWALKER_UPSTREAM_DIR}/StackWalker.cpp"
     DESTINATION
-        "${STACKWALKER_INCLUDE_ROOT}/stackwalker"
+        "${STACKWALKER_INCLUDE_DIR}/stackwalker"
 )
 
-# ------------------------------------------------------------
-# StackWalker library
-# ------------------------------------------------------------
-
-add_library(StackWalker STATIC
-    "${STACKWALKER_INCLUDE_ROOT}/stackwalker/StackWalker.cpp"
-)
-
-target_include_directories(StackWalker
-    PUBLIC
-        "${STACKWALKER_INCLUDE_ROOT}"
+set(STACKWALKER_SOURCES
+    "${STACKWALKER_INCLUDE_DIR}/stackwalker/StackWalker.cpp"
 )

@@ -110,10 +110,11 @@ include(cmake/directxtk.cmake)
 include(cmake/minhook.cmake)
 
 # ------------------------------------------------------------
-# StackWalker library
+# StackWalker sources
 # ------------------------------------------------------------
-# Fetched from GitHub (master); see cmake/stackwalker.cmake. Defines the
-# StackWalker target linked below.
+# Fetched from GitHub (master); see cmake/stackwalker.cmake. Doesn't need
+# its own library - just compiled straight into the Stand target below via
+# STACKWALKER_SOURCES, same as it was when it lived under src/stackwalker/.
 
 include(cmake/stackwalker.cmake)
 
@@ -178,6 +179,9 @@ add_library(Stand SHARED
 
     # fmt
     ${FMT_CPP}
+
+    # StackWalker
+    ${STACKWALKER_SOURCES}
 )
 
 # ------------------------------------------------------------
@@ -195,6 +199,9 @@ target_include_directories(Stand
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
+
+        # StackWalker
+        "${STACKWALKER_INCLUDE_DIR}"
 )
 
 # ------------------------------------------------------------
@@ -224,9 +231,6 @@ target_link_libraries(Stand
 
         # MinHook
         MinHook
-
-        # StackWalker
-        StackWalker
 
         dbghelp
 )
