@@ -155,6 +155,19 @@ target_include_directories(Pluto
         "${PLUTO_DIR}"
 )
 
+# Several Lua core functions (luaB_error, luaL_argerror, luaL_typeerror,
+# luaL_error, ...) are declared [[noreturn]] but defined as
+# `return some_other_noreturn_call(...);` - this is Lua's standard
+# never-returns-but-typed-int idiom (so call sites can write
+# `return luaL_error(...)`), and it genuinely never returns since the
+# callee doesn't either. Clang's -Winvalid-noreturn doesn't trace through
+# that and warns anyway. Silenced project-wide for Pluto rather than
+# per-file, since this same idiom recurs throughout Lua's core.
+target_compile_options(Pluto
+    PRIVATE
+        $<$<CXX_COMPILER_ID:Clang>:-Wno-invalid-noreturn>
+)
+
 # IMPORTANT:
 # Pluto has its own vendored Soup implementation under:
 #

@@ -67,3 +67,15 @@ file(COPY
 set(STACKWALKER_SOURCES
     "${STACKWALKER_INCLUDE_DIR}/stackwalker/StackWalker.cpp"
 )
+
+# StackWalker.cpp switches on dbghelp's SymType enum without a case for
+# NumSymTypes (a sentinel/count value, not a real symbol type - dbghelp
+# itself never returns it). That's upstream's code, not ours to edit here
+# since it's re-fetched/re-copied on every configure, so the -Wswitch this
+# produces under Clang is silenced for just this one file instead. Scoped to
+# this file rather than the whole Stand target so it doesn't hide a real
+# missing-case bug in Stand's own switches.
+set_source_files_properties(${STACKWALKER_SOURCES}
+    PROPERTIES COMPILE_OPTIONS
+        "$<$<CXX_COMPILER_ID:Clang>:-Wno-switch>"
+)
