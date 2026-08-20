@@ -37,7 +37,7 @@ function(stand_apply_common_compile_options target)
             # itself is regenerated; true, and an accepted trade-off for the
             # compile-time win a PCH gives here, not something to fix by
             # unpicking ObfusString.hpp back out of common.hpp.
-            $<$<CXX_COMPILER_ID:Clang>:-Wno-pch-date-time>
+            $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:Clang>>:-Wno-pch-date-time>
     )
 endfunction()
 
