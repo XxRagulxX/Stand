@@ -27,13 +27,18 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
     GIT_TAG        ${FMT_GIT_TAG}
     GIT_SHALLOW    TRUE
+
+    # fmt has its own top-level CMakeLists.txt, which FetchContent would
+    # otherwise add_subdirectory() automatically, creating its own "fmt"
+    # target (plus tests/install rules) instead of the plain INTERFACE
+    # target defined below. Pointing SOURCE_SUBDIR at include/ (headers
+    # only, no CMakeLists.txt of its own) makes FetchContent fetch the
+    # source without building it; it does not change where
+    # FMT_SOURCE_DIR points below.
+    SOURCE_SUBDIR "include"
 )
 
-FetchContent_GetProperties(fmt_upstream)
-if(NOT fmt_upstream_POPULATED)
-    message(STATUS "Fetching fmt (${FMT_GIT_TAG}) from https://github.com/fmtlib/fmt ...")
-    FetchContent_Populate(fmt_upstream)
-endif()
+FetchContent_MakeAvailable(fmt_upstream)
 
 set(FMT_SOURCE_DIR "${fmt_upstream_SOURCE_DIR}")
 

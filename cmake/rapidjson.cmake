@@ -21,13 +21,17 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
     GIT_TAG        ${RAPIDJSON_GIT_TAG}
     GIT_SHALLOW    TRUE
+
+    # RapidJSON has its own top-level CMakeLists.txt (builds its test suite,
+    # docs, etc.), which FetchContent would otherwise add_subdirectory()
+    # automatically instead of the plain INTERFACE target defined below.
+    # Pointing SOURCE_SUBDIR at include/ (headers only, no CMakeLists.txt of
+    # its own) makes FetchContent fetch the source without building it; it
+    # does not change where RAPIDJSON_SOURCE_DIR points below.
+    SOURCE_SUBDIR "include"
 )
 
-FetchContent_GetProperties(rapidjson_upstream)
-if(NOT rapidjson_upstream_POPULATED)
-    message(STATUS "Fetching RapidJSON (${RAPIDJSON_GIT_TAG}) from https://github.com/Tencent/rapidjson ...")
-    FetchContent_Populate(rapidjson_upstream)
-endif()
+FetchContent_MakeAvailable(rapidjson_upstream)
 
 set(RAPIDJSON_SOURCE_DIR "${rapidjson_upstream_SOURCE_DIR}")
 
