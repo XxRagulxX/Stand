@@ -14,7 +14,7 @@
 
 include(FetchContent)
 
-set(RAPIDJSON_GIT_TAG "v1.1.0" CACHE STRING "RapidJSON release tag to fetch")
+set(RAPIDJSON_GIT_TAG "master" CACHE STRING "RapidJSON branch to fetch")
 
 FetchContent_Declare(
     rapidjson_upstream
