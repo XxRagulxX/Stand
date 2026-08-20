@@ -26,13 +26,18 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/JochenKalmbach/StackWalker.git
     GIT_TAG        ${STACKWALKER_GIT_TAG}
     GIT_SHALLOW    TRUE
+
+    # StackWalker has its own top-level CMakeLists.txt, which FetchContent
+    # would otherwise add_subdirectory() automatically instead of just
+    # mirroring the two files below. Pointing SOURCE_SUBDIR at
+    # Main/StackWalker (the header/source pair plus some .sln/.vcxproj
+    # files, no CMakeLists.txt of its own) makes FetchContent fetch the
+    # source without building it; it does not change where
+    # stackwalker_upstream_SOURCE_DIR points below.
+    SOURCE_SUBDIR "Main/StackWalker"
 )
 
-FetchContent_GetProperties(stackwalker_upstream)
-if(NOT stackwalker_upstream_POPULATED)
-    message(STATUS "Fetching StackWalker (${STACKWALKER_GIT_TAG}) from https://github.com/JochenKalmbach/StackWalker ...")
-    FetchContent_Populate(stackwalker_upstream)
-endif()
+FetchContent_MakeAvailable(stackwalker_upstream)
 
 set(STACKWALKER_UPSTREAM_DIR "${stackwalker_upstream_SOURCE_DIR}/Main/StackWalker")
 

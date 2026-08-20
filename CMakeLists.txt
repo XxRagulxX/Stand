@@ -78,14 +78,6 @@ file(GLOB_RECURSE PLUTO_CPP CONFIGURE_DEPENDS
 )
 
 # ------------------------------------------------------------
-# fmt sources
-# ------------------------------------------------------------
-
-file(GLOB_RECURSE FMT_CPP CONFIGURE_DEPENDS
-    "${FMT_DIR}/*.cc"
-)
-
-# ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
 # Fetched from GitHub and built from a curated file list; see
