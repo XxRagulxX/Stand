@@ -25,18 +25,25 @@ include(FetchContent)
 
 set(STACKWALKER_GIT_TAG "master" CACHE STRING "StackWalker branch/tag to fetch")
 
-FetchContent_Declare(
+# Populated via FetchContent_Populate()'s direct-arguments form (content
+# details passed straight to Populate(), no prior Declare()) rather than the
+# classic Declare()+GetProperties()+Populate(<name>) recipe - the latter's
+# bare Populate(<name>) call is deprecated as of CMake 3.30 (policy
+# CMP0169) in favor of FetchContent_MakeAvailable(), which doesn't apply
+# here anyway since only two files get copied out below, not the whole
+# repo added as a subdirectory. The direct-arguments form used below isn't
+# deprecated - see cmake/directxtk.cmake for the fuller explanation.
+message(STATUS "Fetching StackWalker (${STACKWALKER_GIT_TAG}) from https://github.com/JochenKalmbach/StackWalker ...")
+
+FetchContent_Populate(
     stackwalker_upstream
     GIT_REPOSITORY https://github.com/JochenKalmbach/StackWalker.git
     GIT_TAG        ${STACKWALKER_GIT_TAG}
     GIT_SHALLOW    TRUE
+    SOURCE_DIR     "${CMAKE_BINARY_DIR}/_deps/stackwalker_upstream-src"
+    SUBBUILD_DIR   "${CMAKE_BINARY_DIR}/_deps/stackwalker_upstream-subbuild"
+    BINARY_DIR     "${CMAKE_BINARY_DIR}/_deps/stackwalker_upstream-build"
 )
-
-FetchContent_GetProperties(stackwalker_upstream)
-if(NOT stackwalker_upstream_POPULATED)
-    message(STATUS "Fetching StackWalker (${STACKWALKER_GIT_TAG}) from https://github.com/JochenKalmbach/StackWalker ...")
-    FetchContent_Populate(stackwalker_upstream)
-endif()
 
 set(STACKWALKER_UPSTREAM_DIR "${stackwalker_upstream_SOURCE_DIR}/Main/StackWalker")
 
