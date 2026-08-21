@@ -62,7 +62,11 @@ namespace Stand
 		template <typename T>
 		[[nodiscard]] T getOriginal() const noexcept
 		{
-			return static_cast<T>(original);
+			static_assert(std::is_pointer_v<T>, "T must be a pointer type");
+
+			static_assert(sizeof(T) == sizeof(original), "Function pointer size must match void pointer size"); T result{}; std::memcpy(&result, &original, sizeof(result));
+
+			return result;
 		}
 
 		[[nodiscard]] bool isValid() const noexcept;

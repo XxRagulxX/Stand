@@ -191,7 +191,7 @@ LUALIB_API_NORETURN int luaL_argerror (lua_State *L, int arg, const char *extram
   lua_Debug ar;
   const char *argword;
   if (!lua_getstack(L, 0, &ar))  /* no stack frame? */
-    return luaL_error(L, "bad argument #%d (%s)", arg, extramsg);
+      luaL_error(L, "bad argument #%d (%s)", arg, extramsg);
   lua_getinfo(L, "nt", &ar);
   if (arg <= ar.extraargs)  /* error in an extra argument? */
     argword =  "extra argument";
@@ -200,7 +200,7 @@ LUALIB_API_NORETURN int luaL_argerror (lua_State *L, int arg, const char *extram
     if (strcmp(ar.namewhat, "method") == 0) {  /* colon syntax? */
       arg--;  /* do not count (extra) self argument */
       if (arg == 0)  /* error in self argument? */
-        return luaL_error(L, "calling '%s' on bad self (%s)",
+        luaL_error(L, "calling '%s' on bad self (%s)",
                                ar.name, extramsg);
       /* else go through; error in a regular argument */
     }
@@ -208,7 +208,7 @@ LUALIB_API_NORETURN int luaL_argerror (lua_State *L, int arg, const char *extram
   }
   if (ar.name == NULL)
     ar.name = (pushglobalfuncname(L, &ar)) ? lua_tostring(L, -1) : "?";
-  return luaL_error(L, "bad %s #%d to '%s' (%s)",
+       luaL_error(L, "bad %s #%d to '%s' (%s)",
                        argword, arg, ar.name, extramsg);
 }
 
@@ -223,7 +223,7 @@ LUALIB_API_NORETURN int luaL_typeerror (lua_State *L, int arg, const char *tname
   else
     typearg = luaL_typename(L, arg);  /* standard name */
   msg = lua_pushfstring(L, "%s expected, got %s", tname, typearg);
-  return luaL_argerror(L, arg, msg);
+        luaL_argerror(L, arg, msg);
 }
 
 
@@ -261,7 +261,7 @@ LUALIB_API_NORETURN int luaL_error (lua_State *L, const char *fmt, ...) {
   lua_pushvfstring(L, fmt, argp);
   va_end(argp);
   lua_concat(L, 2);
-  return lua_error(L);
+  lua_error(L);
 }
 
 

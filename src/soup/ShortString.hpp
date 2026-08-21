@@ -15,9 +15,7 @@ NAMESPACE_SOUP
 		const char term = 0;
 
 	public:
-		ShortString() noexcept
-		{
-		}
+		ShortString() noexcept = default;
 
 		ShortString(const std::string& b) noexcept
 		{
@@ -41,28 +39,37 @@ NAMESPACE_SOUP
 
 		void operator =(const char* b) noexcept
 		{
-			SOUP_DEBUG_ASSERT(strlen(b) <= S);
-			strncpy(data(), b, S);
+			SOUP_DEBUG_ASSERT(b != nullptr);
+			SOUP_DEBUG_ASSERT(std::strlen(b) <= S);
+
+			std::memset(m_data, 0, S);
+
+			const size_t length = std::strlen(b);
+
+			if (length != 0)
+			{
+				std::memcpy(m_data, b, length);
+			}
 		}
 
 		void operator =(const ShortString<S>& b) noexcept
 		{
-			strncpy(data(), b.data(), S);
+			std::memcpy(m_data, b.m_data, S);
 		}
 
 		[[nodiscard]] char* data() noexcept
 		{
-			return &m_data[0];
+			return m_data;
 		}
 
 		[[nodiscard]] const char* data() const noexcept
 		{
-			return &m_data[0];
+			return m_data;
 		}
 
 		[[nodiscard]] const char* c_str() const noexcept
 		{
-			return &m_data[0];
+			return m_data;
 		}
 
 		[[nodiscard]] static size_t capacity() noexcept
@@ -74,10 +81,10 @@ NAMESPACE_SOUP
 		{
 			return m_data[0] == 0;
 		}
-		
+
 		[[nodiscard]] size_t size() const noexcept
 		{
-			return strlen(c_str());
+			return std::strlen(c_str());
 		}
 
 		[[nodiscard]] char& operator [](size_t Index) noexcept

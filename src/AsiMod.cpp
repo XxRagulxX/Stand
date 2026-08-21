@@ -3,6 +3,9 @@
 #include <winternl.h>
 #include <tlhelp32.h>
 
+#include <cstdlib>
+#include <cwchar>
+
 #include <filesystem>
 
 #include <soup/ObfusString.hpp>
@@ -24,6 +27,22 @@
 
 namespace Stand
 {
+	[[nodiscard]] static std::wstring getEnvironmentVariable(const wchar_t* name)
+	{
+		wchar_t* value = nullptr;
+		size_t length = 0;
+
+		if (_wdupenv_s(&value, &length, name) != 0 || value == nullptr)
+		{
+			return {};
+		}
+
+		std::wstring result(value);
+		std::free(value);
+
+		return result;
+	}
+
 	AsiMod::AsiMod(CommandPhysical* cmd, AsiDirectory dir)
 		: cmd(cmd), dir(dir)
 	{
@@ -50,7 +69,7 @@ namespace Stand
 			}
 			else
 			{
-				path = _wgetenv(L"appdata");
+				path = getEnvironmentVariable(L"APPDATA");
 			}
 			path.append(LR"(\Stand\ASI Mods\)");
 			break;
@@ -76,7 +95,8 @@ namespace Stand
 			return;
 		}
 
-		auto scripthookv_path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Bin\)");
+		auto scripthookv_path = getEnvironmentVariable(L"APPDATA");
+		scripthookv_path.append(LR"(\Stand\Bin\)");
 		if (!std::filesystem::exists(scripthookv_path))
 		{
 			std::filesystem::create_directory(scripthookv_path);

@@ -103,9 +103,16 @@ namespace rage
 				;
 		}
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(netConnectionManager, m_EndpointsByEndpointId) == 0x98); // 3337
 	static_assert(offsetof(netConnectionManager, m_EndpointsByAddr) == 0xC8); // 3337
 	static_assert(offsetof(netConnectionManager, m_EndpointsByPeerId) == 0xE0); // 3337
 	static_assert(offsetof(netConnectionManager, cxns) == 0x110); // 3337
 	static_assert(offsetof(netConnectionManager, critical_section) == 0x968); // 3337
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 }

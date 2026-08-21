@@ -95,9 +95,16 @@ public:
 	PAD(0x1008 + 4, 0x1060) uint64_t flags; // 1 = inside moving train, 2 = allow control inside moving train
 	/* 0x1068 */ CTrain* train_inside_of;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPlayerInfo, m_ped) == 0x240); // 4C 8B 81 ? ? ? ? 41 8B 80 ? ? ? ? C1 E8 1E A8 01
 static_assert(offsetof(CPlayerInfo, m_swim_speed) == 0x1C8);
 static_assert(offsetof(CPlayerInfo, m_frame_flags) == 0x270);
 static_assert(offsetof(CPlayerInfo, m_Wanted) == 0x830); // CPlayerInfo::SetPlayerPed
 static_assert(offsetof(CPlayerInfo, m_fWeaponDamageModifier) == 0xD6C); // CPlayerInfo::SetInitialState
 #pragma pack(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

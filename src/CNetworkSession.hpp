@@ -78,7 +78,14 @@ namespace rage
 		}
 	};
 	static_assert(sizeof(rlSession) == 0x770); // 2944
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(rlSession, data.info) == 0x108); // 2944
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 #pragma pack(pop)
 
 	class snGamer
@@ -88,7 +95,14 @@ namespace rage
 		PAD(sizeof(rlGamerInfo), 0x100) inlist_node<snGamer> m_ListLink;
 		PAD(0x110, 0x118);
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(snGamer, m_ListLink) == 0x100); // 2944
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 	class snPeer
 	{
@@ -103,8 +117,15 @@ namespace rage
 		/* 0xF8 */ bool m_AllowMigrate : 1;
 	};
 	static_assert(sizeof(snPeer) == 0x100);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(snPeer, gamer) == 0xD8); // 2944
 	static_assert(offsetof(snPeer, m_NumGamers) == 0xE0); // 2944
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #define RLSC_PRESENCE_ATTR_NAME_MAX_SIZE 64
 
@@ -146,6 +167,10 @@ namespace rage
 	};
 	// 2944
 	static_assert(sizeof(snSession) == 0x5488); // see CNetworkSession ctor
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(snSession, rline_session) == 0x80);
 	static_assert(offsetof(snSession, m_LocalPeer) == 0x7F0);
 	static_assert(offsetof(snSession, host_peer_id) == 0x8F0);
@@ -156,6 +181,9 @@ namespace rage
 	static_assert(offsetof(snSession, channel_id) == 0x5338);
 	static_assert(offsetof(snSession, m_LocalOwnerIndex) == 0x5340);
 	static_assert(offsetof(snSession, m_AttrIsJoinable) == 0x5444);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #pragma pack(push, 1)
 	struct netPeerComplainer
@@ -170,10 +198,17 @@ namespace rage
 		//void sendComplaint(const netComplaintMsg* packet) noexcept;
 	};
 	static_assert(sizeof(netPeerComplainer) == 0x1098); // 1.70
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(netPeerComplainer, user_peer_id) == 0x00); // 1.70
 	static_assert(offsetof(netPeerComplainer, host_endpoint) == 0x08); // 1.70
 	static_assert(offsetof(netPeerComplainer, con_mgr) == 0x10); // 1.70
 	static_assert(offsetof(netPeerComplainer, channel_index) == 0x1084); // 1.70
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 };
 
 struct BlacklistEntry
@@ -202,7 +237,14 @@ struct NetworkGameConfig
 	PAD(0x38 + sizeof(rage::rlMatchingAttributes), 0x148);
 };
 static_assert(sizeof(NetworkGameConfig) == 0x148); // See imul at 84 94 81 ? ? ? ? 74 11 48 69 C0
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(NetworkGameConfig, m_MaxPrivSlots) == 0x34);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CNetworkRecentPlayers
 {
@@ -285,6 +327,13 @@ public:
 	void setSlots(Stand::SessionType type) noexcept;
 	void setMatchmakingGroupSlots(Stand::SessionType type) noexcept;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CNetworkSession, m_SessionState) == 0xB09C);
 static_assert(offsetof(CNetworkSession, m_MatchmakingGroupMax) == 0x1E85C); // 1.71
 static_assert(offsetof(CNetworkSession, host_queue_sort_algo) == 0x2E890); // 1.71
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
