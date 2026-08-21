@@ -17,4 +17,11 @@ struct CPropellerCollisionProcessor
 	/* 0x00 */ int m_nNumRotorImpacts;
 	PAD(0x04, 0x10) CPropellerImpactData m_aStoredImpacts[20];
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPropellerCollisionProcessor, m_aStoredImpacts) == 0x10);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

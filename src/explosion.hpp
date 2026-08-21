@@ -79,5 +79,12 @@ struct CExplosionManager
 		/* 0x8F */ bool m_bDetonatingOtherPlayersExplosive = false;
 		/* 0x90 */ bool m_bDisableDamagingOwner = false;
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(CExplosionArgs, m_bDisableDamagingOwner) == 0x90);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 };

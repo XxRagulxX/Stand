@@ -64,7 +64,14 @@ public:
 		return m_aDrawblData3.GetCount(); 
 	}
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPVComponentData, m_aDrawblData3) == 0x08);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CPedVariationInfo
 {
@@ -113,7 +120,14 @@ public:
 		return 0;
 	}
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPedVariationInfo, m_aComponentData3) == 0x10);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CPedVariationInfoCollection
 {

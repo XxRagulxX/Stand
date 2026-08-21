@@ -145,5 +145,12 @@ struct GFxValue
 		return pObjectInterface->GetArraySize(Value.pData);
 	}
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(GFxValue, Value) == 0x10);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 

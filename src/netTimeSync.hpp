@@ -30,10 +30,17 @@ namespace rage
 		/* 0x7C */ uint8_t sync_flags; // 1 = has synched, 2 = has stable time
 	};
 	static_assert(sizeof(netTimeSync) == 0x80);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(netTimeSync, m_ServerTimeOffset) == 0x18);
 	static_assert(offsetof(netTimeSync, m_Dlgt) == 0x20);
 	static_assert(offsetof(netTimeSync, m_NextPingTime) == 0x50);
 	static_assert(offsetof(netTimeSync, m_SentSeq) == 0x68);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 	struct netTimeSyncMsg
 	{

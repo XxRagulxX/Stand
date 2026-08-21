@@ -8,8 +8,15 @@ namespace rage
 		PAD(0x28, 0xA0) float m_viewportCullingSphereRadius;
 		PAD(0xA4, 0xB4) float m_colnRange;
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(ptxEffectRule, m_viewportCullingSphereRadius) == 0xA0);
 	static_assert(offsetof(ptxEffectRule, m_colnRange) == 0xB4);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 	enum ptxEffectInstPlayState
 	{
@@ -37,5 +44,12 @@ namespace rage
 				;
 		}
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(ptxEffectInst, m_playState) == 0x110);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 }

@@ -18,8 +18,15 @@ namespace rage
 			PAD(0x29, 0x48);
 		};
 		static_assert(sizeof(Subject) == 0x48);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 		static_assert(offsetof(Subject, handle) == 0x08);
 		static_assert(offsetof(Subject, name) == 0x18);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 		/* 0x00 */ inmap_node<netAddress, netPeerCertificate> byAddressLink;
 		/* 0x38 */ inmap_node<uint32_t, netPeerCertificate> byKeyLink;
@@ -31,6 +38,10 @@ namespace rage
 		PAD(0x188 + sizeof(Subject), 0x260) uint8_t unk_status_1;
 		/* 0x261 */ uint8_t unk_status_2;
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(netPeerCertificate, byAddressLink) == 0x00);
 	static_assert(offsetof(netPeerCertificate, byKeyLink) == 0x38);
 	static_assert(offsetof(netPeerCertificate, next) == 0x78);
@@ -39,6 +50,9 @@ namespace rage
 	static_assert(offsetof(netPeerCertificate, subject) == 0x188);
 	static_assert(offsetof(netPeerCertificate, unk_status_1) == 0x260);
 	static_assert(offsetof(netPeerCertificate, unk_status_2) == 0x261);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 	/*[[nodiscard]] inline netPeerCertificate* findCertByKey(uint32_t key)
 	{

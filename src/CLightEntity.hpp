@@ -21,5 +21,12 @@ public:
 		return (e2dEffectType)(m_boundBox.GetUserInt1() & 0xFF);
 	}
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CLightEntity, m_parentEntity) == 0xD0);
 static_assert(offsetof(CLightEntity, m_boundBox) == 0xE0);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

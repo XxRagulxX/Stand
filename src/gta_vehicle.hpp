@@ -65,7 +65,14 @@ public:
 	PAD(0x18 + 4, 0x70);
 };
 static_assert(sizeof(CCarDoor) == 0x70);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CCarDoor, m_nDoorFlags) == 0x18);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 struct CTransmission
 {
@@ -337,7 +344,14 @@ public:
 
 	[[nodiscard]] hash_t getModelAsObservedByOthers() const noexcept;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CVehicle, vehicle_type) == 0x0C28); // 1.70: 0x0C18 -> 0x0C28 (+0x10)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CAutomobile : public CVehicle
 {
@@ -382,7 +396,14 @@ public:
 	float wind_multiplier;
 	PAD(0x1AA4 + 4, 0x1D60) CAircraftDamage m_aircraftDamage;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPlane, turbulence_multiplier) == 0x1B00); // 1.70
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CRotaryWingAircraft : public CAutomobile
 {
@@ -441,9 +462,16 @@ class CTrain : public CVehicle
 		return false;
 	}
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CTrain, m_pEngine) == 0x1548); // 1.70
 static_assert(offsetof(CTrain, linked_forward) == 0x1550); // 1.70
 static_assert(offsetof(CTrain, linked_backward) == 0x1558); // 1.70
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CTrainTrack
 {

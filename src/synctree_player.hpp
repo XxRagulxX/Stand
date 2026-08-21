@@ -61,12 +61,19 @@ public:
 	/* 0x1CC */ float m_MeleeDamageModifier;
 	/* 0x1D0 */ float m_MeleeUnarmedDamageModifier;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPlayerGameStateDataNode, m_GameStateFlags.notDamagedByBullets) == 0x0DA);
 static_assert(offsetof(CPlayerGameStateDataNode, super_jump) == 0x1B9); // 3095
 static_assert(offsetof(CPlayerGameStateDataNode, m_VehicleShareMultiplier) == 0x1C4); // 3095
 static_assert(offsetof(CPlayerGameStateDataNode, m_WeaponDamageModifier) == 0x1C8); // 3095
 static_assert(offsetof(CPlayerGameStateDataNode, m_MeleeDamageModifier) == 0x1CC); // 3095
 static_assert(offsetof(CPlayerGameStateDataNode, m_MeleeUnarmedDamageModifier) == 0x1D0); // 3095
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CSyncedPlayerSecondaryPartialAnim
 {
@@ -92,7 +99,14 @@ public:
 	bool m_PhoneSecondary;
 	bool m_IsBlocked;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CSyncedPlayerSecondaryPartialAnim, m_Phone) == 0x37);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #define NUM_DECORATION_BITFIELDS 60
 
@@ -109,11 +123,18 @@ public:
 	PAD(0x438 + 4, 0x444) bool m_HasHeadBlendData;
 	PAD(0x444 + 1, 0x470);
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPlayerAppearanceDataNode, commons) == 0x1B0); // 3095: 0x1A0 -> 0x1B0
 static_assert(offsetof(CPlayerAppearanceDataNode, head_blend_data) == 0x2B0); // 3095: 0x2A0 -> 0x2B0
 static_assert(offsetof(CPlayerAppearanceDataNode, m_secondaryPartialAnim) == 0x3F0);
 static_assert(offsetof(CPlayerAppearanceDataNode, m_NewModelHash) == 0x430); // 3095: 0x420 -> 0x430
 static_assert(offsetof(CPlayerAppearanceDataNode, m_HasHeadBlendData) == 0x444); // 3095: 0x434 -> 0x444
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CPlayerExtendedGameStateNode : public CSyncDataNodeInfrequent
 {
@@ -138,6 +159,13 @@ class CPlayerSyncTree : public CPedSyncTreeBase
 
 	[[nodiscard]] const char* getNodeName(const rage::netSyncDataNode* node) const;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPlayerSyncTree, appearance_data) == 0x39F0); // 3095
 static_assert(offsetof(CPlayerSyncTree, extended_game_state) == 0x4420); // 3095
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 #pragma pack(pop)

@@ -25,7 +25,14 @@ namespace rage
 		uint16_t m_bAutoStartAnim : 1;
 		uint16_t m_bHasPhysicsInDrawable : 1;
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(fwDynamicArchetypeComponent, m_pPhysicsArch) == 0x18);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #pragma pack(push, 1)
 	class fwArchetype : public datBase

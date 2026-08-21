@@ -33,7 +33,14 @@ namespace rage
 		{
 		}
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(netTunnelDesc, m_TunnelReason) == 1);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 	struct netTunnelRequest
 	{
@@ -67,9 +74,16 @@ namespace rage
 		unsigned m_TimeStarted = 0;
 		unsigned m_TimeStateStarted = 0;
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	static_assert(offsetof(netTunnelRequest, gamer_handle) == 0x18);
 	static_assert(offsetof(netTunnelRequest, m_PeerAddr) == 0x28);
 	static_assert(offsetof(netTunnelRequest, m_TunnelDesc) == 0x188);
 	static_assert(offsetof(netTunnelRequest, m_ListLink) == 0x1A0);
 	static_assert(offsetof(netTunnelRequest, m_Tunneler) == 0x1B0);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 }

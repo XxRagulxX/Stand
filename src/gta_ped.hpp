@@ -82,7 +82,14 @@ class CPed : public CPhysical
 	}
 };
 static_assert(sizeof(CPed) == 0x1966 + 1);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPed, player_info) == 0x10A8); // 2944
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 class CWeapon : public rage::fwRefAwareBase
 {
@@ -90,9 +97,16 @@ class CWeapon : public rage::fwRefAwareBase
 	PAD(0x30, 0x58) rage::fwRegdRef<CDynamicEntity> m_pDrawableEntity;
 	PAD(0x60, 0x178) rage::fwRegdRef<CEntity> m_pMuzzleEntity;
 };
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CWeapon, m_muzzlePos) == 0x20);
 static_assert(offsetof(CWeapon, m_pDrawableEntity) == 0x58);
 static_assert(offsetof(CWeapon, m_pMuzzleEntity) == 0x178);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 struct CWeaponModelInfo : public CBaseModelInfo
 {
