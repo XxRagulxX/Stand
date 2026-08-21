@@ -1,6 +1,7 @@
 ﻿#include "Chat.hpp"
 
 #include <soup/Uuid.hpp>
+#include <cstring>
 
 #include "CMultiplayerChat.hpp"
 #include "evtChatEvent.hpp"
@@ -167,7 +168,8 @@ namespace Stand
 					uuid.bytes[7] &= 0x0F;
 					uuid.bytes[7] |= 0x10;
 					auto uuid_str = uuid.toString();
-					strcpy(packet.unk_uuid, uuid_str.c_str());
+					std::memcpy(packet.unk_uuid, uuid_str.data(), uuid_str.size());
+					packet.unk_uuid[uuid_str.size()] = '\0';
 				}
 				packet.team_chat = team_chat;
 

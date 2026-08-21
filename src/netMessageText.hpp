@@ -1,17 +1,21 @@
 #pragma once
 
+#include <cstring>
+
 #include "netMessage.hpp"
 
 namespace rage
 {
 	struct netMessageText : public netMessage
 	{
-		char text[256];
+		char text[256]{};
 
-		void setText(const char* text) noexcept
+		void setText(const char* source) noexcept
 		{
-			strncpy(this->text, text, 256);
-			this->text[255] = 0;
+			const size_t length = strnlen(source, sizeof(text) - 1);
+
+			std::memcpy(text, source, length);
+			text[length] = '\0';
 		}
 	};
 	static_assert(sizeof(netMessageText) == 256);

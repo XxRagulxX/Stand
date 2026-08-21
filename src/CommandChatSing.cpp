@@ -6,6 +6,7 @@
 #include "Chat.hpp"
 #include "FiberPool.hpp"
 #include "regular_event.hpp"
+#include "get_appdata_path.hpp"
 #include "TimedTextPresenter.hpp"
 
 namespace Stand
@@ -60,7 +61,7 @@ namespace Stand
 	CommandChatSing::CommandChatSing(CommandList* parent)
 		: CommandToggleRegular(parent, LOC("CHATSING"), CMDNAMES("singing", "chatsing"), LOC("CHATSING_H"))
 	{
-		auto file = std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Song.lrc)"));
+		auto file = get_appdata_path(L"Song.lrc");
 		if (!std::filesystem::exists(file))
 		{
 			std::ofstream f(file);
@@ -86,7 +87,7 @@ namespace Stand
 
 	void CommandChatSing::onEnableInner(Click& click)
 	{
-		std::ifstream f(std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Song.lrc)")));
+		std::ifstream f(get_appdata_path(L"Song.lrc"));
 		auto c = TimedTextCollection::fromLRC(f);
 		c.eraseAdvertisements();
 		c.setStartOffset(0);

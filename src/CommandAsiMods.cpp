@@ -41,7 +41,8 @@ namespace Stand
 
 	void CommandAsiMods::populateBody()
 	{
-		const auto stand_asi_directory = std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\ASI Mods\)"));
+		const auto stand_asi_directory = get_appdata_path(L"ASI Mods\\");
+
 		if (!std::filesystem::exists(stand_asi_directory))
 		{
 			std::filesystem::create_directory(stand_asi_directory);

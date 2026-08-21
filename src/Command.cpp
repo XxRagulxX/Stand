@@ -601,6 +601,9 @@ namespace Stand
 
 		case COMMAND_LIST_SELECT:
 			return as<CommandListSelect>()->getCurrentValueHelpText().empty();
+
+		default:
+			break;
 		}
 		return true;
 	}
@@ -726,6 +729,8 @@ namespace Stand
 			return &((CommandLua<CommandReadonlyValue>*)this)->lua_data;
 		case COMMAND_READONLY_LINK:
 			return &((CommandLua<CommandReadonlyLink>*)this)->lua_data;
+		default:
+			break;
 		}
 		SOUP_ASSERT_UNREACHABLE;
 		return nullptr;

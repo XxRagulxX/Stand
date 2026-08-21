@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cstdint>
 #include "gta_fwddecl.hpp"
 
 struct GFxMovieView
@@ -122,12 +122,12 @@ struct GFxValue
 
 	[[nodiscard]] bool IsManagedValue() const
 	{
-		return (Type & VTC_ManagedBit) != 0;
+		return (static_cast<uint32_t>(Type) & static_cast<uint32_t>(VTC_ManagedBit)) != 0;
 	}
 
 	[[nodiscard]] ValueType GetType() const
 	{
-		return ValueType(Type & VTC_TypeMask);
+		return static_cast<ValueType>(static_cast<uint32_t>(Type) & static_cast<uint32_t>(VTC_TypeMask));
 	}
 
 	[[nodiscard]] const char* GetString() const

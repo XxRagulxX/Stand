@@ -1,5 +1,3 @@
-#pragma once
-
 #include "CommandDrunkMode.hpp"
 
 #include "AbstractEntity.hpp"

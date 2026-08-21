@@ -214,7 +214,18 @@ namespace Stand
 		case CLICK_BULK:
 		case CLICK_AUTO:
 			return true;
+
+		case CLICK_MENU:
+		case CLICK_COMMAND:
+		case CLICK_HOTKEY:
+		case CLICK_SCRIPTED:
+		case CLICK_CHAT_ALL:
+		case CLICK_CHAT_TEAM:
+		case CLICK_WEB:
+		case CLICK_WEB_COMMAND:
+			return false;
 		}
+
 		return false;
 	}
 
@@ -507,16 +518,28 @@ namespace Stand
 
 	bool Click::isSoundAllowed() const noexcept
 	{
-		if (g_gui.isSoundEnabled())
+		if (!g_gui.isSoundEnabled())
 		{
-			switch (type)
-			{
-			case CLICK_MENU:
-			case CLICK_COMMAND:
-			case CLICK_HOTKEY:
-				return true;
-			}
+			return false;
 		}
+
+		switch (type)
+		{
+		case CLICK_MENU:
+		case CLICK_COMMAND:
+		case CLICK_HOTKEY:
+			return true;
+
+		case CLICK_FLAG_AUTO:
+		case CLICK_AUTO:
+		case CLICK_SCRIPTED:
+		case CLICK_CHAT_ALL:
+		case CLICK_CHAT_TEAM:
+		case CLICK_WEB:
+		case CLICK_WEB_COMMAND:
+			return false;
+		}
+
 		return false;
 	}
 

@@ -9,6 +9,7 @@
 #include "AbstractEntity.hpp"
 #include "ColonsAndTabs.hpp"
 #include "joaatToString.hpp"
+#include "get_appdata_path.hpp"
 #include "str2int.hpp"
 #include "VehicleColour.hpp"
 
@@ -16,7 +17,7 @@ namespace Stand
 {
 	bool ColonsVehicleCustomisationIo::handleSaveCommand(Click& click, std::wstring& args, VehicleCustomisationIo& veh_cio, AbstractEntity* veh)
 	{
-		auto path = std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Vehicles\)").append(std::move(args)).append(L".txt"));
+		auto path = get_appdata_path(L"Vehicles\\").append(std::move(args)).append(L".txt");
 		args.clear();
 
 		std::vector<std::string> order{};
