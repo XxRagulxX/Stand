@@ -36,7 +36,7 @@ namespace Stand
 			}
 			else
 			{
-				ensureScriptThread(click, [=]
+				ensureScriptThread(click, [=, this]
 				{
 					auto veh = g_player_ped.getVehicle(true);
 					if (veh.isValid() && veh.isOwnerOfVehicleAndDriver())

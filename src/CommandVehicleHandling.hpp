@@ -7,7 +7,6 @@
 #include "AbstractEntity.hpp"
 #include "AbstractModel.hpp"
 #include "atoffset.hpp"
-#include "CommandVehicleHandling.hpp"
 #include "CHandlingData.hpp"
 #include "gta_vehicle.hpp"
 
@@ -25,11 +24,15 @@ namespace Stand
 			if (auto v = g_player_veh.getCVehicle())
 			{
 				const auto data = v->handling_data;
-				if (this->parent->as<CommandListSubhandling>()->handling_type == HANDLING_TYPE_INVALID)
+
+				auto* const parent = this->parent->template as<CommandListSubhandling>();
+
+				if (parent->handling_type == HANDLING_TYPE_INVALID)
 				{
 					return atoffset<T>(data, value_offset);
 				}
-				if (auto subhandling = data->getSubhandlingData(this->parent->as<CommandListSubhandling>()->handling_type))
+
+				if (auto subhandling = data->getSubhandlingData(parent->handling_type))
 				{
 					return atoffset<T>(subhandling, value_offset);
 				}
@@ -42,7 +45,7 @@ namespace Stand
 			Click click(CLICK_BULK, TC_SCRIPT_NOYIELD);
 			if constexpr (std::is_same_v<T, float>)
 			{
-				this->setValueIndicator(click, int(value * Base::getPrecisionScalar()));
+				this->setValueIndicator(click,static_cast<int>(value * Base::getPrecisionScalar()));
 			}
 			else
 			{
@@ -66,9 +69,11 @@ namespace Stand
 		{
 			if (auto addr = getAddr())
 			{
-				if (const hash_t this_hash = g_player_veh.getModel(); !default_values.contains(this_hash))
+				const hash_t this_hash = g_player_veh.getModel();
+
+				if (!default_values.contains(this_hash))
 				{
-					this->default_values.emplace(this_hash, *addr);
+					default_values.emplace(this_hash, *addr);
 				}
 
 				*addr = Base::template getTValue<T>();
@@ -77,15 +82,20 @@ namespace Stand
 
 		void applyDefaultState() final
 		{
-			if (g_player_veh.isValid())
+			if (!g_player_veh.isValid())
 			{
-				if (const auto entry = this->default_values.find(g_player_veh.getModel()); entry != this->default_values.end())
-				{
-					this->setVisualValueOnly(entry->second);
+				return;
+			}
 
-					auto click = Click(CLICK_BULK, TC_APPLYDEFAULTSTATE);
-					this->onChange(click, 0);
-				}
+			const auto entry = default_values.find(g_player_veh.getModel());
+
+			if (entry != default_values.end())
+			{
+				setVisualValueOnly(entry->second);
+
+				Click click(CLICK_BULK,TC_APPLYDEFAULTSTATE);
+
+				onChange(click, 0);
 			}
 		}
 
@@ -93,7 +103,8 @@ namespace Stand
 		{
 			if (auto addr = getAddr())
 			{
-				this->setVisualValueOnly(*addr);
+				setVisualValueOnly(*addr);
+
 				this->setMinValue(-100000000);
 				this->setMaxValue(100000000);
 				return;

@@ -6,6 +6,7 @@
 
 #include "alphanum.hpp"
 #include "HttpRequestBuilder.hpp"
+#include "get_appdata_path.hpp"
 #include "bin.hpp"
 #include "ensure_folder.hpp"
 #include "Exceptional.hpp"
@@ -57,7 +58,7 @@ namespace Stand
 
 	static std::wstring getCustomHeaderDirectory()
 	{
-		auto path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Headers)");
+		auto path = get_appdata_path(L"Headers");
 		ensure_folder(path);
 		path.append(L"\\Custom Header");
 		ensure_folder(path);
@@ -171,7 +172,7 @@ namespace Stand
 				downloadHeader(filenameformat, num, std::move(files));
 			}
 		};
-		auto path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Headers\)");
+		auto path = get_appdata_path(L"Headers\\");
 		if (!std::filesystem::is_directory(path))
 		{
 			std::filesystem::create_directory(path);
@@ -234,7 +235,8 @@ namespace Stand
 		}
 		else if (value < 200)
 		{
-			auto path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Headers\)").append(getCurrentValueMenuName().getEnglishUtf16());
+			auto path = get_appdata_path(L"Headers\\");
+			path.append(getCurrentValueMenuName().getEnglishUtf16());
 			path.push_back(L'\\');
 			if (!std::filesystem::is_directory(path))
 			{

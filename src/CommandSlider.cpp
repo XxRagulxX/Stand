@@ -274,7 +274,7 @@ namespace Stand
 		{
 			click.setGenericResponse(LIT(LANG_FMT("CMDSTATE_L", getActivationName().getLocalisedUtf8(), value)));
 		}
-		ensureScriptThread(click, [=](Click& click) mutable
+		ensureScriptThread(click, [=, this](Click& click) mutable
 		{
 			const int prev_value = this->value;
 			this->value = value;

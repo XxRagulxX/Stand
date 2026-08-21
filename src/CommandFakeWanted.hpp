@@ -17,7 +17,7 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
-			ensureScriptThread(click, [=]
+			ensureScriptThread(click, [=, this]
 			{
 				const int value = this->value;
 				MISC::SET_FAKE_WANTED_LEVEL(value);

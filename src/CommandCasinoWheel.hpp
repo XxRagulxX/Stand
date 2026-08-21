@@ -540,7 +540,7 @@ namespace Stand
 
 		void onChange(Click& click, long long prev_value) final
 		{
-			ensureScriptThread(click, [=]
+			ensureScriptThread(click, [=, this]
 			{
 				if (value != 0)
 				{

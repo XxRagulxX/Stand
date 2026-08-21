@@ -203,7 +203,7 @@ namespace Stand
 
 	void CommandAutoDriveAction::onItemClick(Click& click, CommandListActionItem* item)
 	{
-		ensureScriptThread([=]() mutable
+		ensureScriptThread([=, this]() mutable
 		{
 			if (!g_player_veh.isValid() || !g_player_veh.isOwnerOfVehicleAndDriver())
 			{

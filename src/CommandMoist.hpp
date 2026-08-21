@@ -16,7 +16,7 @@ namespace Stand
 
 		void onClick(Click& click) final
 		{
-			ensureScriptThread(click, [=]
+			ensureScriptThread(click, [=, this]
 			{
 				if (value == 0)
 				{
