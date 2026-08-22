@@ -53,6 +53,8 @@ namespace Stand
 			case ALIGN_TOP_RIGHT:
 				text_x += float(g_renderer.tabs_width - 5);
 				break;
+			default:
+				break;
 			}
 			std::wstring text = tab->as<CommandTab>()->render_name;
 			g_renderer.trimTextH(text, g_renderer.tabs_text.scale, float(g_renderer.tabs_width - 10));

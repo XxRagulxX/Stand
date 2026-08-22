@@ -47,7 +47,7 @@ namespace Stand
 				Util::toast(LANG_FMT("NO_GRACE", FMT_ARG("feature_name", this->menu_name.getLocalisedUtf8())));
 			}
 
-			registerScriptTickEventHandler([this]
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				HANDLER_CHECK(m_on);
 

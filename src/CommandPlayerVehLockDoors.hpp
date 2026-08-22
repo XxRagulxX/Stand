@@ -21,7 +21,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler([this]
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				for (const auto& p : PP_PTR->getPlayers()) // Third-eye gets complicated here. It doesn't quite align with looped features since it'll inevitably fail to fetch a second vehicle without interrupting the user.
 				{

@@ -17,7 +17,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=]()
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				const bool is_solo = NETWORK::NETWORK_SESSION_IS_SOLO();
 				if (m_on)

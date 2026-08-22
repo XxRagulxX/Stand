@@ -18,7 +18,7 @@ namespace Stand
 		CommandTimecycleMod::shader_overriden = true;
 		CommandWalkStyle::walk_style_overridden = true;
 
-		registerScriptTickEventHandler([this]
+		registerScriptTickEventHandler(click, [=, this]()
 		{
 			HANDLER_CHECK(m_on);
 

@@ -311,6 +311,8 @@ namespace Stand
 					case SKEL_L_Foot:
 						default_on = true;
 						break;
+					default:
+					   break;
 					}
 
 					list->createChild<CommandPtfxTrail>(group.first, std::move(label), {}, default_on);

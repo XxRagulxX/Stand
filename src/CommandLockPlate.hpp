@@ -25,7 +25,7 @@ namespace Stand
 		{
 			CommandPlate::locked = true;
 			
-			registerScriptTickEventHandler([this]
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				HANDLER_CHECK(m_on);
 

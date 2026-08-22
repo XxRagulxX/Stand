@@ -12,7 +12,7 @@ namespace Stand
 
 	void CommandLockOnToAllVehicles::onEnable(Click& click)
 	{
-		registerScriptTickEventHandler([this]
+		registerScriptTickEventHandler(click, [=, this]()
 		{
 			HANDLER_CHECK(m_on);
 			

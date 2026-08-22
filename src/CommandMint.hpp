@@ -16,7 +16,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=]()
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				auto veh = Util::getVehicle();
 				if (veh.isValid())

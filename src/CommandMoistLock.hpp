@@ -19,7 +19,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=]()
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				if (!m_on)
 				{

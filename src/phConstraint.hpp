@@ -27,6 +27,7 @@ namespace rage
 		struct Params
 		{
 			PAD(0, 0x2C) const Type type;
+			Params() = delete;
 		};
 #if defined(__clang__)
 #pragma clang diagnostic push

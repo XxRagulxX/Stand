@@ -646,6 +646,13 @@ namespace Stand
 				pManifold = nullptr;
 			}
 			break;
+		case rage::phConstraintBase::HALFSPACE:
+		case rage::phConstraintBase::DISTANCE:
+		case rage::phConstraintBase::SPHERICAL:
+		case rage::phConstraintBase::ROTATION:
+		case rage::phConstraintBase::HINGE:
+		case rage::phConstraintBase::CYLINDRICAL:
+			break;
 		}
 		COMP_OG(rage_phConstraintBase_ctor)(_this, params);
 	}

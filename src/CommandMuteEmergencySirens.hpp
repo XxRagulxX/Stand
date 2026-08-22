@@ -17,7 +17,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler([this]
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				if (g_player_veh.isValid() && g_player_veh.isOwnerOfVehicleAndDriver())
 				{

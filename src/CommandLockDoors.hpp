@@ -26,7 +26,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler([this]
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				if (exclude_missions->m_on && !is_session_freeroam()) // Should be fine, since we can't enter a non-freeroam session w/o vehicle handle changing.
 				{

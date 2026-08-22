@@ -48,7 +48,7 @@ namespace Stand
 			{
 				if (auto netcomp = fm->getNetComponent())
 				{
-					if (num_fm_array_handlers = netcomp->m_NumHostBroadcastData)
+					if (num_fm_array_handlers = netcomp->m_NumHostBroadcastData; num_fm_array_handlers != 0)
 					{
 						if (/*AbstractPlayer::getPlayerCount() == 1 ||*/ netcomp->amHost())
 						{

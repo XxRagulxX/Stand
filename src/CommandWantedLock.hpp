@@ -23,7 +23,7 @@ namespace Stand
 		{
 			if (m_on)
 			{
-				registerScriptTickEventHandler(click, [=]()
+				registerScriptTickEventHandler(click, [=, this]()
 				{
 					if (m_on)
 					{

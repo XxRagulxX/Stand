@@ -245,7 +245,8 @@ namespace Stand
 
 			p = p.add(15);
 			alt_skeleton_extension_id = p.add(2).rip().as<decltype(alt_skeleton_extension_id)>();
-			alt_skeleton_extensions_array = p.add(29).rip().sub(offsetof(AltSkeletonExtensionArray, m_Count)).as<AltSkeletonExtensionArray*>();
+			auto* count = p.add(29).rip().as<decltype(AltSkeletonExtensionArray::m_Count)*>();
+			alt_skeleton_extensions_array = reinterpret_cast<AltSkeletonExtensionArray*>(reinterpret_cast<std::uintptr_t>(count)- reinterpret_cast<std::uintptr_t>(&(reinterpret_cast<AltSkeletonExtensionArray*>(0)->m_Count)));
 		});
 		BATCH_ADD_OPTIONAL(CODENAME(DoVehicleLightsAsync_RunFromDependency), "4C 8B 01 BA 80 B1 00 00", [](soup::Pointer p)
 		{

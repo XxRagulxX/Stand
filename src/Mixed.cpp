@@ -75,7 +75,7 @@ namespace Stand
 			throw 0;
 		}
 		data = alloc;
-		strcpy(reinterpret_cast<char*>(alloc), cstr);
+		strcpy_s(reinterpret_cast<char*>(alloc), strlen(cstr) + 1, cstr);
 	}
 
 	void Mixed::copy(const Mixed& b)
