@@ -29,6 +29,9 @@ namespace Stand
 		case LANGUAGE_JAPANESE: return LIT(Lang::id_to_name(LANG_JA));
 		case LANGUAGE_MEXICAN: return LIT("Spanish (Mexican) - Española (Mexicana)");
 		case LANGUAGE_CHINESE_SIMPLIFIED: return LIT(Lang::id_to_name(LANG_ZH));
+		case LANGUAGE_UNDEFINED:
+		case MAX_LANGUAGES:
+			return NOLABEL;
 		}
 		return NOLABEL;
 	}

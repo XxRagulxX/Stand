@@ -4,6 +4,7 @@
 
 #include "evtChatEvent.hpp"
 #include "FileLogger.hpp"
+#include "get_appdata_path.hpp"
 #include "StringUtils.hpp"
 
 namespace Stand
@@ -26,7 +27,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			const auto file_path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Chat.txt)");
+			const auto file_path = get_appdata_path().append(LR"(\Stand\Chat.txt)");
 			chat_txt_out.init(file_path);
 			if (!chat_txt_out.isInited())
 			{

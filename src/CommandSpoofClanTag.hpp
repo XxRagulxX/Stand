@@ -25,7 +25,8 @@ namespace Stand
 			auto arg = get_next_arg(args);
 			if (checkArgsLength(click, arg, 4))
 			{
-				strcpy(g_hooking.spoofed_clan_membership.clan.tag, StringUtils::utf16_to_utf8(arg).c_str());
+				const auto tag = StringUtils::utf16_to_utf8(arg);
+				strcpy_s(g_hooking.spoofed_clan_membership.clan.tag, sizeof(g_hooking.spoofed_clan_membership.clan.tag), tag.c_str());
 				setValueFromHooking(click.type);
 				if (g_hooking.spoof_clan_membership)
 				{

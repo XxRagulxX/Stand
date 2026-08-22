@@ -1,5 +1,3 @@
-#pragma once
-
 #include "CommandListCommandBoxPresets.hpp"
 #include "Exceptional.hpp"
 #include "get_appdata_path.hpp"

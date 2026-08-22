@@ -1,6 +1,7 @@
 #include "CommandSaveOutfit.hpp"
 
 #include "AbstractEntity.hpp"
+#include "get_appdata_path.hpp"
 #include "CommandListRefreshable.hpp"
 #include "lang.hpp"
 #include "Util.hpp"
@@ -14,7 +15,7 @@ namespace Stand
 
 	std::wstring CommandSaveOutfit::getFolder() const
 	{
-		return std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Outfits\)"));
+		return get_appdata_path().append(LR"(\Stand\Outfits\)");
 	}
 
 	std::unordered_map<std::string, std::string> CommandSaveOutfit::getDataEn() const

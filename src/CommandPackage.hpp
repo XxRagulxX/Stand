@@ -98,7 +98,7 @@ namespace Stand
 		{
 			setIndicators(
 				pkg->isInstalled(),
-				pkg->status != NONE
+				pkg->status != Package::Status::NONE
 			);
 		}
 

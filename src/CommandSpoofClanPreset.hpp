@@ -27,9 +27,9 @@ namespace Stand
 		void onClick(Click& click) final
 		{
 			g_hooking.spoofed_clan_membership.clan.id = id;
-			strcpy(g_hooking.spoofed_clan_membership.clan.tag, tag);
-			strcpy(g_hooking.spoofed_clan_membership.clan.name, name.c_str());
-			strcpy(g_hooking.spoofed_clan_membership.clan.motto, motto);
+			strcpy_s(g_hooking.spoofed_clan_membership.clan.tag, sizeof(g_hooking.spoofed_clan_membership.clan.tag), tag);
+			strcpy_s(g_hooking.spoofed_clan_membership.clan.name, sizeof(g_hooking.spoofed_clan_membership.clan.name), name.c_str());
+			strcpy_s(g_hooking.spoofed_clan_membership.clan.motto, sizeof(g_hooking.spoofed_clan_membership.clan.motto), motto);
 			g_hooking.spoofed_clan_membership.clan.alt_badge = alt_badge;
 
 			parent->parent->as<CommandSpoofClan>()->setValuesFromHooking(click);

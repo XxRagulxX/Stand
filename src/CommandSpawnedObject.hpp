@@ -7,7 +7,7 @@
 
 namespace Stand
 {
-	class CommandSpawnedObject : public CommandWithOnTickFocused<CommandList>
+	class CommandSpawnedObject final : public CommandWithOnTickFocused<CommandList>
 	{
 	public:
 		const Object handle;

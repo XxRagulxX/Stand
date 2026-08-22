@@ -17,7 +17,7 @@ namespace Stand
 			const auto char_slot = Util::getCharSlot(click);
 			if (char_slot != -1)
 			{
-				showWarning(click, LANG_GET_W("H_FNSH_W"), 0, [=](ThreadContext thread_context)
+				showWarning(click, LANG_GET_W("H_FNSH_W"), 0, [=, this](ThreadContext thread_context)
 				{
 					ensureScriptThread(thread_context, [=]
 					{

@@ -47,7 +47,7 @@ namespace Stand
 		{
 			if (!stats_loaded)
 			{
-				FiberPool::queueJob([=]() mutable
+				FiberPool::queueJob([=, this]() mutable
 				{
 					while (!isLoaded())
 					{

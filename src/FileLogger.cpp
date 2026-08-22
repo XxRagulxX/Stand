@@ -2,13 +2,14 @@
 
 #include <soup/ObfusString.hpp>
 
+#include "get_appdata_path.hpp"
 #include "ensure_folder.hpp"
 
 namespace Stand
 {
 	std::wstring FileLogger::getMainFilePath()
 	{
-		std::wstring path = _wgetenv(L"appdata");
+		std::wstring path = get_appdata_path();
 		path.append(L"\\Stand");
 		ensure_folder(path);
 		path.append(L"\\Log.txt");

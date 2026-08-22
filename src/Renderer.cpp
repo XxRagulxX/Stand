@@ -9,6 +9,7 @@
 #include "AntiAntiCheat.hpp"
 #include "bin.hpp"
 #include "Chat.hpp"
+#include "get_appdata_path.hpp"
 #include "CMultiplayerChat.hpp"
 #include "ColourUtil.hpp"
 #include "Commandbox.hpp"
@@ -295,7 +296,7 @@ namespace Stand
 
 	std::wstring Renderer::getThemePath()
 	{
-		auto theme_path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Theme\)");
+		auto theme_path = get_appdata_path().append(LR"(\Stand\Theme\)");
 		if (!std::filesystem::is_directory(theme_path))
 		{
 			std::filesystem::create_directory(theme_path);

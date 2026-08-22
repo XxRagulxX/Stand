@@ -2965,8 +2965,7 @@ namespace Stand
 			// The game tries to correct plate based on PV data, so we should override this as well.
 			if (isUserPersonalVehicle())
 			{
-				auto* plate_text = ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(),GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>();
-				strcpy_s(plate_text, 16, text);
+				strcpy_s(ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(), GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>(),32,text);
 			}
 
 			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(handle, text);

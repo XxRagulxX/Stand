@@ -1,6 +1,7 @@
 ﻿#include "CommandLuaScript.hpp"
 
 #include <mutex> // lock_guard
+#include <cstdint>
 
 #include <lualib.h>
 #include <lauxlib.h>
@@ -2344,7 +2345,9 @@ f(link)
 
 	CommandLuaScript* luaS_thisptr(lua_State* L)
 	{
-		return reinterpret_cast<CommandLuaScript*>(reinterpret_cast<uintptr_t>(luaS_scriptData(L)) - offsetof(CommandLuaScript, script_data));
+		auto* const script_data = luaS_scriptData(L);
+		const auto offset = reinterpret_cast<std::uintptr_t>(&reinterpret_cast<CommandLuaScript*>(0)->script_data);
+		return reinterpret_cast<CommandLuaScript*>(reinterpret_cast<std::uintptr_t>(script_data) - offset);
 	}
 
 	CommandLuaScript* luaS_getThisPtrAndImplyKeepRunning(lua_State* L)

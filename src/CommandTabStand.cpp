@@ -4,6 +4,7 @@
 #include <soup/ObfusString.hpp>
 
 #include "Auth.hpp"
+#include "get_appdata_path.hpp"
 #include "ColoadMgr.hpp"
 #include "CommandInput.hpp"
 #include "Commandbox.hpp"
@@ -237,7 +238,7 @@ namespace Stand
 					header->createChild<CommandTogglePointer>(&g_renderer.header_bgblur, LOC("BGBLR"), {}, LOC("HDR_BGBLR_H"));
 					header->createChild<CommandLambdaAction>(LOC("OPNFLD"), {}, NOLABEL, [this](Click&)
 					{
-						g_gui.shellExecute(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Headers\)").c_str());
+						g_gui.shellExecute(get_appdata_path().append(LR"(\Stand\Headers\)").c_str());
 					});
 				}
 
@@ -987,7 +988,7 @@ namespace Stand
 		this->createChild<CommandConsole>();
 		this->createChild<CommandLambdaAction>(LOC("OPNSTND"), { CMDNAME("openstandfolder") }, LOC("OPNSTND_H"), [](Click& click)
 		{
-			g_gui.shellExecute(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\)").c_str());
+			g_gui.shellExecute(get_appdata_path().append(LR"(\Stand\)").c_str());
 		});
 		this->createChild<CommandLambdaAction>(LOC("CLRNOTIFS"), { CMDNAME("clearstandnotifys") }, LOC("CLRNOTIFS_H"), [](Click& click)
 		{

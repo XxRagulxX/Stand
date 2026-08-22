@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "CommandListConcealer.hpp"
+#include "get_appdata_path.hpp"
 #include "CommandPlayer.hpp"
 #include "Gui.hpp"
 #include "StringUtils.hpp"
@@ -22,7 +23,7 @@ namespace Stand
 		void onClick(Click& click) final
 		{
 			std::ofstream file_out;
-			file_out.open(std::wstring(_wgetenv(L"appdata")).append(L"\\Stand\\Features (").append(StringUtils::utf8_to_utf16(Lang::idToApiCode(Lang::active_id))).append(L").txt"), std::ios_base::out);
+			file_out.open(get_appdata_path().append(L"\\Stand\\Features (").append(StringUtils::utf8_to_utf16(Lang::idToApiCode(Lang::active_id))).append(L").txt"), std::ios_base::out);
 			recursivelyWriteFeatureList(file_out, "", g_gui.root_list.get());
 			click.setResponse(LOC("FTRLST_T"));
 		}

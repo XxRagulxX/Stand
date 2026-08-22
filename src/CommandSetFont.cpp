@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "bin.hpp"
+#include "get_appdata_path.hpp"
 #include "CommandListActionItem.hpp"
 #include "ConsoleLogger.hpp"
 #include "ensure_folder.hpp"
@@ -128,7 +129,7 @@ namespace Stand
 				g_console.init();
 			}
 
-			auto bin_path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Bin)");
+			auto bin_path = get_appdata_path().append(LR"(\Stand\Bin)");
 			ensure_folder(bin_path);
 			bin_path.push_back(L'\\');
 			auto exe_path = std::move(std::wstring(bin_path).append(L"MakeSpriteFont.exe"));

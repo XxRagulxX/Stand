@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "get_appdata_path.hpp"
 #include "ensure_folder.hpp"
 #include "lang.hpp"
 
@@ -23,7 +24,7 @@ namespace Stand
 
 	void CommandSavePos::onCommand(Click& click, std::wstring& args)
 	{
-		auto path = std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Places)"));
+		auto path = get_appdata_path().append(LR"(\Stand\Places)");
 		ensure_folder(path);
 		path.push_back(L'\\');
 		path.append(std::move(args)).append(L".txt");

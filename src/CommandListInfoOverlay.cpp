@@ -91,8 +91,13 @@ namespace Stand
 		if (show_real_world_time)
 		{
 			std::time_t t = std::time(nullptr);
-			std::tm* now = std::localtime(&t);
-			drawDebugText(fmt::format(L"{:0>2}:{:0>2}:{:0>2}", now->tm_hour, now->tm_min, now->tm_sec));
+			std::tm now{};
+#ifdef _WIN32
+			localtime_s(&now, &t);
+#else
+			localtime_r(&t, &now);
+#endif
+			drawDebugText(fmt::format(L"{:0>2}:{:0>2}:{:0>2}", now.tm_hour, now.tm_min, now.tm_sec));
 		}
 		if (show_speedometer)
 		{

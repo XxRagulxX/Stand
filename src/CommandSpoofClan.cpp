@@ -1,5 +1,7 @@
 #include "CommandSpoofClan.hpp"
 
+#include <cstring>
+
 #include "CommandExtraInfo.hpp"
 #include "ExecCtx.hpp"
 #include "get_next_arg.hpp"
@@ -80,18 +82,20 @@ namespace Stand
 			g_hooking.forceUpdateGamerDataNode();
 
 			ExecCtx::get().ensureScript([]
-			{
-				scrClanDesc& desc = ScriptGlobal(GLOBAL_CLAN_DESCS).at(g_player, 35).as<scrClanDesc&>();
-				rage::rlClanMembershipData& data = *pointers::rage_rlClan_GetPrimaryMembership(0);
+				{
+					scrClanDesc& desc = ScriptGlobal(GLOBAL_CLAN_DESCS).at(g_player, 35).as<scrClanDesc&>();
+					rage::rlClanMembershipData& data = *pointers::rage_rlClan_GetPrimaryMembership(0);
 
-				desc.id.Int = (int)data.clan.id;
-				desc.r.Int = data.clan.r;
-				desc.g.Int = data.clan.g;
-				desc.b.Int = data.clan.b;
-				strcpy(desc.tag, data.clan.tag);
-				strcpy(desc.name, data.clan.name);
-				desc.alt_badge.Int = (data.clan.alt_badge ? 1 : 0);
-			});
+					desc.id.Int = static_cast<int>(data.clan.id);
+					desc.r.Int = data.clan.r;
+					desc.g.Int = data.clan.g;
+					desc.b.Int = data.clan.b;
+
+					strcpy_s(desc.tag, sizeof(desc.tag), data.clan.tag);
+					strcpy_s(desc.name, sizeof(desc.name), data.clan.name);
+
+					desc.alt_badge.Int = data.clan.alt_badge ? 1 : 0;
+				});
 		}
 	}
 }

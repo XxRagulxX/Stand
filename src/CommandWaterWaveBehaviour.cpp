@@ -39,7 +39,7 @@ namespace Stand
 		switch (value)
 		{
 		case 1:
-			registerScriptTickEventHandler(click, [=]()
+			registerScriptTickEventHandler(click, [=, this]()
 			{
 				if (value == 3)
 				{

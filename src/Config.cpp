@@ -1,6 +1,7 @@
 #include "Config.hpp"
 
 #include "ColonsAndTabs.hpp"
+#include "get_appdata_path.hpp"
 #include "Exceptional.hpp"
 #include "Gui.hpp"
 #include "StringUtils.hpp"
@@ -28,7 +29,7 @@ namespace Stand
 
 	std::wstring Config::getPath() const
 	{
-		return std::move(std::wstring(_wgetenv(L"appdata")).append(L"\\Stand\\").append(name).append(L".txt"));
+		return get_appdata_path().append(L"\\Stand\\").append(name).append(L".txt");
 	}
 
 	void Config::setName(std::wstring&& name)
