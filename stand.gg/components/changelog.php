@@ -1,4 +1,9 @@
 <p>Time is provided as observed in Central Europe.</p>
+<?php printHeader('Stand 26.8.1', '22/08/2026 08:05'); ?>
+<ul>
+	<li>Fixed detach wing</li>
+	<li>Lua API: Updated Pluto to 0.13.1 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+</ul>
 <?php printHeader('Stand 26.7.2', '22/07/2026 07:13'); ?>
 <ul>
 	<li>Removed Herobrine</li>

@@ -323,6 +323,7 @@
 	"k 酱 の 温馨小店 (XkCheats)": {
 		"aliases": ["Xiao k", "xkmenu"],
 		"basic": {
+			"stock": -1000,
 			"alipay": ["元90", "https://xkk.bar/"],
 			"wechat": ["元90", "https://xkk.bar/"],
 			"qq": ["元90", "https://xkk.bar/"],
@@ -331,6 +332,7 @@
 			"crypto2": ["元90", "https://xkk.bar/"]
 		},
 		"regular": {
+			"stock": -1000,
 			"alipay": ["元180", "https://xkk.bar/"],
 			"wechat": ["元180", "https://xkk.bar/"],
 			"qq": ["元180", "https://xkk.bar/"],
@@ -339,6 +341,7 @@
 			"crypto2": ["元180", "https://xkk.bar/"]
 		},
 		"ultimate": {
+			"stock": -1000,
 			"alipay": ["元360", "https://xkk.bar/"],
 			"wechat": ["元360", "https://xkk.bar/"],
 			"qq": ["元360", "https://xkk.bar/"],
@@ -347,6 +350,7 @@
 			"crypto2": ["元360", "https://xkk.bar/"]
 		},
 		"basic_to_regular": {
+			"stock": -1000,
 			"alipay": ["元90", "https://xkk.bar/"],
 			"wechat": ["元90", "https://xkk.bar/"],
 			"qq": ["元90", "https://xkk.bar/"],
@@ -355,6 +359,7 @@
 			"crypto2": ["元90", "https://xkk.bar/"]
 		},
 		"regular_to_ultimate": {
+			"stock": -1000,
 			"alipay": ["元180", "https://xkk.bar/"],
 			"wechat": ["元180", "https://xkk.bar/"],
 			"qq": ["元180", "https://xkk.bar/"],
@@ -363,6 +368,7 @@
 			"crypto2": ["元180", "https://xkk.bar/"]
 		},
 		"basic_to_ultimate": {
+			"stock": -1000,
 			"alipay": ["元270", "https://xkk.bar/"],
 			"wechat": ["元270", "https://xkk.bar/"],
 			"qq": ["元270", "https://xkk.bar/"],
@@ -396,6 +402,7 @@
 	"红中的小店": {
 		"aliases": ["HongZhong"],
 		"basic": {
+			"stock": -1000,
 			"pp": ["元90", "https://hzi.simple.ink/"],
 			"btc": ["元90", "https://hzi.simple.ink/"],
 			"ltc": ["元90", "https://hzi.simple.ink/"],
@@ -408,6 +415,7 @@
 			"qq": ["元90", "https://hzi.simple.ink/"]
 		},
 		"regular": {
+			"stock": -1000,
 			"pp": ["元180", "https://hzi.simple.ink/"],
 			"btc": ["元180", "https://hzi.simple.ink/"],
 			"ltc": ["元180", "https://hzi.simple.ink/"],
@@ -420,6 +428,7 @@
 			"qq": ["元180", "https://hzi.simple.ink/"]
 		},
 		"ultimate": {
+			"stock": -1000,
 			"pp": ["元360", "https://hzi.simple.ink/"],
 			"btc": ["元360", "https://hzi.simple.ink/"],
 			"ltc": ["元360", "https://hzi.simple.ink/"],
@@ -432,6 +441,7 @@
 			"qq": ["元360", "https://hzi.simple.ink/"]
 		},
 		"basic_to_regular": {
+			"stock": -1000,
 			"pp": ["元105", "https://hzi.simple.ink/"],
 			"btc": ["元105", "https://hzi.simple.ink/"],
 			"ltc": ["元105", "https://hzi.simple.ink/"],
@@ -444,6 +454,7 @@
 			"qq": ["元105", "https://hzi.simple.ink/"]
 		},
 		"regular_to_ultimate": {
+			"stock": -1000,
 			"pp": ["元180", "https://hzi.simple.ink/"],
 			"btc": ["元180", "https://hzi.simple.ink/"],
 			"ltc": ["元180", "https://hzi.simple.ink/"],
@@ -456,6 +467,7 @@
 			"qq": ["元180", "https://hzi.simple.ink/"]
 		},
 		"basic_to_ultimate": {
+			"stock": -1000,
 			"pp": ["元285", "https://hzi.simple.ink/"],
 			"btc": ["元285", "https://hzi.simple.ink/"],
 			"ltc": ["元285", "https://hzi.simple.ink/"],
@@ -471,34 +483,35 @@
 	"西瓜小铺": {
 		"aliases": ["XiGua", "xgmenu"],
 		"basic": {
-			"alipay": ["元90", "https://xgmenu.love/"],
-			"wechat": ["元90", "https://xgmenu.love/"],
-			"qq": ["元90", "https://xgmenu.love/"]
+			"alipay": ["元95", "https://xigua4.cc/item/17"],
+			"wechat": ["元95", "https://xigua4.cc/item/17"],
+			"qq": ["元95", "https://xigua4.cc/item/17"]
 		},
 		"regular": {
-			"alipay": ["元180", "https://xgmenu.love/"],
-			"wechat": ["元180", "https://xgmenu.love/"],
-			"qq": ["元180", "https://xgmenu.love/"]
+			"alipay": ["元190", "https://xigua4.cc/item/17"],
+			"wechat": ["元190", "https://xigua4.cc/item/17"],
+			"qq": ["元190", "https://xigua4.cc/item/17"]
 		},
 		"ultimate": {
-			"alipay": ["元350", "https://xgmenu.love/"],
-			"wechat": ["元350", "https://xgmenu.love/"],
-			"qq": ["元350", "https://xgmenu.love/"]
+			"alipay": ["元380", "https://xigua4.cc/item/17"],
+			"wechat": ["元380", "https://xigua4.cc/item/17"],
+			"qq": ["元380", "https://xigua4.cc/item/17"]
 		},
 		"basic_to_regular": {
-			"alipay": ["元90", "https://xgmenu.love/"],
-			"wechat": ["元90", "https://xgmenu.love/"],
-			"qq": ["元90", "https://xgmenu.love/"]
+			"alipay": ["元95", "https://xigua4.cc/item/17"],
+			"wechat": ["元95", "https://xigua4.cc/item/17"],
+			"qq": ["元95", "https://xigua4.cc/item/17"]
 		},
 		"regular_to_ultimate": {
-			"alipay": ["元180", "https://xgmenu.love/"],
-			"wechat": ["元180", "https://xgmenu.love/"],
-			"qq": ["元180", "https://xgmenu.love/"]
+			"alipay": ["元185", "https://xigua4.cc/item/17"],
+			"wechat": ["元185", "https://xigua4.cc/item/17"],
+			"qq": ["元185", "https://xigua4.cc/item/17"]
 		},
 		"basic_to_ultimate": {
-			"alipay": ["元270", "https://xgmenu.love/"],
-			"wechat": ["元270", "https://xgmenu.love/"],
-			"qq": ["元270", "https://xgmenu.love/"]
+			"stock": -1000,
+			"alipay": ["元270", "https://xigua4.cc/item/17"],
+			"wechat": ["元270", "https://xigua4.cc/item/17"],
+			"qq": ["元270", "https://xigua4.cc/item/17"]
 		}
 	},
 	"777shop": {
@@ -628,7 +641,7 @@
 		"note": "Verified they sell license keys on 2023-05-24, got license key e1x3, which belongs to RecoveryKing.",
 		"coinbase": true,
 		"basic": {
-			"stock": -92,
+			"stock": -145,
 			"cc": ["$12.50", "https://recoverykings.net/product/stand/?attribute_stand=Basic"],
 			"btc": ["$12.50", "https://recoverykings.net/product/stand/?attribute_stand=Basic"],
 			"ltc": ["$12.50", "https://recoverykings.net/product/stand/?attribute_stand=Basic"],
@@ -1919,6 +1932,7 @@
 	"国王の小店": {
 		"aliases": ["tkmenu"],
 		"basic": {
+			"stock": -1000,
 			"alipay": ["元90", "https://www.theking7.baby/"],
 			"wechat": ["元90", "https://www.theking7.baby/"],
 			"qq": ["元90", "https://www.theking7.baby/"],
@@ -1929,6 +1943,7 @@
 			"crypto2": ["元90", "https://www.theking7.baby/"]
 		},
 		"regular": {
+			"stock": -1000,
 			"alipay": ["元180", "https://www.theking7.baby/"],
 			"wechat": ["元180", "https://www.theking7.baby/"],
 			"qq": ["元180", "https://www.theking7.baby/"],
@@ -1939,6 +1954,7 @@
 			"crypto2": ["元180", "https://www.theking7.baby/"]
 		},
 		"ultimate": {
+			"stock": -1000,
 			"alipay": ["元360", "https://www.theking7.baby/"],
 			"wechat": ["元360", "https://www.theking7.baby/"],
 			"qq": ["元360", "https://www.theking7.baby/"],
@@ -2027,18 +2043,21 @@
 	"GTAxMENU": {
 		"aliases": ["l1angth6"],
 		"basic": {
+			"stock": -9,
 			"alipay": ["€12.50", "https://hi.gtaxmenu.com/"],
 			"wechat": ["€12.50", "https://hi.gtaxmenu.com/"],
 			"qq": ["€12.50", "https://hi.gtaxmenu.com/"],
 			"btc": ["€12.50", "https://shoppy.gg/product/VKN0iRE"]
 		},
 		"regular": {
+			"stock": -1,
 			"alipay": ["€25", "https://hi.gtaxmenu.com/"],
 			"wechat": ["€25", "https://hi.gtaxmenu.com/"],
 			"qq": ["€25", "https://hi.gtaxmenu.com/"],
 			"btc": ["€25", "https://shoppy.gg/product/VQZano5"]
 		},
 		"ultimate": {
+			"stock": -1,
 			"alipay": ["$50", "https://hi.gtaxmenu.com/"],
 			"wechat": ["$50", "https://hi.gtaxmenu.com/"],
 			"qq": ["$50", "https://hi.gtaxmenu.com/"],
@@ -2861,7 +2880,7 @@
 	"Lmarket": {
 		"aliases": ["lplacement"],
 		"basic": {
-			"stock": -3,
+			"stock": -117,
 			"pp": ["€12.49", "https://discord.gg/HyZmvhVuA7"],
 			"skrill": ["€12.49", "https://discord.gg/lmarketnet"],
 			"cc": ["€12.49", "https://lmarket.net/product/stand-mod-menu-gtav/?attribute_duration=Basic"],
@@ -3122,6 +3141,7 @@
 	"SafeMarket": {
 		"aliases": ["Phobia"],
 		"basic": {
+			"stock": -1000,
 			"cc": ["€12.49", "https://safemarket.vip/product/stand/"],
 			"pp": ["€12.49", "https://safemarket.vip/product/stand/"],
 			"btc": ["€12.49", "https://safemarket.vip/product/stand/"],
@@ -3136,6 +3156,7 @@
 			"wise": ["€12.49", "https://safemarket.vip/product/stand/"]
 		},
 		"regular": {
+			"stock": -1000,
 			"cc": ["€24.99", "https://safemarket.vip/product/stand/"],
 			"pp": ["€24.99", "https://safemarket.vip/product/stand/"],
 			"btc": ["€24.99", "https://safemarket.vip/product/stand/"],
@@ -3150,6 +3171,7 @@
 			"wise": ["€24.99", "https://safemarket.vip/product/stand/"]
 		},
 		"ultimate": {
+			"stock": -1000,
 			"cc": ["€49.99", "https://safemarket.vip/product/stand/"],
 			"pp": ["€49.99", "https://safemarket.vip/product/stand/"],
 			"btc": ["€49.99", "https://safemarket.vip/product/stand/"],
@@ -3164,6 +3186,7 @@
 			"wise": ["€49.99", "https://safemarket.vip/product/stand/"]
 		},
 		"basic_to_regular": {
+			"stock": -1000,
 			"cc": ["€12.49", "https://safemarket.vip/product/stand/"],
 			"pp": ["€12.49", "https://safemarket.vip/product/stand/"],
 			"btc": ["€12.49", "https://safemarket.vip/product/stand/"],
@@ -3178,6 +3201,7 @@
 			"wise": ["€12.49", "https://safemarket.vip/product/stand/"]
 		},
 		"basic_to_ultimate": {
+			"stock": -1000,
 			"cc": ["€37.49", "https://safemarket.vip/product/stand/"],
 			"pp": ["€37.49", "https://safemarket.vip/product/stand/"],
 			"btc": ["€37.49", "https://safemarket.vip/product/stand/"],
@@ -3192,6 +3216,7 @@
 			"wise": ["€37.49", "https://safemarket.vip/product/stand/"]
 		},
 		"regular_to_ultimate": {
+			"stock": -1000,
 			"cc": ["€24.99", "https://safemarket.vip/product/stand/"],
 			"pp": ["€24.99", "https://safemarket.vip/product/stand/"],
 			"btc": ["€24.99", "https://safemarket.vip/product/stand/"],
@@ -3585,6 +3610,7 @@
 	},
 	"IrisCheats": {
 		"basic": {
+			"stock": -1000,
 			"cc": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic"],
 			"btc": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic"],
 			"apple": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic"],
@@ -3598,6 +3624,7 @@
 			"europe": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic"]
 		},
 		"regular": {
+			"stock": -1000,
 			"cc": ["€24.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular"],
 			"btc": ["€24.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular"],
 			"apple": ["€24.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular"],
@@ -3611,6 +3638,7 @@
 			"europe": ["€24.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular"]
 		},
 		"ultimate": {
+			"stock": -1000,
 			"cc": ["€49.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Ultimate"],
 			"btc": ["€49.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Ultimate"],
 			"apple": ["€49.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Ultimate"],
@@ -3624,6 +3652,7 @@
 			"europe": ["€49.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Ultimate"]
 		},
 		"regular_to_ultimate": {
+			"stock": -1000,
 			"cc": ["€29.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular+to+Ultimate"],
 			"btc": ["€29.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular+to+Ultimate"],
 			"apple": ["€29.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular+to+Ultimate"],
@@ -3637,6 +3666,7 @@
 			"europe": ["€29.99", "https://irischeats.com/product/stand-gta-online/?attribute_type=Regular+to+Ultimate"]
 		},
 		"basic_to_regular": {
+			"stock": -1000,
 			"cc": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+Regular"],
 			"btc": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+Regular"],
 			"apple": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+Regular"],
@@ -3650,6 +3680,7 @@
 			"europe": ["€12.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+Regular"]
 		},
 		"basic_to_ultimate": {
+			"stock": -1000,
 			"cc": ["€37.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+ultimate"],
 			"btc": ["€37.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+ultimate"],
 			"apple": ["€37.49", "https://irischeats.com/product/stand-gta-online/?attribute_type=Basic+to+ultimate"],
@@ -3665,6 +3696,7 @@
 	},
 	"WhiteModz": {
 		"basic": {
+			"stock": -4,
 			"cc": ["€12.49", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Basic"],
 			"pp": ["€12.49", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Basic"],
 			"apple": ["€12.49", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Basic"],
@@ -3681,6 +3713,7 @@
 			"europe": ["€12.49", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Basic"]
 		},
 		"regular": {
+			"stock": -6,
 			"cc": ["€24.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Regular"],
 			"pp": ["€24.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Regular"],
 			"apple": ["€24.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Regular"],
@@ -3697,6 +3730,7 @@
 			"europe": ["€24.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Regular"]
 		},
 		"ultimate": {
+			"stock": -5,
 			"cc": ["€49.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Ultimate"],
 			"pp": ["€49.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Ultimate"],
 			"apple": ["€49.99", "https://whitemodz.com/product/stand-gta-online/?attribute_choose-licence-type=Ultimate"],

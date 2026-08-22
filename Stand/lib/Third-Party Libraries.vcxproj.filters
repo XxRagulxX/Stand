@@ -681,6 +681,9 @@
     <ClCompile Include="Pluto\vendor\Soup\soup\aes.cpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClCompile>
+    <ClCompile Include="Pluto\vendor\Soup\soup\ffi_call_win_x64.cpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="discord-rpc\include\discord_register.h">

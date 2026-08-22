@@ -244,27 +244,31 @@ static int ffi_funcwrapper_call (lua_State *L) {
     luaL_error(L, "disallowed by content moderation policy");
   }
 #endif
-  uintptr_t args[soup::ffi::MAX_ARGS];
+  soup::ffi::ValueType types[soup::ffi::MAX_CALL_ARGS + 1];
+  uintptr_t args[soup::ffi::MAX_CALL_ARGS];
   int i = 0;
   for (const auto& arg_type : fw->args) {
     lua_assert(i < soup::ffi::MAX_ARGS);
+    types[i] = (arg_type == FFI_F32 || arg_type == FFI_F64) ? soup::ffi::VT_FLOAT : soup::ffi::VT_INTEGRAL;
     args[i] = check_ffi_value(L, 1 + i, arg_type);
     ++i;
   }
+  types[i] = (fw->ret == FFI_F32 || fw->ret == FFI_F64) ? soup::ffi::VT_FLOAT : soup::ffi::VT_INTEGRAL;
   uintptr_t retval;
+  const auto prev_callback_L = callback_L;
   callback_L = L;
   try {
-    retval = soup::ffi::call(fw->addr, args, i);
+    retval = soup::ffi::call(fw->addr, types, args, i);
   }
   catch (const std::exception& e) {
-    callback_L = nullptr;
+    callback_L = prev_callback_L;
     luaL_error(L, "C++ exception: %s", e.what());
   }
   catch (...) {
-    callback_L = nullptr;
+    callback_L = prev_callback_L;
     luaL_error(L, "C++ exception");
   }
-  callback_L = nullptr;
+  callback_L = prev_callback_L;
   return push_ffi_value(L, fw->ret, &retval);
 }
 
@@ -726,20 +730,24 @@ static uintptr_t ffi_callback_trampoline (uintptr_t user_data, const uintptr_t* 
 }
 
 static int ffi_callback (lua_State *L) {
-  const auto nargs = lua_gettop(L) - 2;
+  const int nargs = lua_gettop(L) - 2;
   if (nargs < 0)
     luaL_error(L, "expected at least 2 arguments");
-  if (nargs > soup::ffi::MAX_ARGS)
+  if (nargs > soup::ffi::MAX_CALLBACK_ARGS)
     luaL_error(L, "callback has too many parameters");
   luaL_checktype(L, nargs + 2, LUA_TFUNCTION);
 
   auto& cb = *pluto_newclassinst(L, FfiCallback);
   cb.ret = check_ffi_type(L, 1);
   cb.args.reserve(nargs);
+  soup::ffi::ValueType types[soup::ffi::MAX_CALLBACK_ARGS + 1];
   for (int i = 0; i != nargs; ++i) {
-    cb.args.emplace_back(check_ffi_type(L, 2 + i));
+    const auto t = check_ffi_type(L, 2 + i);
+    cb.args.emplace_back(t);
+    types[i] = (t == FFI_F32 || t == FFI_F64) ? soup::ffi::VT_FLOAT : soup::ffi::VT_INTEGRAL;
   }
-  cb.trampoline = soup::ffi::callbackAlloc(ffi_callback_trampoline, reinterpret_cast<uintptr_t>(&cb));
+  types[soup::ffi::MAX_CALLBACK_ARGS] = (cb.ret == FFI_F32 || cb.ret == FFI_F64) ? soup::ffi::VT_FLOAT : soup::ffi::VT_INTEGRAL;
+  cb.trampoline = soup::ffi::callbackAlloc(ffi_callback_trampoline, reinterpret_cast<uintptr_t>(&cb), types);
   if (!cb.trampoline) {
 #if SOUP_APPLE
     luaL_error(L, "Failed to allocate an FFI callback. Is the 'com.apple.security.cs.allow-jit' entitlement set?");

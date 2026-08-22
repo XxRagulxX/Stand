@@ -324,20 +324,22 @@ public:
 	PAD(0x0968 + sizeof(CVehicleFlags), 0x0A54) float m_fHomingProjectileDistance; // 0F 2E 05 ? ? ? ? 74 05 0F 2F C8 - CVehicle::SetHomingProjectileDistance
 	PAD(0x0A54 + 4, 0x0AEE) bool m_bAllowHomingMissleLockOnSynced;
 	PAD(0x0AEE + 1, 0x0C28) VehicleType vehicle_type;
-	PAD(0x0C18 + 4, 0x0C20) CWheel** wheels;
-	/* 0x0C28 */ int32_t num_wheels;
-	PAD(0x0C28 + 4, 0x0C38) CCarDoor* m_pDoors;
-	/* 0x0C40 */ int32_t m_nNumDoors;
-	PAD(0x0C40 + 4, 0x0C70) CVehicleWeaponMgr* m_pVehicleWeaponMgr;
-	PAD(0x0C70 + 8, 0x0C80) rage::atArray<CVehicleGadget*> m_pVehicleGadgets;
-	/* 0x0C38 */ float m_fVerticalVelocityToKnockOffThisBike;
-	/* 0x0C3C */ float m_fGravityForWheelIntegrator;
+	PAD(0x0C28 + 4, 0x0C30) CWheel** wheels;
+	/* 0x0C38 */ int32_t num_wheels;
+	PAD(0x0C38 + 4, 0x0C48) CCarDoor* m_pDoors;
+	/* 0x0C50 */ int32_t m_nNumDoors;
+	PAD(0x0C50 + 4, 0x0C80) CVehicleWeaponMgr* m_pVehicleWeaponMgr;
+	PAD(0x0C80 + 8, 0x0C90) rage::atArray<CVehicleGadget*> m_pVehicleGadgets;
+	/* 0x0C98 */ float m_fVerticalVelocityToKnockOffThisBike;
+	/* 0x0C9C */ float m_fGravityForWheelIntegrator;
 
 	[[nodiscard]] bool InheritsFromHeli() const noexcept;
 
 	[[nodiscard]] hash_t getModelAsObservedByOthers() const noexcept;
 };
 static_assert(offsetof(CVehicle, vehicle_type) == 0x0C28); // 1.70: 0x0C18 -> 0x0C28 (+0x10)
+static_assert(offsetof(CVehicle, m_pVehicleWeaponMgr) == 0x0C80); // 1.70: 0x0C70 -> 0x0C80 (+0x10)
+static_assert(offsetof(CVehicle, m_pVehicleGadgets) == 0x0C90); // 1.70: 0x0C80 -> 0x0C90 (+0x10)
 
 class CAutomobile : public CVehicle
 {
@@ -379,10 +381,11 @@ class CPlane : public CAutomobile
 {
 public:
 	/* 0x1B00 */ float turbulence_multiplier;
-	float wind_multiplier;
-	PAD(0x1AA4 + 4, 0x1D60) CAircraftDamage m_aircraftDamage;
+	/* 0x1B04 */ float wind_multiplier;
+	PAD(0x1B04 + 4, 0x1DD0) CAircraftDamage m_aircraftDamage;
 };
-static_assert(offsetof(CPlane, turbulence_multiplier) == 0x1B00); // 1.70
+static_assert(offsetof(CPlane, turbulence_multiplier) == 0x1B00); // 1.73
+static_assert(offsetof(CPlane, m_aircraftDamage) == 0x1DD0); // 1.73
 
 class CRotaryWingAircraft : public CAutomobile
 {

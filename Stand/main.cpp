@@ -241,7 +241,7 @@ namespace Stand
 
 		// Erase PE Header
 #if ERASE_PE_HEADER
-		/*call_with_time_limit*/([](uintptr_t)
+		call_with_time_limit([](uintptr_t)
 		{
 			DWORD OldProtect;
 			VirtualProtect(g_hmodule, 0x1000, PAGE_READWRITE, &OldProtect);

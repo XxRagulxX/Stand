@@ -57,7 +57,7 @@ Self — Command: t self
 			Flying Animals
 				<5 Options>
 			NPCs
-				<1063 Options>
+				<1072 Options>
 		Outfit — Command: outfit
 			Wardrobe — Command: wardrobe
 				Save Outfit
@@ -176,23 +176,23 @@ Self — Command: t self
 			Vehicle
 				Random
 				Super
-					<61 Options>
+					<64 Options>
 				Service
 					<14 Options>
 				Utility
-					<49 Options>
+					<50 Options>
 				Helicopters
 					<31 Options>
 				Motorcycles
 					<59 Options>
 				SUVs
-					<48 Options>
+					<50 Options>
 				Sports
-					<122 Options>
+					<125 Options>
 				Planes
 					<35 Options>
 				Emergency
-					<34 Options>
+					<35 Options>
 				Military
 					<17 Options>
 				Sports Classic
@@ -200,17 +200,17 @@ Self — Command: t self
 				Compacts
 					<18 Options>
 				Sedans
-					<48 Options>
+					<49 Options>
 				Boats
 					<25 Options>
 				Commercial
 					<24 Options>
 				Off-Road
-					<70 Options>
+					<71 Options>
 				Vans
-					<41 Options>
+					<42 Options>
 				Muscle
-					<94 Options>
+					<95 Options>
 				Cycles
 					<9 Options>
 				Industrial
@@ -313,7 +313,7 @@ Self — Command: t self
 				Flying Animals
 					<5 Options>
 				NPCs
-					<1063 Options>
+					<1072 Options>
 			Primary Weapon — Bodyguards will use their primary weapon whenever possible. Otherwise, they will try to use their secondary weapon. — Command: bodyguardprimary (value)
 				Melee Weapons
 					<20 Options>
@@ -393,6 +393,8 @@ Vehicle — Command: t vehicle
 	Spawner — Command: spawner
 		Search — Command: findvehicle [clue]
 		DLCs
+			The Kortz Center Heist
+				<14 Options>
 			A Safehouse in the Hills
 				<15 Options>
 			Money Fronts
@@ -497,7 +499,7 @@ Vehicle — Command: t vehicle
 			Cycles
 				<9 Options>
 			Emergency
-				<34 Options>
+				<35 Options>
 			Helicopters
 				<31 Options>
 			Industrial
@@ -507,31 +509,31 @@ Vehicle — Command: t vehicle
 			Motorcycles
 				<59 Options>
 			Muscle
-				<94 Options>
+				<95 Options>
 			Off-Road
-				<70 Options>
+				<71 Options>
 			Open Wheel
 				<4 Options>
 			Planes
 				<46 Options>
 			SUVs
-				<48 Options>
+				<50 Options>
 			Sedans
-				<48 Options>
+				<49 Options>
 			Service
 				<14 Options>
 			Sports
-				<122 Options>
+				<125 Options>
 			Sports Classic
 				<54 Options>
 			Super
-				<61 Options>
+				<64 Options>
 			Trains
 				<11 Options>
 			Utility
-				<52 Options>
+				<53 Options>
 			Vans
-				<41 Options>
+				<42 Options>
 		List Of Spawned Vehicles — Command: listofspawnedvehicles
 		Input Model Name — The "expert mode" way of spawning vehicles. — Command: spawn [model name] — Can be used by other players with the Spawn Commands permission.
 		On Foot Behaviour
@@ -1039,7 +1041,7 @@ Online — Command: t online
 				Cutscenes
 					<3 Options>
 				Uncategorised
-					<209 Options>
+					<214 Options>
 		Session Code — Command: sessioncode
 			Session Code
 			Join Session Via Code — Command: codejoin [code]
@@ -2606,28 +2608,28 @@ Players — Command: t players
 						Ground Animals
 							<4 Options>
 						NPCs
-							<843 Options>
+							<852 Options>
 					Vehicle
 						None
 						Random
 						Super
-							<61 Options>
+							<64 Options>
 						Service
 							<14 Options>
 						Utility
-							<26 Options>
+							<27 Options>
 						Helicopters
 							<31 Options>
 						Motorcycles
 							<59 Options>
 						SUVs
-							<48 Options>
+							<50 Options>
 						Planes
 							<46 Options>
 						Sports
-							<122 Options>
+							<125 Options>
 						Emergency
-							<34 Options>
+							<35 Options>
 						Military
 							<17 Options>
 						Sports Classic
@@ -2635,17 +2637,17 @@ Players — Command: t players
 						Compacts
 							<18 Options>
 						Sedans
-							<48 Options>
+							<49 Options>
 						Boats
 							<26 Options>
 						Commercial
 							<24 Options>
 						Off-Road
-							<70 Options>
+							<71 Options>
 						Vans
-							<41 Options>
+							<42 Options>
 						Muscle
-							<94 Options>
+							<95 Options>
 						Cycles
 							<9 Options>
 						Industrial
@@ -2689,23 +2691,23 @@ Players — Command: t players
 				Vehicle
 					Random
 					Super
-						<61 Options>
+						<64 Options>
 					Service
 						<14 Options>
 					Utility
-						<52 Options>
+						<53 Options>
 					Helicopters
 						<31 Options>
 					Motorcycles
 						<59 Options>
 					SUVs
-						<48 Options>
+						<50 Options>
 					Planes
 						<46 Options>
 					Sports
-						<122 Options>
+						<125 Options>
 					Emergency
-						<34 Options>
+						<35 Options>
 					Military
 						<17 Options>
 					Sports Classic
@@ -2713,17 +2715,17 @@ Players — Command: t players
 					Compacts
 						<18 Options>
 					Sedans
-						<48 Options>
+						<49 Options>
 					Boats
 						<26 Options>
 					Commercial
 						<24 Options>
 					Off-Road
-						<70 Options>
+						<71 Options>
 					Vans
-						<41 Options>
+						<42 Options>
 					Muscle
-						<94 Options>
+						<95 Options>
 					Cycles
 						<9 Options>
 					Industrial
@@ -3255,7 +3257,7 @@ World — Command: t world
 			Input Model Name — The "expert mode" way of spawning objects. — Command: spawnobject [model name]
 			Downtown
 				<130 Options>
-			<20991 More Options>
+			<21364 More Options>
 		Tools
 			Freecam — Command: editorfreecam [on/off]
 			Teleport To Where I'm Looking — Command: editorteleport
@@ -3472,19 +3474,19 @@ Game — Command: t game
 			Spoof Models (On/Off) — Spoofs models from custom DLCs to models that are actually in the game so that players without the custom DLC can still see something.
 			Vehicles — Command: spoofmodelveh (value)
 				Super
-					<61 Options>
+					<64 Options>
 				Service
 					<14 Options>
 				Utility
-					<26 Options>
+					<27 Options>
 				Motorcycles
 					<59 Options>
 				SUVs
-					<48 Options>
+					<50 Options>
 				Sports
-					<122 Options>
+					<125 Options>
 				Emergency
-					<34 Options>
+					<35 Options>
 				Military
 					<17 Options>
 				Sports Classic
@@ -3492,15 +3494,15 @@ Game — Command: t game
 				Compacts
 					<18 Options>
 				Sedans
-					<48 Options>
+					<49 Options>
 				Commercial
 					<24 Options>
 				Off-Road
-					<70 Options>
+					<71 Options>
 				Vans
-					<41 Options>
+					<42 Options>
 				Muscle
-					<94 Options>
+					<95 Options>
 				Industrial
 					<12 Options>
 				Coupes

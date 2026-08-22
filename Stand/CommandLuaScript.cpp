@@ -7652,12 +7652,14 @@ f(link)
 	{
 		return luaS_tryCatch(L, [](lua_State* L)
 		{
+			std::vector<soup::ffi::ValueType> types{ soup::ffi::VT_INTEGRAL };
 			std::vector<uintptr_t> args{};
 			const int num_args = (lua_gettop(L) + 1);
 			if (num_args >= 2)
 			{
 				for (int i = 2; i != num_args; ++i)
 				{
+					types.emplace_back(soup::ffi::VT_INTEGRAL);
 					args.emplace_back(luaS_checkRegister(L, i));
 				}
 			}
@@ -7675,7 +7677,7 @@ f(link)
 			{
 				luaL_error(L, "FFI call to this function is not allowed without first calling util.i_really_need_manual_access_to_process_apis");
 			}
-			luaS_push(L, soup::ffi::call(func, args));
+			luaS_push(L, soup::ffi::call(func, types.data(), args.data(), args.size()));
 			return 1;
 		});
 	}
