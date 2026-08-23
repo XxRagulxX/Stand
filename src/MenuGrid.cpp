@@ -198,6 +198,9 @@ namespace Stand
 							addressbar->width += (self.spacer_x + self.scrollbar_width);
 						}
 						break;
+
+					case ScrollbarMode::DISABLED:
+						break;
 					}
 
 					std::vector<std::wstring> corner{};
@@ -292,6 +295,9 @@ namespace Stand
 		case HeaderState::DOWNLOADING:
 		case HeaderState::LOADING:
 			items_draft.emplace_back(std::make_unique<GridItemHeaderLoading>(full_menu_width, priority, force_alignment_to));
+			break;
+
+		case HeaderState::HIDE:
 			break;
 		}
 	}

@@ -1,6 +1,7 @@
 #include "rl_matching.hpp"
 
 #include <cstring> // strcpy
+#include "FunctionPointer.hpp"
 
 #include <soup/ObfusString.hpp>
 
@@ -12,7 +13,7 @@ namespace rage
 
 		filter_id = ~1u; // AD_HOC_FILTER_ID
 
-		strcpy(filter_name, soup::ObfusString("Group").c_str());
+		strcpy_s(filter_name, sizeof(filter_name), soup::ObfusString("Group").c_str());
 
 		attr_ids[0] = MMATTR_DISCRIMINATOR;
 		attr_ids[1] = MMATTR_MM_GROUP_1;
@@ -23,14 +24,14 @@ namespace rage
 		attr_ids[6] = MMATTR_ACTIVITY_ID;
 		attr_ids[7] = MMATTR_ACTIVITY_PLAYERS;
 
-		strcpy(attribute_names[0], soup::ObfusString("MMATTR_DISCRIMINATOR").c_str());
-		strcpy(attribute_names[1], soup::ObfusString("MMATTR_MM_GROUP_1").c_str());
-		strcpy(attribute_names[2], soup::ObfusString("MMATTR_MM_GROUP_2").c_str());
-		strcpy(attribute_names[3], soup::ObfusString("MMATTR_AIM_TYPE").c_str());
-		strcpy(attribute_names[4], soup::ObfusString("MMATTR_REGION").c_str());
-		strcpy(attribute_names[5], soup::ObfusString("MMATTR_ACTIVITY_TYPE").c_str());
-		strcpy(attribute_names[6], soup::ObfusString("MMATTR_ACTIVITY_ID").c_str());
-		strcpy(attribute_names[7], soup::ObfusString("MMATTR_ACTIVITY_PLAYERS").c_str());
+		strcpy_s(attribute_names[0], sizeof(attribute_names[0]), soup::ObfusString("MMATTR_DISCRIMINATOR").c_str());
+		strcpy_s(attribute_names[1], sizeof(attribute_names[1]), soup::ObfusString("MMATTR_MM_GROUP_1").c_str());
+		strcpy_s(attribute_names[2], sizeof(attribute_names[2]), soup::ObfusString("MMATTR_MM_GROUP_2").c_str());
+		strcpy_s(attribute_names[3], sizeof(attribute_names[3]), soup::ObfusString("MMATTR_AIM_TYPE").c_str());
+		strcpy_s(attribute_names[4], sizeof(attribute_names[4]), soup::ObfusString("MMATTR_REGION").c_str());
+		strcpy_s(attribute_names[5], sizeof(attribute_names[5]), soup::ObfusString("MMATTR_ACTIVITY_TYPE").c_str());
+		strcpy_s(attribute_names[6], sizeof(attribute_names[6]), soup::ObfusString("MMATTR_ACTIVITY_ID").c_str());
+		strcpy_s(attribute_names[7], sizeof(attribute_names[7]), soup::ObfusString("MMATTR_ACTIVITY_PLAYERS").c_str());
 
 		num_attributes = 8;
 	}

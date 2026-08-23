@@ -445,6 +445,15 @@ namespace Stand
 				return;
 			}
 			break;
+
+		case FORWARD:
+			break;
+
+		case BACK:
+			break;
+
+		case NONE:
+			break;
 		}
 		last_directional_input = direction;
 	}
@@ -468,6 +477,12 @@ namespace Stand
 
 		case MENUKEY_LEFT:
 			return LEFT;
+			break;
+
+		case MENUKEY_NONE:
+			break;
+
+		case MENUKEY_BACK:
 			break;
 		}
 		return TELEPORT;
@@ -2325,7 +2340,7 @@ namespace Stand
 				prev_focus_ptr->parent->onActiveListUpdate();
 			}
 
-			if (prev_focus_ptr = prev_focus.getPointer()) // Need to check again because onActiveListUpdate may have deleted the child
+			if ((prev_focus_ptr = prev_focus.getPointer())) // Need to check again because onActiveListUpdate may have deleted the child
 			{
 				prev_focus_ptr->as<CommandPhysical>()->onBlur(thread_context, momentum);
 			}

@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include <cstring>
 #include <soup/ObfusString.hpp>
 
 #include "Auth.hpp"
@@ -58,15 +59,15 @@ namespace Stand
 		explicit RemoteGamerRequestData(RemoteGamer* const g)
 			: g(g)
 		{
-			strcpy(peeraddr().name, soup::ObfusString("peeraddr"));
+			strncpy_s(peeraddr().name, sizeof(peeraddr().name), soup::ObfusString("peeraddr").c_str(), _TRUNCATE);
 			peeraddr().int_value = 0;
 			peeraddr().type = RLSC_PRESTYPE_STRING;
 
-			strcpy(gsinfo().name, soup::ObfusString("gsinfo"));
+			strncpy_s(gsinfo().name, sizeof(gsinfo().name), soup::ObfusString("gsinfo").c_str(), _TRUNCATE);
 			gsinfo().int_value = 0;
 			gsinfo().type = RLSC_PRESTYPE_STRING;
 
-			strcpy(gstype().name, soup::ObfusString("gstype"));
+			strncpy_s(gstype().name, sizeof(gstype().name), soup::ObfusString("gstype").c_str(), _TRUNCATE);
 			gstype().int_value = 0;
 			gstype().type = RLSC_PRESTYPE_S64;
 		}
@@ -521,6 +522,9 @@ namespace Stand
 
 		case ONLINE_PUBLIC:
 			return LANG_GET("ST_P");
+
+		default:
+			break;
 		}
 		return LANG_GET("ST_O");
 #endif
@@ -559,6 +563,9 @@ namespace Stand
 
 		case ONLINE_PUBLIC:
 			return LOC("SHTONLSTS_ST_P");
+
+		default:
+			break;
 		}
 		return LOC("SHTONLSTS_ST_O");
 	}
@@ -618,9 +625,10 @@ namespace Stand
 		case ONLINE_CREW: return GS_CREW;
 		case ONLINE_SOLO: return GS_SOLO;
 		case ONLINE_PUBLIC: return GS_PUBLIC;
-
 		case ONLINE_OTHER:
 			return 69;
+		default:
+			break;
 		}
 		return std::nullopt;
 	}

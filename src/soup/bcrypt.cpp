@@ -719,7 +719,7 @@ NAMESPACE_SOUP
 
 		if (*salt > BCRYPT_VERSION) {
 			/* How do I handle errors ? Return ':' */
-			strcpy(encrypted, error);
+			strncpy_s(encrypted, sizeof(encrypted), error, _TRUNCATE);
 			return;
 		}
 
@@ -732,7 +732,7 @@ NAMESPACE_SOUP
 				salt++;
 				break;
 			default:
-				strcpy(encrypted, error);
+				strncpy_s(encrypted, sizeof(encrypted), error, _TRUNCATE);
 				return;
 			}
 		}
@@ -744,19 +744,19 @@ NAMESPACE_SOUP
 
 		if (salt[2] != '$') {
 			/* Out of sync with passwd entry */
-			strcpy(encrypted, error);
+			strncpy_s(encrypted, sizeof(encrypted), error, _TRUNCATE);
 			return;
 		}
 
 		/* Computer power doesn't increase linear, 2^x should be fine */
 		n = atoi(salt);
 		if (n > 31 || n < 0) {
-			strcpy(encrypted, error);
+			strncpy_s(encrypted, sizeof(encrypted), error, _TRUNCATE);
 			return;
 		}
 		logr = (uint8_t)n;
 		if ((rounds = (uint32_t)1 << logr) < BCRYPT_MINROUNDS) {
-			strcpy(encrypted, error);
+			strncpy_s(encrypted, sizeof(encrypted), error, _TRUNCATE);
 			return;
 		}
 
@@ -764,7 +764,7 @@ NAMESPACE_SOUP
 		salt += 3;
 
 		if (strlen(salt) * 3 / 4 < BCRYPT_MAXSALT) {
-			strcpy(encrypted, error);
+			strncpy_s(encrypted, sizeof(encrypted), error, _TRUNCATE);
 			return;
 		}
 

@@ -1,5 +1,6 @@
 #include "script_vm_common.hpp"
 
+#include "FunctionPointer.hpp"
 #include "PointerNames.hpp"
 #include "ScriptMgr.hpp"
 #include "Util.hpp"
@@ -226,7 +227,7 @@ namespace Stand
 		auto entry = g_script_mgr.reverse_entrypoint_map.find(entrypoint);
 		if (entry == g_script_mgr.reverse_entrypoint_map.end())
 		{
-			return std::move(std::string("@ ").append(PointerNames::format(entrypoint)));
+			return std::string("@ ").append(PointerNames::format(function_pointer_to_void(entrypoint)));
 		}
 		std::string str{};
 		for (auto i = entry->second.begin(); i != entry->second.end(); ++i)

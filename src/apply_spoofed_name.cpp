@@ -13,7 +13,7 @@ namespace Stand
 	void apply_spoofed_name(const char* name)
 	{
 		g_player.setOverrideName(name);
-		strcpy(pointers::rlPresence_m_ActingGamerInfo->name, name);
+		strcpy_s(pointers::rlPresence_m_ActingGamerInfo->name, sizeof(pointers::rlPresence_m_ActingGamerInfo->name), name);
 	}
 
 	void on_name_spoofing_update()

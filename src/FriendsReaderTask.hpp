@@ -16,7 +16,7 @@ namespace rage
 		{
 			if (*num_friends < max_friends)
 			{
-				strcpy(friends[*num_friends].sc_friend.name, name);
+				strncpy_s(friends[*num_friends].sc_friend.name, sizeof(friends[*num_friends].sc_friend.name), name, _TRUNCATE);
 				friends[*num_friends].sc_friend.rockstar_id = rockstar_id;
 				friends[*num_friends].sc_friend.relationship = 0x20;
 				if (is_online)

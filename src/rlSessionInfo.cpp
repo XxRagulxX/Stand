@@ -35,7 +35,7 @@ namespace rage
 
 	void rlSessionInfo::reset()
 	{
-		ZeroMemory(this, sizeof(*this));
+		ZeroMemory(static_cast<void*>(this), sizeof(*this));
 	}
 
 	Stand::SessionId rlSessionInfo::getId() const

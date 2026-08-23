@@ -102,6 +102,12 @@ namespace Stand
 					!i_am_left ? participant->my_pong_wins : participant->their_pong_wins
 				));
 				break;
+
+			case INACTIVE:
+				break;
+
+			case PLAYING:
+				break;
 			}
 		}
 

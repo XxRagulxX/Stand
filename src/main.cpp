@@ -49,6 +49,7 @@
 #include "RemoteStats.hpp"
 #include "Renderer.hpp"
 #include "ResourceMgr.hpp"
+#include "FunctionPointer.hpp"
 #include "rlGamerInfo.hpp"
 #include "Sanity.hpp"
 #include "ScriptMgr.hpp"
@@ -221,8 +222,9 @@ namespace Stand
 		startManagedThreadFunc();
 		::exceptional_init(&Exceptional::handleCaughtException, &Exceptional::handleUncaughtException);
 		// Initialise CodeIntegrity
-		CodeIntegrity::add(&CommandHistoricPlayer::getStateImpl);
-		CodeIntegrity::add(static_cast<std::string(*)(const void*, size_t)>(&soup::sha1::hash));
+		CodeIntegrity::add(function_pointer_to_void(&CommandHistoricPlayer::getStateImpl));
+		CodeIntegrity::add(function_pointer_to_void(static_cast<std::string(*)(const void*, size_t)>(&soup::sha1::hash))
+		);
 		// Detect OS version (note that this does not work to detect Windows 8 or later)
 #pragma warning(push)
 #pragma warning(disable: 4996) // GetVersion was declared deprecated
@@ -719,8 +721,8 @@ namespace Stand
 		auto area = reinterpret_cast<uint8_t*>(VirtualAlloc(nullptr, sizeof(thread_asm), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
 		memcpy(area, thread_asm, sizeof(thread_asm));
 
-		*(void**)(&area[8 + 2]) = &Sleep;
-		*(void**)(&area[27 + 2]) = &memset;
+		*reinterpret_cast<void**>(&area[8 + 2]) = function_pointer_to_void(&Sleep);
+		*reinterpret_cast<void**>(&area[27 + 2]) = function_pointer_to_void(&memset);
 		*(void**)(&area[37 + 2]) = g_hmodule;
 		*(size_t*)(&area[50 + 2]) = g_stand_dll_range.size;
 
@@ -1578,27 +1580,27 @@ namespace Stand
 		});
 
 		BATCH_ADD("D0", "FF ? 41 8B DE EB 1B", [](soup::Pointer p)
-		{
-			p = p.add(14);
-			CHECK_EXISTING_HOOK("D0", "44 8B C7 8B D3 48 8B 01 FF 50 40");
-			pointers::swapchain = p.sub(4).rip().as<IDXGISwapChain**>();
-			pointers::swapchain_present = p.sub(7).as<void*>();
-			void* target = soup::Pointer(pointers::swapchain_present).followJumps().as<void*>();
-			void* jumpout = p.as<void*>();
-			if (target != pointers::swapchain_present)
 			{
-				jumpout = target;
-			}
-			swapchain_hook_init_present(
-				&hooks::swapchain_present,
-				jumpout
-			);
-		});
+				p = p.add(14);
+				CHECK_EXISTING_HOOK("D0", "44 8B C7 8B D3 48 8B 01 FF 50 40");
+				pointers::swapchain = p.sub(4).rip().as<IDXGISwapChain**>();
+				pointers::swapchain_present = p.sub(7).as<void*>();
+				void* target = soup::Pointer(pointers::swapchain_present).followJumps().as<void*>();
+				void* jumpout = p.as<void*>();
+				if (target != pointers::swapchain_present)
+				{
+					jumpout = target;
+				}
+				swapchain_hook_init_present(
+					function_pointer_to_void(&hooks::swapchain_present),
+					jumpout
+				);
+			});
 		BATCH_ADD_OPTIONAL("D1", "8B 44 24 50 4C 8B 17 44 8B 4E 04 44 8B 06 8B 54 24 68 48 8B CF C7 44 24 28 02 00 00 00 89 44 24 20 41 FF 52 68", [](soup::Pointer p)
 		{
 			swapchain_hook_init_resize_buffers(
 				p.sub(4).rip().as<void*>(),
-				&hooks::swapchain_resize_buffers,
+				function_pointer_to_void(&hooks::swapchain_resize_buffers),
 				p.as<void*>()
 			);
 			pointers::swapchain_resize_buffers = p.sub(5).as<void*>();
@@ -2507,9 +2509,16 @@ namespace Stand
 		// S1 & S2 are unused
 		BATCH_ADD_OPTIONAL("SY", "48 8B 05 ? ? ? ? 8B CB 48 69 C9 E0 01 00 00 48 63 94 01 B0 00 00 00 48 8B 05", [](soup::Pointer p)
 		{
-			pointers::scaleform_array = p.add(3).rip().as<rage::atArray<ScaleformMovieStruct>*>();
-			pointers::scaleform_store = p.add(27).rip().sub(offsetof(CScaleformStore, m_pool.m_aFlags)).as<CScaleformStore*>();
-		});
+		   pointers::scaleform_array = p.add(3).rip().as<rage::atArray<ScaleformMovieStruct>*>();
+		   using PoolType = std::remove_reference_t<decltype(std::declval<CScaleformStore>().m_pool)>;
+
+		   const auto pool_offset = member_offset(&CScaleformStore::m_pool);
+
+		   const auto flags_offset = member_offset(&PoolType::m_aFlags);
+
+		   pointers::scaleform_store = p.add(27).rip().sub(pool_offset + flags_offset).as<CScaleformStore*>();
+		}
+		);
 		BATCH_ADD_OPTIONAL("SZ", "0F 94 C0 88 44 24 20 E8 ? ? ? ? 48 8B 05", [](soup::Pointer p)
 		{
 			// ped_factory is also here if we needed it

@@ -1,6 +1,7 @@
 ﻿#include "Hooking.hpp"
 
 #include <sstream>
+#include <type_traits>
 
 #include <fmt/core.h>
 #include <MinHook.h>
@@ -116,6 +117,7 @@
 #include "OrgHelper.hpp"
 #include "PlayerHistory.hpp"
 #include "pointers.hpp"
+#include "FunctionPointer.hpp"
 #include "RageConnector.hpp"
 #include "regular_event.hpp"
 #include "RemoteGamer.hpp"
@@ -546,56 +548,50 @@ f("OA", CNetObjVehicle_GetVehicleCreateData, 0) \
 			{ REACTION_TOAST | REACTION_LOG_CONSOLE | REACTION_BLOCK }, // MISC_PTFX
 		},
 
-#define ITERATOR_CTOR(code, name, flags) name ## _hook(code, &hooks::name, flags),
+#define ITERATOR_CTOR(code, name, flags) name ## _hook(code, function_pointer_to_void(&hooks::name), flags),
 		FOR_EACH_TRIVIAL_HOOK(ITERATOR_CTOR)
 		FOR_EACH_HOOK_FROM_POINTERS(ITERATOR_CTOR)
 
 #if HTTP_HOOK
-		rage_netHttpRequest_Update_hook("N1", &hooks::rage_netHttpRequest_Update, DH_MANDATORY),
+		rage_netHttpRequest_Update_hook("N1", function_pointer_to_void(&hooks::rage_netHttpRequest_Update), DH_MANDATORY),
 #endif
 
 #if CLEAR_BONUS_ON_DL
-		CTunables_OnCloudEvent_hook("N5", &hooks::CTunables_OnCloudEvent, 0),
+		CTunables_OnCloudEvent_hook("N5", function_pointer_to_void(&hooks::CTunables_OnCloudEvent), 0),
 #endif
 
 #ifdef STAND_DEBUG
-		rage_netMessage_WriteHeader_hook("Z0", &hooks::rage_netMessage_WriteHeader, 0),
+		rage_netMessage_WriteHeader_hook("Z0", function_pointer_to_void(&hooks::rage_netMessage_WriteHeader), 0),
 #endif
 #ifdef STAND_DEV
-		rage_netSyncDataNode_Read_hook("Z1", &hooks::rage_netSyncDataNode_Read, 0),
+		rage_netSyncDataNode_Read_hook("Z1", function_pointer_to_void(&hooks::rage_netSyncDataNode_Read), 0),
 #endif
 
-		rage_fwConfigManager_GetSizeOfPool_hook("A1", &hooks::rage_fwConfigManager_GetSizeOfPool, 0),
-
-		swapchain_resize_buffers_hook("D1", &swapchain_hook_resize_buffers, 0),
-		swapchain_present_hook("D0", &swapchain_hook_present, DH_NOFOLLOWJUMPS | DH_MANDATORY),
-
-		set_value_from_keyboard_hook("I0", &set_value_from_keyboard_detour, DH_NOFOLLOWJUMPS),
-		set_value_from_mkb_axis_hook("I1", &set_value_from_mkb_axis_detour, DH_NOFOLLOWJUMPS),
-
-		script_vm_switch_hook("PC", &script_vm_switch_detour, DH_NOFOLLOWJUMPS),
-		script_thread_error_kill_1_hook("PD", &script_vm_error_detour, DH_NOFOLLOWJUMPS),
-		script_thread_error_kill_2_hook("PE", &script_vm_error_detour, DH_NOFOLLOWJUMPS),
-
-		rage_rlTelemetry_Export_hook("N0", &hooks::rage_rlTelemetry_Export, 0),
-		rage_gameSkeleton_updateGroup_Update_hook("N8", &hooks::rage_gameSkeleton_updateGroup_Update, DH_NOFOLLOWJUMPS),
-		network_bail_hook("N9", &hooks::network_bail, 0),
-		rage_sysDependencyScheduler_InsertInternal_hook("NE", &hooks::rage_sysDependencyScheduler_InsertInternal, DH_NOFOLLOWJUMPS),
-
-		aes_initfile_hook("O1", &aes_initfile_detour, DH_NOFOLLOWJUMPS),
-		aes_decrypt_callsite_hook("O3", &aes_decrypt_callsite_detour, DH_NOFOLLOWJUMPS),
-
-		send_net_info_to_lobby_wrap_hook("S0", &hooks::send_net_info_to_lobby_wrap, DH_MANDATORY),
-		CNetGamePlayer_GetGamerInfo_hook("S3", &hooks::CNetGamePlayer_GetGamerInfo, DH_NOFOLLOWJUMPS),
-		get_active_clan_data_hook("S4", &hooks::get_active_clan_data, DH_MANDATORY),
-		data_node_write_hook("S9", &data_node_write_detour, DH_NOFOLLOWJUMPS)
+		rage_fwConfigManager_GetSizeOfPool_hook("A1", function_pointer_to_void(&hooks::rage_fwConfigManager_GetSizeOfPool), 0),
+		swapchain_resize_buffers_hook("D1", function_pointer_to_void(&swapchain_hook_resize_buffers), 0),
+		swapchain_present_hook("D0", function_pointer_to_void(&swapchain_hook_present), DH_NOFOLLOWJUMPS | DH_MANDATORY),
+		set_value_from_keyboard_hook("I0", function_pointer_to_void(&set_value_from_keyboard_detour), DH_NOFOLLOWJUMPS),
+		set_value_from_mkb_axis_hook("I1", function_pointer_to_void(&set_value_from_mkb_axis_detour), DH_NOFOLLOWJUMPS),
+		script_vm_switch_hook("PC", function_pointer_to_void(&script_vm_switch_detour), DH_NOFOLLOWJUMPS),
+		script_thread_error_kill_1_hook("PD", function_pointer_to_void(&script_vm_error_detour), DH_NOFOLLOWJUMPS),
+		script_thread_error_kill_2_hook("PE", function_pointer_to_void(&script_vm_error_detour), DH_NOFOLLOWJUMPS),
+		rage_rlTelemetry_Export_hook("N0", function_pointer_to_void(&hooks::rage_rlTelemetry_Export), 0),
+		rage_gameSkeleton_updateGroup_Update_hook("N8", function_pointer_to_void(&hooks::rage_gameSkeleton_updateGroup_Update), DH_NOFOLLOWJUMPS),
+		network_bail_hook("N9", function_pointer_to_void(&hooks::network_bail), 0),
+		rage_sysDependencyScheduler_InsertInternal_hook("NE", function_pointer_to_void(&hooks::rage_sysDependencyScheduler_InsertInternal), DH_NOFOLLOWJUMPS),
+		aes_initfile_hook("O1", function_pointer_to_void(&aes_initfile_detour), DH_NOFOLLOWJUMPS),
+		aes_decrypt_callsite_hook("O3", function_pointer_to_void(&aes_decrypt_callsite_detour), DH_NOFOLLOWJUMPS),
+		send_net_info_to_lobby_wrap_hook("S0", function_pointer_to_void(&hooks::send_net_info_to_lobby_wrap), DH_MANDATORY),
+		CNetGamePlayer_GetGamerInfo_hook("S3", function_pointer_to_void(&hooks::CNetGamePlayer_GetGamerInfo), DH_NOFOLLOWJUMPS),
+		get_active_clan_data_hook("S4", function_pointer_to_void(&hooks::get_active_clan_data), DH_MANDATORY),
+		data_node_write_hook("S9", function_pointer_to_void(&data_node_write_detour), DH_NOFOLLOWJUMPS	)
 	{
 		initSpoofedClan();
 		spoofed_clan_membership.clan.id = 133742069;
 		spoofed_clan_membership.clan.alt_badge = true;
-		strcpy(spoofed_clan_membership.clan.name, soup::ObfusString("Stand.sh").c_str());
-		strcpy(spoofed_clan_membership.clan.tag, "STD");
-		strcpy(spoofed_clan_membership.position, "Member");
+		strcpy_s(spoofed_clan_membership.clan.name, sizeof(spoofed_clan_membership.clan.name), soup::ObfusString("Stand.sh").c_str());
+		strcpy_s(spoofed_clan_membership.clan.tag, sizeof(spoofed_clan_membership.clan.tag), "STD");
+		strcpy_s(spoofed_clan_membership.position, sizeof(spoofed_clan_membership.position), "Member");
 	}
 
 	void Hooking::initSpoofedClan()
@@ -657,7 +653,7 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 		script_thread_error_kill_1_hook.setTarget(pointers::script_thread_error_kill_1);
 		script_thread_error_kill_2_hook.setTarget(pointers::script_thread_error_kill_2);
 
-		get_active_clan_data_hook.setTarget(pointers::rage_rlClan_GetPrimaryMembership);
+		get_active_clan_data_hook.setTarget(function_pointer_to_void(pointers::rage_rlClan_GetPrimaryMembership));
 	}
 
 	void Hooking::performChecks()
@@ -1375,9 +1371,7 @@ namespace Stand::hooks
 			if (classification != PlayerClassifier::NONE)
 			{
 				if ((AbstractPlayer::getReactionsRaw(FlowEvent::CLSFN_ANY, player_type) & REACTION_KICK)
-					|| (AbstractPlayer::getReactionsRaw(FlowEvent::CLSFN_ANY + classification, player_type) & REACTION_KICK)
-					&& !is_whitelisted_plr
-					)
+					|| (AbstractPlayer::getReactionsRaw(static_cast<FlowEvent::_>(static_cast<int>(FlowEvent::CLSFN_ANY) + static_cast<int>(classification)), player_type) & REACTION_KICK)	&& !is_whitelisted_plr)
 				{
 					notify_blocked_join(player, as_host, PlayerClassifier::getLocalisedClassificationName(classification));
 					return true;
@@ -1510,8 +1504,9 @@ namespace Stand::hooks
 		rage::rlGamerInfo* gamer_info = player->GetGamerInfoImpl();
 		if (auto e = g_hooking.name_overrides.find(gamer_info->peer.id); e != g_hooking.name_overrides.end())
 		{
-			memcpy(&rlGamerInfo_spoofing_buf, gamer_info, sizeof(rage::rlGamerInfo));
-			strcpy(rlGamerInfo_spoofing_buf.name, e->second.c_str());
+			memcpy(static_cast<void*>(&rlGamerInfo_spoofing_buf), static_cast<const void*>(gamer_info), sizeof(rage::rlGamerInfo));
+			strcpy_s(rlGamerInfo_spoofing_buf.name, sizeof(rlGamerInfo_spoofing_buf.name), e->second.c_str()
+			);
 			return &rlGamerInfo_spoofing_buf;
 		}
 		return gamer_info;
@@ -1553,6 +1548,9 @@ namespace Stand::hooks
 			{
 				return g_hooking.spoofed_kd;
 			}
+			break;
+
+		default:
 			break;
 		}
 		return OG(get_player_card_stat)(a1, a2, statIndex, a4);
@@ -1635,6 +1633,8 @@ namespace Stand::hooks
 		case /* wheelTypeTrack */ 12: return 209;
 
 		case /* wheelTypeBike */ 6: return 209; // model=oppressor2, wheel_type=6, wheel_mod=121, rear_wheel_mod=144
+		default:
+			break;
 		}
 		return -1;
 	}
@@ -1776,6 +1776,8 @@ namespace Stand::hooks
 					}
 				}
 				break;
+			default:
+				break;
 			}
 
 			// Write node data to buffer (note false so we don't extract data from object again)
@@ -1908,6 +1910,8 @@ namespace Stand::hooks
 						timestamp_label_buf.append(StringUtils::utf16_to_utf8(format_time_since_1970_for_user_locale(get_seconds_since_unix_epoch(), true)));
 						return timestamp_label_buf.c_str();
 					}
+					break;
+				default:
 					break;
 				}
 			}
@@ -3327,6 +3331,8 @@ namespace Stand::hooks
 						case EXP_TAG_BLIMP2:
 							modded = true;
 							extra_data = LANG_GET("EXPAMMO");
+							break;
+						default:
 							break;
 						}
 					}
@@ -7025,6 +7031,8 @@ namespace Stand::hooks
 		case VEHICLE_TYPE_HELI:
 		case VEHICLE_TYPE_BLIMP:
 			return true;
+		default:
+			break;
 		}
 		return false;
 	}
@@ -7806,7 +7814,7 @@ to_recover.emplace_back(addr, *addr); \
 
 	[[nodiscard]] static bool is_unwanted_dependency(rage::sysDependency* dep) noexcept
 	{
-		void* f1 = dep->m_Callback;
+		void* f1 = function_pointer_to_void(dep->m_Callback);
 		void* f2 = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x100);
 		void* f3 = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x1A0);
 
@@ -7851,8 +7859,8 @@ to_recover.emplace_back(addr, *addr); \
 				auto verifier = reinterpret_cast<AcVerifier*>(reinterpret_cast<uintptr_t>(dep) - 0x30);
 				verifier->m_delay.Set(INT_MAX);
 				dep->m_Callback = &nulldep;
-				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x100) = &nulldep;
-				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x1A0) = &nulldep;
+				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x100) = function_pointer_to_void(&nulldep);
+				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x1A0) = function_pointer_to_void(&nulldep);
 				return;
 			}
 		}
@@ -8134,6 +8142,8 @@ to_recover.emplace_back(addr, *addr); \
 						}
 					}
 				}
+				break;
+			default:
 				break;
 			}
 			return OG(CNetworkSession_OnSessionEvent)(thisptr, a2, event);
@@ -8463,7 +8473,7 @@ to_recover.emplace_back(addr, *addr); \
 		pointers::CVehicleModelInfo_ctor(info);
 		info->Init();
 		info->hash = rage::atStringHash(name);
-		strcpy(info->hash_name, name);
+		strcpy_s(info->hash_name, sizeof(info->hash_name), name);
 		pointers::rage_fwArchetypeManager_RegisterStreamedArchetype(info, mapTypeDefIndex);
 		CustomDlcMgr::registerModel(info);
 		return info;

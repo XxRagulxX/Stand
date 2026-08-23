@@ -41,7 +41,14 @@ public:
 	PAD(0x214 + 4, 0x22C) uint32_t account_id;
 };
 //static_assert(sizeof(CPlayerGamerDataNode) == 0x22C + 4);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(CPlayerGamerDataNode, account_id) == 0x258);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 // CNetObjPlayer::GetPlayerGameStateData: B8 02 00 00 00 83 C0 FE 41
 class CPlayerGameStateDataNode : public CSyncDataNodeInfrequent

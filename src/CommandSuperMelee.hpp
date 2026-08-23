@@ -80,7 +80,7 @@ namespace Stand
 						{
 							if (isPlayerVehicle(ent))
 							{
-								ent.requestControl(ATSTRINGHASH("CommandSuperMelee"), [=](AbstractEntity& ent)
+								ent.requestControl(ATSTRINGHASH("CommandSuperMelee"), [=, this](AbstractEntity& ent)
 								{
 									apply(ent);
 								});

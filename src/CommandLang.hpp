@@ -65,7 +65,7 @@ namespace Stand
 				onChangeImplUnavailable(click, prev_value);
 				return;
 			}
-			FiberPool::queueJob([=]
+			FiberPool::queueJob([=, this]
 			{
 				if (Lang::active_id != (lang_t)value && !working && !g_gui.isUnloadPending())
 				{
