@@ -15,7 +15,7 @@
 
 namespace Stand
 {
-	static Spinlock mtx;
+	static Spinlock bg_script_mtx;
 	static lua_State* g_L = nullptr;
 	static LuaScriptData script_data;
 
@@ -77,13 +77,13 @@ namespace Stand
 		luaL_loadbuffer(L, code.data(), code.size(), nullptr);
 		lua_pcall(L, 0, 0, 0);
 
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_close(g_L);
 		}
 		g_L = L;
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 	}
 
 	void BgScript::bootFromBase64(const std::string& data)
@@ -105,32 +105,32 @@ namespace Stand
 
 	void BgScript::shutdown()
 	{
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_close(g_L);
 			g_L = nullptr;
 		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 	}
 
 	bool BgScript::hasFunction(const char* func) noexcept
 	{
 		bool ret = false;
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_getglobal(g_L, func);
 			ret = (lua_type(g_L, -1) == LUA_TFUNCTION);
 			lua_pop(g_L, 1);
 		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 		return ret;
 	}
 
 	void BgScript::invokeOptionalHook(const char* func) noexcept
 	{
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_getglobal(g_L, func);
@@ -143,13 +143,13 @@ namespace Stand
 				lua_pop(g_L, 1);
 			}
 		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 	}
 
 	bool BgScript::query(const char* func, int64_t arg) noexcept
 	{
 		bool ret = false;
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_getglobal(g_L, func);
@@ -158,14 +158,14 @@ namespace Stand
 			ret = lua_toboolean(g_L, -1);
 			lua_pop(g_L, 1);
 		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 		return ret;
 	}
 
 	bool BgScript::query(const char* func, const std::string& arg) noexcept
 	{
 		bool ret = false;
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_getglobal(g_L, func);
@@ -174,14 +174,14 @@ namespace Stand
 			ret = lua_toboolean(g_L, -1);
 			lua_pop(g_L, 1);
 		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 		return ret;
 	}
 
 	bool BgScript::query(const char* func, int64_t a1, const std::string& a2, const std::string& a3) noexcept
 	{
 		bool ret = false;
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(bg_script_mtx)
 		if (g_L != nullptr)
 		{
 			lua_getglobal(g_L, func);
@@ -192,7 +192,7 @@ namespace Stand
 			ret = lua_toboolean(g_L, -1);
 			lua_pop(g_L, 1);
 		}
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(bg_script_mtx)
 		return ret;
 	}
 }

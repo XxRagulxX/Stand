@@ -7,11 +7,11 @@
 
 namespace Stand
 {
-	static thread_local ExecCtx inst;
+	static thread_local ExecCtx exec_ctx_inst;
 
 	ExecCtx& ExecCtx::get() noexcept
 	{
-		return inst;
+		return exec_ctx_inst;
 	}
 
 	bool ExecCtx::isScript() const noexcept

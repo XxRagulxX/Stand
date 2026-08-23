@@ -12,7 +12,7 @@
 
 namespace Stand
 {
-	static RecursiveSpinlock mtx{};
+	static RecursiveSpinlock pattern_batch_mtx{};
 	static PatternBatch* inst = nullptr;
 
 	PatternBatch::PatternBatch(std::unordered_map<std::string, uintptr_t>* cache)
@@ -45,9 +45,9 @@ namespace Stand
 
 	void PatternBatch::add_impl(const Codename& name, soup::Range&& range, soup::Pattern&& pattern, pattern_callback_t callback, pattern_fail_callback_t fail_callback)
 	{
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(pattern_batch_mtx)
 		addPatternEntry(*this, name, std::move(range), std::move(pattern), callback, fail_callback);
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(pattern_batch_mtx)
 	}
 
 	// cache_i is an unordered_map iterator (non-trivially destructible under the debug CRT), so it must not exist inside a __try.
@@ -67,9 +67,9 @@ namespace Stand
 	// entry, owned by threadPatternScan below, has a non-trivial destructor, so the __try must live in a function that doesn't own it.
 	static void updatePatternCacheLocked(PatternBatch* inst, const std::string& name, uintptr_t offset)
 	{
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(pattern_batch_mtx)
 		updatePatternCache(inst, name, offset);
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(pattern_batch_mtx)
 	}
 
 	// list_append's parameter is const StringCastable& (owns a std::string), so
@@ -83,10 +83,10 @@ namespace Stand
 	// entry, owned by threadPatternScan below, has a non-trivial destructor, so the __try must live in a function that doesn't own it.
 	static void invokePatternFailCallbackLocked(PatternBatch* inst, const PatternBatch::Entry& entry)
 	{
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(pattern_batch_mtx)
 		appendAllowedFail(inst, entry.name);
 		entry.fail_callback(*inst);
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(pattern_batch_mtx)
 	}
 
 	// building this message constructs ObfusString/std::string temporaries, so it can't run inside the __try below.
@@ -105,19 +105,19 @@ namespace Stand
 	// entry, owned by threadPatternScan below, has a non-trivial destructor, so the __try must live in a function that doesn't own it.
 	static void appendPatternFailureMessageLocked(PatternBatch* inst, const PatternBatch::Entry& entry)
 	{
-		EXCEPTIONAL_LOCK(mtx)
+		EXCEPTIONAL_LOCK(pattern_batch_mtx)
 		appendPatternFailureMessage(inst, entry.name);
-		EXCEPTIONAL_UNLOCK(mtx)
+		EXCEPTIONAL_UNLOCK(pattern_batch_mtx)
 	}
 
 	void threadPatternScan()
 	{
 		do
 		{
-			mtx.lock();
+			pattern_batch_mtx.lock();
 			if (inst->entries.empty())
 			{
-				mtx.unlock();
+				pattern_batch_mtx.unlock();
 				return;
 			}
 			PatternBatch::Entry entry = std::move(inst->entries.front());
@@ -130,7 +130,7 @@ namespace Stand
 				if (cached != inst->cache->end())
 				{
 					result = (entry.range.base.as<uintptr_t>() + cached->second);
-					mtx.unlock();
+					pattern_batch_mtx.unlock();
 					if (result.isInRange(entry.range)
 						&& entry.pattern.matches(result.as<uint8_t*>())
 						)
@@ -145,12 +145,12 @@ namespace Stand
 				}
 				else
 				{
-					mtx.unlock();
+					pattern_batch_mtx.unlock();
 				}
 			}
 			else
 			{
-				mtx.unlock();
+				pattern_batch_mtx.unlock();
 			}
 			if (!result)
 			{

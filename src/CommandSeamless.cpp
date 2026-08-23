@@ -32,7 +32,7 @@ namespace Stand
 	{
 	}
 
-	static TransitionState prev_ts = TRANSITION_STATE_EMPTY;
+	static TransitionState seamless_prev_ts = TRANSITION_STATE_EMPTY;
 	static bool prev_transition_active = false;
 	static BOOL online_world_state_desired;
 	static BOOL online_world_state_reality;
@@ -263,7 +263,7 @@ namespace Stand
 				}
 			}
 		}
-		prev_ts = ts;
+		seamless_prev_ts = ts;
 	}
 
 	void CommandSeamless::onPresent()

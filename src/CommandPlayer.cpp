@@ -1544,6 +1544,8 @@ if (flags & (1 << id)) \
 		PlayerListSort::flags_have_changed_since_last_sort = true;
 	}
 
+#undef APPEND_FLAG
+
 	std::string CommandPlayer::getHelpText(AbstractPlayer p)
 	{
 		std::string help_text{};

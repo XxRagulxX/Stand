@@ -515,6 +515,8 @@ if (cmd->flags & (1 << id)) \
 		return flags_str;
 	}
 
+#undef APPEND_FLAG
+
 	const char* AbstractPlayer::getRedundantName() const
 	{
 		return redundant_names.at(p).c_str();

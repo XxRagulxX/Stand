@@ -302,7 +302,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	static void parseExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
+	static void parseSehExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
 	{
 		switch (info[0])
 		{
@@ -360,12 +360,12 @@ NAMESPACE_SOUP
 
 		case EXCEPTION_ACCESS_VIOLATION:
 			exception_name = "Access violation";
-			parseExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
+			parseSehExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
 			break;
 
 		case EXCEPTION_IN_PAGE_ERROR:
 			exception_name = "In-page error";
-			parseExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
+			parseSehExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
 			exception_name.append(" (Status ").append(std::to_string(exp->ExceptionRecord->ExceptionInformation[2])).push_back(')');
 			break;
 

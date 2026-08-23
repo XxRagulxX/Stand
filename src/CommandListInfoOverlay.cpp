@@ -82,7 +82,7 @@ namespace Stand
 		drawInfoText(fmt::to_string(rot.z), LANG_GET("ROT_Z"));
 	}
 
-	static void onTick()
+	static void onInfoOverlayTick()
 	{
 		if (show_in_game_time)
 		{
@@ -425,7 +425,7 @@ namespace Stand
 			{
 				ensureScriptThread(click, []
 				{
-					reScriptTickEvent::registerHandler(&onTick);
+					reScriptTickEvent::registerHandler(&onInfoOverlayTick);
 				});
 			}
 		}
@@ -437,7 +437,7 @@ namespace Stand
 			{
 				ensureScriptThread(click, []
 				{
-					reScriptTickEvent::unregisterHandler(&onTick);
+					reScriptTickEvent::unregisterHandler(&onInfoOverlayTick);
 				});
 			}
 		}
