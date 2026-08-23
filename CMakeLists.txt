@@ -21,7 +21,22 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Unity build batches multiple .cpp files into fewer translation units for a
+# much faster full rebuild. CMAKE_UNITY_BUILD stays OFF here (it would apply
+# to every target, including the vendored libraries below); it's turned on
+# per-target, for Stand only, further down - see STAND_UNITY_BUILD. This is
+# purely a CMake source-grouping feature, so it works identically whether
+# the active toolchain is MSVC (cl.exe) or Clang (clang-cl) - neither
+# compiler needs to know or care that it's compiling batched sources.
+
 set(CMAKE_UNITY_BUILD OFF)
+
+option(STAND_UNITY_BUILD
+    "Batch Stand's own C++ sources (not the vendored libraries) into unity build translation units"
+    ON
+)
+
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ------------------------------------------------------------
@@ -192,6 +207,24 @@ add_library(Stand SHARED
 
     # Stand ASM
     ${STAND_ASM}
+)
+
+# ------------------------------------------------------------
+# Stand unity build
+# ------------------------------------------------------------
+# Only Stand's own sources (STAND_CPP) get batched - fmt and StackWalker are
+# vendored/fetched code bundled directly into this target rather than their
+# own library (see above), and a unity-build name collision surfacing in
+# code we don't own would mean patching it, which is exactly what's been
+# avoided everywhere else in this build. Excluded individually so they keep
+# compiling as their own translation units either way.
+
+set_target_properties(Stand PROPERTIES
+    UNITY_BUILD ${STAND_UNITY_BUILD}
+)
+
+set_source_files_properties(${FMT_CPP} ${STACKWALKER_SOURCES}
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON
 )
 
 # ------------------------------------------------------------
