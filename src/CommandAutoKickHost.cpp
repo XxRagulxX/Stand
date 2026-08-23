@@ -23,7 +23,7 @@ namespace Stand
 		}
 	}
 
-	static void onTransitionFinished(evtTransitionFinishedEvent&)
+	static void onAutoKickHostTransitionFinished(evtTransitionFinishedEvent&)
 	{
 		if (!CommandSessionHopper::instance->m_on || !CommandSessionHopper::instance->shouldHop())
 		{
@@ -55,12 +55,12 @@ namespace Stand
 
 	void CommandAutoKickHost::onEnableInner(Click& click)
 	{
-		evtTransitionFinishedEvent::registerHandler(&onTransitionFinished);
+		evtTransitionFinishedEvent::registerHandler(&onAutoKickHostTransitionFinished);
 	}
 
 	void CommandAutoKickHost::onDisableInner(Click& click)
 	{
-		evtTransitionFinishedEvent::unregisterHandler(&onTransitionFinished);
+		evtTransitionFinishedEvent::unregisterHandler(&onAutoKickHostTransitionFinished);
 	}
 
 	[[nodiscard]] bool CommandAutoKickHost::canRemove(AbstractPlayer p) const

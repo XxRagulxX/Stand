@@ -212,19 +212,19 @@ add_library(Stand SHARED
 # ------------------------------------------------------------
 # Stand unity build
 # ------------------------------------------------------------
-# Only Stand's own sources (STAND_CPP) get batched - fmt and StackWalker are
-# vendored/fetched code bundled directly into this target rather than their
-# own library (see above), and a unity-build name collision surfacing in
-# code we don't own would mean patching it, which is exactly what's been
-# avoided everywhere else in this build. Excluded individually so they keep
-# compiling as their own translation units either way.
+# Only Stand's own sources (STAND_CPP) get batched. Fmt is header-only
+# (an INTERFACE target with nothing to compile) and DirectXTK, RapidJSON,
+# MinHook and StackWalker are each their own separate library target - none
+# of that vendored code is part of the Stand target's source list above, so
+# none of it is touched by Stand's UNITY_BUILD property in the first place.
+# A unity-build name collision surfacing in code we don't own would mean
+# patching it, which is exactly what's been avoided everywhere else in this
+# build; keeping the vendored libraries on their own targets, each compiled
+# as ordinary (non-unity) translation units, sidesteps that entirely rather
+# than requiring per-file SKIP_UNITY_BUILD_INCLUSION opt-outs.
 
 set_target_properties(Stand PROPERTIES
     UNITY_BUILD ${STAND_UNITY_BUILD}
-)
-
-set_source_files_properties(${FMT_CPP} ${STACKWALKER_SOURCES}
-    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON
 )
 
 # ------------------------------------------------------------

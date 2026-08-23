@@ -36,7 +36,7 @@ namespace Stand
 	 * same function frame as __try.
 	 */
 	template <typename Mutex, typename Function>
-	static void exceptionalLock(Mutex& mtx, Function& function)
+	static void tunablesExceptionalLock(Mutex& mtx, Function& function)
 	{
 		EXCEPTIONAL_LOCK(mtx)
 			function();
@@ -58,7 +58,7 @@ namespace Stand
 					ret = e->second;
 				}
 			};
-		exceptionalLock(mtx, get_value);
+		tunablesExceptionalLock(mtx, get_value);
 		return ret;
 	}
 
@@ -77,7 +77,7 @@ namespace Stand
 					ret = e->second;
 				}
 			};
-		exceptionalLock(mtx, get_value);
+		tunablesExceptionalLock(mtx, get_value);
 		return ret;
 	}
 
@@ -154,7 +154,7 @@ namespace Stand
 					{
 						latest_natives_version = mem->asStr();
 					};
-				exceptionalLock(mtx, update_latest_native_version);
+				tunablesExceptionalLock(mtx, update_latest_native_version);
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace Stand
 						c_module_whitelist.emplace_back(hash.asStr());
 					}
 				};
-			exceptionalLock(mtx, update_module_whitelist);
+			tunablesExceptionalLock(mtx, update_module_whitelist);
 		}
 		else
 		{
@@ -178,7 +178,7 @@ namespace Stand
 					c_module_whitelist_enabled = false;
 					c_module_whitelist.clear();
 				};
-			exceptionalLock(mtx, clear_module_whitelist);
+			tunablesExceptionalLock(mtx, clear_module_whitelist);
 		}
 
 		if (initial 
@@ -223,7 +223,7 @@ namespace Stand
 					}
 					Blacklist::has_remote_data = true;
 				};
-			exceptionalLock(Blacklist::mtx, update_blacklist);
+			tunablesExceptionalLock(Blacklist::mtx, update_blacklist);
 		}
 
 		/*
@@ -266,7 +266,7 @@ namespace Stand
 					}
 				}
 			};
-		exceptionalLock(mtx, update_tunables);
+		tunablesExceptionalLock(mtx, update_tunables);
 
 		if (initial)
 		{

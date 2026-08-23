@@ -24,13 +24,13 @@ namespace Stand
 	static std::wstring debug_text;
 
 #if DDT_THREAD_SAFE
-	static Spinlock mtx{};
+	static Spinlock ddt_mtx{};
 #endif
 
 	void onTick_drawDebugText()
 	{
 #if DDT_THREAD_SAFE
-		std::lock_guard lock(mtx);
+		std::lock_guard lock(ddt_mtx);
 #endif
 		if (!debug_text.empty())
 		{
@@ -55,7 +55,7 @@ namespace Stand
 	void drawDebugText(const std::wstring& str)
 	{
 #if DDT_THREAD_SAFE
-		std::lock_guard lock(mtx);
+		std::lock_guard lock(ddt_mtx);
 #else
 		SOUP_ASSERT(ExecCtx::get().isScript());
 #endif
@@ -77,7 +77,7 @@ namespace Stand
 	void drawDebugText(std::wstring&& str)
 	{
 #if DDT_THREAD_SAFE
-		std::lock_guard lock(mtx);
+		std::lock_guard lock(ddt_mtx);
 #else
 		SOUP_ASSERT(ExecCtx::get().isScript());
 #endif
