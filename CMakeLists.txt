@@ -22,20 +22,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Unity build batches multiple .cpp files into fewer translation units for a
-# much faster full rebuild. CMAKE_UNITY_BUILD stays OFF here (it would apply
-# to every target, including the vendored libraries below); it's turned on
-# per-target, for Stand only, further down - see STAND_UNITY_BUILD. This is
-# purely a CMake source-grouping feature, so it works identically whether
-# the active toolchain is MSVC (cl.exe) or Clang (clang-cl) - neither
-# compiler needs to know or care that it's compiling batched sources.
+# much faster full rebuild. It's controlled by the single switch right
+# below: set CMAKE_UNITY_BUILD to ON to enable it, OFF to disable it.
+#
+# That value is captured into STAND_UNITY_BUILD immediately, then
+# CMAKE_UNITY_BUILD itself is forced back OFF - CMake uses CMAKE_UNITY_BUILD
+# as the default UNITY_BUILD property for every target created afterwards,
+# and leaving it ON here would also batch the vendored libraries below.
+# STAND_UNITY_BUILD is what actually gets applied, and only to the Stand
+# target itself, further down - see where it's used near add_library(Stand
+# ...). This is purely a CMake source-grouping feature, so it works
+# identically whether the active toolchain is MSVC (cl.exe) or Clang
+# (clang-cl) - neither compiler needs to know or care that it's compiling
+# batched sources.
+
+set(CMAKE_UNITY_BUILD ON)
+
+set(STAND_UNITY_BUILD ${CMAKE_UNITY_BUILD})
 
 set(CMAKE_UNITY_BUILD OFF)
-
-option(STAND_UNITY_BUILD
-    "Batch Stand's own C++ sources (not the vendored libraries) into unity build translation units"
-    ON
-)
-
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
