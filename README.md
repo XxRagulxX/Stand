@@ -47,27 +47,50 @@ Both are listed in `.vscode/extensions.json` as workspace recommendations
 
 ### Making clangd work on both platforms
 
-clangd only ever knows what `build/compile_commands.json` says. Two
-things about how Stand builds make that file incomplete or wrong unless
-worked around, on every platform - both are already worked around below,
-but it helps to know about them when something still doesn't resolve.
+clangd only ever knows what `build/compile_commands.json` says (plus
+`.clangd`'s own additions). A few things about how Stand builds make that
+incomplete or wrong unless worked around; all of them already are, below
+- but it helps to know about them when something still doesn't resolve.
 
-**Unity build.** By default (`STAND_UNITY_BUILD=ON`, for fast full
-rebuilds) CMake compiles Stand as a handful of synthesized
-`Unity/unity_N_cxx.cxx` files, each `#include`-ing a batch of the real
-`.cpp` files - and `compile_commands.json` only ever gets an entry for
-what actually gets compiled, so under a unity build, individual files
-like `CommandOnPlayer.cpp` have **no entry at all**. clangd's usual trick
-for a header with nothing of its own in the database (`CommandOnPlayer.hpp`,
-which is never its own translation unit) is to borrow its sibling `.cpp`'s
-flags; with no such entry to borrow, it falls back to a generic guess that
-knows nothing about this project - hence errors like `fmt/core.h` (or any
-other vendored/Stand header) not being found, in effectively any header.
-Both `-debug` presets in `CMakePresets.json` already configure with
-`STAND_UNITY_BUILD=OFF` for exactly this reason (`-release` keeps it on) -
-so as long as you're pointed at a Debug configure, this shouldn't come up;
-if it does, re-run **CMake: Configure** and confirm the active preset/cache
-has `STAND_UNITY_BUILD=OFF`.
+**Everything is red / most headers unresolved, despite a successful
+build**: this almost always means clangd is running against stale state,
+not a real bug in the project. In order:
+
+1. Make sure your checkout actually has these fixes -
+   `git log --oneline -1 -- .clangd` should show a recent commit. A stale
+   checkout means none of the below applies yet.
+2. Delete the build directory and reconfigure from scratch:
+   `rm -rf build`, then **CMake: Configure** (or `cmake --preset
+   linux-cross-debug` / `windows-debug` from a terminal). This regenerates
+   `build/compile_commands.json` against the current CMakeLists.txt -
+   important since a compile database from before a CMake change (a
+   moved/renamed vendored library, for instance) is silently wrong rather
+   than missing.
+3. Restart clangd itself: **clangd: Restart language server** (or reload
+   the VS Code window). clangd only reads `.clangd` and the compile
+   database when it starts/restarts, not on every keystroke.
+
+If it's still broken after all three, something's genuinely wrong - see
+the specific failure modes below.
+
+**Unity build.** When turned on, CMake compiles Stand as a handful of
+synthesized `Unity/unity_N_cxx.cxx` files, each `#include`-ing a batch of
+the real `.cpp` files - and `compile_commands.json` only ever gets an
+entry for what actually gets compiled, so under a unity build, individual
+files like `CommandOnPlayer.cpp` have **no entry at all**. clangd's usual
+trick for a header with nothing of its own in the database
+(`CommandOnPlayer.hpp`, which is never its own translation unit) is to
+borrow its sibling `.cpp`'s flags; with no such entry to borrow, it falls
+back to a generic guess that knows nothing about this project - hence
+errors like `fmt/core.h` (or any other vendored/Stand header) not being
+found, in effectively any header. `STAND_UNITY_BUILD` therefore
+**defaults to OFF** - accurate per-file `compile_commands.json` entries,
+which is what any plain `cmake -S . -B build`, any IDE's own default
+configure, and clangd all need - and only the `-release` presets in
+`CMakePresets.json` explicitly turn it back on, for a full CI/from-scratch
+rebuild where the speed is worth losing that per-file accuracy. If you
+ever do need to check, `cmake -L build | grep STAND_UNITY_BUILD` should
+say `OFF`.
 
 **Windows system headers**: clangd never inherits VS Code's (or any
 launching shell's) environment. That's a problem specifically for the
@@ -106,10 +129,14 @@ yet), and when it doesn't, clangd falls back to a generic guess with none
 of this project's include paths - which is what was behind `<soup/...>`,
 `<fmt/...>` and similar failing to resolve even though the real build (and
 most other files) worked fine. `.clangd`'s `CompileFlags.Add` covers this
-directly: those paths (`src/`, `src/lib/`, and each vendored library's own
-public include directory) are appended to *every* file clangd compiles,
-compile command or not - so this doesn't depend on which heuristic
-clangd happened to fall back to, on either platform.
+directly: every one of Stand's own top-level `src/` subfolders, `src/lib/`
+itself, and each vendored library's own public include directory are
+appended to *every* file clangd compiles, compile command or not - so
+this doesn't depend on which heuristic clangd happened to fall back to,
+on either platform. That list is spelled out statically in `.clangd`
+(clangd can't run CMake's own directory-discovery logic itself), so it
+needs a manual update if `src/`'s top-level layout ever changes - see the
+comment above `Add:` in `.clangd`.
 
 `.clangd` also turns off clangd's IncludeCleaner diagnostics
 (`MissingIncludes`/`UnusedIncludes`): this codebase leans on a shared
