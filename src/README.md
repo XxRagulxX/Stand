@@ -43,9 +43,11 @@ below if you're moving files around further.
 - **`Localization/`** - translated strings and language data.
 - **`Util/`** - generic, domain-agnostic helpers (containers, math,
   string/time formatting, small OS helpers).
-
-Vendored/third-party code (`pluto/`, `discord-rpc/`, `soup/`, `souplua/`)
-is untouched by this reorganization and keeps its existing layout.
+- **`lib/`** - vendored/third-party code, untouched by this
+  reorganization beyond moving here as a unit: `pluto/` (the Lua/Pluto
+  script VM), `discord-rpc/` (Discord Rich Presence), `soup/` (a
+  general-purpose C++ toolkit used throughout Stand's own code, e.g.
+  `<soup/Rgb.hpp>`), and `souplua/` (soup's Lua bindings).
 
 ## How includes still work
 
@@ -54,12 +56,14 @@ Every file here still `#include`s its neighbours by bare filename (e.g.
 That works because CMakeLists.txt adds *every* directory under `src/`
 that contains a header to the include search path (see
 `STAND_INCLUDE_DIRS` in CMakeLists.txt) - so wherever a header ends up,
-the compiler can still find it by name alone. `soup/` and `souplua/` are
-deliberately left out of that search path: a few of their headers happen
-to share a bare name with an unrelated Stand header (both have their own
-`Worker.hpp`, for instance), and code outside those folders that wants a
-soup header always spells it `"soup/Foo.hpp"` rather than a bare name, so
-nothing needs them added.
+the compiler can still find it by name alone. `lib/soup/` and
+`lib/souplua/` are deliberately left out of that search path: a few of
+soup's headers happen to share a bare name with an unrelated Stand
+header (both have their own `Worker.hpp`, for instance), and code that
+wants a soup/souplua/discord-rpc header always spells it out qualified -
+`"soup/Foo.hpp"` or `<soup/Foo.hpp>` - which resolves instead via
+`src/lib/` itself being on the path (see `LIB_DIR` in CMakeLists.txt), so
+nothing needs `lib/soup/`'s or `lib/souplua/`'s own subdirectories added.
 
 Practical implications:
 - Adding a new file: drop it in whichever folder above fits, matching
@@ -69,3 +73,9 @@ Practical implications:
   `.cpp`/`.hpp` pair together, and avoid introducing a new file whose bare
   name collides with another Stand header (a Stand-vs-Stand collision,
   unlike the soup/ case above, *would* be genuinely ambiguous).
+
+## Editing in VS Code
+
+See the repo-root README for editor/build setup - CMake Tools + clangd,
+driven by `CMakePresets.json`, gives full cross-platform IntelliSense and
+a build-the-DLL command without needing the full Visual Studio IDE.

@@ -1,0 +1,87 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 25,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "linux-cross-debug",
+            "displayName": "Linux -> Windows cross-compile (Debug)",
+            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake.",
+            "inherits": "base",
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CROSSCOMPILE": "ON"
+            }
+        },
+        {
+            "name": "linux-cross-release",
+            "displayName": "Linux -> Windows cross-compile (Release)",
+            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake.",
+            "inherits": "linux-cross-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CROSSCOMPILE": "ON"
+            }
+        },
+        {
+            "name": "windows-debug",
+            "displayName": "Native Windows (Debug)",
+            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required.",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CROSSCOMPILE": "OFF"
+            }
+        },
+        {
+            "name": "windows-release",
+            "displayName": "Native Windows (Release)",
+            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required.",
+            "inherits": "windows-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CROSSCOMPILE": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "linux-cross-debug",
+            "configurePreset": "linux-cross-debug"
+        },
+        {
+            "name": "linux-cross-release",
+            "configurePreset": "linux-cross-release"
+        },
+        {
+            "name": "windows-debug",
+            "configurePreset": "windows-debug"
+        },
+        {
+            "name": "windows-release",
+            "configurePreset": "windows-release"
+        }
+    ]
+}

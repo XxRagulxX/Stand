@@ -52,12 +52,16 @@ set(STAND_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
+set(LIB_DIR
+    "${STAND_DIR}/lib"
+)
+
 set(PLUTO_DIR
-    "${STAND_DIR}/pluto"
+    "${LIB_DIR}/pluto"
 )
 
 set(DISCORD_RPC_DIR
-    "${STAND_DIR}/discord-rpc"
+    "${LIB_DIR}/discord-rpc"
 )
 
 # ------------------------------------------------------------
@@ -97,14 +101,16 @@ file(GLOB_RECURSE STAND_ASM CONFIGURE_DEPENDS
 # that actually has a .hpp in it. Vendored libraries manage their own
 # include directories elsewhere in this file, so they're excluded here.
 #
-# soup/ and souplua/ are excluded too, even though they're part of the
-# Stand target's own sources (not compiled separately like pluto/ and
-# discord-rpc/): a handful of soup/ headers happen to share a bare name
-# with an unrelated Stand header (e.g. both have their own Worker.hpp),
-# and code outside soup/ that actually wants a soup header always spells
-# it "soup/Foo.hpp" (resolved via STAND_DIR below), never a bare "Foo.hpp"
-# - so adding soup/souplua's own subdirectories here would only introduce
-# same-name collisions with zero upside.
+# soup/ and souplua/ (both under src/lib/, alongside pluto/ and
+# discord-rpc/) are excluded too, even though they're part of the Stand
+# target's own sources (not compiled separately like pluto/ and
+# discord-rpc/ are): a handful of soup/ headers happen to share a bare
+# name with an unrelated Stand header (e.g. both have their own
+# Worker.hpp), and code that wants a soup/souplua header always spells it
+# out qualified - "soup/Foo.hpp" or <soup/Foo.hpp> - resolved via LIB_DIR
+# below, never a bare "Foo.hpp" - so adding soup/souplua's own
+# subdirectories here would only introduce same-name collisions with zero
+# upside.
 
 file(GLOB_RECURSE STAND_HEADERS CONFIGURE_DEPENDS
     "${STAND_DIR}/*.hpp"
@@ -214,6 +220,7 @@ target_include_directories(DiscordRPC
     PRIVATE
         "${DISCORD_RPC_DIR}/src"
         "${STAND_DIR}"
+        "${LIB_DIR}"
         ${STAND_INCLUDE_DIRS}
 )
 
@@ -233,11 +240,14 @@ target_include_directories(Pluto
 
     PRIVATE
         # Pluto used to vendor its own copy of Soup under
-        # src/pluto/vendor/Soup/soup/ for its json/regex/crypto/socket/etc.
+        # src/lib/pluto/vendor/Soup/soup/ for its json/regex/crypto/socket/etc.
         # standard-library extensions. It now includes Stand's own soup/
-        # library directly (the same one Stand's own code uses) instead of
-        # carrying a second, independently-drifting copy.
+        # library directly (the same one Stand's own code uses, at
+        # src/lib/soup/) instead of carrying a second, independently-drifting
+        # copy. "${LIB_DIR}" is what makes Pluto's own `#include "soup/..."`
+        # references resolve to it.
         "${STAND_DIR}"
+        "${LIB_DIR}"
         ${STAND_INCLUDE_DIRS}
 )
 
@@ -296,6 +306,14 @@ target_include_directories(Stand
         # bare filenames with no subfolder prefix.
         "${STAND_DIR}"
         ${STAND_INCLUDE_DIRS}
+
+        # Stand's code (and Pluto's) reaches the vendored libraries under
+        # src/lib/ - soup/, discord-rpc/, souplua/ - via includes like
+        # `#include <soup/Rgb.hpp>` or `#include <discord-rpc/include/discord_rpc.h>`,
+        # i.e. qualified with the library's own directory name. That only
+        # resolves with src/lib/ itself (not each library's own directory)
+        # on the include path.
+        "${LIB_DIR}"
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"

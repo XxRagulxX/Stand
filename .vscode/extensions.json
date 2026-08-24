@@ -1,0 +1,25 @@
+{
+    "recommendations": [
+        // Configures/builds/debugs the CMake project (Stand.dll) from
+        // inside VS Code - the "extension to build the DLL with" mentioned
+        // in .vscode/settings.json.
+        "ms-vscode.cmake-tools",
+
+        // Syntax highlighting for CMakeLists.txt / *.cmake.
+        "twxs.cmake",
+
+        // IntelliSense (go to definition, completion, diagnostics) driven
+        // directly by build/compile_commands.json, so it sees exactly the
+        // include paths CMake actually uses - correct on both Windows and
+        // Linux with no manual include-path list to keep in sync. See
+        // .vscode/settings.json for how it's pointed at that file.
+        "llvm-vs-code-extensions.vscode-clangd"
+    ],
+
+    // ms-vscode.cpptools (Microsoft's C/C++ extension) is intentionally not
+    // recommended here: clangd covers IntelliSense on its own, and skipping
+    // it keeps the editor lighter. It's still fine to install if you want
+    // its debugger; see .vscode/settings.json for the setting that keeps
+    // its IntelliSense engine from fighting with clangd if you do.
+    "unwantedRecommendations": []
+}
