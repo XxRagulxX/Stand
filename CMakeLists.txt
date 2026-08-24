@@ -22,23 +22,39 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Unity build batches multiple .cpp files into fewer translation units for a
-# much faster full rebuild. It's controlled by the single switch right
-# below: set CMAKE_UNITY_BUILD to ON to enable it, OFF to disable it.
-#
-# That value is captured into STAND_UNITY_BUILD immediately, then
-# CMAKE_UNITY_BUILD itself is forced back OFF - CMake uses CMAKE_UNITY_BUILD
-# as the default UNITY_BUILD property for every target created afterwards,
-# and leaving it ON here would also batch the vendored libraries below.
-# STAND_UNITY_BUILD is what actually gets applied, and only to the Stand
-# target itself, further down - see where it's used near add_library(Stand
-# ...). This is purely a CMake source-grouping feature, so it works
-# identically whether the active toolchain is MSVC (cl.exe) or Clang
+# much faster full rebuild. It's a CMake source-grouping feature, so it
+# works identically whether the active toolchain is MSVC (cl.exe) or Clang
 # (clang-cl) - neither compiler needs to know or care that it's compiling
 # batched sources.
+#
+# It comes at a real cost for tooling, though: CMake only ever writes a
+# compile_commands.json entry for whatever a target actually compiles, and
+# under a unity build that's the synthesized CMakeFiles/Stand.dir/Unity/
+# unity_N_cxx.cxx files - never the original .cpp files. clangd's usual
+# trick for a header with no compile command of its own (CommandFoo.hpp,
+# say) is to borrow its sibling CommandFoo.cpp's flags; with unity batching
+# on, CommandFoo.cpp has no entry to borrow, clangd falls back to a bare
+# generic guess, and anything that header needs beyond the standard library
+# - <fmt/core.h>, Stand's own headers via STAND_INCLUDE_DIRS, all of it -
+# stops resolving.
+#
+# So this is a cache option (STAND_UNITY_BUILD), not a hardcoded ON:
+# leave it ON for a normal full build (the default), or configure with
+# -DSTAND_UNITY_BUILD=OFF (already the case for the *-debug presets in
+# CMakePresets.json, on the assumption that a Debug configure is usually
+# the one clangd is actually pointed at) to get accurate per-file
+# compile_commands.json entries instead.
+#
+# Only the Stand target itself ever reads this (see where it's used near
+# add_library(Stand ...)); CMAKE_UNITY_BUILD - the CMake variable that sets
+# the *default* UNITY_BUILD property for every target created afterwards -
+# is forced OFF right below regardless, so the vendored libraries are
+# never batched either way.
 
-set(CMAKE_UNITY_BUILD ON)
-
-set(STAND_UNITY_BUILD ${CMAKE_UNITY_BUILD})
+option(STAND_UNITY_BUILD
+    "Batch multiple .cpp files into fewer translation units for a much faster full rebuild. Turn this OFF for accurate per-file compile_commands.json entries (see the comment above)."
+    ON
+)
 
 set(CMAKE_UNITY_BUILD OFF)
 

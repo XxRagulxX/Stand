@@ -18,7 +18,7 @@
         {
             "name": "linux-cross-debug",
             "displayName": "Linux -> Windows cross-compile (Debug)",
-            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake.",
+            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake. Unity build is off (STAND_UNITY_BUILD=OFF) so compile_commands.json has one real entry per .cpp file, which clangd needs.",
             "inherits": "base",
             "condition": {
                 "type": "notEquals",
@@ -27,23 +27,25 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CROSSCOMPILE": "ON"
+                "CROSSCOMPILE": "ON",
+                "STAND_UNITY_BUILD": "OFF"
             }
         },
         {
             "name": "linux-cross-release",
             "displayName": "Linux -> Windows cross-compile (Release)",
-            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake.",
+            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake. Unity build is on (STAND_UNITY_BUILD=ON) for a fast full rebuild.",
             "inherits": "linux-cross-debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CROSSCOMPILE": "ON"
+                "CROSSCOMPILE": "ON",
+                "STAND_UNITY_BUILD": "ON"
             }
         },
         {
             "name": "windows-debug",
             "displayName": "Native Windows (Debug)",
-            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required.",
+            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required. Unity build is off (STAND_UNITY_BUILD=OFF) so compile_commands.json has one real entry per .cpp file, which clangd needs.",
             "inherits": "base",
             "condition": {
                 "type": "equals",
@@ -52,17 +54,19 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CROSSCOMPILE": "OFF"
+                "CROSSCOMPILE": "OFF",
+                "STAND_UNITY_BUILD": "OFF"
             }
         },
         {
             "name": "windows-release",
             "displayName": "Native Windows (Release)",
-            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required.",
+            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required. Unity build is on (STAND_UNITY_BUILD=ON) for a fast full rebuild.",
             "inherits": "windows-debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CROSSCOMPILE": "OFF"
+                "CROSSCOMPILE": "OFF",
+                "STAND_UNITY_BUILD": "ON"
             }
         }
     ],
