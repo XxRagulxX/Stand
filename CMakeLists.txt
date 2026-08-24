@@ -97,14 +97,20 @@ list(FILTER STAND_CPP EXCLUDE REGEX
     "/discord-rpc/"
 )
 
-# StackWalker.cpp (src/lib/stackwalker/) is built into its own StackWalker
-# target further down; without this it would also get compiled straight
-# into Stand via this glob, and linking both would collide. fmt/,
-# rapidjson/ and minhook/ don't need an entry here: fmt and rapidjson are
-# header-only (nothing under them matches *.cpp) and minhook's sources are
-# *.c, which this glob doesn't match either.
+# StackWalker.cpp (src/lib/stackwalker/) and DirectXTK's curated .cpp
+# files (src/lib/directxtk/Src/) are each built into their own target
+# further down; without these, both would also get compiled straight into
+# Stand via this glob, on top of their own separate target, and linking
+# both would collide. fmt/, rapidjson/ and minhook/ don't need an entry
+# here: fmt and rapidjson are header-only (nothing under them matches
+# *.cpp) and minhook's sources are *.c, which this glob doesn't match
+# either.
 list(FILTER STAND_CPP EXCLUDE REGEX
     "/stackwalker/"
+)
+
+list(FILTER STAND_CPP EXCLUDE REGEX
+    "/directxtk/"
 )
 
 # ------------------------------------------------------------
@@ -182,10 +188,107 @@ file(GLOB_RECURSE PLUTO_CPP CONFIGURE_DEPENDS
 # ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
-# Fetched from GitHub and built from a curated file list; see
-# cmake/directxtk.cmake. Defines the DirectXTK target linked below.
+# Vendored under src/lib/directxtk/ instead of being fetched at configure
+# time, so it can be patched/improved in place like the rest of src/lib/.
+# Vendored from microsoft/DirectXTK @ oct2025
+# (273e95b4ac48478f8af1698db9f17cd525f0ede8) - Inc/ (all public headers)
+# and Src/'s top-level files (all of upstream's own private headers/
+# sources), but only the exact .cpp subset below actually gets compiled.
+#
+# Effects added to DirectXTK since that subset was chosen (Model*,
+# PBREffect*, NormalMapEffect, DebugEffect, NPREffect*) are intentionally
+# NOT compiled. Pulling those in would also need freshly compiled HLSL
+# shader blobs for them, which requires fxc.exe/dxc.exe - unavailable when
+# cross-compiling from Linux (see cmake/cross-compile.cmake), and an
+# avoidable extra toolchain dependency even on native Windows. Stand
+# doesn't use any of those effects, so it doesn't need their shaders
+# compiled at all.
+#
+# Upstream's own Src/Shaders/ (the HLSL source those blobs are compiled
+# from, plus its own compile scripts) isn't vendored at all for the same
+# reason: nothing here ever compiles shaders, so there's nothing for it to
+# do.
+#
+# The precompiled shader blobs under src/lib/directxtk/shaders/ (small
+# binary build artifacts, not source) cover exactly the effects compiled
+# below, so no shader compiler is needed for this project at all, on any
+# toolchain. Src/*.cpp files #include these by bare filename (e.g.
+# "SpriteEffect_SpriteVertexShader.inc"), so that directory is added to
+# DirectXTK's include path directly below - it must stay flat (no
+# subdirectories) to match.
 
-include(cmake/directxtk.cmake)
+set(DIRECTXTK_SOURCE_DIR "${LIB_DIR}/directxtk")
+
+set(DIRECTXTK_CPP_FILES
+    AlphaTestEffect.cpp
+    BasicEffect.cpp
+    BasicPostProcess.cpp
+    BinaryReader.cpp
+    BufferHelpers.cpp
+    CommonStates.cpp
+    DDSTextureLoader.cpp
+    DGSLEffect.cpp
+    DGSLEffectFactory.cpp
+    DirectXHelpers.cpp
+    DualPostProcess.cpp
+    DualTextureEffect.cpp
+    EffectCommon.cpp
+    EffectFactory.cpp
+    EnvironmentMapEffect.cpp
+    GamePad.cpp
+    GeometricPrimitive.cpp
+    Geometry.cpp
+    GraphicsMemory.cpp
+    Keyboard.cpp
+    Mouse.cpp
+    PrimitiveBatch.cpp
+    ScreenGrab.cpp
+    SimpleMath.cpp
+    SkinnedEffect.cpp
+    SpriteBatch.cpp
+    SpriteFont.cpp
+    ToneMapPostProcess.cpp
+    VertexTypes.cpp
+    WICTextureLoader.cpp
+)
+
+set(DIRECTXTK_SOURCES "")
+
+foreach(DIRECTXTK_CPP_FILE IN LISTS DIRECTXTK_CPP_FILES)
+    set(DIRECTXTK_CPP_PATH "${DIRECTXTK_SOURCE_DIR}/Src/${DIRECTXTK_CPP_FILE}")
+
+    if(NOT EXISTS "${DIRECTXTK_CPP_PATH}")
+        message(FATAL_ERROR
+            "DirectXTK source file not found: ${DIRECTXTK_CPP_PATH}"
+        )
+    endif()
+
+    list(APPEND DIRECTXTK_SOURCES "${DIRECTXTK_CPP_PATH}")
+endforeach()
+
+add_library(DirectXTK STATIC
+    ${DIRECTXTK_SOURCES}
+)
+
+target_include_directories(DirectXTK
+    PUBLIC
+        "${DIRECTXTK_SOURCE_DIR}/Inc"
+
+    PRIVATE
+        "${DIRECTXTK_SOURCE_DIR}/Src"
+
+        # Provides the precompiled "*.inc" shader blobs the sources above
+        # #include by bare filename.
+        "${DIRECTXTK_SOURCE_DIR}/shaders"
+)
+
+target_link_libraries(DirectXTK
+    PUBLIC
+        d3d11
+        dxgi
+        d3dcompiler
+        windowscodecs
+)
 
 # ------------------------------------------------------------
 # fmt library
@@ -445,6 +548,21 @@ target_include_directories(Stand
         # resolves with src/lib/ itself (not each library's own directory)
         # on the include path.
         "${LIB_DIR}"
+
+        # fmt, RapidJSON, MinHook and DirectXTK's own public headers.
+        # Linking their targets below (Fmt, RapidJSON, MinHook, DirectXTK)
+        # already brings these in transitively through each target's own
+        # INTERFACE/PUBLIC target_include_directories() - listed here again
+        # directly, the same way Pluto's already are just below, because
+        # clangd's fallback for a header with no compile command of its own
+        # (most of Stand's .hpp files - see STAND_INCLUDE_DIRS above) isn't
+        # always reliable about reconstructing that full transitive chain,
+        # and a missing entry here shows up as e.g. `#include <fmt/core.h>`
+        # not resolving even though the real build links Fmt just fine.
+        "${FMT_SOURCE_DIR}/include"
+        "${RAPIDJSON_SOURCE_DIR}/include"
+        "${MINHOOK_SOURCE_DIR}/include"
+        "${DIRECTXTK_SOURCE_DIR}/Inc"
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"

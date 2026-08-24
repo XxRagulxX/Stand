@@ -43,11 +43,14 @@ below if you're moving files around further.
 - **`Localization/`** - translated strings and language data.
 - **`Util/`** - generic, domain-agnostic helpers (containers, math,
   string/time formatting, small OS helpers).
-- **`lib/`** - vendored/third-party code, untouched by this
-  reorganization beyond moving here as a unit: `pluto/` (the Lua/Pluto
-  script VM), `discord-rpc/` (Discord Rich Presence), `soup/` (a
-  general-purpose C++ toolkit used throughout Stand's own code, e.g.
-  `<soup/Rgb.hpp>`), and `souplua/` (soup's Lua bindings).
+- **`lib/`** - vendored third-party code: `pluto/` (the Lua/Pluto script
+  VM), `discord-rpc/` (Discord Rich Presence), `soup/` (a general-purpose
+  C++ toolkit used throughout Stand's own code, e.g. `<soup/Rgb.hpp>`),
+  `souplua/` (soup's Lua bindings), `fmt/`, `rapidjson/`, `minhook/`,
+  `stackwalker/`, and `directxtk/` (including its precompiled shader
+  blobs, under `directxtk/shaders/`). Everything here is committed
+  source, not fetched at configure time - see CMakeLists.txt for exactly
+  which files each one compiles.
 
 ## How includes still work
 
