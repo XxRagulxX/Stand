@@ -96,6 +96,21 @@ Windows) so `build/compile_commands.json` gets regenerated with those
 flags baked in, then reload the clangd extension (**clangd: Restart
 language server**).
 
+**Headers with no compile command of their own.** Most of Stand's own
+`.hpp` files are never a translation unit by themselves - clangd handles
+that by borrowing the flags of a same-named `.cpp` (`Foo.hpp` borrows
+`Foo.cpp`'s), or from whatever it's already indexed as including that
+header. Neither always kicks in immediately (a header-only file with no
+matching `.cpp`, or simply background-indexing not having reached it
+yet), and when it doesn't, clangd falls back to a generic guess with none
+of this project's include paths - which is what was behind `<soup/...>`,
+`<fmt/...>` and similar failing to resolve even though the real build (and
+most other files) worked fine. `.clangd`'s `CompileFlags.Add` covers this
+directly: those paths (`src/`, `src/lib/`, and each vendored library's own
+public include directory) are appended to *every* file clangd compiles,
+compile command or not - so this doesn't depend on which heuristic
+clangd happened to fall back to, on either platform.
+
 `.clangd` also turns off clangd's IncludeCleaner diagnostics
 (`MissingIncludes`/`UnusedIncludes`): this codebase leans on a shared
 precompiled header (`src/Core/common.hpp`) to pull in most of what any
