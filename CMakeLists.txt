@@ -98,11 +98,11 @@ list(FILTER STAND_CPP EXCLUDE REGEX
 )
 
 # StackWalker.cpp (src/lib/stackwalker/) is built into its own StackWalker
-# target by cmake/stackwalker.cmake; without this it would also get
-# compiled straight into Stand via this glob, and linking both would
-# collide. fmt/, rapidjson/ and minhook/ don't need an entry here: fmt and
-# rapidjson are header-only (nothing under them matches *.cpp) and
-# minhook's sources are *.c, which this glob doesn't match either.
+# target further down; without this it would also get compiled straight
+# into Stand via this glob, and linking both would collide. fmt/,
+# rapidjson/ and minhook/ don't need an entry here: fmt and rapidjson are
+# header-only (nothing under them matches *.cpp) and minhook's sources are
+# *.c, which this glob doesn't match either.
 list(FILTER STAND_CPP EXCLUDE REGEX
     "/stackwalker/"
 )
@@ -190,34 +190,139 @@ include(cmake/directxtk.cmake)
 # ------------------------------------------------------------
 # fmt library
 # ------------------------------------------------------------
-# Vendored under src/lib/fmt/ (header-only); see cmake/fmt.cmake. Defines
-# the Fmt target linked below.
+# Vendored under src/lib/fmt/include/fmt/ instead of being fetched at
+# configure time, so it can be patched/improved in place like the rest of
+# src/lib/. Vendored from fmtlib/fmt @ 9.1.0
+# (a33701196adfad74917046096bf5a2aa0ab0bb50) - the same release this
+# project has always pinned.
+#
+# Only the headers are vendored: fmt fully supports a header-only mode
+# (its own documented way to use it without compiling anything - see the
+# FMT_HEADER_ONLY handling at the bottom of fmt/core.h and fmt/format.h),
+# and Stand doesn't call any of the OS-specific functionality format.cc/
+# os.cc exist for (fmt::file, fmt::buffered_file, fmt::ostream - nothing
+# under src/ references <fmt/os.h> or those types), so there's nothing for
+# either .cc file to provide here.
 
-include(cmake/fmt.cmake)
+set(FMT_SOURCE_DIR "${LIB_DIR}/fmt")
+
+if(NOT EXISTS "${FMT_SOURCE_DIR}/include/fmt/format.h")
+    message(FATAL_ERROR
+        "fmt header not found: ${FMT_SOURCE_DIR}/include/fmt/format.h"
+    )
+endif()
+
+add_library(Fmt INTERFACE)
+
+target_include_directories(Fmt
+    INTERFACE
+        "${FMT_SOURCE_DIR}/include"
+)
+
+target_compile_definitions(Fmt
+    INTERFACE
+        FMT_HEADER_ONLY
+)
 
 # ------------------------------------------------------------
 # RapidJSON library
 # ------------------------------------------------------------
-# Vendored under src/lib/rapidjson/ (header-only); see
-# cmake/rapidjson.cmake. Defines the RapidJSON target linked below.
+# Vendored under src/lib/rapidjson/include/ instead of being fetched at
+# configure time, so it can be patched/improved in place like the rest of
+# src/lib/. Vendored from Tencent/rapidjson @ master
+# (24b5e7a8b27f42fa16b96fc70aade9106cf7102f). It's a header-only library -
+# nothing under it is a .cpp file - so there's nothing to compile or link
+# into a static/shared library; this just exposes its headers through an
+# INTERFACE target for Stand's own <rapidjson/...> includes to resolve
+# against.
 
-include(cmake/rapidjson.cmake)
+set(RAPIDJSON_SOURCE_DIR "${LIB_DIR}/rapidjson")
+
+if(NOT EXISTS "${RAPIDJSON_SOURCE_DIR}/include/rapidjson/document.h")
+    message(FATAL_ERROR
+        "RapidJSON header not found: ${RAPIDJSON_SOURCE_DIR}/include/rapidjson/document.h"
+    )
+endif()
+
+add_library(RapidJSON INTERFACE)
+
+target_include_directories(RapidJSON
+    INTERFACE
+        "${RAPIDJSON_SOURCE_DIR}/include"
+)
 
 # ------------------------------------------------------------
 # MinHook library
 # ------------------------------------------------------------
-# Vendored under src/lib/minhook/; see cmake/minhook.cmake. Defines the
-# MinHook target linked below.
+# Vendored under src/lib/minhook/ instead of being fetched at configure
+# time, so it can be patched/improved in place like the rest of src/lib/.
+# Vendored from TsudaKageyu/minhook @ master
+# (d94c64d32ea37bc4f5ee47d580709f70c6fb6080).
 
-include(cmake/minhook.cmake)
+set(MINHOOK_SOURCE_DIR "${LIB_DIR}/minhook")
+
+set(MINHOOK_SOURCES
+    "${MINHOOK_SOURCE_DIR}/src/buffer.c"
+    "${MINHOOK_SOURCE_DIR}/src/hook.c"
+    "${MINHOOK_SOURCE_DIR}/src/trampoline.c"
+    "${MINHOOK_SOURCE_DIR}/src/hde/hde32.c"
+    "${MINHOOK_SOURCE_DIR}/src/hde/hde64.c"
+)
+
+foreach(MINHOOK_SOURCE_FILE IN LISTS MINHOOK_SOURCES)
+    if(NOT EXISTS "${MINHOOK_SOURCE_FILE}")
+        message(FATAL_ERROR
+            "MinHook source file not found: ${MINHOOK_SOURCE_FILE}"
+        )
+    endif()
+endforeach()
+
+add_library(MinHook STATIC
+    ${MINHOOK_SOURCES}
+)
+
+target_include_directories(MinHook
+    PUBLIC
+        "${MINHOOK_SOURCE_DIR}/include"
+
+    PRIVATE
+        "${MINHOOK_SOURCE_DIR}/src"
+)
 
 # ------------------------------------------------------------
 # StackWalker library
 # ------------------------------------------------------------
-# Vendored under src/lib/stackwalker/; see cmake/stackwalker.cmake.
-# Defines the StackWalker target linked below.
+# Vendored under src/lib/stackwalker/ instead of being fetched at
+# configure time, so it can be patched/improved in place like the rest of
+# src/lib/. Vendored from JochenKalmbach/StackWalker @ master
+# (7af402408202a5c00021fd57e18e39e7e6f11062) - only StackWalker.h/.cpp
+# (upstream keeps them under Main/StackWalker/, alongside a pile of
+# .sln/.vcxproj files for various VS versions and a demo main.cpp, none of
+# which is needed here).
+#
+# Stand's own code includes this library as `<stackwalker/StackWalker.h>`
+# (lowercase directory), so the header/source pair is vendored directly
+# under a lowercase `stackwalker/` directory rather than mirroring
+# upstream's `StackWalker` capitalization - this matters when
+# cross-compiling from Linux (see cmake/cross-compile.cmake), where the
+# filesystem is case-sensitive.
 
-include(cmake/stackwalker.cmake)
+set(STACKWALKER_SOURCE_DIR "${LIB_DIR}/stackwalker")
+
+if(NOT EXISTS "${STACKWALKER_SOURCE_DIR}/StackWalker.cpp")
+    message(FATAL_ERROR
+        "StackWalker source not found: ${STACKWALKER_SOURCE_DIR}/StackWalker.cpp"
+    )
+endif()
+
+add_library(StackWalker STATIC
+    "${STACKWALKER_SOURCE_DIR}/StackWalker.cpp"
+)
+
+target_include_directories(StackWalker
+    PUBLIC
+        "${LIB_DIR}"
+)
 
 # ------------------------------------------------------------
 # Discord RPC library
