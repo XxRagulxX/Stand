@@ -86,6 +86,56 @@ file(GLOB_RECURSE STAND_ASM CONFIGURE_DEPENDS
 )
 
 # ------------------------------------------------------------
+# Stand include directories
+# ------------------------------------------------------------
+# Stand's source tree is organized into subfolders by area (Core, Game,
+# Network, Commands/Vehicle, Commands/Self, etc. - see src/ for the full
+# layout), but its files still #include each other by bare filename, e.g.
+# `#include "Renderer.hpp"` rather than `#include "Rendering/Renderer.hpp"`.
+# That only resolves if every directory containing a header is on the
+# include search path, so this collects them all, one entry per directory
+# that actually has a .hpp in it. Vendored libraries manage their own
+# include directories elsewhere in this file, so they're excluded here.
+#
+# soup/ and souplua/ are excluded too, even though they're part of the
+# Stand target's own sources (not compiled separately like pluto/ and
+# discord-rpc/): a handful of soup/ headers happen to share a bare name
+# with an unrelated Stand header (e.g. both have their own Worker.hpp),
+# and code outside soup/ that actually wants a soup header always spells
+# it "soup/Foo.hpp" (resolved via STAND_DIR below), never a bare "Foo.hpp"
+# - so adding soup/souplua's own subdirectories here would only introduce
+# same-name collisions with zero upside.
+
+file(GLOB_RECURSE STAND_HEADERS CONFIGURE_DEPENDS
+    "${STAND_DIR}/*.hpp"
+)
+
+list(FILTER STAND_HEADERS EXCLUDE REGEX
+    "/pluto/"
+)
+
+list(FILTER STAND_HEADERS EXCLUDE REGEX
+    "/discord-rpc/"
+)
+
+list(FILTER STAND_HEADERS EXCLUDE REGEX
+    "/soup/"
+)
+
+list(FILTER STAND_HEADERS EXCLUDE REGEX
+    "/souplua/"
+)
+
+set(STAND_INCLUDE_DIRS "")
+
+foreach(stand_header ${STAND_HEADERS})
+    get_filename_component(stand_header_dir "${stand_header}" DIRECTORY)
+    list(APPEND STAND_INCLUDE_DIRS "${stand_header_dir}")
+endforeach()
+
+list(REMOVE_DUPLICATES STAND_INCLUDE_DIRS)
+
+# ------------------------------------------------------------
 # Pluto / Lua sources
 # ------------------------------------------------------------
 
@@ -164,6 +214,7 @@ target_include_directories(DiscordRPC
     PRIVATE
         "${DISCORD_RPC_DIR}/src"
         "${STAND_DIR}"
+        ${STAND_INCLUDE_DIRS}
 )
 
 # ------------------------------------------------------------
@@ -187,6 +238,7 @@ target_include_directories(Pluto
         # library directly (the same one Stand's own code uses) instead of
         # carrying a second, independently-drifting copy.
         "${STAND_DIR}"
+        ${STAND_INCLUDE_DIRS}
 )
 
 # IMPORTANT:
@@ -239,8 +291,11 @@ set_target_properties(Stand PROPERTIES
 target_include_directories(Stand
     PRIVATE
 
-        # Stand
+        # Stand - one include directory per subfolder that has a header in
+        # it (see STAND_INCLUDE_DIRS above), since Stand's own #includes are
+        # bare filenames with no subfolder prefix.
         "${STAND_DIR}"
+        ${STAND_INCLUDE_DIRS}
 
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
@@ -252,7 +307,7 @@ target_include_directories(Stand
 
 target_precompile_headers(Stand
     PRIVATE
-        "${STAND_DIR}/common.hpp"
+        "${STAND_DIR}/Core/common.hpp"
 )
 
 # ------------------------------------------------------------
