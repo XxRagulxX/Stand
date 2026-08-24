@@ -81,6 +81,16 @@ list(FILTER STAND_CPP EXCLUDE REGEX
     "/discord-rpc/"
 )
 
+# StackWalker.cpp (src/lib/stackwalker/) is built into its own StackWalker
+# target by cmake/stackwalker.cmake; without this it would also get
+# compiled straight into Stand via this glob, and linking both would
+# collide. fmt/, rapidjson/ and minhook/ don't need an entry here: fmt and
+# rapidjson are header-only (nothing under them matches *.cpp) and
+# minhook's sources are *.c, which this glob doesn't match either.
+list(FILTER STAND_CPP EXCLUDE REGEX
+    "/stackwalker/"
+)
+
 # ------------------------------------------------------------
 # Stand ASM sources
 # ------------------------------------------------------------
@@ -164,15 +174,15 @@ include(cmake/directxtk.cmake)
 # ------------------------------------------------------------
 # fmt library
 # ------------------------------------------------------------
-# Fetched from GitHub and built from its two .cc files; see cmake/fmt.cmake.
-# Defines the Fmt target linked below.
+# Vendored under src/lib/fmt/ (header-only); see cmake/fmt.cmake. Defines
+# the Fmt target linked below.
 
 include(cmake/fmt.cmake)
 
 # ------------------------------------------------------------
 # RapidJSON library
 # ------------------------------------------------------------
-# Fetched from GitHub (header-only, nothing to compile); see
+# Vendored under src/lib/rapidjson/ (header-only); see
 # cmake/rapidjson.cmake. Defines the RapidJSON target linked below.
 
 include(cmake/rapidjson.cmake)
@@ -180,7 +190,7 @@ include(cmake/rapidjson.cmake)
 # ------------------------------------------------------------
 # MinHook library
 # ------------------------------------------------------------
-# Fetched from GitHub (master); see cmake/minhook.cmake. Defines the
+# Vendored under src/lib/minhook/; see cmake/minhook.cmake. Defines the
 # MinHook target linked below.
 
 include(cmake/minhook.cmake)
@@ -188,8 +198,8 @@ include(cmake/minhook.cmake)
 # ------------------------------------------------------------
 # StackWalker library
 # ------------------------------------------------------------
-# Fetched from GitHub (master); see cmake/stackwalker.cmake. Defines the
-# StackWalker target linked below.
+# Vendored under src/lib/stackwalker/; see cmake/stackwalker.cmake.
+# Defines the StackWalker target linked below.
 
 include(cmake/stackwalker.cmake)
 
