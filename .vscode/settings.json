@@ -1,0 +1,38 @@
+{
+    // --- CMake Tools ---
+    // Presets live in CMakePresets.json (see that file for what each one
+    // does). On Windows, pick a matching kit - e.g. "Visual Studio Build
+    // Tools 2022 - amd64" or an LLVM/clang-cl kit - before configuring, so
+    // cl.exe/clang-cl.exe and the Windows SDK are on the environment; CMake
+    // Tools applies the kit's environment on top of the preset
+    // automatically. No full Visual Studio IDE needed - Build Tools alone
+    // (or standalone LLVM + the Windows SDK) is enough.
+    "cmake.useCMakePresets": "always",
+    "cmake.configureOnOpen": true,
+
+    // --- clangd ---
+    // Reads build/compile_commands.json (written by CMake because
+    // CMAKE_EXPORT_COMPILE_COMMANDS is ON in CMakeLists.txt), which lists
+    // the exact include paths, defines, and flags each file was actually
+    // compiled with - so headers resolve identically to however you last
+    // configured the project, on both Windows and Linux, without a
+    // hand-maintained include list to fall out of sync.
+    //
+    // Re-run "CMake: Configure" after switching presets/kits so this file
+    // reflects the toolchain you're currently building with.
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--background-index",
+        "--header-insertion=never"
+    ],
+
+    // Avoids double diagnostics/completion if ms-vscode.cpptools is also
+    // installed (e.g. just for its debugger) - clangd is the one actually
+    // driving IntelliSense here.
+    "C_Cpp.intelliSenseEngine": "disabled",
+
+    "files.associations": {
+        "*.hpp": "cpp",
+        "*.ipp": "cpp"
+    }
+}
