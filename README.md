@@ -47,9 +47,31 @@ Both are listed in `.vscode/extensions.json` as workspace recommendations
 
 ### Making clangd work on both platforms
 
-clangd only knows what `build/compile_commands.json` tells it - it never
-inherits VS Code's (or any launching shell's) environment. That's a
-problem specifically for the CRT/STL/Windows SDK headers, which
+clangd only ever knows what `build/compile_commands.json` says. Two
+things about how Stand builds make that file incomplete or wrong unless
+worked around, on every platform - both are already worked around below,
+but it helps to know about them when something still doesn't resolve.
+
+**Unity build.** By default (`STAND_UNITY_BUILD=ON`, for fast full
+rebuilds) CMake compiles Stand as a handful of synthesized
+`Unity/unity_N_cxx.cxx` files, each `#include`-ing a batch of the real
+`.cpp` files - and `compile_commands.json` only ever gets an entry for
+what actually gets compiled, so under a unity build, individual files
+like `CommandOnPlayer.cpp` have **no entry at all**. clangd's usual trick
+for a header with nothing of its own in the database (`CommandOnPlayer.hpp`,
+which is never its own translation unit) is to borrow its sibling `.cpp`'s
+flags; with no such entry to borrow, it falls back to a generic guess that
+knows nothing about this project - hence errors like `fmt/core.h` (or any
+other vendored/Stand header) not being found, in effectively any header.
+Both `-debug` presets in `CMakePresets.json` already configure with
+`STAND_UNITY_BUILD=OFF` for exactly this reason (`-release` keeps it on) -
+so as long as you're pointed at a Debug configure, this shouldn't come up;
+if it does, re-run **CMake: Configure** and confirm the active preset/cache
+has `STAND_UNITY_BUILD=OFF`.
+
+**Windows system headers**: clangd never inherits VS Code's (or any
+launching shell's) environment. That's a problem specifically for the
+CRT/STL/Windows SDK headers, which
 cl.exe/clang-cl.exe normally find through the `INCLUDE` environment
 variable (set by `vcvarsall.bat`, a Developer Command Prompt, or a CMake
 Tools kit) rather than an explicit flag - an env var that's long gone by
