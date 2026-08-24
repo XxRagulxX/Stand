@@ -1,5 +1,8 @@
 #pragma once
 
+#include "fwddecl.hpp"
+#include "Label.hpp"
+
 #include "netGameEventId.hpp"
 
 #include <string>
