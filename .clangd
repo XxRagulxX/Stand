@@ -1,0 +1,16 @@
+CompileFlags:
+  # All four CMake presets (see CMakePresets.json) use the same binaryDir,
+  # so this is correct regardless of which one was last configured -
+  # linux-cross-{debug,release} or windows-{debug,release}.
+  CompilationDatabase: build
+
+Diagnostics:
+  # This codebase leans on a shared precompiled header (src/Core/common.hpp)
+  # to pull in most of what any given file needs, and on the vendored
+  # libraries under src/lib/ having their own established include style.
+  # clangd's IncludeCleaner would otherwise flag a lot of headers as
+  # "missing" (reached transitively through the PCH) or "unused" (kept for
+  # a symbol IncludeCleaner doesn't attribute to it) that aren't actually
+  # either - so both are turned off rather than fought file by file.
+  UnusedIncludes: None
+  MissingIncludes: None

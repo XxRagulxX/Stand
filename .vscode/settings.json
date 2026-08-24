@@ -12,16 +12,22 @@
 
     // --- clangd ---
     // Reads build/compile_commands.json (written by CMake because
-    // CMAKE_EXPORT_COMPILE_COMMANDS is ON in CMakeLists.txt), which lists
-    // the exact include paths, defines, and flags each file was actually
-    // compiled with - so headers resolve identically to however you last
+    // CMAKE_EXPORT_COMPILE_COMMANDS is ON in CMakeLists.txt - see .clangd
+    // for the CompilationDatabase path itself), which lists the exact
+    // include paths, defines, and flags each file was actually compiled
+    // with - so headers resolve identically to however you last
     // configured the project, on both Windows and Linux, without a
-    // hand-maintained include list to fall out of sync.
+    // hand-maintained include list to fall out of sync. cmake/windows.cmake
+    // and cmake/cross-compile.cmake both go out of their way to bake the
+    // MSVC/Windows SDK header paths into that file as explicit flags
+    // (rather than leaving clangd to rely on inheriting whatever
+    // environment VS Code happened to start with), so this works the same
+    // way in both directions - native on Windows, cross-compiled from
+    // Linux.
     //
     // Re-run "CMake: Configure" after switching presets/kits so this file
     // reflects the toolchain you're currently building with.
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build",
         "--background-index",
         "--header-insertion=never"
     ],
