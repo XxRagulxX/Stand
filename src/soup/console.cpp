@@ -20,10 +20,10 @@
 #endif
 
 #define BEL "\x7"
-#define ESC "\x1B"
-#define CSI ESC "["
-#define OSC ESC "]"
-#define ST  ESC "\\"
+#define SOUP_ESC "\x1B"
+#define CSI SOUP_ESC "["
+#define OSC SOUP_ESC "]"
+#define ST  SOUP_ESC "\\"
 
 NAMESPACE_SOUP
 {
@@ -246,7 +246,7 @@ NAMESPACE_SOUP
 				std::this_thread::sleep_for(1ms);
 				continue;
 			}
-			if (c == ESC[0])
+			if (c == SOUP_ESC[0])
 			{
 				char _;
 				if (read(in, &_, 1) == 1)
@@ -583,7 +583,7 @@ NAMESPACE_SOUP
 }
 
 #undef BEL
-#undef ESC
+#undef SOUP_ESC
 #undef CSI
 #undef OSC
 #undef ST

@@ -16,10 +16,10 @@
 #endif
 
 #define BEL "\x7"
-#define ESC "\x1B"
-#define CSI ESC "["
-#define OSC ESC "]"
-#define ST  ESC "\\"
+#define SOUP_ESC "\x1B"
+#define CSI SOUP_ESC "["
+#define OSC SOUP_ESC "]"
+#define ST  SOUP_ESC "\\"
 
 NAMESPACE_SOUP
 {
@@ -190,7 +190,7 @@ NAMESPACE_SOUP
 }
 
 #undef BEL
-#undef ESC
+#undef SOUP_ESC
 #undef CSI
 #undef OSC
 #undef ST

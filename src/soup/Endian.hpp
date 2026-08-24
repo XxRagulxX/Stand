@@ -3,11 +3,10 @@
 #if defined(_MSC_VER) && !defined(__clang__)
 #include <cstdlib> // _byteswap_*
 #include <type_traits> // is_constant_evaluated
-#include <bit>
 #endif
 
 #include "base.hpp"
-
+#include <bit>
 #include "IntStruct.hpp"
 
 NAMESPACE_SOUP
