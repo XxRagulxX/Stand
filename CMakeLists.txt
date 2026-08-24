@@ -38,12 +38,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # - <fmt/core.h>, Stand's own headers via STAND_INCLUDE_DIRS, all of it -
 # stops resolving.
 #
-# So this is a cache option (STAND_UNITY_BUILD), not a hardcoded ON:
-# leave it ON for a normal full build (the default), or configure with
-# -DSTAND_UNITY_BUILD=OFF (already the case for the *-debug presets in
-# CMakePresets.json, on the assumption that a Debug configure is usually
-# the one clangd is actually pointed at) to get accurate per-file
-# compile_commands.json entries instead.
+# So this is a cache option (STAND_UNITY_BUILD), defaulting to OFF:
+# accurate per-file compile_commands.json entries - what any plain
+# `cmake -S . -B build`, any IDE's default configure, and clangd all need
+# - is the safer thing for a build most people are now driving through an
+# editor rather than a from-scratch CI rebuild. Configure with
+# -DSTAND_UNITY_BUILD=ON (already the case for the *-release presets in
+# CMakePresets.json) when you actually want the faster batched build - a
+# full CI/Release rebuild, not day-to-day editing.
 #
 # Only the Stand target itself ever reads this (see where it's used near
 # add_library(Stand ...)); CMAKE_UNITY_BUILD - the CMake variable that sets
@@ -52,8 +54,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # never batched either way.
 
 option(STAND_UNITY_BUILD
-    "Batch multiple .cpp files into fewer translation units for a much faster full rebuild. Turn this OFF for accurate per-file compile_commands.json entries (see the comment above)."
-    ON
+    "Batch multiple .cpp files into fewer translation units for a much faster full rebuild, at the cost of per-file compile_commands.json entries (see the comment above) - leave this OFF unless you specifically want a fast from-scratch CI/Release rebuild."
+    OFF
 )
 
 set(CMAKE_UNITY_BUILD OFF)

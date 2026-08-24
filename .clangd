@@ -8,22 +8,51 @@ CompileFlags:
   # to *every* file clangd compiles, including one with no compile command
   # of its own (a header with no same-named .cpp to borrow flags from, or
   # any file opened before background-indexing has found one) - cases
-  # where clangd otherwise falls back to a generic guess with none of
-  # this project's include paths at all. That's what was causing
-  # <soup/...>, <fmt/...>, etc. to intermittently fail to resolve: CMake
-  # already puts every path below on the Stand target's real compile
-  # commands (see CMakeLists.txt), but that only helps a file that
-  # actually gets one.
+  # where clangd otherwise falls back to a generic guess with none of this
+  # project's include paths at all. CMake already puts every path below on
+  # the Stand target's real compile commands (see CMakeLists.txt,
+  # STAND_INCLUDE_DIRS and LIB_DIR in particular) - and since
+  # STAND_UNITY_BUILD defaults to OFF, most .cpp/.hpp pairs get a real,
+  # complete entry of their own and don't even need this - but a header
+  # with no matching .cpp of its own still does, and this is what makes it
+  # work regardless.
   #
   # Relative paths here resolve relative to this .clangd file itself (the
   # repo root), the same on Windows and Linux - no OS-specific paths
   # needed for this part.
   Add:
-    # Every subfolder under src/ that has a header in it (Core/, Game/,
-    # Commands/Vehicle/, etc.) is on the real compile commands already
-    # (see STAND_INCLUDE_DIRS in CMakeLists.txt) - this is just the root,
-    # for same-directory/top-level lookups.
+    # src/ itself, for same-directory/top-level lookups.
     - -Isrc
+
+    # Every subfolder under src/ that holds its own headers - this list is
+    # STAND_INCLUDE_DIRS from CMakeLists.txt, spelled out statically here
+    # since clangd (unlike CMake) can't compute it at file-open time. Keep
+    # this in sync if src/'s top-level layout changes - see src/README.md
+    # for what each one is.
+    - -Isrc/AntiCheat
+    - -Isrc/Commands/Extra
+    - -Isrc/Commands/Online
+    - -Isrc/Commands/Ped
+    - -Isrc/Commands/Player
+    - -Isrc/Commands/Self
+    - -Isrc/Commands/Stand
+    - -Isrc/Commands/Vehicle
+    - -Isrc/Commands/Weapons
+    - -Isrc/Commands/Widgets
+    - -Isrc/Commands/World
+    - -Isrc/Config
+    - -Isrc/Core
+    - -Isrc/Game
+    - -Isrc/Localization
+    - -Isrc/Menu
+    - -Isrc/Network
+    - -Isrc/Ped
+    - -Isrc/Rendering
+    - -Isrc/Scripting
+    - -Isrc/Util
+    - -Isrc/Vehicle
+    - -Isrc/Weapons
+    - -Isrc/World
 
     # src/lib/ itself - what makes `#include <soup/Rgb.hpp>`,
     # `#include "soup/Uri.hpp"`, `#include <discord-rpc/include/discord_rpc.h>`
