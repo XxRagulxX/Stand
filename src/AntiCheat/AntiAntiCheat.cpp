@@ -7,6 +7,7 @@
 
 #include "conf_antianticheat.hpp"
 
+#include "CNetworkSession.hpp"
 #include "AcThingData.hpp"
 #include "atStringHash.hpp"
 #include "Hooking.hpp"
