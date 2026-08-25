@@ -51,7 +51,7 @@ namespace Stand
 				return;
 			}
 
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(value != 0);
 

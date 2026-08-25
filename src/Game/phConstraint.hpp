@@ -27,7 +27,6 @@ namespace rage
 		struct Params
 		{
 			PAD(0, 0x2C) const Type type;
-			Params() = delete;
 		};
 		static_assert(offsetof(Params, type) == 0x2C);
 

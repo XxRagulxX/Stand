@@ -19,7 +19,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler(click, [=]()
 			{
 				if (!m_on)
 				{

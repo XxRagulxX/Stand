@@ -23,7 +23,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			ensureYieldableScriptThread(click, [=, this]
+			ensureYieldableScriptThread(click, [=]
 			{
 				Camgr::startCamCommand();
 				g_tb_freecam.enable();

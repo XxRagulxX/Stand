@@ -23,7 +23,7 @@ namespace Stand
 				MISC::SET_FAKE_WANTED_LEVEL(value);
 				if (value > 0)
 				{
-					registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=, this]()
+					registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=]()
 					{
 						if (value != this->value)
 						{

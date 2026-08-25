@@ -101,8 +101,6 @@ namespace Stand
 						case ALIGN_TOP_CENTRE:
 							y -= item->height;
 							break;
-						default:
-							break;
 						}
 					}
 					else
@@ -132,8 +130,6 @@ namespace Stand
 						case ALIGN_TOP_CENTRE:
 							y -= (item->height + spacer_y);
 							break;
-						default:
-							break;
 						}
 					}
 					item->x = x;
@@ -160,8 +156,6 @@ namespace Stand
 					item->keep_pos = true;
 					need_redo = true;
 				}
-				break;
-			default:
 				break;
 			}
 			last_item = item.get();

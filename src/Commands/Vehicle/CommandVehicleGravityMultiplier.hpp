@@ -23,7 +23,7 @@ namespace Stand
 			const float fvalue = ((float)this->value / 100.0f) * 9.8000002f;
 			if (value != 100)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value != this->value)
 					{

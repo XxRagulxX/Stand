@@ -427,8 +427,6 @@ namespace Stand
 						case soup::R13: exp->ContextRecord->R13 = 0; break;
 						case soup::R14: exp->ContextRecord->R14 = 0; break;
 						case soup::R15: exp->ContextRecord->R15 = 0; break;
-						default:
-							break;
 						}
 					}
 				}

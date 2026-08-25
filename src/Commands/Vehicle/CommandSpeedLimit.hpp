@@ -20,7 +20,7 @@ namespace Stand
 			const int value = this->value;
 			if (value != 540)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value != this->value)
 					{

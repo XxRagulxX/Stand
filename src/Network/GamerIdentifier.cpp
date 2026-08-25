@@ -11,7 +11,7 @@ namespace Stand
 {
 	void GamerIdentifier::unpackAuthoritativeData(std::string& str)
 	{
-		if ((is_on_devdbg = (str.back() == '#')))
+		if (is_on_devdbg = (str.back() == '#'))
 		{
 			str.pop_back();
 		}

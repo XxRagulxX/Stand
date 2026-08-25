@@ -69,7 +69,7 @@ namespace Stand
 	protected:
 		void doChangeExtra(AbstractEntity& vehicle) override
 		{
-			ensureScriptThread([=, this]() mutable
+			ensureScriptThread([=]() mutable
 			{
 				SOUP_IF_LIKELY (auto cveh = vehicle.getCVehicle())
 				{

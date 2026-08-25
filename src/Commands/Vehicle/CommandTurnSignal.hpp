@@ -99,7 +99,7 @@ namespace Stand
 		{
 			handler_on = true;
 
-			registerScriptTickEventHandler([=, this]
+			registerScriptTickEventHandler([=]
 			{
 				auto vehicle = Util::getVehicle();
 
