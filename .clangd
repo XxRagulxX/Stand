@@ -29,7 +29,7 @@ CompileFlags:
     # since clangd (unlike CMake) can't compute it at file-open time. Keep
     # this in sync if src/'s top-level layout changes - see src/README.md
     # for what each one is.
-    - -Isrc/AntiCheat
+    - -Isrc/Hooking
     - -Isrc/Commands/Extra
     - -Isrc/Commands/Online
     - -Isrc/Commands/Ped

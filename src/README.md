@@ -24,8 +24,10 @@ below if you're moving files around further.
 - **`Core/`** - process bootstrap, the DLL/ASI entry point, threading,
   allocation, fibers, ticking, the event system, and other engine-agnostic
   runtime plumbing. Also holds `common.hpp`, Stand's precompiled header.
-- **`AntiCheat/`** - detection evasion, code integrity, function hooking,
-  pattern scanning, and obfuscation.
+- **`Hooking/`** - function hooking (`DetourHook`, `Hooking`,
+  `NativeFingerprinter`, native table hooks), pattern scanning, and the
+  detection-evasion/obfuscation code built on top of it (anti-debug,
+  anti-anti-cheat, code integrity, string/hash obfuscation).
 - **`Game/`** - reverse-engineered RAGE/GTA V engine types: native
   wrappers, enums, and engine data structures (`C*`, `e*`, `gta_*`, `at*`,
   `fw*`, etc.).
