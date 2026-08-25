@@ -176,6 +176,26 @@ endforeach()
 list(REMOVE_DUPLICATES STAND_INCLUDE_DIRS)
 
 # ------------------------------------------------------------
+# Helper: Stand's own bare-filename #include search path
+# ------------------------------------------------------------
+# DiscordRPC, Pluto and Stand itself all need this same base - every
+# Stand header directory (STAND_DIR/STAND_INCLUDE_DIRS, for e.g.
+# `#include "Renderer.hpp"`) plus src/lib/ itself (LIB_DIR, for
+# `#include <soup/Rgb.hpp>`-style qualified vendored-library includes) -
+# and each also adds whatever else it specifically needs on top (fmt,
+# RapidJSON, etc. for Stand; nothing more for DiscordRPC/Pluto). Pulled
+# into one place instead of repeating the same three lines three times.
+
+function(stand_add_include_dirs target)
+    target_include_directories(${target}
+        PRIVATE
+            "${STAND_DIR}"
+            ${STAND_INCLUDE_DIRS}
+            "${LIB_DIR}"
+    )
+endfunction()
+
+# ------------------------------------------------------------
 # Pluto / Lua sources
 # ------------------------------------------------------------
 
@@ -455,10 +475,9 @@ target_include_directories(DiscordRPC
 
     PRIVATE
         "${DISCORD_RPC_DIR}/src"
-        "${STAND_DIR}"
-        "${LIB_DIR}"
-        ${STAND_INCLUDE_DIRS}
 )
+
+stand_add_include_dirs(DiscordRPC)
 
 # ------------------------------------------------------------
 # Pluto / Lua library
@@ -470,22 +489,20 @@ add_library(Pluto STATIC
     ${PLUTO_CPP}
 )
 
+# Pluto used to vendor its own copy of Soup under
+# src/lib/pluto/vendor/Soup/soup/ for its json/regex/crypto/socket/etc.
+# standard-library extensions. It now includes Stand's own soup/ library
+# directly (the same one Stand's own code uses, at src/lib/soup/) instead
+# of carrying a second, independently-drifting copy - stand_add_include_dirs()
+# below is what makes Pluto's own `#include "soup/..."` references (via
+# LIB_DIR) resolve to it.
+
 target_include_directories(Pluto
     PUBLIC
         "${PLUTO_DIR}"
-
-    PRIVATE
-        # Pluto used to vendor its own copy of Soup under
-        # src/lib/pluto/vendor/Soup/soup/ for its json/regex/crypto/socket/etc.
-        # standard-library extensions. It now includes Stand's own soup/
-        # library directly (the same one Stand's own code uses, at
-        # src/lib/soup/) instead of carrying a second, independently-drifting
-        # copy. "${LIB_DIR}" is what makes Pluto's own `#include "soup/..."`
-        # references resolve to it.
-        "${STAND_DIR}"
-        "${LIB_DIR}"
-        ${STAND_INCLUDE_DIRS}
 )
+
+stand_add_include_dirs(Pluto)
 
 # IMPORTANT:
 # Pluto must not inherit Stand's PCH (common.hpp): that PCH pulls in
@@ -534,33 +551,20 @@ set_target_properties(Stand PROPERTIES
 # Stand include directories
 # ------------------------------------------------------------
 
+# fmt, RapidJSON, MinHook and DirectXTK's own public headers are added
+# below on top of stand_add_include_dirs()'s base (STAND_DIR/
+# STAND_INCLUDE_DIRS/LIB_DIR - see that function for what each covers).
+# Linking their targets (Fmt, RapidJSON, MinHook, DirectXTK) below already
+# brings these in transitively through each target's own INTERFACE/PUBLIC
+# target_include_directories() - listed here again directly, the same way
+# Pluto's already are, because clangd's fallback for a header with no
+# compile command of its own (most of Stand's .hpp files) isn't always
+# reliable about reconstructing that full transitive chain, and a missing
+# entry here shows up as e.g. `#include <fmt/core.h>` not resolving even
+# though the real build links Fmt just fine.
+
 target_include_directories(Stand
     PRIVATE
-
-        # Stand - one include directory per subfolder that has a header in
-        # it (see STAND_INCLUDE_DIRS above), since Stand's own #includes are
-        # bare filenames with no subfolder prefix.
-        "${STAND_DIR}"
-        ${STAND_INCLUDE_DIRS}
-
-        # Stand's code (and Pluto's) reaches the vendored libraries under
-        # src/lib/ - soup/, discord-rpc/, souplua/ - via includes like
-        # `#include <soup/Rgb.hpp>` or `#include <discord-rpc/include/discord_rpc.h>`,
-        # i.e. qualified with the library's own directory name. That only
-        # resolves with src/lib/ itself (not each library's own directory)
-        # on the include path.
-        "${LIB_DIR}"
-
-        # fmt, RapidJSON, MinHook and DirectXTK's own public headers.
-        # Linking their targets below (Fmt, RapidJSON, MinHook, DirectXTK)
-        # already brings these in transitively through each target's own
-        # INTERFACE/PUBLIC target_include_directories() - listed here again
-        # directly, the same way Pluto's already are just below, because
-        # clangd's fallback for a header with no compile command of its own
-        # (most of Stand's .hpp files - see STAND_INCLUDE_DIRS above) isn't
-        # always reliable about reconstructing that full transitive chain,
-        # and a missing entry here shows up as e.g. `#include <fmt/core.h>`
-        # not resolving even though the real build links Fmt just fine.
         "${FMT_SOURCE_DIR}/include"
         "${RAPIDJSON_SOURCE_DIR}/include"
         "${MINHOOK_SOURCE_DIR}/include"
@@ -569,6 +573,8 @@ target_include_directories(Stand
         # Pluto / Lua public headers
         "${PLUTO_DIR}"
 )
+
+stand_add_include_dirs(Stand)
 
 # ------------------------------------------------------------
 # Stand precompiled header
