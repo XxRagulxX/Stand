@@ -13,7 +13,7 @@ namespace Stand
 		void createUnderlyingTexture(UINT width, UINT height);
 		void ensureHasUnderlyingTextureOfSize(UINT width, UINT height);
 
-		void fromBackbuffer(const RECT& r);
+		[[nodiscard]] void fromBackbuffer(const RECT& r);
 
 		// These can't be called while in a draw context
 		void drawOnto(const std::function<void()>& draw_func, const bool change_viewport = false) const;

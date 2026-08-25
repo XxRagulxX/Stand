@@ -2,16 +2,16 @@
 
 #include <limits>
 
-#include "lib/soup/Matrix.hpp"
+#include <soup/Matrix.hpp>
 
-#include "Util/struct_base.hpp"
+#include "struct_base.hpp"
 
-#include "Game/CBaseModelInfo.hpp"
-#include "Game/datRef.hpp"
-#include "Game/fragCacheEntry.hpp"
-#include "Game/gta_extensible.hpp"
-#include "Game/gta_draw_handler.hpp"
-#include "Game/pgBase.hpp"
+#include "CBaseModelInfo.hpp"
+#include "datRef.hpp"
+#include "fragCacheEntry.hpp"
+#include "gta_extensible.hpp"
+#include "gta_draw_handler.hpp"
+#include "pgBase.hpp"
 
 namespace rage
 {
@@ -50,16 +50,7 @@ namespace rage
 		}
 	};
 	static_assert(sizeof(phInst) == 0x20 + sizeof(soup::Matrix));
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(phInst, m_Matrix) == 0x20);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
 
 	struct phInstBreakable : public phInst
 	{
@@ -140,14 +131,16 @@ namespace rage
 		/* 0x64 */ float m_fForceAddToBoundRadius;
 		/* 0x68 */ uint8_t m_nNoCollisionFlags;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+	#if defined(__clang__)
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Winvalid-offsetof"
+	#endif
+
 	static_assert(offsetof(fwDynamicEntityComponent, m_nNoCollisionFlags) == 0x68);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+
+	#if defined(__clang__)
+	#pragma clang diagnostic pop
+	#endif
 	static_assert(sizeof(fwDynamicEntityComponent) == 0x68 + 1 + 7);
 
 #pragma pack(push, 1)
@@ -399,7 +392,9 @@ static_assert(sizeof(CPhysical) == 0x284 + 4);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
+
 static_assert(offsetof(CPhysical, relationship_hash) == 0x194);
+
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif

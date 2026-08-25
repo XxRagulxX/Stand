@@ -172,7 +172,7 @@ int luaB_utonumber(lua_State *L) {
     lua_pushvalue(L, 1);
     lua_concat(L, 2);
   }
-  lua_error(L);
+  return lua_error(L);
 }
 
 
@@ -496,7 +496,7 @@ static int luaB_dofile (lua_State *L) {
   const char *fname = luaL_optstring(L, 1, NULL);
   lua_settop(L, 1);
   if (l_unlikely(luaL_loadfile(L, fname) != LUA_OK))
-    lua_error(L);
+    return lua_error(L);
   lua_callk(L, 0, LUA_MULTRET, 0, dofilecont);
   return dofilecont(L, 0, 0);
 }

@@ -38,14 +38,7 @@ public:
 
 	[[nodiscard]] compactplayer_t getHostIndex() const;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CNetworkPlayerMgr, localPlayer) == 0xF0);
 static_assert(offsetof(CNetworkPlayerMgr, NumPlayers) == 0x180);
 static_assert(offsetof(CNetworkPlayerMgr, Players) == 0x188);
 static_assert(offsetof(CNetworkPlayerMgr, player_bitset) == 0x8E0);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
