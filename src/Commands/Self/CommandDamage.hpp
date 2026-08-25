@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "natives.hpp"
-#include "WeaponMgr.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/natives.hpp"
+#include "Weapons/WeaponMgr.hpp"
 
 namespace Stand
 {

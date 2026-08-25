@@ -1,9 +1,9 @@
 #pragma once
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
 
 #define ANTIDBG_ENABLED !STAND_DEBUG || false
 

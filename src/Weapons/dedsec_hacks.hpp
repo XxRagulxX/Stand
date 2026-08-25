@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
 namespace Stand
 {

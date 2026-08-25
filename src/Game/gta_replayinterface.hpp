@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 template<class T>
 class CEntityTracker

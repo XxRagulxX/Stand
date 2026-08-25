@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sysObfuscated.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
 namespace rage
 {

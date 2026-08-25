@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "CommandListFolder.hpp"
+#include "Commands/Widgets/CommandListFolder.hpp"
 
 namespace Stand
 {

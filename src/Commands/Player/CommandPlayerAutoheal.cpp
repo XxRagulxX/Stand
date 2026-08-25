@@ -1,7 +1,7 @@
-#include "CommandPlayerAutoheal.hpp"
+#include "Commands/Player/CommandPlayerAutoheal.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Gui.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

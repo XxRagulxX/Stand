@@ -1,7 +1,7 @@
-#include "CommandForceRelay.hpp"
+#include "Commands/Online/CommandForceRelay.hpp"
 
-#include "Hooking.hpp"
-#include "pointers.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

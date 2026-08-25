@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "FiberPool.hpp"
-#include "Hooking.hpp"
-#include "netStatus.hpp"
-#include "Script.hpp"
+#include "Core/FiberPool.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/netStatus.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

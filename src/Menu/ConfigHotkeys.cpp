@@ -1,8 +1,8 @@
-#include "ConfigHotkeys.hpp"
+#include "Menu/ConfigHotkeys.hpp"
 
-#include "CommandPhysical.hpp"
-#include "extract_delimited_string_with_escaping.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
+#include "Util/extract_delimited_string_with_escaping.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

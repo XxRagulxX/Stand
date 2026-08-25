@@ -1,12 +1,12 @@
-#include "GridItemScrollbar.hpp"
+#include "Menu/GridItemScrollbar.hpp"
 
 #include <algorithm>
 
-#include "CommandList.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

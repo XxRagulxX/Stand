@@ -1,13 +1,13 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include <soup/BigBitset.hpp>
+#include "lib/soup/BigBitset.hpp"
 
-#include "fwRefAwareBase.hpp"
-#include "fwRegdRef.hpp"
-#include "gta_entity.hpp"
-#include "vector.hpp"
+#include "Game/fwRefAwareBase.hpp"
+#include "Game/fwRegdRef.hpp"
+#include "Game/gta_entity.hpp"
+#include "Util/vector.hpp"
 
 #pragma pack(push, 1)
 class CPedFactory

@@ -2,9 +2,9 @@
 
 #include <stack>
 
-#include "script_program.hpp"
+#include "Game/script_program.hpp"
 
-#include "sgnStackVar.hpp"
+#include "Scripting/sgnStackVar.hpp"
 
 namespace ScriptGenie
 {

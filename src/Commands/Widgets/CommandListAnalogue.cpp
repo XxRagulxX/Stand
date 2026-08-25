@@ -1,15 +1,15 @@
-#include "CommandListAnalogue.hpp"
+#include "Commands/Widgets/CommandListAnalogue.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandLambdaSlider.hpp"
-#include "CommandReadonlyLink.hpp"
-#include "CommandReadonlyValueLambda.hpp"
-#include "CommandSlider.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaSlider.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandReadonlyValueLambda.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Util/StringUtils.hpp"
 
-#include "CommandAnalogueInput.hpp"
+#include "Commands/Stand/CommandAnalogueInput.hpp"
 
 namespace Stand
 {

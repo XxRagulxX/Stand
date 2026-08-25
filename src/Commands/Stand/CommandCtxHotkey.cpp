@@ -1,10 +1,10 @@
-#include "CommandCtxHotkey.hpp"
+#include "Commands/Stand/CommandCtxHotkey.hpp"
 
-#include "CommandCtxHotkeyHoldMode.hpp"
-#include "CommandCtxHotkeyRemove.hpp"
-#include "CommandLambdaAction.hpp"
-#include "Gui.hpp"
-#include "Util.hpp"
+#include "Commands/Stand/CommandCtxHotkeyHoldMode.hpp"
+#include "Commands/Stand/CommandCtxHotkeyRemove.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

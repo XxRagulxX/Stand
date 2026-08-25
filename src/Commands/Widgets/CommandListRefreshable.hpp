@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 #include <functional>
 
-#include "CommandDivider.hpp"
-#include "nullsub.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Util/nullsub.hpp"
 
 namespace Stand
 {

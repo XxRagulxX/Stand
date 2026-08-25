@@ -1,19 +1,19 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <fmt/xchar.h>
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
-#include "DrawUtil3d.hpp"
-#include "get_ground_z.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "PosRot.hpp"
-#include "regular_event.hpp"
-#include "Renderer.hpp"
-#include "Util.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Util/PosRot.hpp"
+#include "Core/regular_event.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

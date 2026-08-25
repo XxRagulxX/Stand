@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "Label.hpp"
-#include "PlayerType.hpp"
+#include "Util/Label.hpp"
+#include "Network/PlayerType.hpp"
 
 // Please preserve order for player history. Cheers.
 

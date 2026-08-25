@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "GridItem.hpp"
-#include "Position2d.hpp"
+#include "Menu/GridItem.hpp"
+#include "Util/Position2d.hpp"
 
 namespace Stand
 {

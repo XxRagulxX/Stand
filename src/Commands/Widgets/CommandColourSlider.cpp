@@ -1,4 +1,4 @@
-#include "CommandColourSlider.hpp"
+#include "Commands/Widgets/CommandColourSlider.hpp"
 
 namespace Stand
 {

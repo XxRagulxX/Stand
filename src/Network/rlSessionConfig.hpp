@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rl.hpp"
-#include "rl_matching.hpp"
+#include "Network/rl.hpp"
+#include "Network/rl_matching.hpp"
 
 namespace rage
 {

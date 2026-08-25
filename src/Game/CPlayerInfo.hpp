@@ -1,9 +1,9 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "gta_extensible.hpp"
-#include "rlGamerInfo.hpp"
+#include "Game/gta_extensible.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 #pragma pack(push, 1)
 enum eWantedLevel : int32_t

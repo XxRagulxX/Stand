@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

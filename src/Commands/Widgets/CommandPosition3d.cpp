@@ -1,7 +1,7 @@
-#include "CommandPosition3d.hpp"
+#include "Commands/Widgets/CommandPosition3d.hpp"
 
-#include "CommandVector3Slider.hpp"
-#include "CommandVector3Copy.hpp"
+#include "Commands/Widgets/CommandVector3Slider.hpp"
+#include "Commands/Widgets/CommandVector3Copy.hpp"
 
 namespace Stand
 {

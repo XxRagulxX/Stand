@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandInteriorCustomisable.hpp"
+#include "Commands/World/CommandInteriorCustomisable.hpp"
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
 namespace Stand
 {

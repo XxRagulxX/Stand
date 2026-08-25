@@ -2,11 +2,11 @@
 
 #include <cstdint>
 
-#include "CommandDivider.hpp"
-#include "CommandSlider.hpp"
-#include "CommandSliderPointer.hpp"
-#include "CommandTogglePointer.hpp"
-#include "PlayerExcludes.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderPointer.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Network/PlayerExcludes.hpp"
 
 namespace Stand
 {

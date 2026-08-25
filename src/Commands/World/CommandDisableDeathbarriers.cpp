@@ -1,6 +1,6 @@
-#include "CommandDisableDeathbarriers.hpp"
+#include "Commands/World/CommandDisableDeathbarriers.hpp"
 
-#include "tbDisableDeathbarriers.hpp"
+#include "Core/tbDisableDeathbarriers.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
-#include "ComponentDrawPatch.hpp"
+#include "AntiCheat/ComponentDrawPatch.hpp"
 
-#include "dlDrawListMgr.hpp"
-#include "eEntityType.hpp"
-#include "gta_entity.hpp"
-#include "Renderer.hpp"
+#include "Rendering/dlDrawListMgr.hpp"
+#include "Game/eEntityType.hpp"
+#include "Game/gta_entity.hpp"
+#include "Rendering/Renderer.hpp"
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {

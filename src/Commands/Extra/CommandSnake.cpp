@@ -1,16 +1,16 @@
-#include "CommandSnake.hpp"
+#include "Commands/Extra/CommandSnake.hpp"
 
-#include <soup/macros.hpp>
-#include <soup/rand.hpp>
+#include "lib/soup/macros.hpp"
+#include "lib/soup/rand.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "huddecl.hpp"
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "regular_event.hpp"
-#include "Renderer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/huddecl.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Core/regular_event.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

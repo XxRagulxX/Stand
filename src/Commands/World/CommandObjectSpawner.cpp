@@ -1,11 +1,11 @@
-#include "CommandObjectSpawner.hpp"
+#include "Commands/World/CommandObjectSpawner.hpp"
 
-#include "joaat_hash_db.hpp"
+#include "Game/joaat_hash_db.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandFindObject.hpp"
-#include "CommandSpawnAnyObject.hpp"
-#include "CommandSpawnObject.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/World/CommandFindObject.hpp"
+#include "Commands/World/CommandSpawnAnyObject.hpp"
+#include "Commands/World/CommandSpawnObject.hpp"
 
 namespace Stand
 {

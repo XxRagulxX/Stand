@@ -1,17 +1,17 @@
-#include "GlobalsWatcher.hpp"
+#include "Core/GlobalsWatcher.hpp"
 
-#include <soup/bitutil.hpp>
+#include "lib/soup/bitutil.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CNetGamePlayer.hpp"
-#include "FlowEvent.hpp"
-#include "FlowEventReaction.hpp"
-#include "natives.hpp"
-#include "ScriptEventTaxonomy.hpp"
-#include "ScriptGlobal.hpp"
-#include "ScriptLocal.hpp"
-#include "script_thread.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Core/FlowEventReaction.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptEventTaxonomy.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_thread.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

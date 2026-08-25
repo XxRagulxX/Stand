@@ -1,8 +1,8 @@
-#include "VehicleMods.hpp"
+#include "Vehicle/VehicleMods.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
 namespace Stand
 {

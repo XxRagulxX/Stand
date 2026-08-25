@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerIntel.hpp"
+#include "Commands/Player/CommandPlayerIntel.hpp"
 
 namespace Stand
 {

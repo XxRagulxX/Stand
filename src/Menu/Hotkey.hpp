@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "CommandName.hpp"
+#include "Commands/Online/CommandName.hpp"
 
 // 32 bits are reserved for the virtual key value
 #define FLAG_CTRL		0b100000000000000000000000000000000

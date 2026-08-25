@@ -1,4 +1,4 @@
-#include "CommandLuaTextsliderStateful.hpp"
+#include "Commands/Extra/CommandLuaTextsliderStateful.hpp"
 
 namespace Stand
 {

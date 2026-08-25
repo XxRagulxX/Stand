@@ -3,18 +3,18 @@
 #include <cstdint>
 #include <string>
 
-#include "struct_base.hpp"
-#include "rtti_shim.hpp"
+#include "Util/struct_base.hpp"
+#include "AntiCheat/rtti_shim.hpp"
 
-#include <soup/Quaternion.hpp>
+#include "lib/soup/Quaternion.hpp"
 
-#include "gta_node_list.hpp"
-#include "gta_player.hpp"
-#include "NetworkObjectTypes.hpp"
-#include "NodeCommonDataOperations.hpp"
-#include "script_id.hpp"
-#include "SyncType.hpp"
-#include "vector.hpp"
+#include "Game/gta_node_list.hpp"
+#include "Game/gta_player.hpp"
+#include "Network/NetworkObjectTypes.hpp"
+#include "Config/NodeCommonDataOperations.hpp"
+#include "Game/script_id.hpp"
+#include "Util/SyncType.hpp"
+#include "Util/vector.hpp"
 
 using rage::ObjectId;
 

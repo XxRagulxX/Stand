@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "atFixedArray.hpp"
-#include "fwRefAwareBase.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Game/fwRefAwareBase.hpp"
 
 enum ePedTaskTrees
 {

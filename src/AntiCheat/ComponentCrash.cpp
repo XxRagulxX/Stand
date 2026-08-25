@@ -1,8 +1,8 @@
-#include "ComponentCrash.hpp"
+#include "AntiCheat/ComponentCrash.hpp"
 
-#include "gta_net_object_mgr.hpp"
+#include "Game/gta_net_object_mgr.hpp"
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {

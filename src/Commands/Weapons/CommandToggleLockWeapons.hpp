@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandListLockWeapons.hpp"
-#include "WeaponLoadout.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Weapons/CommandListLockWeapons.hpp"
+#include "Weapons/WeaponLoadout.hpp"
 
 namespace Stand
 {

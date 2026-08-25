@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandReadonlyValueCopy.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
 
-#include "CommandSessionCode.hpp"
+#include "Commands/Online/CommandSessionCode.hpp"
 
 namespace Stand
 {

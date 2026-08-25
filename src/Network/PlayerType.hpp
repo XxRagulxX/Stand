@@ -1,9 +1,9 @@
 #pragma once
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "CommandPlayer.hpp"
-#include "rlFriend.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Network/rlFriend.hpp"
 
 namespace Stand
 {

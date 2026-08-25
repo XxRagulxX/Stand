@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GridItem.hpp"
+#include "Menu/GridItem.hpp"
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
 namespace Stand
 {

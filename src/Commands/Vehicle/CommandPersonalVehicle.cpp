@@ -1,22 +1,22 @@
-#include "CommandPersonalVehicle.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicle.hpp"
 
 #include <fmt/format.h>
 
-#include <soup/Bitset.hpp>
+#include "lib/soup/Bitset.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "get_current_time_millis.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "PersonalVehicleCustomisationIo.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
-#include "VehicleEntityCustomisationIo.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Vehicle/PersonalVehicleCustomisationIo.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleEntityCustomisationIo.hpp"
 
-#include "CommandSavePv.hpp"
+#include "Commands/Stand/CommandSavePv.hpp"
 //#include "CommandPersonalVehicleInsurance.hpp"
 
 namespace Stand

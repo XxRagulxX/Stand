@@ -1,10 +1,10 @@
-#include "CommandGamer.hpp"
+#include "Commands/Online/CommandGamer.hpp"
 
 #include <fmt/format.h>
 
-#include "CommandInputGamerName.hpp"
-#include "CommandGamerRid.hpp"
-#include "CommandList.hpp"
+#include "Commands/Online/CommandInputGamerName.hpp"
+#include "Commands/Online/CommandGamerRid.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 namespace Stand
 {

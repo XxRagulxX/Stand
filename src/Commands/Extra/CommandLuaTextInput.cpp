@@ -1,4 +1,4 @@
-#include "CommandLuaTextInput.hpp"
+#include "Commands/Extra/CommandLuaTextInput.hpp"
 
 namespace Stand
 {

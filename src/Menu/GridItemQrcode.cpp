@@ -1,10 +1,10 @@
-#include "GridItemQrcode.hpp"
+#include "Menu/GridItemQrcode.hpp"
 
-#include <soup/QrCode.hpp>
+#include "lib/soup/QrCode.hpp"
 
-#include "ColourUtil.hpp"
-#include "Renderer.hpp"
-#include "RenderTarget.hpp"
+#include "Rendering/ColourUtil.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Rendering/RenderTarget.hpp"
 
 namespace Stand
 {

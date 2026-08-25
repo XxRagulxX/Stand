@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/fwd.hpp>
+#include "lib/soup/fwd.hpp"
 
-#include "natives_decl.hpp"
-#include "vector.hpp"
+#include "Game/natives_decl.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

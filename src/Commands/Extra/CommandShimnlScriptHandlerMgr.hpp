@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "NetLoggingInterfaceShim.hpp"
-#include "pointers.hpp"
-#include "scriptHandlerMgr.hpp"
+#include "Network/NetLoggingInterfaceShim.hpp"
+#include "Game/pointers.hpp"
+#include "Game/scriptHandlerMgr.hpp"
 
 namespace Stand
 {

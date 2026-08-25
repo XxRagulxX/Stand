@@ -1,8 +1,8 @@
-#include "CommandPlayerKickLoveLetter.hpp"
+#include "Commands/Player/CommandPlayerKickLoveLetter.hpp"
 
-#include "LeaveReasons.hpp"
-#include "netPeerId.hpp"
-#include "pointers.hpp"
+#include "Network/LeaveReasons.hpp"
+#include "Network/netPeerId.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

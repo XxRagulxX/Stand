@@ -1,7 +1,7 @@
-#include "SpectateMgr.hpp"
+#include "Network/SpectateMgr.hpp"
 
-#include "AbstractEntity.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

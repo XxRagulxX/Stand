@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

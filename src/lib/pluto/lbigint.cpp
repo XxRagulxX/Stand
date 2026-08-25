@@ -2,7 +2,7 @@
 #include "lualib.h"
 #include "llimits.h" // l_unlikely
 
-#include "soup/Bigint.hpp"
+#include "lib/soup/Bigint.hpp"
 
 void pushbigint (lua_State *L, soup::Bigint x);
 

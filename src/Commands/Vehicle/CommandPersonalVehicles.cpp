@@ -1,14 +1,14 @@
-#include "CommandPersonalVehicles.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicles.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "CommandPersonalVehicle.hpp"
-#include "CommandSearchLiterals.hpp"
-#include "CommandPersonalVehiclesSort.hpp"
-#include "CommandSaveAllPersonalVehicles.hpp"
-#include "Gui.hpp"
-#include "PersonalVehicle.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicle.hpp"
+#include "Commands/Widgets/CommandSearchLiterals.hpp"
+#include "Commands/Vehicle/CommandPersonalVehiclesSort.hpp"
+#include "Commands/Vehicle/CommandSaveAllPersonalVehicles.hpp"
+#include "Rendering/Gui.hpp"
+#include "Vehicle/PersonalVehicle.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

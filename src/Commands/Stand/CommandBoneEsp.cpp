@@ -1,9 +1,9 @@
-#include "CommandBoneEsp.hpp"
+#include "Commands/Stand/CommandBoneEsp.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "AbstractRenderer.hpp"
-#include "PedBoneId.hpp"
-#include "vector.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Rendering/AbstractRenderer.hpp"
+#include "Ped/PedBoneId.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

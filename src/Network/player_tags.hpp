@@ -1,9 +1,9 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "conf_classifier.hpp"
+#include "Config/conf_classifier.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ConsoleLogger.hpp"
-#include "lang.hpp"
+#include "Core/ConsoleLogger.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

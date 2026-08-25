@@ -1,11 +1,11 @@
-#include "CommandFlowEventReaction3.hpp"
+#include "Commands/Extra/CommandFlowEventReaction3.hpp"
 
 #include <fmt/core.h>
 
-#include "CommandFlowEvent.hpp"
-#include "Hooking.hpp"
-#include "lang.hpp"
-#include "Util.hpp"
+#include "Commands/Extra/CommandFlowEvent.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Localization/lang.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

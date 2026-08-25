@@ -1,10 +1,10 @@
-#include "CommandWaterwheels.hpp"
+#include "Commands/World/CommandWaterwheels.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_vehicle.hpp"
-#include "phArchetype.hpp"
-#include "Util.hpp"
-#include "VehicleType.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/phArchetype.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleType.hpp"
 
 namespace Stand
 {

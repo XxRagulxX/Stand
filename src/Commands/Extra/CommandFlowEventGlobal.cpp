@@ -1,8 +1,8 @@
-#include "CommandFlowEventGlobal.hpp"
+#include "Commands/Extra/CommandFlowEventGlobal.hpp"
 
-#include "FlowEvent.hpp"
-#include "Hooking.hpp"
-#include "lang.hpp"
+#include "Core/FlowEvent.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

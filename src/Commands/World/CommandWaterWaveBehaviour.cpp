@@ -1,8 +1,8 @@
-#include "CommandWaterWaveBehaviour.hpp"
+#include "Commands/World/CommandWaterWaveBehaviour.hpp"
 
-#include "AbstractEntity.hpp"
-#include "regular_event.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/regular_event.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

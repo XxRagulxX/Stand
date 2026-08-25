@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
 
 namespace Stand
 {

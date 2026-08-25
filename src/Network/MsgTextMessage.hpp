@@ -1,8 +1,8 @@
 #pragma once
 
-#include "netMessageText.hpp"
+#include "Network/netMessageText.hpp"
 
-#include "rlGamerHandle.hpp"
+#include "Network/rlGamerHandle.hpp"
 
 struct MsgTextMessage : public rage::netMessageText
 {

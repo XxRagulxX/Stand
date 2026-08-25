@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gta_net_object_mgr.hpp"
+#include "Game/gta_net_object_mgr.hpp"
 
-#include "rlclancommon.hpp"
-#include "CPedHeadBlendData.hpp"
+#include "Network/rlclancommon.hpp"
+#include "Ped/CPedHeadBlendData.hpp"
 
 #pragma pack(push, 1)
 class CPlayerCreationDataNode : public CProjectBaseSyncDataNode

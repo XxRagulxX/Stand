@@ -1,9 +1,9 @@
 #pragma once
 
-#include "tbToggleableBehaviourScript.hpp"
+#include "Core/tbToggleableBehaviourScript.hpp"
 
-#include "natives_decl.hpp"
-#include "vector.hpp"
+#include "Game/natives_decl.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

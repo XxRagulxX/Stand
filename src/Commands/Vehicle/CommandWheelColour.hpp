@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandStandardGameVehicleColour.hpp"
+#include "Commands/Vehicle/CommandStandardGameVehicleColour.hpp"
 
 namespace Stand
 {

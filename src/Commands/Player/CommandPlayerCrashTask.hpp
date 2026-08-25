@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerCrash.hpp"
+#include "Commands/Player/CommandPlayerCrash.hpp"
 
 namespace Stand
 {

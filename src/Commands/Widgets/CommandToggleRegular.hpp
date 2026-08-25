@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandToggleEditionbound.hpp"
+#include "Commands/Stand/CommandToggleEditionbound.hpp"
 
 namespace Stand
 {

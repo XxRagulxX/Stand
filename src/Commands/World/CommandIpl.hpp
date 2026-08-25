@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CommandToggle.hpp"
-#include "CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
 
-#include "DrawUtil3d.hpp"
-#include "FiberPool.hpp"
-#include "ipls.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
-#include "TpUtil.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Core/FiberPool.hpp"
+#include "World/ipls.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

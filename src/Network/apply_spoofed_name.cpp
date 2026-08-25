@@ -1,12 +1,12 @@
-#include "apply_spoofed_name.hpp"
+#include "Network/apply_spoofed_name.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "CPlayerInfo.hpp"
-#include "Hooking.hpp"
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 namespace Stand
 {

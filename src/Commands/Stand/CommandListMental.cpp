@@ -1,8 +1,8 @@
-#include "CommandListMental.hpp"
+#include "Commands/Stand/CommandListMental.hpp"
 
-#include "CommandMental.hpp"
-#include "CommandLockMentalState.hpp"
-#include "CommandMentalPulse.hpp"
+#include "Commands/Self/CommandMental.hpp"
+#include "Commands/Stand/CommandLockMentalState.hpp"
+#include "Commands/Self/CommandMentalPulse.hpp"
 
 namespace Stand
 {

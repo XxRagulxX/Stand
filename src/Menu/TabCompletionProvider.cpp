@@ -1,8 +1,8 @@
-#include "TabCompletionProvider.hpp"
+#include "Menu/TabCompletionProvider.hpp"
 
-#include <soup/base.hpp>
+#include "lib/soup/base.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
@@ -58,7 +58,7 @@ namespace Stand
 	}
 }
 
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {
@@ -83,10 +83,10 @@ namespace Stand
 	}
 }
 
-#include "CommandboxGrid.hpp"
-#include "CommandExtraInfo.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListActionItem.hpp"
-#include "CommandWithEntityPreview.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandWithEntityPreview.hpp"
 
-#include "AbstractModel.hpp"
-#include "PedType.hpp"
-#include "Util.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Ped/PedType.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

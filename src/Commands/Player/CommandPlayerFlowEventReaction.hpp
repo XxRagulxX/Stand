@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandListPlayer.hpp"
-#include "Hooking.hpp"
-#include "PlayerProvider.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

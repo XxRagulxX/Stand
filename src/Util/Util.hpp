@@ -7,12 +7,12 @@
 
 #include <windows.h>
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "natives_decl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/natives_decl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "outfit_data.hpp"
+#include "Ped/outfit_data.hpp"
 
 #define TOAST_ABOVE_MAP			((toast_t)0b1)
 #define TOAST_CONSOLE			((toast_t)0b10)

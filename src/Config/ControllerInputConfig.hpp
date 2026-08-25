@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "gta_input.hpp"
+#include "Game/gta_input.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CVehicleModelInfo.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
 
-#include <soup/StructMap.hpp>
+#include "lib/soup/StructMap.hpp"
 
 namespace Stand
 {

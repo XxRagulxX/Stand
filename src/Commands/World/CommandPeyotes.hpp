@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ManagedTunables.hpp"
+#include "Config/ManagedTunables.hpp"
 
 namespace Stand
 {

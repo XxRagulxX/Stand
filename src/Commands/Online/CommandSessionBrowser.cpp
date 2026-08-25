@@ -1,26 +1,26 @@
-#include "CommandSessionBrowser.hpp"
+#include "Commands/Online/CommandSessionBrowser.hpp"
 
-#include "Auth.hpp"
-#include "Blacklist.hpp"
-#include "CNetworkAssetVerifier.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLambdaListSelect.hpp"
-#include "CommandSlider.hpp"
-#include "CommandSliderPointer.hpp"
-#include "CommandTogglePointer.hpp"
-#include "Hooking.hpp"
-#include "Matchmaking.hpp"
-#include "pointers.hpp"
-#include "Session.hpp"
-#include "StringUtils.hpp"
-#include "Tunables.hpp"
+#include "Network/Auth.hpp"
+#include "Network/Blacklist.hpp"
+#include "Network/CNetworkAssetVerifier.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaListSelect.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderPointer.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/Matchmaking.hpp"
+#include "Game/pointers.hpp"
+#include "Network/Session.hpp"
+#include "Util/StringUtils.hpp"
+#include "Config/Tunables.hpp"
 
 #ifdef STAND_DEBUG
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 #endif
 
-#include "CommandSessionBrowserRefresh.hpp"
-#include "CommandSessionBrowserSession.hpp"
+#include "Commands/Online/CommandSessionBrowserRefresh.hpp"
+#include "Commands/Online/CommandSessionBrowserSession.hpp"
 
 namespace Stand
 {

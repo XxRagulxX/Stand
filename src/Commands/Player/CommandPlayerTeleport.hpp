@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "PlayerProvider.hpp"
-#include "TpUtil.hpp"
-#include "Vector2Plus.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Core/TpUtil.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

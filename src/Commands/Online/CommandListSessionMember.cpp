@@ -1,26 +1,26 @@
-#include "conf_netcode.hpp"
+#include "Config/conf_netcode.hpp"
 #if I_CAN_SPY
 
-#include "CommandListSessionMember.hpp"
+#include "Commands/Online/CommandListSessionMember.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandListSession.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "NetworkSessionMessages.hpp"
-#include "pointers.hpp"
-#include "RageConnector.hpp"
-#include "rlSessionInfo.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Online/CommandListSession.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Network/NetworkSessionMessages.hpp"
+#include "Game/pointers.hpp"
+#include "Network/RageConnector.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
 
 #if SPY_CAN_KICK
-#include "CommandListSessionMemberOrgasm.hpp"
+#include "Commands/Online/CommandListSessionMemberOrgasm.hpp"
 #endif
 
 namespace Stand

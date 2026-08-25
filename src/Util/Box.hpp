@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/gmBoxCorners.hpp>
+#include "lib/soup/gmBoxCorners.hpp"
 
-#include "fwddecl.hpp"
-#include "Renderer.hpp"
+#include "Game/fwddecl.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

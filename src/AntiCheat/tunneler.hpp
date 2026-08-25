@@ -1,8 +1,8 @@
 #pragma once
 
-#include "netStatus.hpp"
-#include "rlGamerHandle.hpp"
-#include "sc_presence_attributes.hpp"
+#include "Network/netStatus.hpp"
+#include "Network/rlGamerHandle.hpp"
+#include "Network/sc_presence_attributes.hpp"
 
 namespace rage
 {

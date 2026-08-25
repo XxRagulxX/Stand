@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "StringCastable.hpp"
-#include "Util.hpp"
+#include "Util/StringCastable.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

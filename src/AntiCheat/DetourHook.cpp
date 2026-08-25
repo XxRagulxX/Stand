@@ -1,15 +1,15 @@
-#include "DetourHook.hpp"
+#include "AntiCheat/DetourHook.hpp"
 
 #include <fmt/core.h>
 #include <MinHook.h>
 
-#include <soup/ObfusString.hpp>
-#include <soup/Pointer.hpp>
-#include <soup/x64.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/Pointer.hpp"
+#include "lib/soup/x64.hpp"
 
-#include "ColoadMgr.hpp"
-#include "FileLogger.hpp"
-#include "StringUtils.hpp"
+#include "Game/ColoadMgr.hpp"
+#include "Core/FileLogger.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

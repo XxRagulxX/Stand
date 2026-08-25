@@ -1,8 +1,8 @@
-#include "CommandNoDailyExpenses.hpp"
+#include "Commands/Self/CommandNoDailyExpenses.hpp"
 
-#include <soup/macros.hpp>
-#include "script_func.hpp"
-#include "ScriptVmOpCode.hpp"
+#include "lib/soup/macros.hpp"
+#include "Game/script_func.hpp"
+#include "Scripting/ScriptVmOpCode.hpp"
 
 namespace Stand
 {

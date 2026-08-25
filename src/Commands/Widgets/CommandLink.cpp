@@ -1,10 +1,10 @@
-#include "CommandLink.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
 
-#include <soup/WeakRef.hpp>
+#include "lib/soup/WeakRef.hpp"
 
-#include "CommandPhysical.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 #ifdef STAND_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

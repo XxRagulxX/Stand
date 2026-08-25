@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandPlayerActionAggressive.hpp"
+#include "Commands/Player/CommandPlayerActionAggressive.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "ExecCtx.hpp"
-#include "OrgHelper.hpp"
-#include "script_events.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Network/OrgHelper.hpp"
+#include "Network/script_events.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

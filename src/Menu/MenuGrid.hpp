@@ -2,8 +2,8 @@
 
 #include <functional>
 
-#include "Grid.hpp"
-#include "TextSettings.hpp"
+#include "Menu/Grid.hpp"
+#include "Rendering/TextSettings.hpp"
 
 namespace Stand
 {

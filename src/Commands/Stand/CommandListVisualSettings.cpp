@@ -1,11 +1,11 @@
-#include "CommandListVisualSettings.hpp"
+#include "Commands/Stand/CommandListVisualSettings.hpp"
 
-#include <soup/string.hpp>
+#include "lib/soup/string.hpp"
 
-#include "CommandVisualSetting.hpp"
-#include "visual_settings.hpp"
+#include "Commands/Stand/CommandVisualSetting.hpp"
+#include "Rendering/visual_settings.hpp"
 
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

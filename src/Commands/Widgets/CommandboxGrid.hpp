@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Grid.hpp"
+#include "Menu/Grid.hpp"
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include <soup/Thread.hpp>
-#include <soup/WeakRef.hpp>
+#include "lib/soup/Thread.hpp"
+#include "lib/soup/WeakRef.hpp"
 
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
 #define COLOURS_WIDTH(i) (((colour_size + spacer_size) * i) - spacer_size)
 

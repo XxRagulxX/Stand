@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rgsc_common.hpp"
+#include "Network/rgsc_common.hpp"
 
 namespace rgsc
 {

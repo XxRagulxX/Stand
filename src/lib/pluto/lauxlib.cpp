@@ -36,9 +36,9 @@
 
 #include <filesystem>
 
-#include "soup/filesystem.hpp"
-#include "soup/sha256.hpp"
-#include "soup/string.hpp"
+#include "lib/soup/filesystem.hpp"
+#include "lib/soup/sha256.hpp"
+#include "lib/soup/string.hpp"
 #endif
 
 

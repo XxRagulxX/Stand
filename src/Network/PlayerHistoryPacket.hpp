@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <soup/Packet.hpp>
+#include "lib/soup/Packet.hpp"
 
 namespace Stand
 {

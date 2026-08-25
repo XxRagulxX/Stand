@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cloth.hpp"
+#include "Game/cloth.hpp"
 
 namespace rage
 {

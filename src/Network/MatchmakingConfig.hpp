@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "gta_player.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_player.hpp"
 
 namespace Stand
 {

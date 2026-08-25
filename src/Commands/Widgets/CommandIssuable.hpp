@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Command.hpp"
+#include "Commands/Widgets/Command.hpp"
 
 #include <unordered_set>
 #include <vector>
 
-#include "Click.hpp"
-#include "CommandName.hpp" // COMPACT_COMMAND_NAMES
-#include "CommandPerm.hpp"
+#include "Menu/Click.hpp"
+#include "Commands/Online/CommandName.hpp" // COMPACT_COMMAND_NAMES
+#include "Commands/Online/CommandPerm.hpp"
 
 namespace Stand
 {

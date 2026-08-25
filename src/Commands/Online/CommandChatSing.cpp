@@ -1,13 +1,13 @@
-﻿#include "CommandChatSing.hpp"
+﻿#include "Commands/Online/CommandChatSing.hpp"
 
 #include <filesystem>
 #include <fstream>
 
-#include "Chat.hpp"
-#include "FiberPool.hpp"
-#include "regular_event.hpp"
-#include "get_appdata_path.hpp"
-#include "TimedTextPresenter.hpp"
+#include "Network/Chat.hpp"
+#include "Core/FiberPool.hpp"
+#include "Core/regular_event.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Menu/TimedTextPresenter.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "natives_decl.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

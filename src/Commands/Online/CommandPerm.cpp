@@ -1,4 +1,4 @@
-#include "CommandPerm.hpp"
+#include "Commands/Online/CommandPerm.hpp"
 
 namespace Stand
 {

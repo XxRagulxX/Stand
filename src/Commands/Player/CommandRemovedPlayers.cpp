@@ -1,7 +1,7 @@
-#include "CommandRemovedPlayers.hpp"
-#include "CommandUndoRemoved.hpp"
+#include "Commands/Player/CommandRemovedPlayers.hpp"
+#include "Commands/Online/CommandUndoRemoved.hpp"
 
-#include "Hooking.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

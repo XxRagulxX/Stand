@@ -1,6 +1,6 @@
-#include "GridItemColourBox.hpp"
+#include "Rendering/GridItemColourBox.hpp"
 
-#include "CommandboxGrid.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "evtEvent.hpp"
+#include "Core/evtEvent.hpp"
 
 #include <string>
 
-#include "gta_player.hpp"
+#include "Game/gta_player.hpp"
 
 namespace Stand
 {

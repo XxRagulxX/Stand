@@ -1,20 +1,20 @@
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 
-#include "lang.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "tbScreenshotMode.hpp"
+#include "Localization/lang.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
 #define DDT_THREAD_SAFE false
 #define DDT_SPAM_SAFE false
 
 #if DDT_THREAD_SAFE
 #else
-#include "ExecCtx.hpp"
+#include "Core/ExecCtx.hpp"
 #endif
 
 #if DDT_SPAM_SAFE
-#include "huddecl.hpp"
+#include "Game/huddecl.hpp"
 #endif
 
 namespace Stand

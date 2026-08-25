@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "atMap.hpp"
-#include "rlGamerInfo.hpp"
-#include "sysCriticalSection.hpp"
+#include "Game/atMap.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Game/sysCriticalSection.hpp"
 
 namespace rage
 {

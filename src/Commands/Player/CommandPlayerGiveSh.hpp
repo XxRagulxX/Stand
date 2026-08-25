@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "PlayerProviderSingle.hpp"
-#include "script_handler.hpp"
-#include "ScriptHostUtil.hpp"
-#include "script_thread.hpp"
+#include "Network/PlayerProviderSingle.hpp"
+#include "Game/script_handler.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
+#include "Game/script_thread.hpp"
 
 #if CAN_GIVE_SH
 namespace Stand

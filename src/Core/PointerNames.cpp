@@ -1,19 +1,19 @@
-#include "PointerNames.hpp"
+#include "Core/PointerNames.hpp"
 
 #include <windows.h>
 #include <dbghelp.h>
 
 #include <fmt/format.h>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "conf.hpp"
-#include "Exceptional.hpp"
-#include "main.hpp"
-#include "mystackwalker.hpp"
-#include "PeHeader.hpp"
-#include "pointers.hpp"
-#include "Util.hpp"
+#include "Config/conf.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/main.hpp"
+#include "Core/mystackwalker.hpp"
+#include "AntiCheat/PeHeader.hpp"
+#include "Game/pointers.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

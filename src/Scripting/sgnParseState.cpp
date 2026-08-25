@@ -1,6 +1,6 @@
-#include "sgnParseState.hpp"
+#include "Scripting/sgnParseState.hpp"
 
-#include "script_vm_common.hpp"
+#include "Game/script_vm_common.hpp"
 
 namespace ScriptGenie
 {

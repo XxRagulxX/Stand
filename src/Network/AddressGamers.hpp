@@ -4,12 +4,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include <soup/ShortString.hpp>
+#include "lib/soup/ShortString.hpp"
 
-#include "netIpAddress.hpp"
-#include "rlGamerInfo.hpp"
+#include "Network/netIpAddress.hpp"
+#include "Network/rlGamerInfo.hpp"
 
-#include "RateLimit.hpp"
+#include "Network/RateLimit.hpp"
 
 namespace Stand
 {

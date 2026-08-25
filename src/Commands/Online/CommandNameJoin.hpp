@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandTextsliderJoin.hpp"
+#include "Commands/Widgets/CommandTextsliderJoin.hpp"
 
-#include "get_next_arg.hpp"
-#include "JoinUtil.hpp"
-#include "ScAccount.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Network/JoinUtil.hpp"
+#include "Network/ScAccount.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

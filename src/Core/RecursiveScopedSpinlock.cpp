@@ -1,20 +1,20 @@
-#include "RecursiveScopedSpinlock.hpp"
+#include "Core/RecursiveScopedSpinlock.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
 
 #define LOG_WRITE_LOCK_FAIL_DUE_TO_READERS false
 #define RSNYM_LOG_WRITE false
 #define PROFILE_LOCK_WRITE false
 
 #if LOG_WRITE_LOCK_FAIL_DUE_TO_READERS || RSNYM_LOG_WRITE
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 #if PROFILE_LOCK_WRITE
-#include "TimedCall.hpp"
+#include "Core/TimedCall.hpp"
 #endif
 
 // This saves us a lot of headaches with Gui::recursivelyApplyState.

@@ -1,16 +1,16 @@
-#include "CommandSuperFlight.hpp"
+#include "Commands/Self/CommandSuperFlight.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ButtonInstructions.hpp"
-#include "eTaskType.hpp"
-#include "get_ground_z.hpp"
-#include "gta_input.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "input.hpp"
-#include "natives.hpp"
-#include "tbTempEmptyParachute.hpp"
-#include "TickMgr.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Menu/ButtonInstructions.hpp"
+#include "Ped/eTaskType.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Game/gta_input.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
+#include "Core/tbTempEmptyParachute.hpp"
+#include "Core/TickMgr.hpp"
 
 namespace Stand
 {

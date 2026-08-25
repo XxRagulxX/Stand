@@ -1,11 +1,11 @@
-#include "ChainedVehicleMgr.hpp"
+#include "Vehicle/ChainedVehicleMgr.hpp"
 
-#include "eCombatAttributes.hpp"
-#include "ExecCtx.hpp"
-#include "get_ground_z.hpp"
-#include "PathFind.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
+#include "Weapons/eCombatAttributes.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Ped/PathFind.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

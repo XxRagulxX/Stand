@@ -1,13 +1,13 @@
-#include "CommandDiscord.hpp"
+#include "Commands/Extra/CommandDiscord.hpp"
 
-#include <discord-rpc/include/discord_rpc.h>
+#include "lib/discord-rpc/include/discord_rpc.h"
 
-#include <soup/ObfusString.hpp>
-#include <soup/rand.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/rand.hpp"
 
-#include "Gui.hpp"
-#include "main.hpp" // g_windows_7_or_older
-#include "Util.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/main.hpp" // g_windows_7_or_older
+#include "Util/Util.hpp"
 
 namespace Stand
 {

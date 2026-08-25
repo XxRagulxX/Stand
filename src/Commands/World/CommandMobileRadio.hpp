@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "atArray.hpp"
-#include "ControlMgr.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "script_thread.hpp"
+#include "Game/atArray.hpp"
+#include "Game/ControlMgr.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Game/script_thread.hpp"
 
 namespace Stand
 {

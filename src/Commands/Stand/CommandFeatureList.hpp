@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
 #include <fstream>
 
-#include "CommandListConcealer.hpp"
-#include "get_appdata_path.hpp"
-#include "CommandPlayer.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

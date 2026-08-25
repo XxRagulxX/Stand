@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "vehicle_items.hpp"
+#include "Vehicle/vehicle_items.hpp"
 
 namespace Stand
 {

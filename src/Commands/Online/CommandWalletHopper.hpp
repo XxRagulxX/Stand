@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
-#include "CommandDevFlag.hpp"
+#include "Commands/Extra/CommandDevFlag.hpp"
 
-#include "DlcMgr.hpp"
-#include "pointers.hpp"
-#include "rlRosCredentials.hpp"
+#include "Game/DlcMgr.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlRosCredentials.hpp"
 
 namespace Stand
 {

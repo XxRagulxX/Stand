@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/Matrix.hpp>
+#include "lib/soup/Matrix.hpp"
 
-#include "struct_base.hpp"
-#include "fwRefAwareBase.hpp"
+#include "Util/struct_base.hpp"
+#include "Game/fwRefAwareBase.hpp"
 
 #pragma pack(push, 1)
 class camFrame : public rage::fwRefAwareBase

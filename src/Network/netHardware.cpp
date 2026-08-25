@@ -1,4 +1,4 @@
-#include "netHardware.hpp"
+#include "Network/netHardware.hpp"
 
 #include <rpc.h>
 #pragma comment(lib, "rpcrt4.lib")

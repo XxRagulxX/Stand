@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandStandardGameVehicleColour.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Vehicle/CommandStandardGameVehicleColour.hpp"
 
-#include "AbstractModel.hpp"
-#include "CommandCustomsShowNa.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Commands/Stand/CommandCustomsShowNa.hpp"
 
 namespace Stand
 {

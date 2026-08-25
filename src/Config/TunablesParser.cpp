@@ -1,8 +1,8 @@
-#include "TunablesParser.hpp"
+#include "Config/TunablesParser.hpp"
 
-#include "natives.hpp"
-#include "script_vm_common.hpp"
-#include "sgnParseState.hpp"
+#include "Game/natives.hpp"
+#include "Game/script_vm_common.hpp"
+#include "Scripting/sgnParseState.hpp"
 
 namespace Stand
 {

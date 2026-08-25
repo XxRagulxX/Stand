@@ -1,14 +1,14 @@
-#include "FeatureCanvasWindow.hpp"
+#include "Menu/FeatureCanvasWindow.hpp"
 
-#include <soup/ObfusString.hpp>
-#include <soup/Rgb.hpp>
-#include <soup/RenderTarget.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/Rgb.hpp"
+#include "lib/soup/RenderTarget.hpp"
 
-#include "CommandPhysical.hpp" // HANDLER_CHECK, HANDLER_END
-#include "Exceptional.hpp"
-#include "regular_event.hpp"
-#include "Renderer.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp" // HANDLER_CHECK, HANDLER_END
+#include "Core/Exceptional.hpp"
+#include "Core/regular_event.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

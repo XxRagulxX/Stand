@@ -2,16 +2,16 @@
 
 #include <limits>
 
-#include <soup/Matrix.hpp>
+#include "lib/soup/Matrix.hpp"
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "CBaseModelInfo.hpp"
-#include "datRef.hpp"
-#include "fragCacheEntry.hpp"
-#include "gta_extensible.hpp"
-#include "gta_draw_handler.hpp"
-#include "pgBase.hpp"
+#include "Game/CBaseModelInfo.hpp"
+#include "Game/datRef.hpp"
+#include "Game/fragCacheEntry.hpp"
+#include "Game/gta_extensible.hpp"
+#include "Game/gta_draw_handler.hpp"
+#include "Game/pgBase.hpp"
 
 namespace rage
 {

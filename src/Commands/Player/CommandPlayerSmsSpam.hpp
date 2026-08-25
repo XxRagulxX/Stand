@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "FiberPool.hpp"
+#include "Core/FiberPool.hpp"
 
 namespace Stand
 {

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "Label.hpp"
+#include "Game/fwddecl.hpp"
+#include "Util/Label.hpp"
 
-#include "netGameEventId.hpp"
+#include "Network/netGameEventId.hpp"
 
 #include <string>
 
-#include "conf_classifier.hpp"
+#include "Config/conf_classifier.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "PlayerProviderAll.hpp"
+#include "Network/PlayerProviderAll.hpp"
 
-#include "CommandToggleNoCorrelation.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
 namespace Stand
 {

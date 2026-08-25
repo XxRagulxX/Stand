@@ -1,7 +1,7 @@
-#include "CommandLuaScript.hpp"
-#include "lua_commons.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Scripting/lua_commons.hpp"
 
-#include "TimedCall.hpp"
+#include "Core/TimedCall.hpp"
 
 namespace Stand
 {

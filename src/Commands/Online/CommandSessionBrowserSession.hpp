@@ -1,17 +1,17 @@
 #pragma once
 
-#include "CommandWithOnTickFocused.hpp"
-#include "CommandListSession.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
+#include "Commands/Online/CommandListSession.hpp"
 
 #define SESSION_BROWSER_DEBUG false
 
-#include "RageConnector.hpp"
-#include "rlSessionDetail.hpp"
-#include "ScAccount.hpp"
-#include "Session.hpp"
+#include "Network/RageConnector.hpp"
+#include "Network/rlSessionDetail.hpp"
+#include "Network/ScAccount.hpp"
+#include "Network/Session.hpp"
 #if SESSION_BROWSER_DEBUG
 static_assert(STAND_DEBUG);
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

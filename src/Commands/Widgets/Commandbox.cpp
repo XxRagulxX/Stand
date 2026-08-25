@@ -1,15 +1,15 @@
-﻿#include "Commandbox.hpp"
+﻿#include "Commands/Widgets/Commandbox.hpp"
 
-#include "Click.hpp"
-#include "CommandboxGrid.hpp"
-#include "FiberPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "StringUtils.hpp"
-#include "TextColour.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
+#include "Menu/Click.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
+#include "Rendering/TextColour.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

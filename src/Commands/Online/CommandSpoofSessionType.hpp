@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "gsType.hpp"
-#include "SessionSpoofing.hpp"
-#include "Tunables.hpp"
+#include "Game/gsType.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

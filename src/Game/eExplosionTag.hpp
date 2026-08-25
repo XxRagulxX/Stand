@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListActionItemData.hpp"
+#include "Commands/Widgets/CommandListActionItemData.hpp"
 
 enum eExplosionTag
 {

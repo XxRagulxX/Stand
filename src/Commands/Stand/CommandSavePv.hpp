@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandActionName.hpp"
+#include "Commands/Widgets/CommandActionName.hpp"
 
 namespace Stand
 {

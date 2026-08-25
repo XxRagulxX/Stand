@@ -1,5 +1,5 @@
-#include "CommandLuaScript.hpp"
-#include "lua_commons.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Scripting/lua_commons.hpp"
 
 namespace Stand
 {

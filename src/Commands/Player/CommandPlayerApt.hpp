@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandAction.hpp"
-#include "CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
 
 #include <fmt/format.h>
 
-#include "DrawUtil3d.hpp"
-#include "pointers.hpp"
-#include "script_events.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Game/pointers.hpp"
+#include "Network/script_events.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
-#include "CommandActionModel.hpp"
+#include "Commands/Widgets/CommandActionModel.hpp"
 
 #include <fmt/core.h>
 
-#include "get_next_arg.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

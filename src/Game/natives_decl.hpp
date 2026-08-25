@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include "gta_fwddecl.hpp"
-#include "gta_player.hpp"
-#include "typedecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/gta_player.hpp"
+#include "Game/typedecl.hpp"
 
 namespace rage
 {

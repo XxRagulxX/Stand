@@ -1,7 +1,7 @@
-#include "CommandAnyVehRc.hpp"
+#include "Commands/Vehicle/CommandAnyVehRc.hpp"
 
-#include <soup/macros.hpp>
-#include "script_func.hpp"
+#include "lib/soup/macros.hpp"
+#include "Game/script_func.hpp"
 
 namespace Stand
 {

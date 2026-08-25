@@ -1,8 +1,8 @@
 #pragma once
 
-#include "PatternBatch.hpp"
-#include "DetourHook.hpp"
-#include "main.hpp" // g_gta_module
+#include "AntiCheat/PatternBatch.hpp"
+#include "AntiCheat/DetourHook.hpp"
+#include "Core/main.hpp" // g_gta_module
 
 #define CODENAME(hn) hn##_hook.name
 

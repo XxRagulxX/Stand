@@ -4,16 +4,16 @@
 #include <string>
 #include <vector>
 
-#include <soup/Promise.hpp>
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/Promise.hpp"
+#include "lib/soup/UniquePtr.hpp"
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "Command.hpp"
-#include "HistoricPlayer.hpp"
-#include "Spinlock.hpp"
+#include "Commands/Widgets/Command.hpp"
+#include "Network/HistoricPlayer.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

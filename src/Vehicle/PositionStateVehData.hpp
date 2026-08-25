@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "vector.hpp"
+#include "Game/fwddecl.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

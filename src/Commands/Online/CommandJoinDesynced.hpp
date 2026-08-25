@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandPlayer.hpp"
-#include "FiberPool.hpp"
-#include "is_session.hpp"
-#include "JoinUtil.hpp"
-#include "RemoteGamer.hpp"
-#include "Script.hpp"
-#include "tbLoadingSessionDetails.hpp"
-#include "Util.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/is_session.hpp"
+#include "Network/JoinUtil.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/tbLoadingSessionDetails.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "unrestrictGameplayCam.hpp"
+#include "Rendering/unrestrictGameplayCam.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
-#include "PersonalVehicle.hpp"
+#include "Vehicle/PersonalVehicle.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/Bitset.hpp>
+#include "lib/soup/Bitset.hpp"
 
-#include "atStringHash.hpp"
-#include "natives.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

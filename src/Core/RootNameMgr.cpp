@@ -1,9 +1,9 @@
-﻿#include "RootNameMgr.hpp"
+﻿#include "Core/RootNameMgr.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "conf.hpp"
-#include "Gui.hpp"
+#include "Config/conf.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

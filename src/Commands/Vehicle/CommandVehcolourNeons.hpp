@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandVehcolour.hpp"
-#include "Util.hpp"
-#include "AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandVehcolour.hpp"
+#include "Util/Util.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

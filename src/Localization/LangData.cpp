@@ -1,8 +1,8 @@
-#include "LangData.hpp"
+#include "Localization/LangData.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "lang.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

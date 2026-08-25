@@ -2,12 +2,12 @@
 
 #include <cstdint>
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "gta_node_list.hpp"
-#include "script_id.hpp"
+#include "Game/gta_node_list.hpp"
+#include "Game/script_id.hpp"
 
 #define CAN_GIVE_SH false
 

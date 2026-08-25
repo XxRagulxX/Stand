@@ -1,4 +1,4 @@
-#include "GarbageCollector.hpp"
+#include "Core/GarbageCollector.hpp"
 
 namespace Stand
 {

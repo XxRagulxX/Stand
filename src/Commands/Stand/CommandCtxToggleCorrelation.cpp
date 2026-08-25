@@ -1,7 +1,7 @@
-#include "CommandCtxToggleCorrelation.hpp"
+#include "Commands/Stand/CommandCtxToggleCorrelation.hpp"
 
-#include "CommandToggle.hpp"
-#include "ContextMenu.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Menu/ContextMenu.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "net.hpp"
-#include "netConnectionManager.hpp"
+#include "Network/net.hpp"
+#include "Network/netConnectionManager.hpp"
 
 namespace rage
 {

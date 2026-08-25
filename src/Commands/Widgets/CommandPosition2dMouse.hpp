@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "dx_common.hpp"
-#include "MouseMode.hpp"
-#include "Position2d.hpp"
+#include "Rendering/dx_common.hpp"
+#include "Menu/MouseMode.hpp"
+#include "Util/Position2d.hpp"
 
 namespace Stand
 {

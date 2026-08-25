@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include <soup/WeakRef.hpp>
+#include "lib/soup/WeakRef.hpp"
 
-#include "CommandListPlayer.hpp"
-#include "CommandLuaScript.hpp"
-#include "Util.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

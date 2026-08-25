@@ -1,9 +1,9 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "atArray.hpp"
-#include "atString.hpp"
+#include "Game/atArray.hpp"
+#include "Game/atString.hpp"
 
 struct SSetupData
 {

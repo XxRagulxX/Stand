@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 #include <fmt/core.h>
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
 namespace Stand
 {

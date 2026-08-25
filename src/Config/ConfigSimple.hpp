@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Config.hpp"
+#include "Config/Config.hpp"
 
 namespace Stand
 {

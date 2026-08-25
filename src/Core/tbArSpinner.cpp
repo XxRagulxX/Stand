@@ -1,8 +1,8 @@
-#include "tbArSpinner.hpp"
+#include "Core/tbArSpinner.hpp"
 
-#include "AbstractEntity.hpp"
-#include "DrawUtil3d.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
-#include "GridItemTabsHorizontal.hpp"
+#include "Menu/GridItemTabsHorizontal.hpp"
 
-#include "CommandTab.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
+#include "Commands/Widgets/CommandTab.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

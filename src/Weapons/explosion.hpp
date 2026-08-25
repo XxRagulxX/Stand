@@ -1,10 +1,10 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "CNetFXIdentifier.hpp"
-#include "eExplosionTag.hpp"
-#include "fwInteriorLocation.hpp"
+#include "Network/CNetFXIdentifier.hpp"
+#include "Game/eExplosionTag.hpp"
+#include "Game/fwInteriorLocation.hpp"
 
 #define DEFAULT_EXPLOSION_SCALE 1.0f
 

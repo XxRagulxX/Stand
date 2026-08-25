@@ -1,7 +1,7 @@
 #pragma once
 
-#include "assetstore.hpp"
-#include "pgBase.hpp"
+#include "Game/assetstore.hpp"
+#include "Game/pgBase.hpp"
 
 namespace rage
 {

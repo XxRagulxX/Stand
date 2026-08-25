@@ -1,6 +1,6 @@
-#include "CommandListQrcode.hpp"
+#include "Commands/Stand/CommandListQrcode.hpp"
 
-#include "MenuGrid.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

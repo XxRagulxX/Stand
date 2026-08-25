@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_net_game_event.hpp"
+#include "Game/gta_net_game_event.hpp"
 
 // This is based off 323
 

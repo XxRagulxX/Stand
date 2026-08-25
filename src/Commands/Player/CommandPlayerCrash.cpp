@@ -1,10 +1,10 @@
-#include "CommandPlayerCrash.hpp"
+#include "Commands/Player/CommandPlayerCrash.hpp"
 
-#include "Hooking.hpp"
-#include "RateLimit.hpp"
-#include "TransitionHelper.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/RateLimit.hpp"
+#include "Core/TransitionHelper.hpp"
 #ifndef STAND_DEBUG
-#include "yeet_flow.hpp"
+#include "Core/yeet_flow.hpp"
 #endif
 
 namespace Stand

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandListSessionMemberAction.hpp"
+#include "Commands/Online/CommandListSessionMemberAction.hpp"
 
-#include "netConnectionManager.hpp"
-#include "NetworkSessionMessages.hpp"
-#include "Script.hpp"
+#include "Network/netConnectionManager.hpp"
+#include "Network/NetworkSessionMessages.hpp"
+#include "Scripting/Script.hpp"
 //#include "Tunables.hpp"
-#include "tunneler.hpp"
+#include "AntiCheat/tunneler.hpp"
 
 namespace Stand
 {

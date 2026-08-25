@@ -1,9 +1,9 @@
-#include "CommandOutfitComponentVariation.hpp"
+#include "Commands/Self/CommandOutfitComponentVariation.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandOutfitComponent.hpp"
-#include "CommandLockOutfit.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Self/CommandOutfitComponent.hpp"
+#include "Commands/Self/CommandLockOutfit.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

@@ -1,24 +1,24 @@
-#include "ComponentSavedata.hpp"
+#include "AntiCheat/ComponentSavedata.hpp"
 
 #ifdef STAND_DEBUG
-#include <soup/JsonBool.hpp>
-#include <soup/JsonFloat.hpp>
-#include <soup/JsonInt.hpp>
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/JsonBool.hpp"
+#include "lib/soup/JsonFloat.hpp"
+#include "lib/soup/JsonInt.hpp"
+#include "lib/soup/UniquePtr.hpp"
 #endif
 
-#include "atStringHash.hpp"
-#include "CStatsDataMgr.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/CStatsDataMgr.hpp"
 
 #define PRINT_UNSUPPORTED false
 
 #if PRINT_UNSUPPORTED
 #include <fmt/format.h>
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 #endif
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {

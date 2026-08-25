@@ -1,8 +1,8 @@
-#include "weapons.hpp"
+#include "Weapons/weapons.hpp"
 
-#include "atStringHash.hpp"
-#include "lang.hpp"
-#include "Util.hpp"
+#include "Game/atStringHash.hpp"
+#include "Localization/lang.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

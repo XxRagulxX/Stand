@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Scaleform.hpp"
+#include "Rendering/Scaleform.hpp"
 
 namespace Stand
 {

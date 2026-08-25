@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandPlayerActionAggressive.hpp"
+#include "Commands/Player/CommandPlayerActionAggressive.hpp"
 
-#include "script_events.hpp"
-#include "tse.hpp"
+#include "Network/script_events.hpp"
+#include "Util/tse.hpp"
 
 namespace Stand
 {

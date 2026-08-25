@@ -1,13 +1,13 @@
-#include "CommandSetCarClubRepLevel.hpp"
+#include "Commands/Online/CommandSetCarClubRepLevel.hpp"
 
 #include <stdexcept>
 
-#include "get_next_arg.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
-#include "StatUtil.hpp"
-#include "Util.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/StatUtil.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

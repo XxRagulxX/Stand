@@ -1,8 +1,8 @@
-#include "CommandReadonlyValue.hpp"
+#include "Commands/Widgets/CommandReadonlyValue.hpp"
 
-#include "Exceptional.hpp"
-#include "RelayCon.hpp"
-#include "StringUtils.hpp"
+#include "Core/Exceptional.hpp"
+#include "Network/RelayCon.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

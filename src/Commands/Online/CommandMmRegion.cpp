@@ -1,7 +1,7 @@
-#include "CommandMmRegion.hpp"
+#include "Commands/Online/CommandMmRegion.hpp"
 
-#include "CommandMmRegionToggle.hpp"
-#include "CommandMmRegionSelect.hpp"
+#include "Commands/Online/CommandMmRegionToggle.hpp"
+#include "Commands/Online/CommandMmRegionSelect.hpp"
 
 namespace Stand
 {

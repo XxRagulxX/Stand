@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "DlcMgr.hpp"
+#include "Game/DlcMgr.hpp"
 
 namespace Stand
 {

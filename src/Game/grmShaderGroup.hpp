@@ -1,8 +1,8 @@
 #pragma once
 
-#include "datBase.hpp"
-#include "pgDictionary.hpp"
-#include "grcTexture.hpp"
+#include "Game/datBase.hpp"
+#include "Game/pgDictionary.hpp"
+#include "Game/grcTexture.hpp"
 
 namespace rage
 {

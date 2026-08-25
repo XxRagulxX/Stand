@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gta_entity.hpp"
+#include "Game/gta_entity.hpp"
 
-#include "fwRegdRef.hpp"
-#include "spdAABB.hpp"
+#include "Game/fwRegdRef.hpp"
+#include "Game/spdAABB.hpp"
 
 enum e2dEffectType
 {

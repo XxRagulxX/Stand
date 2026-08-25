@@ -1,10 +1,10 @@
 #pragma once
 
-#include "rl.hpp"
-#include "rlPeerInfo.hpp"
-#include "rlSessionInfo.hpp"
-#include "rlSessionConfig.hpp"
-#include "rlGamerHandle.hpp"
+#include "Network/rl.hpp"
+#include "Network/rlPeerInfo.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "Network/rlSessionConfig.hpp"
+#include "Network/rlGamerHandle.hpp"
 
 namespace rage
 {

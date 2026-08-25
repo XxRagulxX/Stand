@@ -1,9 +1,9 @@
-#include "PositionStateVehData.hpp"
+#include "Vehicle/PositionStateVehData.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CVehicleModelInfo.hpp"
-#include "gta_vehicle.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

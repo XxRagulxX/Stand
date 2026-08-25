@@ -2,9 +2,9 @@
 
 #include <fmt/format.h>
 
-#include <soup/TreeReader.hpp>
-#include <soup/TreeWriter.hpp>
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/TreeReader.hpp"
+#include "lib/soup/TreeWriter.hpp"
+#include "lib/soup/UniquePtr.hpp"
 
 namespace Stand
 {

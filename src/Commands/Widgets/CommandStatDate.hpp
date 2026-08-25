@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "Stats.hpp"
+#include "Config/Stats.hpp"
 
 namespace Stand
 {

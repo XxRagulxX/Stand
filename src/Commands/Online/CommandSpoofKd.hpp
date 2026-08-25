@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSpoof.hpp"
-#include "CommandSliderFloat.hpp"
+#include "Commands/Online/CommandSpoof.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "as_fraction.hpp"
+#include "Util/as_fraction.hpp"
 
 namespace Stand
 {

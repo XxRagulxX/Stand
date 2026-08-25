@@ -1,9 +1,9 @@
-#include "DisableDripfeed.hpp"
+#include "Game/DisableDripfeed.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "atStringHash.hpp"
-#include "script_func.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/script_func.hpp"
 
 namespace Stand
 {

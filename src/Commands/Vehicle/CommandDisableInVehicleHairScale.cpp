@@ -1,8 +1,8 @@
-#include "CommandDisableInVehicleHairScale.hpp"
+#include "Commands/Vehicle/CommandDisableInVehicleHairScale.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
-#include "CommandDivider.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
 
-#include "CommandList.hpp"
-#include "Gui.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

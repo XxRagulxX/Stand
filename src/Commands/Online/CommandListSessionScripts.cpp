@@ -1,19 +1,19 @@
-#include "CommandListSessionScripts.hpp"
+#include "Commands/Online/CommandListSessionScripts.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandSessionScript.hpp"
-#include "eMpMission.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Online/CommandSessionScript.hpp"
+#include "Game/eMpMission.hpp"
 
-#include "CommandStartSessionScript.hpp"
+#include "Commands/Online/CommandStartSessionScript.hpp"
 
-#include "CommandSessionScriptBb.hpp"
-#include "CommandSessionScriptBb2.hpp"
-#include "CommandSessionScriptBeast.hpp"
-#include "CommandSessionScriptCpCollection.hpp"
-#include "CommandSessionScriptChallenges.hpp"
-#include "CommandSessionScriptCriminalDamage.hpp"
-#include "CommandSessionScriptFmintro.hpp"
-#include "CommandSessionScriptPennedin.hpp"
+#include "Commands/Online/CommandSessionScriptBb.hpp"
+#include "Commands/Online/CommandSessionScriptBb2.hpp"
+#include "Commands/Online/CommandSessionScriptBeast.hpp"
+#include "Commands/Online/CommandSessionScriptCpCollection.hpp"
+#include "Commands/Online/CommandSessionScriptChallenges.hpp"
+#include "Commands/Online/CommandSessionScriptCriminalDamage.hpp"
+#include "Commands/Online/CommandSessionScriptFmintro.hpp"
+#include "Commands/Online/CommandSessionScriptPennedin.hpp"
 
 namespace Stand
 {

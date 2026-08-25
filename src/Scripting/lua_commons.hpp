@@ -1,8 +1,8 @@
 #pragma once
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "PointerNames.hpp"
+#include "Core/PointerNames.hpp"
 
 #define EXPOSE_INT_CONSTANT(constant) { \
 	lua_pushinteger(L, constant); \

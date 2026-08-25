@@ -1,8 +1,8 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "hashtype.hpp"
-#include "atArray.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/hashtype.hpp"
+#include "Game/atArray.hpp"
 
 class CVehicleDriveByAnimInfo
 {

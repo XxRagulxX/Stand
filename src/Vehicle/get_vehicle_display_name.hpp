@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "vehicle_items.hpp"
+#include "Vehicle/vehicle_items.hpp"
 
 namespace Stand
 {

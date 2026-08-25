@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSliderDynamic.hpp"
+#include "Commands/Widgets/CommandSliderDynamic.hpp"
 
-#include "ExecCtx.hpp"
+#include "Core/ExecCtx.hpp"
 
 namespace Stand
 {

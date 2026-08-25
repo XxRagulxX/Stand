@@ -1,15 +1,15 @@
 #pragma once
 
-#include "GridItem.hpp"
+#include "Menu/GridItem.hpp"
 
 #include <string>
 #include <vector>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "Texture.hpp"
-#include "TextureDynamic.hpp"
+#include "Rendering/Texture.hpp"
+#include "Rendering/TextureDynamic.hpp"
 
 namespace Stand
 {

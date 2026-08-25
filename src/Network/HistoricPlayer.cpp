@@ -1,16 +1,16 @@
-#include "HistoricPlayer.hpp"
+#include "Network/HistoricPlayer.hpp"
 
 #include <fmt/format.h>
 
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "get_seconds_since_unix_epoch.hpp"
-#include "natives.hpp"
-#include "PlayerHistory.hpp"
-#include "RemoteGamer.hpp"
-#include "rlGamerId.hpp"
-#include "ScAccount.hpp"
-#include "SessionSpoofing.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Util/get_seconds_since_unix_epoch.hpp"
+#include "Game/natives.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/rlGamerId.hpp"
+#include "Network/ScAccount.hpp"
+#include "Network/SessionSpoofing.hpp"
 
 namespace Stand
 {

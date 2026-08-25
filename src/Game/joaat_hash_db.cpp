@@ -1,6 +1,6 @@
-#include "joaat_hash_db.hpp"
+#include "Game/joaat_hash_db.hpp"
 
-#include "atStringHash.hpp"
+#include "Game/atStringHash.hpp"
 
 namespace Stand
 {

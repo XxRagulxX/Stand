@@ -1,9 +1,9 @@
-#include "CommandInteriorCustomisable.hpp"
+#include "Commands/World/CommandInteriorCustomisable.hpp"
 
-#include "CommandInterior.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "WorldState.hpp"
+#include "Commands/World/CommandInterior.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Config/WorldState.hpp"
 
 namespace Stand
 {

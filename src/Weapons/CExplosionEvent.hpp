@@ -1,8 +1,8 @@
 #pragma once
 
-#include "datBitBuffer.hpp"
-#include "explosion.hpp"
-#include "joaatToString.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Weapons/explosion.hpp"
+#include "Game/joaatToString.hpp"
 
 struct CExplosionEvent
 {

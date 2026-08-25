@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/macros.hpp>
-#include "script_func.hpp"
-#include "ScriptFuncPatch.hpp"
+#include "lib/soup/macros.hpp"
+#include "Game/script_func.hpp"
+#include "AntiCheat/ScriptFuncPatch.hpp"
 
 namespace Stand
 {

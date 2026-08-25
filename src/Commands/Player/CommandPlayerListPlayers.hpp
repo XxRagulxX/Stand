@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandAction.hpp"
-#include "CommandOnPlayer.hpp"
-#include "CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
 
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "PlayerProvider.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

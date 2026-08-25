@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AttackerMgr.hpp"
-#include "BodyguardMgr.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Network/AttackerMgr.hpp"
+#include "Ped/BodyguardMgr.hpp"
 
 #ifdef STAND_DEBUG
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 #endif
 
 namespace Stand

@@ -1,25 +1,25 @@
-﻿#include "CommandSetFont.hpp"
+﻿#include "Commands/Stand/CommandSetFont.hpp"
 
 #include <algorithm>
 #include <filesystem>
 
 #include <windows.h>
 
-#include "bin.hpp"
-#include "get_appdata_path.hpp"
-#include "CommandListActionItem.hpp"
-#include "ConsoleLogger.hpp"
-#include "ensure_folder.hpp"
-#include "Exceptional.hpp"
-#include "get_display_names.hpp"
-#include "lang.hpp"
-#include "LangId.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "Renderer.hpp"
-#include "RootNameMgr.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Util/bin.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Core/ConsoleLogger.hpp"
+#include "Util/ensure_folder.hpp"
+#include "Core/Exceptional.hpp"
+#include "Network/get_display_names.hpp"
+#include "Localization/lang.hpp"
+#include "Localization/LangId.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/RootNameMgr.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

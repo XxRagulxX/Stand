@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

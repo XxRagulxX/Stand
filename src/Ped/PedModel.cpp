@@ -1,6 +1,6 @@
-#include "PedModel.hpp"
+#include "Ped/PedModel.hpp"
 
-#include "atStringHash.hpp"
+#include "Game/atStringHash.hpp"
 
 namespace Stand
 {

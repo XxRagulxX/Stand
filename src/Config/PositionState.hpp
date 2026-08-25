@@ -1,9 +1,9 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "PositionStateVehData.hpp"
+#include "Vehicle/PositionStateVehData.hpp"
 
 namespace Stand
 {

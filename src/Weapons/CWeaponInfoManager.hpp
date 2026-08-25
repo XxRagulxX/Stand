@@ -1,6 +1,6 @@
 #pragma once
 
-#include "atArray.hpp"
+#include "Game/atArray.hpp"
 
 class CWeaponInfoBlob
 {

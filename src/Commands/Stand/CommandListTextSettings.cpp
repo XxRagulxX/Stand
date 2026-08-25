@@ -1,13 +1,13 @@
-#include "CommandListTextSettings.hpp"
+#include "Commands/Stand/CommandListTextSettings.hpp"
 
-#include "dx_common.hpp"
+#include "Rendering/dx_common.hpp"
 
-#include "CommandboxGrid.hpp"
-#include "CommandLambdaSlider.hpp"
-#include "CommandSlider.hpp"
-#include "Gui.hpp"
-#include "NotifyGrid.hpp"
-#include "TextSettings.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Commands/Widgets/CommandLambdaSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/NotifyGrid.hpp"
+#include "Rendering/TextSettings.hpp"
 
 namespace Stand
 {

@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include <soup/AtomicStack.hpp>
+#include "lib/soup/AtomicStack.hpp"
 
-#include "Codename.hpp"
+#include "Util/Codename.hpp"
 
 namespace Stand
 {

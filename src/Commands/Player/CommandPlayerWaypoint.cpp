@@ -1,7 +1,7 @@
-#include "CommandPlayerWaypoint.hpp"
+#include "Commands/Player/CommandPlayerWaypoint.hpp"
 
-#include "PlayerProvider.hpp"
-#include "Script.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

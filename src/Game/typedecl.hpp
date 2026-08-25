@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "hashtype.hpp"
+#include "Game/hashtype.hpp"
 
 #define CMDFLAG_BITS 23
 

@@ -1,9 +1,9 @@
-#include "ParachuteModels.hpp"
+#include "Ped/ParachuteModels.hpp"
 
 #include <fmt/format.h>
 
-#include "Label.hpp"
-#include "lang.hpp"
+#include "Util/Label.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

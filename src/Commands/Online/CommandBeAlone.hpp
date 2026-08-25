@@ -3,12 +3,12 @@
 #define ENABLE_LEFT_DUE_TO_CHEATING false
 
 #if ENABLE_LEFT_DUE_TO_CHEATING
-#include "CommandTextslider.hpp"
+#include "Commands/Widgets/CommandTextslider.hpp"
 #else
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 #endif
 
-#include "TransitionHelper.hpp"
+#include "Core/TransitionHelper.hpp"
 
 namespace Stand
 {

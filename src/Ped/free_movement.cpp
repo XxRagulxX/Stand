@@ -1,10 +1,10 @@
-#include "free_movement.hpp"
+#include "Ped/free_movement.hpp"
 
-#include <soup/math.hpp> // lerp
+#include "lib/soup/math.hpp" // lerp
 
-#include "gta_input.hpp"
-#include "input.hpp"
-#include "natives.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

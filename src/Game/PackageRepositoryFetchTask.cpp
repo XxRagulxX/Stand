@@ -1,8 +1,8 @@
-#include "PackageRepositoryFetchTask.hpp"
+#include "Game/PackageRepositoryFetchTask.hpp"
 
-#include <soup/json.hpp>
+#include "lib/soup/json.hpp"
 
-#include "PackageMgr.hpp"
+#include "Game/PackageMgr.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandOnPlayerVehicle.hpp"
-#include "CommandSliderFloat.hpp"
+#include "Commands/Vehicle/CommandOnPlayerVehicle.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
 namespace Stand
 {

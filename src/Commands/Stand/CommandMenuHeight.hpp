@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

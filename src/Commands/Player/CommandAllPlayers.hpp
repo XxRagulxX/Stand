@@ -2,7 +2,7 @@
 
 #include <CommandListPlayer.hpp>
 
-#include "PlayerProviderAll.hpp"
+#include "Network/PlayerProviderAll.hpp"
 
 namespace Stand
 {

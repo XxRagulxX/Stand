@@ -1,10 +1,10 @@
 #pragma once
 
-#include <soup/macros.hpp>
-#include "CommandIssuable.hpp"
+#include "lib/soup/macros.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
-#include "atStringHash.hpp"
-#include "ePedVarComp.hpp"
+#include "Game/atStringHash.hpp"
+#include "Ped/ePedVarComp.hpp"
 
 namespace Stand
 {

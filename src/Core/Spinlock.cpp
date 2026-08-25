@@ -1,9 +1,9 @@
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
 
 namespace Stand
 {

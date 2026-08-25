@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netIpAddress.hpp"
+#include "Network/netIpAddress.hpp"
 
 #pragma pack(push, 1)
 namespace rage

@@ -1,7 +1,7 @@
-#include "BlipUtil.hpp"
+#include "Rendering/BlipUtil.hpp"
 
-#include "atStringHash.hpp"
-#include "natives.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

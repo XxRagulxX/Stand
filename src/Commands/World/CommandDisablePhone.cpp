@@ -1,10 +1,10 @@
-#include "CommandDisablePhone.hpp"
+#include "Commands/World/CommandDisablePhone.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "gta_input.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_input.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

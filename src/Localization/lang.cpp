@@ -1,10 +1,10 @@
-﻿#include "lang.hpp"
+﻿#include "Localization/lang.hpp"
 
-#include "LangBuiltins.hpp"
-#include "LangData.hpp"
-#include "LangId.hpp"
-#include "ParachuteModels.hpp"
-#include "StringUtils.hpp"
+#include "Localization/LangBuiltins.hpp"
+#include "Localization/LangData.hpp"
+#include "Localization/LangId.hpp"
+#include "Ped/ParachuteModels.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

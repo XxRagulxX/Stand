@@ -1,6 +1,6 @@
 #pragma once
 
-#include "inlist.hpp"
+#include "Util/inlist.hpp"
 
 namespace rage
 {

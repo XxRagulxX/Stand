@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandSlider.hpp"
-#include "CommandCustomVoteKickToggle.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Online/CommandCustomVoteKickToggle.hpp"
 
 namespace Stand
 {

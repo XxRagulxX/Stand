@@ -1,13 +1,13 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "inmap.hpp"
-#include "net.hpp"
-#include "netAddress.hpp"
-#include "netConnection.hpp"
-#include "netPeerAddress.hpp"
-#include "netStatus.hpp"
+#include "Util/inmap.hpp"
+#include "Network/net.hpp"
+#include "Network/netAddress.hpp"
+#include "Network/netConnection.hpp"
+#include "Network/netPeerAddress.hpp"
+#include "Network/netStatus.hpp"
 
 namespace rage
 {

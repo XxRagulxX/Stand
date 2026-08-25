@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandOnPlayer.hpp"
-#include "CommandToggle.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 namespace Stand
 {

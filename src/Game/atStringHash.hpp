@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "hashtype.hpp"
+#include "Game/hashtype.hpp"
 
 namespace rage
 {

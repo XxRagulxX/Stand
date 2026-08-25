@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandPlate.hpp"
-#include "get_current_time_millis.hpp"
-#include "regular_event.hpp"
+#include "Commands/Vehicle/CommandPlate.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

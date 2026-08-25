@@ -1,11 +1,11 @@
-﻿#include "ChatHistory.hpp"
+﻿#include "Network/ChatHistory.hpp"
 
-#include "atArray.hpp"
-#include "Chat.hpp"
-#include "CScaleformStore.hpp"
-#include "pointers.hpp"
-#include "scaleform_gfx.hpp"
-#include "ScaleformMovieStruct.hpp"
+#include "Game/atArray.hpp"
+#include "Network/Chat.hpp"
+#include "Game/CScaleformStore.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/scaleform_gfx.hpp"
+#include "Rendering/ScaleformMovieStruct.hpp"
 
 namespace Stand
 {

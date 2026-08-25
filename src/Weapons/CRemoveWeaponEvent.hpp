@@ -1,7 +1,7 @@
 #pragma once
 
-#include "datBitBuffer.hpp"
-#include "joaatToString.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Game/joaatToString.hpp"
 
 struct CRemoveWeaponEvent
 {

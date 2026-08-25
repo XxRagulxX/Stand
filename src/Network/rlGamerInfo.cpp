@@ -1,20 +1,20 @@
-#include "rlGamerInfo.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 #include <fmt/format.h>
 
-#include "AbstractPlayer.hpp"
-#include "Blacklist.hpp"
-#include "cidr.hpp"
-#include "CNetworkSession.hpp"
-#include "Exceptional.hpp"
-#include "FlowEvent.hpp"
-#include "Hooking.hpp"
-#include "is_rid.hpp"
-#include "is_session.hpp"
-#include "NuancedEvent.hpp"
-#include "pointers.hpp"
-#include "rockstar_admins.hpp"
-#include "ScAccount.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/Blacklist.hpp"
+#include "Util/cidr.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FlowEvent.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_rid.hpp"
+#include "Network/is_session.hpp"
+#include "Core/NuancedEvent.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rockstar_admins.hpp"
+#include "Network/ScAccount.hpp"
 
 namespace rage
 {

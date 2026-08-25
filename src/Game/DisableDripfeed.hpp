@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#include "ScriptFuncPatch.hpp"
+#include "AntiCheat/ScriptFuncPatch.hpp"
 
 namespace Stand
 {

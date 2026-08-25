@@ -1,8 +1,8 @@
-#include "CommandScorched.hpp"
+#include "Commands/Self/CommandScorched.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_entity.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_entity.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

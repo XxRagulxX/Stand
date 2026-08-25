@@ -1,12 +1,12 @@
 #pragma once
 
-#include "struct_base.hpp"
-#include "netMessage.hpp"
-#include "atDelegate.hpp"
-#include "inlist.hpp"
-#include "nettypes.hpp"
-#include "netEndpoint.hpp"
-#include "sysCriticalSection.hpp"
+#include "Util/struct_base.hpp"
+#include "Network/netMessage.hpp"
+#include "Game/atDelegate.hpp"
+#include "Util/inlist.hpp"
+#include "Network/nettypes.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Game/sysCriticalSection.hpp"
 
 namespace rage
 {

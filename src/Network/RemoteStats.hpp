@@ -1,9 +1,9 @@
 #pragma once
 
-#include "netStatus.hpp"
-#include "rlprofilestatscommon.hpp"
+#include "Network/netStatus.hpp"
+#include "Network/rlprofilestatscommon.hpp"
 
-#include <soup/UniqueListLink.hpp>
+#include "lib/soup/UniqueListLink.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListConcealer.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
 
-#include "vector.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

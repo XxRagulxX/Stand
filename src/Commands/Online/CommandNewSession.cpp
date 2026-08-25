@@ -1,11 +1,11 @@
-#include "CommandNewSession.hpp"
+#include "Commands/Online/CommandNewSession.hpp"
 
-#include "CommandActionSuffixLambda.hpp"
-#include "CommandDivider.hpp"
-#include "CommandToggle.hpp"
-#include "is_session.hpp"
-#include "Script.hpp"
-#include "TransitionHelper.hpp"
+#include "Commands/Widgets/CommandActionSuffixLambda.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Network/is_session.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/TransitionHelper.hpp"
 
 namespace Stand
 {

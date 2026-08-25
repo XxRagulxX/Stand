@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggleRegularSp.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
 
-#include "get_ground_z.hpp"
-#include "GhostDriver.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Vehicle/GhostDriver.hpp"
 
 namespace Stand
 {

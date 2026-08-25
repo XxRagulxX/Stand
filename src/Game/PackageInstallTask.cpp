@@ -1,15 +1,15 @@
-#include "PackageInstallTask.hpp"
+#include "Game/PackageInstallTask.hpp"
 
 #include <fstream>
 
 #include <fmt/core.h>
 
-#include <soup/Regex.hpp>
+#include "lib/soup/Regex.hpp"
 
-#include "fmt_arg.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "Tunables.hpp"
-#include "Util.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Config/Tunables.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

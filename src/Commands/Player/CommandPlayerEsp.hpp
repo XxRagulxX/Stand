@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandSlider.hpp"
-#include "tbScreenshotMode.hpp"
-#include "natives.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Core/tbScreenshotMode.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

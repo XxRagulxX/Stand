@@ -1,25 +1,25 @@
-#include "NativeTableHooks.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
 
 #include <unordered_map>
 
-#include <soup/Exception.hpp>
+#include "lib/soup/Exception.hpp"
 
-#include "atStringHash.hpp"
-#include "Exceptional.hpp"
-#include "NativeCallContext.hpp"
-#include "native_tables.hpp"
-#include "pointers.hpp"
-#include "ScriptMgr.hpp"
-#include "script_program.hpp"
+#include "Game/atStringHash.hpp"
+#include "Core/Exceptional.hpp"
+#include "Game/NativeCallContext.hpp"
+#include "Game/native_tables.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Game/script_program.hpp"
 #ifdef STAND_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 #define NTH_GC_NOTIFY false
 
 #if NTH_GC_NOTIFY
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

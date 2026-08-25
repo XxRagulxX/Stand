@@ -1,10 +1,10 @@
-#include "NotifyGrid.hpp"
+#include "Menu/NotifyGrid.hpp"
 
-#include "Exceptional.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
-#include "ScriptGlobal.hpp"
-#include "Util.hpp"
+#include "Core/Exceptional.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

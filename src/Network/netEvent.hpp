@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "netAddress.hpp"
+#include "Network/netAddress.hpp"
 
 namespace rage
 {

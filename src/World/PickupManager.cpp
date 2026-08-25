@@ -1,7 +1,7 @@
-#include "PickupManager.hpp"
+#include "World/PickupManager.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "natives.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

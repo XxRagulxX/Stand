@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandInputText.hpp"
-#include "CommandSlider.hpp"
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandInputText.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "ExecCtx.hpp"
-#include "FiberPool.hpp"
-#include "Script.hpp"
-#include "Stats.hpp"
-#include "StringUtils.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/FiberPool.hpp"
+#include "Scripting/Script.hpp"
+#include "Config/Stats.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

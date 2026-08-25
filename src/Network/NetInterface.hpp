@@ -1,14 +1,14 @@
 #pragma once
 
-#include <soup/DetachedScheduler.hpp>
+#include "lib/soup/DetachedScheduler.hpp"
 
 #define NETINTERFACE_STATS true
 
 #if NETINTERFACE_STATS
-#include <soup/SchedulerStats.hpp>
+#include "lib/soup/SchedulerStats.hpp"
 #endif
 
-#include "Exceptional.hpp"
+#include "Core/Exceptional.hpp"
 
 namespace Stand
 {

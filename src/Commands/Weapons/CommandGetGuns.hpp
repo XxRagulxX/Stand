@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListWeapons.hpp"
+#include "Commands/Weapons/CommandListWeapons.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

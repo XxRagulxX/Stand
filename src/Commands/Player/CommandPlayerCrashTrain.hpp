@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerCrash.hpp"
+#include "Commands/Player/CommandPlayerCrash.hpp"
 
-#include "ComponentCrash.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
+#include "AntiCheat/ComponentCrash.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

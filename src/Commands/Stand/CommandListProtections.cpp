@@ -1,37 +1,37 @@
-#include "CommandListProtections.hpp"
+#include "Commands/Stand/CommandListProtections.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "atStringHash.hpp"
-#include "ColoadMgr.hpp"
-#include "CommandDivider.hpp"
-#include "CommandListSelectUnlessFriend.hpp"
-#include "CommandPlayer.hpp"
-#include "CommandReadonlyLink.hpp"
-#include "CommandTogglePointer.hpp"
-#include "ComponentDrawPatch.hpp"
-#include "ComponentNetcode.hpp"
-#include "Hooking.hpp"
-#include "main.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/ColoadMgr.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandListSelectUnlessFriend.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/ComponentDrawPatch.hpp"
+#include "AntiCheat/ComponentNetcode.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Core/main.hpp"
 
-#include "CommandFlowEventGlobal.hpp"
+#include "Commands/Extra/CommandFlowEventGlobal.hpp"
 
-#include "CommandModelBlacklist.hpp"
-#include "CommandNoVoteKick.hpp"
-#include "CommandBlockBlockJoin.hpp"
-#include "CommandBlockBlame.hpp"
-#include "CommandAntiEntitySpam.hpp"
-#include "CommandScriptErrorRecovery.hpp"
+#include "Commands/Online/CommandModelBlacklist.hpp"
+#include "Commands/Online/CommandNoVoteKick.hpp"
+#include "Commands/Online/CommandBlockBlockJoin.hpp"
+#include "Commands/Online/CommandBlockBlame.hpp"
+#include "Commands/World/CommandAntiEntitySpam.hpp"
+#include "Commands/Extra/CommandScriptErrorRecovery.hpp"
 #if HAVE_BREAKUP_KICK
-#include "CommandHostKickKarma.hpp"
+#include "Commands/Online/CommandHostKickKarma.hpp"
 #endif
-#include "CommandDesyncKickKarma.hpp"
-#include "CommandLoveLetterLube.hpp"
-#include "CommandNoBeast.hpp"
-#include "CommandNoModPop.hpp"
-#include "CommandForceRelay.hpp"
+#include "Commands/Online/CommandDesyncKickKarma.hpp"
+#include "Commands/Online/CommandLoveLetterLube.hpp"
+#include "Commands/Self/CommandNoBeast.hpp"
+#include "Commands/World/CommandNoModPop.hpp"
+#include "Commands/Online/CommandForceRelay.hpp"
 
 namespace Stand
 {

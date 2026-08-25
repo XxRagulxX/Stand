@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <fmt/xchar.h>
 
-#include "AptHelper.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
+#include "Network/AptHelper.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

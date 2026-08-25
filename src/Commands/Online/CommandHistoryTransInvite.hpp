@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandHistoryAction.hpp"
+#include "Commands/Online/CommandHistoryAction.hpp"
 
 namespace Stand
 {

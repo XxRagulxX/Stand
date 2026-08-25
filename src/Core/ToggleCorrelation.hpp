@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
 #include <string>
 

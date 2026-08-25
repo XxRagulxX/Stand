@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandPosition3d.hpp"
+#include "Commands/Widgets/CommandPosition3d.hpp"
 
-#include "AbstractEntity.hpp"
-#include "vector.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

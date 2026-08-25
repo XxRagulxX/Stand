@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPausable.hpp"
+#include "Commands/Widgets/CommandPausable.hpp"
 
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "paused.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Core/paused.hpp"
 
 namespace Stand
 {

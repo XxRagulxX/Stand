@@ -1,21 +1,21 @@
 #ifdef STAND_DEBUG
 
-#include "NativeFingerprinter.hpp"
+#include "AntiCheat/NativeFingerprinter.hpp"
 
 #include <unordered_set>
 
 #include <fmt/format.h>
 
-#include <soup/joaat.hpp>
-#include <soup/StringWriter.hpp>
+#include "lib/soup/joaat.hpp"
+#include "lib/soup/StringWriter.hpp"
 
-#include "conf.hpp"
-#include "Exceptional.hpp"
-#include "FileLogger.hpp"
-#include "main.hpp"
-#include "ScriptMgr.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Config/conf.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FileLogger.hpp"
+#include "Core/main.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

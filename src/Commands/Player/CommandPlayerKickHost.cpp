@@ -1,11 +1,11 @@
-#include "CommandPlayerKickHost.hpp"
+#include "Commands/Player/CommandPlayerKickHost.hpp"
 
-#include "CommandListPlayer.hpp"
-#include "natives.hpp"
-#include "PlayerProvider.hpp"
-#include "ScriptGlobal.hpp"
-#include "ScriptHostUtil.hpp"
-#include "Util.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Game/natives.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

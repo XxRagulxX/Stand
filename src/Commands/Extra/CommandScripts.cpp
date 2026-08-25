@@ -1,10 +1,10 @@
-#include "CommandScripts.hpp"
+#include "Commands/Extra/CommandScripts.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "CommandReadonlyLink.hpp"
-#include "CommandScript.hpp"
-#include "FileLogger.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
+#include "Commands/Extra/CommandScript.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

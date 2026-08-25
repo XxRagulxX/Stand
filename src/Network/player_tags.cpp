@@ -1,6 +1,6 @@
-#include "player_tags.hpp"
+#include "Network/player_tags.hpp"
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "ScriptGlobal.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

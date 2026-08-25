@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListWarning.hpp"
+#include "Commands/Stand/CommandListWarning.hpp"
 
 namespace Stand
 {

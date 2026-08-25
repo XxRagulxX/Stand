@@ -1,16 +1,16 @@
-#include "gta_net_object_mgr.hpp"
+#include "Game/gta_net_object_mgr.hpp"
 
 #include <fmt/format.h>
 
-#include "atStringHash.hpp"
-#include "Exceptional.hpp"
-#include "gta_entity.hpp"
-#include "joaatToString.hpp"
-#include "pointers.hpp"
-#include "synctree_player.hpp"
+#include "Game/atStringHash.hpp"
+#include "Core/Exceptional.hpp"
+#include "Game/gta_entity.hpp"
+#include "Game/joaatToString.hpp"
+#include "Game/pointers.hpp"
+#include "Network/synctree_player.hpp"
 
 #ifdef STAND_DEBUG
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 #endif
 
 namespace rage

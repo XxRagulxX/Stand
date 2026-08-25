@@ -1,6 +1,6 @@
-#include "CommandColourPointer.hpp"
+#include "Commands/Widgets/CommandColourPointer.hpp"
 
-#include "Colour.hpp"
+#include "Rendering/Colour.hpp"
 
 namespace Stand
 {

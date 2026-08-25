@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ScriptLocal.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_thread.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_thread.hpp"
 
 namespace Stand
 {

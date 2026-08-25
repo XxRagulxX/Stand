@@ -1,15 +1,15 @@
-#include "ButtonInstructions.hpp"
+#include "Menu/ButtonInstructions.hpp"
 
-#include "Commandbox.hpp"
-#include "ControllerInputConfig.hpp"
-#include "Gui.hpp"
-#include "hud_component.hpp"
-#include "input.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "Scaleform.hpp"
-#include "tbScreenshotMode.hpp"
-#include "ScriptGlobal.hpp"
+#include "Commands/Widgets/Commandbox.hpp"
+#include "Config/ControllerInputConfig.hpp"
+#include "Rendering/Gui.hpp"
+#include "Rendering/hud_component.hpp"
+#include "Core/input.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Scaleform.hpp"
+#include "Core/tbScreenshotMode.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

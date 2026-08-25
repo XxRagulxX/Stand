@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Stats.hpp"
-#include "CommandStatSlider.hpp"
+#include "Config/Stats.hpp"
+#include "Commands/Widgets/CommandStatSlider.hpp"
 
 namespace Stand
 {

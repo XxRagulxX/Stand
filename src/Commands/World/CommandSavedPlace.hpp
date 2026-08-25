@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandWithOnTickFocused.hpp"
-#include "CommandListFolderItemData.hpp"
-#include "CommandActionScript.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
 #include <optional>
 
-#include "Vector2Plus.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

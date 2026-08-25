@@ -1,4 +1,4 @@
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
 namespace Stand
 {

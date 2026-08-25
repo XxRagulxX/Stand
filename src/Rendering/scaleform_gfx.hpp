@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 struct GFxMovieView
 {

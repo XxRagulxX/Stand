@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "natives.hpp"
-#include "pointers.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

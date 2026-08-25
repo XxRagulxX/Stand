@@ -1,6 +1,6 @@
-#include "parse_coord.hpp"
+#include "Util/parse_coord.hpp"
 
-#include <soup/Regex.hpp>
+#include "lib/soup/Regex.hpp"
 
 namespace Stand
 {

@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "conf_classifier.hpp"
+#include "Config/conf_classifier.hpp"
 
-#include "NuancedEvent.hpp"
-#include "RecursiveSpinlock.hpp"
+#include "Core/NuancedEvent.hpp"
+#include "Core/RecursiveSpinlock.hpp"
 
 namespace Stand
 {

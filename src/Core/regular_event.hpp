@@ -7,9 +7,9 @@
 
 #include <fmt/core.h>
 
-#include "Exceptional.hpp"
-#include "FileLogger.hpp"
-#include "Spinlock.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FileLogger.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

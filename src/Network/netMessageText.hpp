@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "netMessage.hpp"
+#include "Network/netMessage.hpp"
 
 namespace rage
 {

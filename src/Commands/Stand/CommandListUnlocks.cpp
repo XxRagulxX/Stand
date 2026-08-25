@@ -1,16 +1,16 @@
-#include "CommandListUnlocks.hpp"
+#include "Commands/Stand/CommandListUnlocks.hpp"
 
 #include <memory>
 
-#include "CommandLambdaAction.hpp"
-#include "CommandLambdaActionScript.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
 
-#include "lang.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "ScriptGlobal.hpp"
-#include "StatUtil.hpp"
-#include "Util.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/StatUtil.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

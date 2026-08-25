@@ -1,13 +1,13 @@
-#include "CommandGallery.hpp"
+#include "Commands/Extra/CommandGallery.hpp"
 
-#include "CommandAction.hpp"
-#include "CommandListAction.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandSlider.hpp"
-#include "CommandSliderFloat.hpp"
-#include "CommandTextsliderStateful.hpp"
-#include "CommandToggle.hpp"
-#include "CommandToggleNoCorrelation.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandTextsliderStateful.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
 namespace Stand
 {

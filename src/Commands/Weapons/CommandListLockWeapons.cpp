@@ -1,16 +1,16 @@
-#include "CommandToggleLockWeapons.hpp"
+#include "Commands/Weapons/CommandToggleLockWeapons.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandDivider.hpp"
-#include "CommandListCommandBoxPresets.hpp"
-#include "CommandListLockWeapon.hpp"
-#include "CommandLockWeaponsSavePreset.hpp"
-#include "CommandOnlyRemoveSelectedWeapons.hpp"
-#include "CommandTogglePointer.hpp"
-#include "CommandToggleLockWeapon.hpp"
-#include "get_current_time_millis.hpp"
-#include "is_session.hpp"
-#include "weapons.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Stand/CommandListCommandBoxPresets.hpp"
+#include "Commands/Weapons/CommandListLockWeapon.hpp"
+#include "Commands/Weapons/CommandLockWeaponsSavePreset.hpp"
+#include "Commands/Weapons/CommandOnlyRemoveSelectedWeapons.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Commands/Weapons/CommandToggleLockWeapon.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/is_session.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {

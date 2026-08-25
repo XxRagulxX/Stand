@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPhysical.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPlayerActionAggressive.hpp"
+#include "Commands/Player/CommandPlayerActionAggressive.hpp"
 
-#include "eDamageFlags.hpp"
+#include "Game/eDamageFlags.hpp"
 
 namespace Stand
 {

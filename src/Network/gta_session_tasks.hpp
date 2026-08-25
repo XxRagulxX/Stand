@@ -1,10 +1,10 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "CNetworkSession.hpp"
-#include "rlTaskBase.hpp"
-#include "rlGamerInfo.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Network/rlTaskBase.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 #pragma pack(push, 1)
 namespace rage

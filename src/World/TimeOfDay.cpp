@@ -1,8 +1,8 @@
-#include "TimeOfDay.hpp"
+#include "World/TimeOfDay.hpp"
 
-#include "natives.hpp"
-#include "str2int.hpp"
-#include "StringUtils.hpp"
+#include "Game/natives.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

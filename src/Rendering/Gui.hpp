@@ -5,24 +5,24 @@
 
 #include <windows.h>
 
-#include <soup/fwd.hpp>
-#include <soup/Promise.hpp>
+#include "lib/soup/fwd.hpp"
+#include "lib/soup/Promise.hpp"
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandList.hpp"
-#include "ConfigHotkeys.hpp"
-#include "ConfigMetaState.hpp"
-#include "ConfigState.hpp"
-#include "Direction.hpp"
-#include "LangId.hpp"
-#include "MenuKey.hpp"
-#include "MouseMode.hpp"
-#include "RecursiveScopedSpinlock.hpp"
-#include "Spinlock.hpp"
-#include "Vector2Plus.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Menu/ConfigHotkeys.hpp"
+#include "Config/ConfigMetaState.hpp"
+#include "Config/ConfigState.hpp"
+#include "Util/Direction.hpp"
+#include "Localization/LangId.hpp"
+#include "Menu/MenuKey.hpp"
+#include "Menu/MouseMode.hpp"
+#include "Core/RecursiveScopedSpinlock.hpp"
+#include "Core/Spinlock.hpp"
+#include "Util/Vector2Plus.hpp"
 
 #define GUI_DEBUG false
 #define BAD_BOY_ENABLED true

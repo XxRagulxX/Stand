@@ -6,9 +6,9 @@
 
 #include <fmt/core.h>
 
-#include "atStringHash.hpp"
-#include "lang.hpp"
-#include "LangData.hpp"
+#include "Game/atStringHash.hpp"
+#include "Localization/lang.hpp"
+#include "Localization/LangData.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
-#include "EventAggregation.hpp"
+#include "Core/EventAggregation.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "FlowEvent.hpp"
-#include "lang.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

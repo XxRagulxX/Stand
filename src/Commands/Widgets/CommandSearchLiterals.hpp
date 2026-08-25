@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSearch.hpp"
+#include "Commands/Widgets/CommandSearch.hpp"
 
-#include "CommandLink.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

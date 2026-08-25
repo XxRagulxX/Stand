@@ -26,9 +26,9 @@
 #include "lualib.h"
 #include "llimits.h"
 
-#include "soup/filesystem.hpp"
-#include "soup/string.hpp"
-#include "soup/unicode.hpp"
+#include "lib/soup/filesystem.hpp"
+#include "lib/soup/string.hpp"
+#include "lib/soup/unicode.hpp"
 
 #if SOUP_WINDOWS
 #include <windows.h>

@@ -1,8 +1,8 @@
-#include "CommandWhitelistedPlayers.hpp"
+#include "Commands/Player/CommandWhitelistedPlayers.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "PlayerHistory.hpp"
-#include "lang.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "atStringHash.hpp"
+#include "Game/atStringHash.hpp"
 
 #define LANG_GET(key) Lang::get(ATSTRINGHASH(key))
 #define LANG_GET_W(key) Lang::getW(ATSTRINGHASH(key))

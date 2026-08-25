@@ -1,14 +1,14 @@
-#include "CommandIssuable.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
-#include "CommandExtraInfo.hpp"
-#include "CommandList.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 #ifdef STAND_DEBUG
 #include <fmt/core.h>
 
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

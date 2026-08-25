@@ -1,14 +1,14 @@
 #if false // needs some work before it will compile again
 #ifdef STAND_DEBUG
 
-#include "CommandHistoryTransInvite.hpp"
+#include "Commands/Online/CommandHistoryTransInvite.hpp"
 
-#include "CNetworkSession.hpp"
-#include "ComponentNetcode.hpp"
-#include "HistoricPlayer.hpp"
-#include "RemoteGamerConnector.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "AntiCheat/ComponentNetcode.hpp"
+#include "Network/HistoricPlayer.hpp"
+#include "Network/RemoteGamerConnector.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

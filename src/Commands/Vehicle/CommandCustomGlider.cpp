@@ -1,9 +1,9 @@
-#include "CommandCustomGlider.hpp"
+#include "Commands/Vehicle/CommandCustomGlider.hpp"
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "CommandCustomGliderSetspeed.hpp"
-#include "CommandCustomGliderToggle.hpp"
+#include "Commands/Vehicle/CommandCustomGliderSetspeed.hpp"
+#include "Commands/Vehicle/CommandCustomGliderToggle.hpp"
 
 namespace Stand
 {

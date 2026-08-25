@@ -1,7 +1,7 @@
-#include "rlFriend.hpp"
+#include "Network/rlFriend.hpp"
 
-#include "FunctionPointer.hpp"
-#include "natives.hpp"
+#include "Core/FunctionPointer.hpp"
+#include "Game/natives.hpp"
 
 namespace rage
 {

@@ -1,7 +1,7 @@
-#include "CommandExportDisplayNames.hpp"
+#include "Commands/Online/CommandExportDisplayNames.hpp"
 
-#include "get_display_names.hpp"
-#include "FileLogger.hpp"
+#include "Network/get_display_names.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

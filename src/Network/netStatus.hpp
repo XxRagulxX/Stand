@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Script.hpp"
+#include "Scripting/Script.hpp"
 
 namespace rage
 {

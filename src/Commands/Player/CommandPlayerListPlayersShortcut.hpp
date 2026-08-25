@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerListPlayers.hpp"
+#include "Commands/Player/CommandPlayerListPlayers.hpp"
 
 namespace Stand
 {

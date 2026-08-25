@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListSelectParticle.hpp"
+#include "Commands/Stand/CommandListSelectParticle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "FiberPool.hpp"
-#include "is_session.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/is_session.hpp"
 
 namespace Stand
 {

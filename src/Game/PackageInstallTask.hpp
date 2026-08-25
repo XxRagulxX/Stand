@@ -1,11 +1,11 @@
 #pragma once
 
-#include <soup/Task.hpp>
+#include "lib/soup/Task.hpp"
 
 #include <optional>
 
-#include <soup/HttpRequestTask.hpp>
-#include "Package.hpp"
+#include "lib/soup/HttpRequestTask.hpp"
+#include "Game/Package.hpp"
 
 namespace Stand
 {

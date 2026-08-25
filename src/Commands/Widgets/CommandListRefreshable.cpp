@@ -1,11 +1,11 @@
-#include "CommandListRefreshable.hpp"
+#include "Commands/Widgets/CommandListRefreshable.hpp"
 
 #include <algorithm>
 
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

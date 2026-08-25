@@ -1,16 +1,16 @@
-#include "TutorialGrid.hpp"
+#include "Menu/TutorialGrid.hpp"
 
 #include <fmt/format.h>
 
-#include "ControllerInputConfig.hpp"
-#include "fmt_arg.hpp"
-#include "GridItemPrimaryText.hpp"
-#include "GridItemText.hpp"
-#include "huddecl.hpp"
-#include "input.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
-#include "Tutorial.hpp"
+#include "Config/ControllerInputConfig.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Menu/GridItemPrimaryText.hpp"
+#include "Menu/GridItemText.hpp"
+#include "Game/huddecl.hpp"
+#include "Core/input.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/Tutorial.hpp"
 
 namespace Stand
 {

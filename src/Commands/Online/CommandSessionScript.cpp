@@ -1,8 +1,8 @@
-#include "CommandSessionScript.hpp"
+#include "Commands/Online/CommandSessionScript.hpp"
 
-#include "CNetGamePlayer.hpp"
-#include "Gui.hpp"
-#include "script_handler.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/script_handler.hpp"
 
 namespace Stand
 {

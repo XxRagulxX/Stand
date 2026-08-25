@@ -1,22 +1,22 @@
-#include "CommandLuaScript.hpp"
-#include "lua_commons.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Scripting/lua_commons.hpp"
 
-#include "LuaConfig.hpp"
+#include "Scripting/LuaConfig.hpp"
 
-#include <soup/Module.hpp>
-#include <soup/Pattern.hpp>
-#include <soup/Pointer.hpp>
-#include <soup/Thread.hpp>
-#include "ExecCtx.hpp"
-#include "main.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "ScriptLocal.hpp"
-#include "script_program.hpp"
-#include "script_thread.hpp"
-#include "Tunables.hpp"
-#include "TunablesParser.hpp"
+#include "lib/soup/Module.hpp"
+#include "lib/soup/Pattern.hpp"
+#include "lib/soup/Pointer.hpp"
+#include "lib/soup/Thread.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/main.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_program.hpp"
+#include "Game/script_thread.hpp"
+#include "Config/Tunables.hpp"
+#include "Config/TunablesParser.hpp"
 
 namespace Stand
 {

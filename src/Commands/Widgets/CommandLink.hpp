@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Command.hpp"
+#include "Commands/Widgets/Command.hpp"
 
-#include <soup/WeakRef.hpp>
+#include "lib/soup/WeakRef.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
-#include "CommandListWeaponComponents.hpp"
+#include "Commands/Weapons/CommandListWeaponComponents.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_ped.hpp"
-#include "natives.hpp"
-#include "weapon_components.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/natives.hpp"
+#include "Weapons/weapon_components.hpp"
 
-#include "CommandWeaponComponent.hpp"
+#include "Commands/Weapons/CommandWeaponComponent.hpp"
 
 namespace Stand
 {

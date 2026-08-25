@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "ExecCtx.hpp"
+#include "Core/ExecCtx.hpp"
 
 namespace Stand
 {

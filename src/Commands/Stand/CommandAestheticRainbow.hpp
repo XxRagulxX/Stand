@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandRainbow.hpp"
+#include "Commands/Stand/CommandRainbow.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "gta_player.hpp"
-#include "gta_node_list.hpp"
-#include "script_id.hpp"
+#include "Game/gta_player.hpp"
+#include "Game/gta_node_list.hpp"
+#include "Game/script_id.hpp"
 
 #pragma pack(push, 1)
 namespace rage

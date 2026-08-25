@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandListFolderItemData.hpp"
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 namespace Stand
 {

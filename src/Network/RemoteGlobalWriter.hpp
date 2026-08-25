@@ -7,15 +7,15 @@
 
 #include <vector>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Script.hpp"
-#include "script_events.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_handler.hpp"
-#include "script_thread.hpp"
-#include "tse.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/Script.hpp"
+#include "Network/script_events.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_handler.hpp"
+#include "Game/script_thread.hpp"
+#include "Util/tse.hpp"
 
 namespace Stand
 {

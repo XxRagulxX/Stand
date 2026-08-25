@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandAutoDeployCountermeasures.hpp"
-#include "CommandFireCountermeasure.hpp"
+#include "Commands/Vehicle/CommandAutoDeployCountermeasures.hpp"
+#include "Commands/Vehicle/CommandFireCountermeasure.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
-#include "be_delegate.hpp"
+#include "Network/be_delegate.hpp"
 
 #include <array>
 #include <future>
 #include <thread>
 
-#include "be_packet.hpp"
+#include "Network/be_packet.hpp"
 
 battleye::becl_game_data::send_packet_t battleye::delegate::o_send_packet = nullptr;
 

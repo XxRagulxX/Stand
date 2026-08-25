@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandLua.hpp"
+#include "Commands/Extra/CommandLua.hpp"
 
 namespace Stand
 {

@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <windows.h>
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 // am_launcher
 

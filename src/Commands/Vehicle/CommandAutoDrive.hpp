@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandAutoDriveAction.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandListSelectDrivingMode.hpp"
-#include "CommandSliderFloatOverride.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandAutoDriveAction.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Stand/CommandListSelectDrivingMode.hpp"
+#include "Commands/Widgets/CommandSliderFloatOverride.hpp"
 
 namespace Stand
 {

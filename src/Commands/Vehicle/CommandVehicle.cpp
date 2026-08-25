@@ -1,17 +1,17 @@
-#include "CommandVehicle.hpp"
+#include "Commands/Vehicle/CommandVehicle.hpp"
 
 #include <fmt/format.h>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "AbstractModel.hpp"
-#include "CommandSpawnVehicle.hpp"
-#include "conf.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "lang.hpp"
-#include "OnlineVersion.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Commands/Vehicle/CommandSpawnVehicle.hpp"
+#include "Config/conf.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "Localization/lang.hpp"
+#include "Network/OnlineVersion.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

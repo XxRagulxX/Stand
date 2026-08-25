@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandGamer.hpp"
+#include "Commands/Online/CommandGamer.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
-#include "SessionSpoofing.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Network/SessionSpoofing.hpp"
 
 namespace Stand
 {

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "PlayerProvider.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

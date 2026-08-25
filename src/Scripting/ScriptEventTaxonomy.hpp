@@ -2,11 +2,11 @@
 
 #include <unordered_map>
 
-#include <soup/tunables.hpp>
+#include "lib/soup/tunables.hpp"
 
-#include "gta_player.hpp"
+#include "Game/gta_player.hpp"
 
-#include "EventAggregation.hpp"
+#include "Core/EventAggregation.hpp"
 
 #define ARGSCOUNT2(x) (x - 2 + 3)
 #define ARGSIDX2(x) (x >= 2 ? _args[x - 2 + 3] : _args[x])

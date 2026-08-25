@@ -1,10 +1,10 @@
 #pragma once
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "ChainedVehicleMgr.hpp"
-#include "get_current_time_millis.hpp"
-#include "gta_net_game_event.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Vehicle/ChainedVehicleMgr.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_net_game_event.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "typedecl.hpp"
-#include "gta_player.hpp"
+#include "Game/typedecl.hpp"
+#include "Game/gta_player.hpp"
 
-#include "get_current_time_millis.hpp"
+#include "Util/get_current_time_millis.hpp"
 
 namespace Stand
 {

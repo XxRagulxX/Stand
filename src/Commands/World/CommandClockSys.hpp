@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/time.hpp>
+#include "lib/soup/time.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <soup/tunables.hpp>
+#include "lib/soup/tunables.hpp"
 
 // shop_controller
 
@@ -407,7 +407,7 @@ inline SOUP_TUNABLE(uint32_t, GLOBAL_NANO_DRONE_RANGE_LIMIT) =								13;
 
 #include <functional>
 
-#include <soup/Pointerlike.hpp>
+#include "lib/soup/Pointerlike.hpp"
 
 namespace Stand
 {

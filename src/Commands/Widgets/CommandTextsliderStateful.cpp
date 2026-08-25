@@ -1,8 +1,8 @@
-#include "CommandTextsliderStateful.hpp"
+#include "Commands/Widgets/CommandTextsliderStateful.hpp"
 
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "RelayCon.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/RelayCon.hpp"
 
 namespace Stand
 {

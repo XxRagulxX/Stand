@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "atStringHash.hpp"
-#include "natives.hpp"
-#include "VehicleMods.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
+#include "Vehicle/VehicleMods.hpp"
 
 namespace Stand
 {

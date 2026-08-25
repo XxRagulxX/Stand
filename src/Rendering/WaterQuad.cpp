@@ -1,6 +1,6 @@
-#include "WaterQuad.hpp"
+#include "Rendering/WaterQuad.hpp"
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 using namespace Stand;
 

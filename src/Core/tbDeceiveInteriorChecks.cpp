@@ -1,9 +1,9 @@
-#include "tbDeceiveInteriorChecks.hpp"
+#include "Core/tbDeceiveInteriorChecks.hpp"
 
-#include "is_session.hpp"
-#include "NativeTableHooks.hpp"
-#include "ScriptGlobal.hpp"
-#include "scrNativeCallContext.hpp"
+#include "Network/is_session.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace Stand
 {

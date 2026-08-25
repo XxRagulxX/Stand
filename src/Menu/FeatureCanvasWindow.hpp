@@ -1,10 +1,10 @@
 #pragma once
 
-#include "FeatureCanvas.hpp"
+#include "Menu/FeatureCanvas.hpp"
 
 #include <optional>
 
-#include <soup/Window.hpp>
+#include "lib/soup/Window.hpp"
 
 namespace Stand
 {

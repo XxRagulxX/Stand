@@ -1,10 +1,10 @@
-#include "CommandFlowEvent.hpp"
+#include "Commands/Extra/CommandFlowEvent.hpp"
 
-#include "CommandFlowEventReaction4.hpp"
-#include "CommandFlowEventReaction3.hpp"
-#include "CommandFlowEventReaction2.hpp"
-#include "FlowEvent.hpp"
-#include "lang.hpp"
+#include "Commands/Extra/CommandFlowEventReaction4.hpp"
+#include "Commands/Extra/CommandFlowEventReaction3.hpp"
+#include "Commands/Extra/CommandFlowEventReaction2.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dx_common.hpp"
+#include "Rendering/dx_common.hpp"
 
 namespace Stand
 {

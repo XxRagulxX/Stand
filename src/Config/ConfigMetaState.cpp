@@ -1,7 +1,7 @@
-#include "ConfigMetaState.hpp"
+#include "Config/ConfigMetaState.hpp"
 
-#include "ColonsAndTabs.hpp"
-#include "Gui.hpp"
+#include "Util/ColonsAndTabs.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

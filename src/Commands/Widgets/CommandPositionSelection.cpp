@@ -1,11 +1,11 @@
-#include "CommandPositionSelection.hpp"
+#include "Commands/Widgets/CommandPositionSelection.hpp"
 
-#include "DrawUtil3d.hpp"
-#include "tbFreecam.hpp"
-#include "Gui.hpp"
-#include "parse_coord.hpp"
-#include "tbPositionSelection.hpp"
-#include "tbReticle.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Core/tbFreecam.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/parse_coord.hpp"
+#include "Core/tbPositionSelection.hpp"
+#include "Core/tbReticle.hpp"
 
 namespace Stand
 {

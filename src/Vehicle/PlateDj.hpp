@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tbToggleableBehaviourScript.hpp"
+#include "Core/tbToggleableBehaviourScript.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

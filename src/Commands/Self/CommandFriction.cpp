@@ -1,11 +1,11 @@
-#include "CommandFriction.hpp"
+#include "Commands/Self/CommandFriction.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CPlayerInfo.hpp"
-#include "gta_input.hpp"
-#include "input.hpp"
-#include "natives.hpp"
-#include "TickMgr.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
+#include "Core/TickMgr.hpp"
 
 namespace Stand
 {

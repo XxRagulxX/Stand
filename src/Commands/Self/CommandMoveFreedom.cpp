@@ -1,12 +1,12 @@
-#include "CommandMoveFreedom.hpp"
+#include "Commands/Self/CommandMoveFreedom.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ControlMgr.hpp"
-#include "ePedConfigFlags.hpp"
-#include "ePedResetFlags.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
-#include "regular_event.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/ControlMgr.hpp"
+#include "Ped/ePedConfigFlags.hpp"
+#include "Ped/ePedResetFlags.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

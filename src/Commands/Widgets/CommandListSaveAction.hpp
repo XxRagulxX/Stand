@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandActionName.hpp"
+#include "Commands/Widgets/CommandActionName.hpp"
 
 #include <filesystem>
 #include <fstream>
 
-#include "ColonsAndTabs.hpp"
-#include "CommandListSave.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
+#include "Util/ColonsAndTabs.hpp"
+#include "Commands/Widgets/CommandListSave.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

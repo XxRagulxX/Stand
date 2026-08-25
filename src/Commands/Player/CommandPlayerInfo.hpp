@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandOnPlayer.hpp"
-#include "CommandListReadonly.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
+#include "Commands/Widgets/CommandListReadonly.hpp"
 
 namespace Stand
 {

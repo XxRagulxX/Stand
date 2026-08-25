@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
 namespace Stand
 {

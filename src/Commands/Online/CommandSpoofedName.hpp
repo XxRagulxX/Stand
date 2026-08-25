@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "apply_spoofed_name.hpp"
-#include "CommandExtraInfo.hpp"
-#include "get_next_arg.hpp"
-#include "Hooking.hpp"
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
-#include "StringUtils.hpp"
+#include "Network/apply_spoofed_name.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Util/get_next_arg.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandReadonlyValueCopy.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
 
-#include "CommandColourCustom.hpp"
+#include "Commands/Widgets/CommandColourCustom.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "get_next_arg.hpp"
-#include "RemoteGamerConnector.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Network/RemoteGamerConnector.hpp"
 
 namespace Stand
 {

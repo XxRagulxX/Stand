@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TextboxInterface.hpp"
+#include "Menu/TextboxInterface.hpp"
 
 namespace Stand
 {

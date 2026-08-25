@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "is_session.hpp"
-#include "natives.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

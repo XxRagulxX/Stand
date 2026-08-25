@@ -1,11 +1,11 @@
-#include "GunPunishments.hpp"
+#include "Network/GunPunishments.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "gta_input.hpp"
-#include "input.hpp"
-#include "natives.hpp"
-#include "punishments.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
+#include "Network/punishments.hpp"
 
 namespace Stand
 {

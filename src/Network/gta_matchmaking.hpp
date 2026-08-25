@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rlTaskBase.hpp"
+#include "Network/rlTaskBase.hpp"
 
 #pragma pack(push, 1)
 namespace rage

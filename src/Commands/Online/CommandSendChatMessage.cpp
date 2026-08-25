@@ -1,12 +1,12 @@
-#include "CommandSendChatMessage.hpp"
+#include "Commands/Online/CommandSendChatMessage.hpp"
 
-#include "Chat.hpp"
-#include "CommandLuaScript.hpp"
-#include "CommandToggle.hpp"
-#include "ExecCtx.hpp"
-#include "Hooking.hpp"
-#include "Script.hpp"
-#include "StringUtils.hpp"
+#include "Network/Chat.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Core/ExecCtx.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

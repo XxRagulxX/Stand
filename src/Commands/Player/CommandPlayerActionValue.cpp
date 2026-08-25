@@ -1,8 +1,8 @@
-#include "CommandPlayerActionValue.hpp"
+#include "Commands/Player/CommandPlayerActionValue.hpp"
 
 #include <fmt/xchar.h>
 
-#include "get_next_arg.hpp"
+#include "Util/get_next_arg.hpp"
 
 namespace Stand
 {

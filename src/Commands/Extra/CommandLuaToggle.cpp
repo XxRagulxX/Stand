@@ -1,4 +1,4 @@
-#include "CommandLuaToggle.hpp"
+#include "Commands/Extra/CommandLuaToggle.hpp"
 
 namespace Stand
 {

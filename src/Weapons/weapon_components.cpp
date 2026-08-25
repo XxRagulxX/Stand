@@ -1,6 +1,6 @@
-#include "weapon_components.hpp"
+#include "Weapons/weapon_components.hpp"
 
-#include "Util.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

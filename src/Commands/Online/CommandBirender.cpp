@@ -1,10 +1,10 @@
-#include "CommandBirender.hpp"
+#include "Commands/Online/CommandBirender.hpp"
 
-#include "AbstractRenderer.hpp"
-#include "CommandToggleRegularSp.hpp"
-#include "Exceptional.hpp"
-#include "Renderer.hpp"
-#include "tbScreenshotMode.hpp"
+#include "Rendering/AbstractRenderer.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "TcpConnection.hpp"
+#include "Network/TcpConnection.hpp"
 
 #include <string>
 
-#include "fwddecl.hpp"
-#include "RecursiveSpinlock.hpp"
+#include "Game/fwddecl.hpp"
+#include "Core/RecursiveSpinlock.hpp"
 
 namespace Stand
 {

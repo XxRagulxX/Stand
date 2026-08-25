@@ -1,10 +1,10 @@
 #pragma once
 
-#include "GridItemHeader.hpp"
+#include "Menu/GridItemHeader.hpp"
 
 #include <memory>
 
-#include "TextureArray.hpp"
+#include "Rendering/TextureArray.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
-#include "CommandPlayerCopyVehicle.hpp"
+#include "Commands/Vehicle/CommandPlayerCopyVehicle.hpp"
 
-#include "CustomisationData.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
-#include "VehicleEntityCustomisationIo.hpp"
+#include "Ped/CustomisationData.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleEntityCustomisationIo.hpp"
 
 namespace Stand
 {

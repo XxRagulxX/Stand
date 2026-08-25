@@ -1,11 +1,11 @@
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandCtxToggleCorrelation.hpp"
-#include "CommandListSelect.hpp"
-#include "ContextMenu.hpp"
-#include "fmt_arg.hpp"
-#include "Gui.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Stand/CommandCtxToggleCorrelation.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

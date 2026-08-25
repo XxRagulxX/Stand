@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandFlowEvent.hpp"
+#include "Commands/Extra/CommandFlowEvent.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "Hooking.hpp"
-#include "joaatToString.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/joaatToString.hpp"
 
 namespace Stand
 {

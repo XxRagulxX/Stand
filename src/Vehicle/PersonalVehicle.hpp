@@ -1,7 +1,7 @@
 #pragma once
 
-#include "hashtype.hpp"
-#include "ScriptGlobal.hpp"
+#include "Game/hashtype.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

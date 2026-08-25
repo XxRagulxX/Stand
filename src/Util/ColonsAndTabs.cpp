@@ -1,13 +1,13 @@
-#include "ColonsAndTabs.hpp"
+#include "Util/ColonsAndTabs.hpp"
 
-#include <soup/cat.hpp>
-#include <soup/catTreeReader.hpp>
-#include <soup/IstreamReader.hpp>
+#include "lib/soup/cat.hpp"
+#include "lib/soup/catTreeReader.hpp"
+#include "lib/soup/IstreamReader.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 #ifdef STAND_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

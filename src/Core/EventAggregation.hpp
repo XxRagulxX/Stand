@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "Codename.hpp"
-#include "Label.hpp"
+#include "Util/Codename.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

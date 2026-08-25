@@ -1,9 +1,9 @@
-#include "is_session.hpp"
+#include "Network/is_session.hpp"
 
-#include "CNetworkSession.hpp"
-#include "pointers.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionState.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {

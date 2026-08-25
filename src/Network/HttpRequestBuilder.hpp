@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include <soup/HttpRequest.hpp>
+#include "lib/soup/HttpRequest.hpp"
 
-#include "nullsub.hpp"
+#include "Util/nullsub.hpp"
 
 namespace Stand
 {

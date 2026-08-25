@@ -1,8 +1,8 @@
-#include "ScUtil.hpp"
+#include "Network/ScUtil.hpp"
 
-#include "players_interface.hpp"
-#include "pointers.hpp"
-#include "rlPc.hpp"
+#include "Network/players_interface.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlPc.hpp"
 
 namespace rgsc
 {

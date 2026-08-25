@@ -1,17 +1,17 @@
-#include "asi_api.hpp"
+#include "Core/asi_api.hpp"
 
-#include "AbstractEntity.hpp"
-#include "NativeCallContext.hpp"
-#include "pointers.hpp"
-#include "Renderer.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "ScriptMgr.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/NativeCallContext.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/ScriptMgr.hpp"
 
 #define LOG_SH false
 
 #if LOG_SH
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace Stand

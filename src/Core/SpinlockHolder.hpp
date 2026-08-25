@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

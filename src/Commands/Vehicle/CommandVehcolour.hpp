@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandColourCustom.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandColourCustom.hpp"
 
-#include "CommandListSelect.hpp"
-#include "CommandSlider.hpp"
-#include "natives.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

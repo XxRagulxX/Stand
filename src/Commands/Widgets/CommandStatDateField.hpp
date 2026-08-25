@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandStatSlider.hpp"
+#include "Commands/Widgets/CommandStatSlider.hpp"
 
-#include <soup/time.hpp>
+#include "lib/soup/time.hpp"
 
-#include "Date.hpp"
-#include "Offset.hpp"
+#include "Util/Date.hpp"
+#include "Core/Offset.hpp"
 
 namespace Stand
 {

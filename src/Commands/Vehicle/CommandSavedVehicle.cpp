@@ -1,10 +1,10 @@
-#include "CommandSavedVehicle.hpp"
+#include "Commands/Vehicle/CommandSavedVehicle.hpp"
 
 #include <iostream>
 
-#include "ColonsAndTabs.hpp"
-#include "ExecCtx.hpp"
-#include "StringUtils.hpp"
+#include "Util/ColonsAndTabs.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "script_events.hpp"
-#include "pointers.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Network/script_events.hpp"
+#include "Game/pointers.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "tbToggleableBehaviourScript.hpp"
+#include "Core/tbToggleableBehaviourScript.hpp"
 
-#include "fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "vector.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

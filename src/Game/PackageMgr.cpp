@@ -1,27 +1,27 @@
-#include "PackageMgr.hpp"
+#include "Game/PackageMgr.hpp"
 
-#include <soup/os.hpp>
+#include "lib/soup/os.hpp"
 
 #include <fmt/format.h>
 
-#include <soup/FileReader.hpp>
-#include <soup/FileWriter.hpp>
+#include "lib/soup/FileReader.hpp"
+#include "lib/soup/FileWriter.hpp"
 
-#include "Auth.hpp"
-#include "Codename.hpp"
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "get_appdata_path.hpp"
-#include "Gui.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "Label.hpp"
-#include "lang.hpp"
-#include "NetInterface.hpp"
-#include "PackageInstallTask.hpp"
-#include "str2int.hpp"
-#include "StringUtils.hpp"
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Network/Auth.hpp"
+#include "Util/Codename.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Util/Label.hpp"
+#include "Localization/lang.hpp"
+#include "Network/NetInterface.hpp"
+#include "Game/PackageInstallTask.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

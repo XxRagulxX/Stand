@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "xormagics.hpp"
+#include "AntiCheat/xormagics.hpp"
 
 namespace Stand
 {

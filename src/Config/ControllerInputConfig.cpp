@@ -1,8 +1,8 @@
-#include "ControllerInputConfig.hpp"
+#include "Config/ControllerInputConfig.hpp"
 
 #include <fmt/core.h>
 
-#include "lang.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

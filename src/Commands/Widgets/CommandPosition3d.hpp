@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandVector3.hpp"
+#include "Commands/Widgets/CommandVector3.hpp"
 
 namespace Stand
 {

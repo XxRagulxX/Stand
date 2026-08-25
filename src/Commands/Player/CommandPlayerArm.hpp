@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListWeapons.hpp"
-#include "CommandOnPlayer.hpp"
+#include "Commands/Weapons/CommandListWeapons.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandLambdaActionScript.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
 
 namespace Stand
 {

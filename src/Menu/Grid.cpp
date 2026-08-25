@@ -1,12 +1,12 @@
-#include "Grid.hpp"
+#include "Menu/Grid.hpp"
 
 #include <algorithm>
 
-#include "GridItem.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
-#include "Worker.hpp"
+#include "Menu/GridItem.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/Worker.hpp"
 
 #define spacer_x spacer_size
 #define spacer_y spacer_size

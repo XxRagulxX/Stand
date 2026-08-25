@@ -1,8 +1,8 @@
-#include "get_appdata_path.hpp"
+#include "Util/get_appdata_path.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

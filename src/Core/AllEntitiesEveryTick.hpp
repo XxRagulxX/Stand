@@ -1,13 +1,13 @@
 #pragma once
 
-#include <soup/Quaternion.hpp>
+#include "lib/soup/Quaternion.hpp"
 
-#include "AbstractEntity.hpp"
-#include "dedsec_hacks.hpp"
-#include "PedBoneId.hpp"
-#include "PlayerExcludes.hpp"
-#include "TargetingData.hpp"
-#include "vector.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Weapons/dedsec_hacks.hpp"
+#include "Ped/PedBoneId.hpp"
+#include "Network/PlayerExcludes.hpp"
+#include "Util/TargetingData.hpp"
+#include "Util/vector.hpp"
 
 #define DEDSEC_TUTORIAL_STATE_DONE 0
 #define DEDSEC_TUTORIAL_STATE_TARGET 1

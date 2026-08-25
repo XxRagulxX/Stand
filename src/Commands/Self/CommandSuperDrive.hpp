@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandSelectControllerKey.hpp"
-#include "gta_input.hpp"
-#include "input.hpp"
-#include "natives.hpp"
+#include "Commands/Stand/CommandSelectControllerKey.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
 
 //#include "drawDebugText.hpp"
 

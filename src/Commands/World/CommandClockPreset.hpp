@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
 #include <fmt/xchar.h>
 

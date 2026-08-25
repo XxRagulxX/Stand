@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AbstractPlayer.hpp"
-#include "CommandColour.hpp"
-#include "CommandEspTags.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
+#include "Commands/Stand/CommandEspTags.hpp"
 
 namespace Stand
 {

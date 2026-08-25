@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "hashtype.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/hashtype.hpp"
 
 namespace Stand
 {

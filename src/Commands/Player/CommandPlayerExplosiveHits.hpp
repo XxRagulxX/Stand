@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
-#include "CommandOnPlayer.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
 
-#include "eExplosionTag.hpp"
+#include "Game/eExplosionTag.hpp"
 
 namespace Stand
 {

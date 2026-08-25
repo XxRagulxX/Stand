@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
-#include "CommandListActionItemData.hpp"
+#include "Commands/Widgets/CommandListActionItemData.hpp"
 
 namespace Stand
 {

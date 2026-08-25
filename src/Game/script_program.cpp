@@ -1,13 +1,13 @@
-#include "script_program.hpp"
+#include "Game/script_program.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/Range.hpp>
+#include "lib/soup/Range.hpp"
 
-#include "FileLogger.hpp"
-#include "pointers.hpp"
-#include "script_vm_common.hpp"
-#include "ScriptVmOpCode.hpp"
+#include "Core/FileLogger.hpp"
+#include "Game/pointers.hpp"
+#include "Game/script_vm_common.hpp"
+#include "Scripting/ScriptVmOpCode.hpp"
 
 namespace rage
 {

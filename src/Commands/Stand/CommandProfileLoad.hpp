@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

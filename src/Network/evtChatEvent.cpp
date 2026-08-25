@@ -1,8 +1,8 @@
-#include "evtChatEvent.hpp"
+#include "Network/evtChatEvent.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "ChatHistory.hpp"
-#include "get_seconds_since_unix_epoch.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/ChatHistory.hpp"
+#include "Util/get_seconds_since_unix_epoch.hpp"
 
 namespace Stand
 {

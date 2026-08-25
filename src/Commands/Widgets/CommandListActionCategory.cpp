@@ -1,7 +1,7 @@
-#include "CommandListActionCategory.hpp"
+#include "Commands/Widgets/CommandListActionCategory.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
 namespace Stand
 {

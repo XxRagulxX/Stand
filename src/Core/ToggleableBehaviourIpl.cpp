@@ -1,11 +1,11 @@
-#include "ToggleableBehaviourIpl.hpp"
+#include "Core/ToggleableBehaviourIpl.hpp"
 
-#include "FiberPool.hpp"
-#include "force_door_open.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "regular_event.hpp"
-#include "ScriptGlobal.hpp"
+#include "Core/FiberPool.hpp"
+#include "Vehicle/force_door_open.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Core/regular_event.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "gta_net_object_mgr.hpp"
-#include "natives.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

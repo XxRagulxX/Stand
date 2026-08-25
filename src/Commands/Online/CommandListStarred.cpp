@@ -1,7 +1,7 @@
-#include "CommandListStarred.hpp"
+#include "Commands/Online/CommandListStarred.hpp"
 
-#include "CommandLink.hpp"
-#include "Gui.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

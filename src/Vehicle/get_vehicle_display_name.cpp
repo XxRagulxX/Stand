@@ -1,10 +1,10 @@
-#include "get_vehicle_display_name.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
 
-#include "atStringHash.hpp"
-#include "CVehicleModelInfo.hpp"
-#include "joaatToString.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Game/atStringHash.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Game/joaatToString.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

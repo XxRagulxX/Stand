@@ -1,4 +1,4 @@
-#include "Animations.hpp"
+#include "Game/Animations.hpp"
 
 namespace Stand
 {

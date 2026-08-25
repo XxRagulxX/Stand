@@ -1,6 +1,6 @@
-#include "CMiniMapBlip.hpp"
+#include "Rendering/CMiniMapBlip.hpp"
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 CMiniMapBlip* CMiniMapBlip::fromHandle(int handle)
 {

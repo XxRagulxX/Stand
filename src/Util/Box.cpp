@@ -1,7 +1,7 @@
-#include "Box.hpp"
+#include "Util/Box.hpp"
 
-#include "AbstractRenderer.hpp"
-#include "DrawUtil3d.hpp"
+#include "Rendering/AbstractRenderer.hpp"
+#include "Rendering/DrawUtil3d.hpp"
 
 namespace Stand
 {

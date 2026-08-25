@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "TpUtil.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

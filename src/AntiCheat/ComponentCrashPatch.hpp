@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Component.hpp"
+#include "AntiCheat/Component.hpp"
 
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {

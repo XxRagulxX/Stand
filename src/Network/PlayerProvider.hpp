@@ -3,12 +3,12 @@
 #include <functional>
 #include <vector>
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "PlayerExcludes.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/PlayerExcludes.hpp"
 
 #define PC_PTR this->resolveParent(COMMAND_LIST_PLAYER)->template as<CommandListPlayer>()
 #define PC_PTR_SINGLE this->resolveParent(COMMAND_LIST_PLAYER)->as<CommandPlayer>()

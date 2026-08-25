@@ -1,10 +1,10 @@
 #pragma once
 
-#include "AbstractPlayer.hpp"
-#include "atFixedArray.hpp"
-#include "CProjectile.hpp"
-#include "CommandSliderFloat.hpp"
-#include "pointers.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Weapons/CProjectile.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

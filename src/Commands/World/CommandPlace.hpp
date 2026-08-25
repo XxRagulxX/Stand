@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "Place.hpp"
+#include "World/Place.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
-#include "create_colour_with_rainbow.hpp"
+#include "Rendering/create_colour_with_rainbow.hpp"
 
-#include "CommandColourPointer.hpp"
-#include "CommandColourPointerDirectx.hpp"
-#include "create_rainbow.hpp"
+#include "Commands/Widgets/CommandColourPointer.hpp"
+#include "Commands/Widgets/CommandColourPointerDirectx.hpp"
+#include "Rendering/create_rainbow.hpp"
 
 namespace Stand
 {

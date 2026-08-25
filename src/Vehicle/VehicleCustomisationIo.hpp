@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CustomisationIo.hpp"
+#include "Ped/CustomisationIo.hpp"
 
-#include "fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "VehicleMods.hpp"
+#include "Vehicle/VehicleMods.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
-#include "format_duration.hpp"
+#include "Util/format_duration.hpp"
 
 #include <fmt/format.h>
 
-#include "lang.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

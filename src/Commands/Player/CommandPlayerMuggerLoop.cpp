@@ -1,23 +1,23 @@
-#include "CommandPlayerMuggerLoop.hpp"
+#include "Commands/Player/CommandPlayerMuggerLoop.hpp"
 
-#include "AbstractEntity.hpp"
-#include "FiberPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_handler.hpp"
-#include "ScriptHostUtil.hpp"
-#include "ScriptLocal.hpp"
-#include "script_thread.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_handler.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_thread.hpp"
 
 #define MUGDEBUG false
 
 #if MUGDEBUG
-#include "drawDebugText.hpp"
-#include "DrawUtil3d.hpp"
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Rendering/drawDebugText.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

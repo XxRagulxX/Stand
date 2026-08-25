@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/Vector3.hpp>
+#include "lib/soup/Vector3.hpp"
 
 namespace Stand
 {

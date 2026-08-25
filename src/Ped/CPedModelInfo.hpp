@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CBaseModelInfo.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
-#include "atString.hpp"
-#include "PedVariationDS.hpp"
+#include "Game/atString.hpp"
+#include "Ped/PedVariationDS.hpp"
 
 class CPedModelInfo : public CBaseModelInfo
 {

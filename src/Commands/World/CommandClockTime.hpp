@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
 #include <fmt/core.h>
 
-#include "get_next_arg.hpp"
+#include "Util/get_next_arg.hpp"
 
 namespace Stand
 {

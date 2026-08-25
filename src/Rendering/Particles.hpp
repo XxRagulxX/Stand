@@ -1,7 +1,7 @@
 #pragma once
 
-#include "natives.hpp"
-#include "Script.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

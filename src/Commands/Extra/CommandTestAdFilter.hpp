@@ -2,10 +2,10 @@
 
 #ifdef STAND_DEBUG
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "StringUtils.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

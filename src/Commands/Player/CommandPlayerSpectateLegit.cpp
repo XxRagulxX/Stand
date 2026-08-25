@@ -1,12 +1,12 @@
-#include "CommandPlayerSpectateLegit.hpp"
+#include "Commands/Player/CommandPlayerSpectateLegit.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Camgr.hpp"
-#include "natives.hpp"
-#include "PlayerProvider.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "SpectateMgr.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Game/natives.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Network/SpectateMgr.hpp"
 
 namespace Stand
 {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
-#include "struct_base.hpp"
-#include "rtti_shim.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Util/struct_base.hpp"
+#include "AntiCheat/rtti_shim.hpp"
 
-#include "net.hpp"
-#include "rlclancommon.hpp"
-#include "rlSessionInfo.hpp"
+#include "Network/net.hpp"
+#include "Network/rlclancommon.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 namespace rage
 {

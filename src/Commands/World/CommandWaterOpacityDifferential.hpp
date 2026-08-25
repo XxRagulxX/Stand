@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "WaterQuad.hpp"
+#include "Rendering/WaterQuad.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
-#include "CommandThousandsSep.hpp"
+#include "Commands/Stand/CommandThousandsSep.hpp"
 
-#include <soup/Bytepatch.hpp>
+#include "lib/soup/Bytepatch.hpp"
 
-#include "eSCRIPT_HUD_COMPONENT.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
-#include "pointers.hpp"
+#include "Game/eSCRIPT_HUD_COMPONENT.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

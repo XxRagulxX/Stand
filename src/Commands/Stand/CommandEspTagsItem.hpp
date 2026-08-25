@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "create_rainbow.hpp"
-#include "player_tags.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
+#include "Rendering/create_rainbow.hpp"
+#include "Network/player_tags.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

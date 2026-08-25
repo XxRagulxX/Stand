@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandSpoof.hpp"
+#include "Commands/Online/CommandSpoof.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "ScriptGlobal.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

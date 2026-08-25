@@ -1,7 +1,7 @@
 #pragma once
 
-#include "netPeerAddress.hpp"
-#include "netSocketAddress.hpp"
+#include "Network/netPeerAddress.hpp"
+#include "Network/netSocketAddress.hpp"
 
 namespace rage
 {

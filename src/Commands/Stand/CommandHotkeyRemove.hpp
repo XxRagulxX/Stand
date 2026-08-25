@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandIssuable.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
-#include "get_next_arg.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

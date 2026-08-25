@@ -1,11 +1,11 @@
-#include "tbTempEmptyParachute.hpp"
+#include "Core/tbTempEmptyParachute.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "ePedConfigFlags.hpp"
-#include "gta_ped.hpp"
-#include "atStringHash.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Ped/ePedConfigFlags.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

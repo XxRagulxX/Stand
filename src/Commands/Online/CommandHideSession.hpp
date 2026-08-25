@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "SessionSpoofing.hpp"
-#include "Tunables.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

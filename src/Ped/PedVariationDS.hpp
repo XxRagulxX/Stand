@@ -1,8 +1,8 @@
 #pragma once
 
-#include "atArray.hpp"
-#include "ePedVarComp.hpp"
-#include "PedProps.hpp"
+#include "Game/atArray.hpp"
+#include "Ped/ePedVarComp.hpp"
+#include "Ped/PedProps.hpp"
 
 class CPedVariationData
 {

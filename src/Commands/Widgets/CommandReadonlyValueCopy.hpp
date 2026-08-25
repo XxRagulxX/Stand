@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandReadonlyValue.hpp"
+#include "Commands/Widgets/CommandReadonlyValue.hpp"
 
-#include "StringCastable.hpp"
+#include "Util/StringCastable.hpp"
 
 namespace Stand
 {

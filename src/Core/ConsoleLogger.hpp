@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Logger.hpp"
+#include "Core/Logger.hpp"
 
 #include <fstream>
 
-#include <soup/DetachedScheduler.hpp>
+#include "lib/soup/DetachedScheduler.hpp"
 
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "natives_decl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "ScriptVmOpCode.hpp"
+#include "Scripting/ScriptVmOpCode.hpp"
 
 namespace Stand
 {

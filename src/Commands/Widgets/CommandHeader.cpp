@@ -1,20 +1,20 @@
-#include "CommandHeader.hpp"
+#include "Commands/Widgets/CommandHeader.hpp"
 
 #include <filesystem>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "alphanum.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "get_appdata_path.hpp"
-#include "bin.hpp"
-#include "ensure_folder.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Util/alphanum.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/bin.hpp"
+#include "Util/ensure_folder.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

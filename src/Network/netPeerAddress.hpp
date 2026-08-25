@@ -1,9 +1,9 @@
 #pragma once
 
-#include "netPeerId.hpp"
-#include "netRelayToken.hpp"
-#include "netSocketAddress.hpp"
-#include "rlGamerHandle.hpp"
+#include "Network/netPeerId.hpp"
+#include "Network/netRelayToken.hpp"
+#include "Network/netSocketAddress.hpp"
+#include "Network/rlGamerHandle.hpp"
 
 #pragma pack(push, 1)
 namespace rage

@@ -1,20 +1,20 @@
-﻿#include "input.hpp"
+﻿#include "Core/input.hpp"
 
 #include <fmt/format.h>
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "GhostDriver.hpp"
-#include "Gui.hpp"
-#include "is_number_char.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "Renderer.hpp"
-#include "tbFreecam.hpp"
-#include "vk_string_map.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Vehicle/GhostDriver.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/is_number_char.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/tbFreecam.hpp"
+#include "Util/vk_string_map.hpp"
 
 namespace Stand
 {

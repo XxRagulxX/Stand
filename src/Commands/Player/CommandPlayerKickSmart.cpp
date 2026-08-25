@@ -1,10 +1,10 @@
-#include "CommandPlayerKickSmart.hpp"
+#include "Commands/Player/CommandPlayerKickSmart.hpp"
 
-#include "CommandListPlayer.hpp"
-#include "FiberPool.hpp"
-#include "lang.hpp"
-#include "PlayerProvider.hpp"
-#include "Util.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Core/FiberPool.hpp"
+#include "Localization/lang.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

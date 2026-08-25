@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/Bitset.hpp>
+#include "lib/soup/Bitset.hpp"
 
-#include "punishments.hpp"
+#include "Network/punishments.hpp"
 
 namespace Stand
 {

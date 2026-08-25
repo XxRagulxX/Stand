@@ -1,13 +1,13 @@
-#include "CommandSpoofName.hpp"
+#include "Commands/Online/CommandSpoofName.hpp"
 
-#include "AbstractEntity.hpp"
-#include "apply_spoofed_name.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "is_session.hpp"
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Network/apply_spoofed_name.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_session.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

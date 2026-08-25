@@ -1,11 +1,11 @@
-#include "CommandPlayerExplode.hpp"
+#include "Commands/Player/CommandPlayerExplode.hpp"
 
-#include "AbstractEntity.hpp"
-#include "eExplosionTag.hpp"
-#include "natives.hpp"
-#include "PlayerProvider.hpp"
-#include "script_thread.hpp"
-#include "Vector2Plus.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/eExplosionTag.hpp"
+#include "Game/natives.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Game/script_thread.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

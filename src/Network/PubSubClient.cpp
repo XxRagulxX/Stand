@@ -1,10 +1,10 @@
-#include "PubSubClient.hpp"
+#include "Network/PubSubClient.hpp"
 
-#include <soup/EstablishWebSocketConnectionTask.hpp>
-#include <soup/MaintainWebSocketConnectionTask.hpp>
-#include <soup/ObfusString.hpp>
+#include "lib/soup/EstablishWebSocketConnectionTask.hpp"
+#include "lib/soup/MaintainWebSocketConnectionTask.hpp"
+#include "lib/soup/ObfusString.hpp"
 
-#include "NetInterface.hpp"
+#include "Network/NetInterface.hpp"
 
 namespace Stand
 {

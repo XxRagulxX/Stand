@@ -1,10 +1,10 @@
-#include "FiberPool.hpp"
+#include "Core/FiberPool.hpp"
 
-#include <soup/AtomicDeque.hpp>
+#include "lib/soup/AtomicDeque.hpp"
 
-#include "main.hpp" // g_hmodule
-#include "Script.hpp"
-#include "ScriptMgr.hpp"
+#include "Core/main.hpp" // g_hmodule
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptMgr.hpp"
 
 namespace Stand
 {

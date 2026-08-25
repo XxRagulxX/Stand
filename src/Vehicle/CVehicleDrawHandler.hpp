@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_draw_handler.hpp"
+#include "Game/gta_draw_handler.hpp"
 
 class CVehicleDrawHandler : public CDynamicEntityDrawHandler
 {

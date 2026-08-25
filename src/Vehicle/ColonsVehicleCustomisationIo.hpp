@@ -1,10 +1,10 @@
 #pragma once
 
-#include "VehicleCustomisationIo.hpp"
+#include "Vehicle/VehicleCustomisationIo.hpp"
 
 #include <unordered_map>
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
 namespace Stand
 {

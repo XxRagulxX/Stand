@@ -1,10 +1,10 @@
-#include "Blacklist.hpp"
+#include "Network/Blacklist.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Auth.hpp"
-#include "Codename.hpp"
-#include "Exceptional.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/Auth.hpp"
+#include "Util/Codename.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

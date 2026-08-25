@@ -1,7 +1,7 @@
 #pragma once
 
-#include "netTask.hpp"
-#include "rlFriend.hpp"
+#include "Network/netTask.hpp"
+#include "Network/rlFriend.hpp"
 
 namespace rage
 {

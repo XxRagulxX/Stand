@@ -1,11 +1,11 @@
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "Auth.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
-#include "UnicodePrivateUse.hpp"
+#include "Network/Auth.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
 
 namespace Stand
 {

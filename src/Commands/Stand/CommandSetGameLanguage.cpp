@@ -1,14 +1,14 @@
-﻿#include "CommandSetGameLanguage.hpp"
+﻿#include "Commands/Stand/CommandSetGameLanguage.hpp"
 
-#include "CProfileSettings.hpp"
-#include "eMenuPref.hpp"
-#include "sysLanguage.hpp"
+#include "Config/CProfileSettings.hpp"
+#include "Game/eMenuPref.hpp"
+#include "Game/sysLanguage.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "Label.hpp"
-#include "lang.hpp"
-#include "LangId.hpp"
-#include "pointers.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Util/Label.hpp"
+#include "Localization/lang.hpp"
+#include "Localization/LangId.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
-#include "CommandGunFreedom.hpp"
+#include "Commands/Weapons/CommandGunFreedom.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ControlMgr.hpp"
-#include "hud_component.hpp"
-#include "NativeTableHooks.hpp"
-#include "ScriptGlobal.hpp"
-#include "scrNativeCallContext.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/ControlMgr.hpp"
+#include "Rendering/hud_component.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "netMessage.hpp"
+#include "Network/netMessage.hpp"
 
-#include "netPeerId.hpp"
+#include "Network/netPeerId.hpp"
 
 #pragma pack(push, 1)
 namespace rage

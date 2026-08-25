@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "eHomingLockOnState.hpp"
-#include "CommandFireCountermeasure.hpp"
-#include "gta_vehicle.hpp"
+#include "Game/eHomingLockOnState.hpp"
+#include "Commands/Vehicle/CommandFireCountermeasure.hpp"
+#include "Game/gta_vehicle.hpp"
 
 namespace Stand
 {

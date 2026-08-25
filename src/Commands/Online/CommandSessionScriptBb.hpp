@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSessionScript.hpp"
+#include "Commands/Online/CommandSessionScript.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "ScriptLocal.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Scripting/ScriptLocal.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/Task.hpp>
+#include "lib/soup/Task.hpp"
 
-#include <soup/GetFileContentsTask.hpp>
-#include "PackageRepository.hpp"
+#include "lib/soup/GetFileContentsTask.hpp"
+#include "Game/PackageRepository.hpp"
 
 namespace Stand
 {

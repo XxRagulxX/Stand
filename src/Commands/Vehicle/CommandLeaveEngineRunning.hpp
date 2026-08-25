@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ePedConfigFlags.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Ped/ePedConfigFlags.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

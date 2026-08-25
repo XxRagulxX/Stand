@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandColour.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
 
-#include "AllEntitiesEveryTick.hpp"
+#include "Core/AllEntitiesEveryTick.hpp"
 
 namespace Stand
 {

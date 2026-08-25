@@ -1,10 +1,10 @@
-#include "vector.hpp"
+#include "Util/vector.hpp"
 
 #include <fmt/xchar.h>
 
-#include "natives.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

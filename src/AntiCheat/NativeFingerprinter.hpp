@@ -3,10 +3,10 @@
 #include <map>
 #include <unordered_map>
 
-#include <soup/fwd.hpp>
-#include <soup/x64.hpp>
+#include "lib/soup/fwd.hpp"
+#include "lib/soup/x64.hpp"
 
-#include "natives_decl.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

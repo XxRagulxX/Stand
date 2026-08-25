@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandPlayerVehicleAction.hpp"
+#include "Commands/Vehicle/CommandPlayerVehicleAction.hpp"
 
-#include "natives.hpp"
-#include "TpUtil.hpp"
+#include "Game/natives.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

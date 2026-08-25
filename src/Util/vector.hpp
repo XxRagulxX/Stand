@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include <soup/VectorBase.hpp>
-#include <soup/Vector3.hpp>
+#include "lib/soup/VectorBase.hpp"
+#include "lib/soup/Vector3.hpp"
 
 #pragma pack(push, 1)
 namespace Stand

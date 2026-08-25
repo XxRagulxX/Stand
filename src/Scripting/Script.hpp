@@ -4,7 +4,7 @@
 #include <functional>
 #include <windows.h>
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
 #ifdef STAND_DEBUG
 #define REPORT_YIELD_IN_NOYIELD true

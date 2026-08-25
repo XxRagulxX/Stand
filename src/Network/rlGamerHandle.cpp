@@ -1,7 +1,7 @@
-#include "rlGamerHandle.hpp"
+#include "Network/rlGamerHandle.hpp"
 
-#include "datBitBuffer.hpp"
-#include "str2int.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Util/str2int.hpp"
 
 namespace rage
 {

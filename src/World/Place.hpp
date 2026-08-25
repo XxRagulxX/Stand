@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vector2Plus.hpp"
-#include "Label.hpp"
+#include "Util/Vector2Plus.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

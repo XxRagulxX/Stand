@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <optional>
 
-#include <soup/SharedLibrary.hpp>
+#include "lib/soup/SharedLibrary.hpp"
 
-#include "pointers.hpp"
-#include "Util.hpp"
+#include "Game/pointers.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

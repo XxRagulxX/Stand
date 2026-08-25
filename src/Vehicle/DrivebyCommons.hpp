@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "gta_fwddecl.hpp"
-#include "hashtype.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/hashtype.hpp"
 
 namespace Stand
 {

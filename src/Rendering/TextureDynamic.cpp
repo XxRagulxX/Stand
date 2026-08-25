@@ -1,6 +1,6 @@
-#include "TextureDynamic.hpp"
+#include "Rendering/TextureDynamic.hpp"
 
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

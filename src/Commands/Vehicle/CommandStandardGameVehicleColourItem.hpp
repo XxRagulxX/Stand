@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandStandardGameVehicleColour.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
-#include "vehicle_colours.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandStandardGameVehicleColour.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/vehicle_colours.hpp"
 
 namespace Stand
 {

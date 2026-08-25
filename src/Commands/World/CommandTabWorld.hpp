@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandTab.hpp"
+#include "Commands/Widgets/CommandTab.hpp"
 
 namespace Stand
 {

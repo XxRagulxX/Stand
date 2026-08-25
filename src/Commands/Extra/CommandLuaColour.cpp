@@ -1,4 +1,4 @@
-#include "CommandLuaColour.hpp"
+#include "Commands/Extra/CommandLuaColour.hpp"
 
 namespace Stand
 {

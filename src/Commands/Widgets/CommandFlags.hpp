@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
 // Can not be used with saved state, hotkeys, & saved commands because it is temporary.
 #define CMDFLAG_TEMPORARY					(commandflags_t)0b1

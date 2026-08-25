@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "eDamageFlags.hpp"
-#include "natives.hpp"
-#include "TargetingData.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/eDamageFlags.hpp"
+#include "Game/natives.hpp"
+#include "Util/TargetingData.hpp"
 
 namespace Stand
 {

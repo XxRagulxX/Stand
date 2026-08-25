@@ -3,20 +3,20 @@
 #include <functional>
 #include <optional>
 #include <array>
-#include "vector.hpp"
+#include "Util/vector.hpp"
 
-#include <soup/Optional.hpp>
-#include <soup/ShortString.hpp>
+#include "lib/soup/Optional.hpp"
+#include "lib/soup/ShortString.hpp"
 
-#include "natives_decl.hpp"
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "gta_player.hpp"
-#include "typedecl.hpp"
+#include "Game/natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/gta_player.hpp"
+#include "Game/typedecl.hpp"
 
-#include "atStringHash.hpp"
-#include "BiString.hpp"
-#include "PlayerScope.hpp"
+#include "Game/atStringHash.hpp"
+#include "Util/BiString.hpp"
+#include "Network/PlayerScope.hpp"
 
 #define HAVE_BREAKUP_KICK false
 

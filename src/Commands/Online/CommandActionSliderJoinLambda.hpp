@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandTextsliderJoin.hpp"
+#include "Commands/Widgets/CommandTextsliderJoin.hpp"
 
 namespace Stand
 {

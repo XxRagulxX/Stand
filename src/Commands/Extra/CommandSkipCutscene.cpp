@@ -1,12 +1,12 @@
-#include "CommandSkipCutscene.hpp"
+#include "Commands/Extra/CommandSkipCutscene.hpp"
 
-#include <soup/Bytepatch.hpp>
-#include <soup/macros.hpp>
+#include "lib/soup/Bytepatch.hpp"
+#include "lib/soup/macros.hpp"
 
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

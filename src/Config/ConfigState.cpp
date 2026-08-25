@@ -1,4 +1,4 @@
-#include "ConfigState.hpp"
+#include "Config/ConfigState.hpp"
 
 namespace Stand
 {

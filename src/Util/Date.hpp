@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scrValue.hpp"
+#include "Game/scrValue.hpp"
 
 namespace Stand
 {

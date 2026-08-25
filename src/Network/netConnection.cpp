@@ -1,7 +1,7 @@
-#include "netConnection.hpp"
+#include "Network/netConnection.hpp"
 #if I_CAN_SPY
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 namespace rage
 {

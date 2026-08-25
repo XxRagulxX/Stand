@@ -1,9 +1,9 @@
 #pragma once
 
-#include "netTask.hpp"
+#include "Network/netTask.hpp"
 
-#include "rl.hpp"
-#include "struct_base.hpp"
+#include "Network/rl.hpp"
+#include "Util/struct_base.hpp"
 
 namespace rage
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListRefreshable.hpp"
+#include "Commands/Widgets/CommandListRefreshable.hpp"
 
-#include "AsiMod.hpp"
+#include "Core/AsiMod.hpp"
 
 namespace Stand
 {

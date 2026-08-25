@@ -1,12 +1,12 @@
-﻿#include "ChatCommandsCommon.hpp"
+﻿#include "Network/ChatCommandsCommon.hpp"
 
-#include "CommandListSelect.hpp"
-#include "CommandPlayer.hpp"
-#include "evtChatEvent.hpp"
-#include "FiberPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Network/evtChatEvent.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

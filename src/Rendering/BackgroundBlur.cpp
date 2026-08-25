@@ -1,6 +1,6 @@
-#include "BackgroundBlur.hpp"
+#include "Rendering/BackgroundBlur.hpp"
 
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

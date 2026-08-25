@@ -1,18 +1,18 @@
-﻿#include "scrNativeCallContext.hpp"
+﻿#include "Game/scrNativeCallContext.hpp"
 
-#include "ida_decl.hpp"
+#include "AntiCheat/ida_decl.hpp"
 
-#include "Metrics.hpp"
-#include "pointers.hpp"
-#include "ScriptMgr.hpp"
-#include "vector.hpp"
+#include "Core/Metrics.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/vector.hpp"
 
 #if !EXPECT_INVOKE_WONT_FAIL
 #define LOG_INVOKE_FAIL false
 
 #if LOG_INVOKE_FAIL
-#include "FileLogger.hpp"
-#include "Util.hpp"
+#include "Core/FileLogger.hpp"
+#include "Util/Util.hpp"
 #endif
 #endif
 

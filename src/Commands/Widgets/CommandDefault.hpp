@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "ExecCtx.hpp"
-#include "Gui.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

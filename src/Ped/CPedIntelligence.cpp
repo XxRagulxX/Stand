@@ -1,6 +1,6 @@
-#include "CPedIntelligence.hpp"
+#include "Ped/CPedIntelligence.hpp"
 
-#include "aiTaskTree.hpp"
+#include "Ped/aiTaskTree.hpp"
 
 CTask* CPedIntelligence::FindTaskActiveByType(const int iType) const noexcept
 {

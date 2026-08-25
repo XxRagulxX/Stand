@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dx_common.hpp"
-#include "fwddecl.hpp"
+#include "Rendering/dx_common.hpp"
+#include "Game/fwddecl.hpp"
 
 namespace Stand
 {

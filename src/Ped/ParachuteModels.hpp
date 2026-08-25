@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "atStringHash.hpp"
-#include "Label.hpp"
+#include "Game/atStringHash.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

@@ -1,29 +1,29 @@
-#include "ScAccount.hpp"
+#include "Network/ScAccount.hpp"
 
 #include <queue>
 
 #include <fmt/core.h>
 #include <rapidjson/document.h>
 
-#include <soup/json.hpp>
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/json.hpp"
+#include "lib/soup/UniquePtr.hpp"
 
-#include "Auth.hpp"
-#include "Click.hpp"
-#include "Hooking.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "is_rid.hpp"
-#include "name_validation.hpp"
-#include "PlayerHistory.hpp"
-#include "pointers.hpp"
-#include "RateLimit.hpp"
-#include "rlGamerInfo.hpp"
-#include "rlRosCredentials.hpp"
-#include "rockstar_admins.hpp"
-#include "StringUtils.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
-#include "VectorMap.hpp"
+#include "Network/Auth.hpp"
+#include "Menu/Click.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Network/is_rid.hpp"
+#include "Util/name_validation.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Game/pointers.hpp"
+#include "Network/RateLimit.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Network/rlRosCredentials.hpp"
+#include "Network/rockstar_admins.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
+#include "Rendering/VectorMap.hpp"
 
 namespace Stand
 {

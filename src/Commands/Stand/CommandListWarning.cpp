@@ -1,7 +1,7 @@
-#include "CommandListWarning.hpp"
+#include "Commands/Stand/CommandListWarning.hpp"
 
-#include "Gui.hpp"
-#include "Auth.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/Auth.hpp"
 
 namespace Stand
 {

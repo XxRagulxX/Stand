@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
 
-#include "Gui.hpp"
-#include "RelayCon.hpp"
-#include "Util.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/RelayCon.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

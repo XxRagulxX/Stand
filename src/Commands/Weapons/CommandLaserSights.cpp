@@ -1,10 +1,10 @@
-#include "CommandLaserSights.hpp"
+#include "Commands/Weapons/CommandLaserSights.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_input.hpp"
-#include "input.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

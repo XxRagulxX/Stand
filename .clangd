@@ -10,61 +10,28 @@ CompileFlags:
   # any file opened before background-indexing has found one) - cases
   # where clangd otherwise falls back to a generic guess with none of this
   # project's include paths at all. CMake already puts every path below on
-  # the Stand target's real compile commands (see CMakeLists.txt,
-  # STAND_INCLUDE_DIRS and LIB_DIR in particular) - and since
-  # STAND_UNITY_BUILD defaults to OFF, most .cpp/.hpp pairs get a real,
-  # complete entry of their own and don't even need this - but a header
-  # with no matching .cpp of its own still does, and this is what makes it
-  # work regardless.
+  # the Stand target's real compile commands (see the "Stand include
+  # directories" section of CMakeLists.txt) - and since STAND_UNITY_BUILD
+  # defaults to OFF, most .cpp/.hpp pairs get a real, complete entry of
+  # their own and don't even need this - but a header with no matching
+  # .cpp of its own still does, and this is what makes it work regardless.
   #
   # Relative paths here resolve relative to this .clangd file itself (the
   # repo root), the same on Windows and Linux - no OS-specific paths
   # needed for this part.
   Add:
-    # src/ itself, for same-directory/top-level lookups.
+    # src/ itself. Every Stand-own header and every vendored library
+    # under src/lib/ is reached with a fully qualified #include relative
+    # to this one root - e.g. #include "Game/CObject.hpp" or
+    # #include "lib/soup/rand.hpp" - so this single path is all that's
+    # needed to resolve any of them, regardless of which folder a header
+    # lives in or moves to. See src/README.md.
     - -Isrc
 
-    # Every subfolder under src/ that holds its own headers - this list is
-    # STAND_INCLUDE_DIRS from CMakeLists.txt, spelled out statically here
-    # since clangd (unlike CMake) can't compute it at file-open time. Keep
-    # this in sync if src/'s top-level layout changes - see src/README.md
-    # for what each one is.
-    - -Isrc/AntiCheat
-    - -Isrc/Commands/Extra
-    - -Isrc/Commands/Online
-    - -Isrc/Commands/Ped
-    - -Isrc/Commands/Player
-    - -Isrc/Commands/Self
-    - -Isrc/Commands/Stand
-    - -Isrc/Commands/Vehicle
-    - -Isrc/Commands/Weapons
-    - -Isrc/Commands/Widgets
-    - -Isrc/Commands/World
-    - -Isrc/Config
-    - -Isrc/Core
-    - -Isrc/Game
-    - -Isrc/Localization
-    - -Isrc/Menu
-    - -Isrc/Network
-    - -Isrc/Ped
-    - -Isrc/Rendering
-    - -Isrc/Scripting
-    - -Isrc/Util
-    - -Isrc/Vehicle
-    - -Isrc/Weapons
-    - -Isrc/World
-
-    # src/lib/ itself - what makes `#include <soup/Rgb.hpp>`,
-    # `#include "soup/Uri.hpp"`, `#include <discord-rpc/include/discord_rpc.h>`
-    # and `#include <souplua/soup_lua_bindings.hpp>` resolve (each vendored
-    # library is reached qualified with its own directory name, rather
-    # than adding every vendored library's own directory to the search
-    # path - see the comment on LIB_DIR in CMakeLists.txt for why, and
-    # crucially, why soup/ itself is deliberately NOT also added).
-    - -Isrc/lib
-
-    # The vendored libraries whose own headers are reached bare (no
-    # library-name prefix), matching how each one's
+    # These vendored libraries are instead reached the way any
+    # third-party library normally is - unqualified, by their own public
+    # header name (<fmt/core.h>, <rapidjson/document.h>, <MinHook.h>,
+    # <lua.h>, DirectXTK's own headers) - matching how each one's
     # target_include_directories() exposes it in CMakeLists.txt.
     - -Isrc/lib/pluto
     - -Isrc/lib/fmt/include

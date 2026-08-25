@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandListSelect.hpp"
-#include "Particles.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Rendering/Particles.hpp"
 
 namespace Stand
 {

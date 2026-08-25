@@ -25,9 +25,9 @@
 #include "lstate.h"
 #endif
 
-#include "soup/base.hpp"
-#include "soup/dnsOsResolver.hpp"
-#include "soup/os.hpp"
+#include "lib/soup/base.hpp"
+#include "lib/soup/dnsOsResolver.hpp"
+#include "lib/soup/os.hpp"
 
 
 /*

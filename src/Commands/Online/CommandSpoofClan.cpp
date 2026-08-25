@@ -1,31 +1,31 @@
-#include "CommandSpoofClan.hpp"
+#include "Commands/Online/CommandSpoofClan.hpp"
 
 #include <cstring>
 
-#include "CommandExtraInfo.hpp"
-#include "ExecCtx.hpp"
-#include "get_next_arg.hpp"
-#include "Hooking.hpp"
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "rlClanClient.hpp"
-#include "scrClanDesc.hpp"
-#include "ScriptGlobal.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Util/get_next_arg.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlClanClient.hpp"
+#include "Network/scrClanDesc.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/StringUtils.hpp"
 
-#include "CommandSpoofClanToggle.hpp"
+#include "Commands/Online/CommandSpoofClanToggle.hpp"
 
-#include "CommandSpoofClanId.hpp"
-#include "CommandSpoofClanTag.hpp"
-#include "CommandSpoofClanName.hpp"
-#include "CommandSpoofClanMotto.hpp"
-#include "CommandSpoofClanAlt.hpp"
-#include "CommandSpoofClanColour.hpp"
+#include "Commands/Online/CommandSpoofClanId.hpp"
+#include "Commands/Online/CommandSpoofClanTag.hpp"
+#include "Commands/Online/CommandSpoofClanName.hpp"
+#include "Commands/Online/CommandSpoofClanMotto.hpp"
+#include "Commands/Online/CommandSpoofClanAlt.hpp"
+#include "Commands/Online/CommandSpoofClanColour.hpp"
 
-#include "CommandSpoofClanPreset.hpp"
-#include "CommandSpoofClanMine.hpp"
+#include "Commands/Online/CommandSpoofClanPreset.hpp"
+#include "Commands/Online/CommandSpoofClanMine.hpp"
 
 namespace Stand
 {

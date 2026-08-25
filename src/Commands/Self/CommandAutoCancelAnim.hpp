@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Animations.hpp"
-#include "ExecCtx.hpp"
-#include "input.hpp"
+#include "Game/Animations.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/input.hpp"
 
 namespace Stand
 {

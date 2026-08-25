@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "SharedNativeHooks.hpp"
+#include "AntiCheat/SharedNativeHooks.hpp"
 
 namespace Stand
 {

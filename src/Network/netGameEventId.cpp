@@ -1,8 +1,8 @@
-#include "netGameEventId.hpp"
+#include "Network/netGameEventId.hpp"
 
 #include <fmt/format.h>
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

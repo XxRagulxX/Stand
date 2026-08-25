@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "PlayerHistory.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
 
 namespace Stand
 {

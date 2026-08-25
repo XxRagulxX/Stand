@@ -1,14 +1,14 @@
-#include "script_thread.hpp"
+#include "Game/script_thread.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "atArray.hpp"
-#include "CNetGamePlayer.hpp"
-#include "get_current_time_millis.hpp"
-#include "Label.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "script_handler.hpp"
-#include "script_program.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/atArray.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/Label.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Game/script_handler.hpp"
+#include "Game/script_program.hpp"
 
 using namespace Stand;
 

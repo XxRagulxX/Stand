@@ -1,7 +1,7 @@
 #pragma once
 
-#include "atSpanArray.hpp"
-#include "rlGamerHandle.hpp"
+#include "Game/atSpanArray.hpp"
+#include "Network/rlGamerHandle.hpp"
 
 namespace rage
 {

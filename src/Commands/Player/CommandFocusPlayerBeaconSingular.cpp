@@ -1,6 +1,6 @@
-#include "CommandFocusPlayerBeaconSingular.hpp"
+#include "Commands/Player/CommandFocusPlayerBeaconSingular.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

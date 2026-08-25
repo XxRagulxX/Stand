@@ -1,8 +1,8 @@
 #pragma once
 
-#include <soup/fwd.hpp>
+#include "lib/soup/fwd.hpp"
 
-#include "Package.hpp"
+#include "Game/Package.hpp"
 
 namespace Stand
 {

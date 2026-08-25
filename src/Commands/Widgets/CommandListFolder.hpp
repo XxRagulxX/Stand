@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListRefreshable.hpp"
+#include "Commands/Widgets/CommandListRefreshable.hpp"
 
 namespace Stand
 {

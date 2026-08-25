@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <fmt/format.h>
 
-#include "get_current_time_millis.hpp"
-#include "gta_input.hpp"
-#include "natives.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

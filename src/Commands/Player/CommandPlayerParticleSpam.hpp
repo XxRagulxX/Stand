@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "CommandPlayerParticleSpamDelay.hpp"
-#include "CommandPlayerParticleSpamScale.hpp"
-#include "CommandSliderFloat.hpp"
-#include "Particles.hpp"
-#include "natives.hpp"
+#include "Commands/Player/CommandPlayerParticleSpamDelay.hpp"
+#include "Commands/Player/CommandPlayerParticleSpamScale.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Rendering/Particles.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandAction.hpp"
-#include "CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
 
-#include "AbstractEntity.hpp"
-#include "DrawUtil3d.hpp"
-#include "is_session.hpp"
-#include "script_events.hpp"
-#include "TpUtil.hpp"
-#include "tse.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Network/is_session.hpp"
+#include "Network/script_events.hpp"
+#include "Core/TpUtil.hpp"
+#include "Util/tse.hpp"
 
 namespace Stand
 {

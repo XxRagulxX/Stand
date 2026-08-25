@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "tse.hpp"
+#include "Util/tse.hpp"
 
 namespace Stand
 {

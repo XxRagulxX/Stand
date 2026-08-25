@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPlayerListPlayersShortcut.hpp"
+#include "Commands/Player/CommandPlayerListPlayersShortcut.hpp"
 
-#include "FiberPool.hpp"
+#include "Core/FiberPool.hpp"
 
 namespace Stand
 {

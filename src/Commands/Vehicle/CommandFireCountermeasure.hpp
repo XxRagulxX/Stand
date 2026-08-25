@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "gta_vehicle.hpp"
-#include "Particles.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Particles.hpp"
 
 namespace Stand
 {

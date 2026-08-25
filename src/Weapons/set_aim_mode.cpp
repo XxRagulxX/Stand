@@ -1,6 +1,6 @@
-#include "set_aim_mode.hpp"
+#include "Weapons/set_aim_mode.hpp"
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

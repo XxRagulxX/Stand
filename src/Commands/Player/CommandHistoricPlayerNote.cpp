@@ -1,10 +1,10 @@
-#include "CommandHistoricPlayerNote.hpp"
+#include "Commands/Player/CommandHistoricPlayerNote.hpp"
 
-#include <soup/string.hpp>
+#include "lib/soup/string.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "PlayerHistory.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

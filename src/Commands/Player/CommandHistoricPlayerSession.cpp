@@ -1,10 +1,10 @@
-#include "CommandHistoricPlayerSession.hpp"
+#include "Commands/Player/CommandHistoricPlayerSession.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandActionSliderJoinLambda.hpp"
-#include "CommandHistoricPlayer.hpp"
-#include "JoinUtil.hpp"
-#include "RemoteGamer.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Online/CommandActionSliderJoinLambda.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/JoinUtil.hpp"
+#include "Network/RemoteGamer.hpp"
 
 namespace Stand
 {

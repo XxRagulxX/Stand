@@ -1,27 +1,27 @@
-#include "Exceptional.hpp"
+#include "Core/Exceptional.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/ObfusString.hpp>
-#include <soup/os.hpp>
-#include <soup/unicode.hpp>
-#include <soup/x64.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/os.hpp"
+#include "lib/soup/unicode.hpp"
+#include "lib/soup/x64.hpp"
 
 #include <rtcapi.h>
 #include <signal.h>
 #include <winternl.h>
 
-#include "atStringHash.hpp"
-#include "FileLogger.hpp"
-#include "Hooking.hpp"
-#include "lang.hpp"
-#include "mystackwalker.hpp"
-#include "pointers.hpp"
-#include "PointerNames.hpp"
-#include "ScriptVmErrorHandling.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
-#include "yeet_flow.hpp"
+#include "Game/atStringHash.hpp"
+#include "Core/FileLogger.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Localization/lang.hpp"
+#include "Core/mystackwalker.hpp"
+#include "Game/pointers.hpp"
+#include "Core/PointerNames.hpp"
+#include "Scripting/ScriptVmErrorHandling.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
+#include "Core/yeet_flow.hpp"
 
 namespace Stand
 {

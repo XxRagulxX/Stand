@@ -1,6 +1,6 @@
-#include "GridItem.hpp"
+#include "Menu/GridItem.hpp"
 
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "JoinUtil.hpp"
-#include "StringUtils.hpp"
+#include "Network/JoinUtil.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

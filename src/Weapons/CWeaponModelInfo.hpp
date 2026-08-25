@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CBaseModelInfo.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
 class CWeaponModelInfo : public CBaseModelInfo
 {

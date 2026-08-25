@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ePedConfigFlags.hpp"
+#include "Ped/ePedConfigFlags.hpp"
 
 namespace Stand
 {

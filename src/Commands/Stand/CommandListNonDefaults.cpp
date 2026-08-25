@@ -1,7 +1,7 @@
-#include "CommandListNonDefaults.hpp"
+#include "Commands/Stand/CommandListNonDefaults.hpp"
 
-#include "CommandLink.hpp"
-#include "Gui.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

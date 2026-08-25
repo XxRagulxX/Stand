@@ -1,9 +1,9 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "atFixedArray.hpp"
-#include "gta_player.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Game/gta_player.hpp"
 
 #pragma pack(push, 1)
 namespace rage

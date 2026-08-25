@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/UniquePtr.hpp"
 
-#include "FeatureCanvas.hpp"
+#include "Menu/FeatureCanvas.hpp"
 
 namespace Stand
 {

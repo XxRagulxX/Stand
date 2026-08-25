@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CPedIntelligence.hpp"
-#include "gta_ped.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Ped/CPedIntelligence.hpp"
+#include "Game/gta_ped.hpp"
 //#include "natives.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

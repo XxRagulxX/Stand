@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "ScriptErrorRecoveryMode.hpp"
+#include "Scripting/ScriptErrorRecoveryMode.hpp"
 
 namespace Stand
 {

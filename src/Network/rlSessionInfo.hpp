@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netPeerAddress.hpp"
+#include "Network/netPeerAddress.hpp"
 
 namespace Stand
 {

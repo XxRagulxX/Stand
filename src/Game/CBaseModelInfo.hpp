@@ -1,11 +1,11 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "datBase.hpp"
-#include "gta_extensible.hpp"
+#include "Game/datBase.hpp"
+#include "Game/gta_extensible.hpp"
 
 namespace rage
 {

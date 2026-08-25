@@ -1,13 +1,13 @@
-#include "CommandListHandling.hpp"
+#include "Commands/Vehicle/CommandListHandling.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandHandlingEditorSave.hpp"
-#include "CommandListCommandBoxPresets.hpp"
-#include "CommandListViewport.hpp"
-#include "CommandRedirectToList.hpp"
-#include "CommandScripts.hpp"
-#include "CommandToggle.hpp"
-#include "CommandVehicleHandling.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Vehicle/CommandHandlingEditorSave.hpp"
+#include "Commands/Stand/CommandListCommandBoxPresets.hpp"
+#include "Commands/Stand/CommandListViewport.hpp"
+#include "Commands/Widgets/CommandRedirectToList.hpp"
+#include "Commands/Extra/CommandScripts.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Vehicle/CommandVehicleHandling.hpp"
 
 namespace Stand
 {

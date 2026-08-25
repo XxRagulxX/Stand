@@ -1,21 +1,21 @@
-#include "CleanupHelper.hpp"
+#include "Core/CleanupHelper.hpp"
 
-#include <soup/netIntel.hpp>
+#include "lib/soup/netIntel.hpp"
 
-#include "Animations.hpp"
-#include "BattlEyeServer.hpp"
-#include "Camgr.hpp"
-#include "DisableDripfeed.hpp"
-#include "Firemangr.hpp"
-#include "Gui.hpp"
-#include "input.hpp"
-#include "tbLoadingSessionDetails.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
-#include "NativeTableHooksBuiltin.hpp"
-#include "SessionSpoofing.hpp"
-#include "ScriptGlobal.hpp"
-#include "VehicleModelFlags.hpp"
+#include "Game/Animations.hpp"
+#include "Network/BattlEyeServer.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Game/DisableDripfeed.hpp"
+#include "World/Firemangr.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/input.hpp"
+#include "Core/tbLoadingSessionDetails.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "AntiCheat/NativeTableHooksBuiltin.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Vehicle/VehicleModelFlags.hpp"
 
 namespace Stand
 {

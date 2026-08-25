@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "CommandToggleUltimate.hpp"
+#include "Commands/Widgets/CommandToggleUltimate.hpp"
 
-#include "Chat.hpp"
-#include "CommandInput.hpp"
-#include "get_current_time_millis.hpp"
-#include "Script.hpp"
+#include "Network/Chat.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

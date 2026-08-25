@@ -1,15 +1,15 @@
-#include "ConsoleLogger.hpp"
+#include "Core/ConsoleLogger.hpp"
 
 #include <windows.h>
 
-#include <soup/console.hpp>
-#include <soup/ObfusString.hpp>
+#include "lib/soup/console.hpp"
+#include "lib/soup/ObfusString.hpp"
 
-#include "conf.hpp"
-#include "Exceptional.hpp"
-#include "Renderer.hpp"
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Config/conf.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

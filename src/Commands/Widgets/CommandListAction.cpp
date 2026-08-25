@@ -1,12 +1,12 @@
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
 #include <bitset>
 
-#include "CommandListActionCategory.hpp"
-#include "CommandListActionItem.hpp"
-#include "CommandListActionItemWithEntityPreview.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
+#include "Commands/Widgets/CommandListActionCategory.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListActionItemWithEntityPreview.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

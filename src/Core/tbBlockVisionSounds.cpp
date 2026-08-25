@@ -1,8 +1,8 @@
-#include "tbBlockVisionSounds.hpp"
+#include "Core/tbBlockVisionSounds.hpp"
 
-#include "NativeTableHooks.hpp"
-#include "ScriptGlobal.hpp"
-#include "scrNativeCallContext.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gta_entity.hpp"
+#include "Game/gta_entity.hpp"
 
-#include "atArray.hpp"
-#include "CVehicleFlags.hpp"
-#include "fwRegdRef.hpp"
+#include "Game/atArray.hpp"
+#include "Vehicle/CVehicleFlags.hpp"
+#include "Game/fwRegdRef.hpp"
 
 #pragma pack(push, 1)
 class CWheel

@@ -1,10 +1,10 @@
-#include "CommandListHistoricPlayers.hpp"
+#include "Commands/Player/CommandListHistoricPlayers.hpp"
 
 #include <map>
 
-#include "CommandHistoricPlayer.hpp"
-#include "CommandLink.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

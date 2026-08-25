@@ -1,13 +1,13 @@
-#include "Components.hpp"
+#include "AntiCheat/Components.hpp"
 
-#include "ComponentCrash.hpp"
-#include "ComponentCrashPatch.hpp"
-#include "ComponentDrawPatch.hpp"
-#include "ComponentGpu.hpp"
-#include "ComponentNetcode.hpp"
-#include "ComponentOverflowPatch.hpp"
-#include "ComponentSavedata.hpp"
-#include "ComponentSpoofPos.hpp"
+#include "AntiCheat/ComponentCrash.hpp"
+#include "AntiCheat/ComponentCrashPatch.hpp"
+#include "AntiCheat/ComponentDrawPatch.hpp"
+#include "AntiCheat/ComponentGpu.hpp"
+#include "AntiCheat/ComponentNetcode.hpp"
+#include "AntiCheat/ComponentOverflowPatch.hpp"
+#include "AntiCheat/ComponentSavedata.hpp"
+#include "AntiCheat/ComponentSpoofPos.hpp"
 
 namespace Stand
 {

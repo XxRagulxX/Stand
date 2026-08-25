@@ -1,6 +1,6 @@
-#include "CommandSchemeKey.hpp"
+#include "Commands/Stand/CommandSchemeKey.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

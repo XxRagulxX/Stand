@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandListSelect.hpp"
-#include "rlRosGeoLocInfo.hpp"
-#include "pointers.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Network/rlRosGeoLocInfo.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

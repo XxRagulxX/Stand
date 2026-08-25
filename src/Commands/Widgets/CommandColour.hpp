@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandColourCustom.hpp"
+#include "Commands/Widgets/CommandColourCustom.hpp"
 
 namespace Stand
 {

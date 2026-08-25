@@ -1,9 +1,9 @@
-#include "CommandListSessionSpoof.hpp"
+#include "Commands/Online/CommandListSessionSpoof.hpp"
 
-#include "CommandHideSession.hpp"
-#include "CommandSpoofSessionType.hpp"
-#include "CommandSpoofHost.hpp"
-#include "CommandSpoofedHost.hpp"
+#include "Commands/Online/CommandHideSession.hpp"
+#include "Commands/Online/CommandSpoofSessionType.hpp"
+#include "Commands/Online/CommandSpoofHost.hpp"
+#include "Commands/Online/CommandSpoofedHost.hpp"
 
 namespace Stand
 {

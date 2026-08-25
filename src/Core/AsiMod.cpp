@@ -1,4 +1,4 @@
-#include "AsiMod.hpp"
+#include "Core/AsiMod.hpp"
 
 #include <winternl.h>
 #include <tlhelp32.h>
@@ -8,22 +8,22 @@
 
 #include <filesystem>
 
-#include <soup/ObfusString.hpp>
-#include <soup/rand.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/rand.hpp"
 
-#include "asi_api.hpp"
-#include "bin.hpp"
-#include "CommandAsiMods.hpp"
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
-#include "Hooking.hpp"
-#include "main.hpp"
-#include "evtPlayerJoinEvent.hpp"
-#include "evtPlayerLeaveEvent.hpp"
-#include "ScriptMgr.hpp"
-#include "StringUtils.hpp"
-#include "Tunables.hpp"
-#include "Util.hpp"
+#include "Core/asi_api.hpp"
+#include "Util/bin.hpp"
+#include "Commands/Extra/CommandAsiMods.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Core/main.hpp"
+#include "Network/evtPlayerJoinEvent.hpp"
+#include "Network/evtPlayerLeaveEvent.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/StringUtils.hpp"
+#include "Config/Tunables.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

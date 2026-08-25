@@ -1,9 +1,9 @@
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "get_appdata_path.hpp"
-#include "ensure_folder.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/ensure_folder.hpp"
 
 namespace Stand
 {

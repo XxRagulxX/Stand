@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Chat.hpp"
-#include "CMultiplayerChat.hpp"
-#include "gta_input.hpp"
-#include "is_session.hpp"
+#include "Network/Chat.hpp"
+#include "Network/CMultiplayerChat.hpp"
+#include "Game/gta_input.hpp"
+#include "Network/is_session.hpp"
 
 namespace Stand
 {

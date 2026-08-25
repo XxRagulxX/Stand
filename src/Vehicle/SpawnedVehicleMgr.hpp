@@ -1,13 +1,13 @@
 #pragma once
 
-#include "AbstractEntity.hpp"
-#include "BlipUtil.hpp"
-#include "CommandColour.hpp"
-#include "CommandSliderFloat.hpp"
-#include "CommandToggle.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "Gui.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/BlipUtil.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

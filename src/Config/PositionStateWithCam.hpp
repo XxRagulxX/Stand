@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PositionState.hpp"
+#include "Config/PositionState.hpp"
 
 namespace Stand
 {

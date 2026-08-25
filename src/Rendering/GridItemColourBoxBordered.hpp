@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GridItemColourBox.hpp"
+#include "Rendering/GridItemColourBox.hpp"
 
 namespace Stand
 {

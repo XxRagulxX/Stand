@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "CommandVehcolour.hpp"
+#include "Commands/Vehicle/CommandVehcolour.hpp"
 
 namespace Stand
 {

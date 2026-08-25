@@ -1,7 +1,7 @@
-#include "CommandListSavedPlaces.hpp"
+#include "Commands/World/CommandListSavedPlaces.hpp"
 
-#include "CommandSavedPlace.hpp"
-#include "lang.hpp"
+#include "Commands/World/CommandSavedPlace.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

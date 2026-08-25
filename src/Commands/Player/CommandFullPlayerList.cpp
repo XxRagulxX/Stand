@@ -1,10 +1,10 @@
-#include "CommandFullPlayerList.hpp"
+#include "Commands/Player/CommandFullPlayerList.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "script_func.hpp"
-#include "ScriptGlobal.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/script_func.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

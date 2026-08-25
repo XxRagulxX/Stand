@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
-#include "TimeOfDay.hpp"
-#include "natives.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "World/TimeOfDay.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

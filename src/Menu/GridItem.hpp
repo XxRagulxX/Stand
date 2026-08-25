@@ -2,11 +2,11 @@
 
 #include <cstdint>
 
-#include "dx_common.hpp"
+#include "Rendering/dx_common.hpp"
 
-#include "Alignment.hpp"
-#include "BackgroundBlur.hpp"
-#include "GridItemType.hpp"
+#include "Menu/Alignment.hpp"
+#include "Rendering/BackgroundBlur.hpp"
+#include "Menu/GridItemType.hpp"
 
 namespace Stand
 {

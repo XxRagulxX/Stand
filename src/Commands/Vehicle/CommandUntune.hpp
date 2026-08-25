@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "atStringHash.hpp"
-#include "natives.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

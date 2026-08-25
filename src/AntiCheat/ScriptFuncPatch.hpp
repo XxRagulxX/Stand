@@ -1,8 +1,8 @@
 #pragma once
 
-#include <soup/Bytepatch.hpp>
+#include "lib/soup/Bytepatch.hpp"
 
-#include "hashtype.hpp"
+#include "Game/hashtype.hpp"
 
 namespace Stand
 {

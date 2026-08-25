@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include <soup/string.hpp>
+#include "lib/soup/string.hpp"
 
-#include "StringCastable.hpp"
+#include "Util/StringCastable.hpp"
 
 namespace Stand
 {

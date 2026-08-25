@@ -1,17 +1,17 @@
-#include "Textbox.hpp"
+#include "Menu/Textbox.hpp"
 
-#include <soup/unicode.hpp>
+#include "lib/soup/unicode.hpp"
 
-#include "pointers.hpp"
-#include "StringUtils.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
+#include "Game/pointers.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
 
 #define DEBUG_INPUT false
 
 #if DEBUG_INPUT
 #include <fmt/format.h>
-#include "ThreadContext.hpp"
+#include "Core/ThreadContext.hpp"
 #endif
 
 namespace Stand

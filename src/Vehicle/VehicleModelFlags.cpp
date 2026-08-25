@@ -1,6 +1,6 @@
-#include "VehicleModelFlags.hpp"
+#include "Vehicle/VehicleModelFlags.hpp"
 
-#include "Hooking.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

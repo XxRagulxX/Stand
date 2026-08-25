@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Place.hpp"
+#include "World/Place.hpp"
 
-#include "parse_coord.hpp"
+#include "Util/parse_coord.hpp"
 
 namespace Stand
 {

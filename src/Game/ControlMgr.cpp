@@ -1,12 +1,12 @@
-#include "ControlMgr.hpp"
+#include "Game/ControlMgr.hpp"
 
 #include <windows.h>
 
-#include "atStringHash.hpp"
-#include "gta_input.hpp"
-#include "NativeTableHooks.hpp"
-#include "script_thread.hpp"
-#include "scrNativeCallContext.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/gta_input.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Game/script_thread.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace Stand
 {

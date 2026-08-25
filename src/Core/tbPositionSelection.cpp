@@ -1,8 +1,8 @@
-#include "tbPositionSelection.hpp"
+#include "Core/tbPositionSelection.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Camgr.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

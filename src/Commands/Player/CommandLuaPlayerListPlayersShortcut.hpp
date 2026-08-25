@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandPlayerListPlayersShortcut.hpp"
-#include "CommandLua.hpp"
+#include "Commands/Player/CommandPlayerListPlayersShortcut.hpp"
+#include "Commands/Extra/CommandLua.hpp"
 
 namespace Stand
 {

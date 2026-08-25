@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
-#include "vector.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Util/vector.hpp"
 
 namespace rage
 {

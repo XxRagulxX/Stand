@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandActionSuffix.hpp"
+#include "Commands/Widgets/CommandActionSuffix.hpp"
 
 namespace Stand
 {

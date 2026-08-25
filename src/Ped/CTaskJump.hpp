@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_task.hpp"
+#include "Game/gta_task.hpp"
 
 enum JumpFlags
 {

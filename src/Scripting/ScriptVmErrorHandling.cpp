@@ -1,27 +1,27 @@
-#include "ScriptVmErrorHandling.hpp"
+#include "Scripting/ScriptVmErrorHandling.hpp"
 
 #include <fmt/core.h>
 
-#include "atStringHash.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "fmt_arg.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "ScriptErrorRecoveryMode.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_program.hpp"
-#include "script_thread.hpp"
-#include "script_vm_common.hpp"
-#include "TransitionState.hpp"
-#include "Util.hpp"
+#include "Game/atStringHash.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptErrorRecoveryMode.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_program.hpp"
+#include "Game/script_thread.hpp"
+#include "Game/script_vm_common.hpp"
+#include "Config/TransitionState.hpp"
+#include "Util/Util.hpp"
 
 #ifdef STAND_DEBUG
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace Stand

@@ -3,9 +3,9 @@
 #include <string>
 #include <fmt/xchar.h>
 
-#include "lang.hpp"
-#include "Renderer.hpp"
-#include "StringCastable.hpp"
+#include "Localization/lang.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringCastable.hpp"
 
 namespace Stand
 {

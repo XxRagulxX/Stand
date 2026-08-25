@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "GamerIdentifier.hpp"
-#include "Spinlock.hpp"
+#include "Network/GamerIdentifier.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

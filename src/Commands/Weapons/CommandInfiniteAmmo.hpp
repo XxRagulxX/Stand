@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "gta_ped.hpp"
-#include "natives.hpp"
-#include "weapons.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/natives.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {

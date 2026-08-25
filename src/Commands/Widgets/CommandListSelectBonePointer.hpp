@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListSelectBone.hpp"
+#include "Commands/Widgets/CommandListSelectBone.hpp"
 
 namespace Stand
 {

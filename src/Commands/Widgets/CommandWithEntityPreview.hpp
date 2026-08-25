@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "Box.hpp"
-#include "CommandEntityPreviews.hpp"
-#include "ePedConfigFlags.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Util/Box.hpp"
+#include "Commands/Stand/CommandEntityPreviews.hpp"
+#include "Ped/ePedConfigFlags.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
 
 //#include "drawDebugText.hpp"
 

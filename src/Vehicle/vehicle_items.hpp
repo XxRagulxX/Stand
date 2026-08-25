@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OnlineVersion.hpp"
+#include "Network/OnlineVersion.hpp"
 
 namespace Stand
 {

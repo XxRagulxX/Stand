@@ -1,10 +1,10 @@
-#include "gta_entity.hpp"
+#include "Game/gta_entity.hpp"
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 #ifdef STAND_DEBUG
-#include "eEntityType.hpp"
-#include "gta_vehicle.hpp"
+#include "Game/eEntityType.hpp"
+#include "Game/gta_vehicle.hpp"
 #endif
 
 namespace rage

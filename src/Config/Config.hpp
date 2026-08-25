@@ -4,9 +4,9 @@
 #include <string>
 #include <unordered_map>
 
-#include <soup/TransientToken.hpp>
+#include "lib/soup/TransientToken.hpp"
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
 namespace Stand
 {

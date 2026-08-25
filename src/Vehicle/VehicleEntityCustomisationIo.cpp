@@ -1,10 +1,10 @@
-#include "VehicleEntityCustomisationIo.hpp"
+#include "Vehicle/VehicleEntityCustomisationIo.hpp"
 
 #include <utility>
 
-#include "AbstractModel.hpp"
-#include "natives.hpp"
-#include "VehicleColour.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Game/natives.hpp"
+#include "Vehicle/VehicleColour.hpp"
 
 namespace Stand
 {

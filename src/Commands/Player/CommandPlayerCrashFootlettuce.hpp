@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandPlayerCrash.hpp"
+#include "Commands/Player/CommandPlayerCrash.hpp"
 
-#include "natives.hpp"
-#include "using_model.hpp"
+#include "Game/natives.hpp"
+#include "Game/using_model.hpp"
 
 namespace Stand
 {

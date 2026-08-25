@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "FiberPool.hpp"
-#include "SessionScriptMgr.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/SessionScriptMgr.hpp"
 
 namespace Stand
 {

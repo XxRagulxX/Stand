@@ -1,34 +1,34 @@
-#include "CommandListSpoofing.hpp"
+#include "Commands/Online/CommandListSpoofing.hpp"
 
-#include "CommandTogglePointer.hpp"
-#include "ComponentSpoofPos.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/ComponentSpoofPos.hpp"
 
-#include "CommandSpoofName.hpp"
-#include "CommandSpoofedName.hpp"
-#include "CommandSpoofedNameFromHistory.hpp"
+#include "Commands/Online/CommandSpoofName.hpp"
+#include "Commands/Online/CommandSpoofedName.hpp"
+#include "Commands/Online/CommandSpoofedNameFromHistory.hpp"
 
 #if false
-#include "CommandSpoofPresets.hpp"
+#include "Commands/Online/CommandSpoofPresets.hpp"
 #endif
 
 #if false
-#include "CommandSpoofHostToken.hpp"
-#include "CommandSpoofedHostToken.hpp"
-#include "CommandHostTokenPresets.hpp"
-#include "CommandAutoKickHost.hpp"
+#include "Commands/Online/CommandSpoofHostToken.hpp"
+#include "Commands/Online/CommandSpoofedHostToken.hpp"
+#include "Commands/Online/CommandHostTokenPresets.hpp"
+#include "Commands/Online/CommandAutoKickHost.hpp"
 #endif
 
-#include "CommandListSessionSpoof.hpp"
-#include "CommandSpoofClan.hpp"
-#include "CommandSpoofRank.hpp"
-#include "CommandSpoofKd.hpp"
+#include "Commands/Online/CommandListSessionSpoof.hpp"
+#include "Commands/Online/CommandSpoofClan.hpp"
+#include "Commands/Online/CommandSpoofRank.hpp"
+#include "Commands/Online/CommandSpoofKd.hpp"
 
-#include "CommandSpoofedPosition.hpp"
+#include "Commands/Online/CommandSpoofedPosition.hpp"
 
-#include "CommandDevFlag.hpp"
-#include "CommandStreamerSpoof.hpp"
-#include "CommandHideFromPlayerList.hpp"
-#include "CommandPhoneModeSpoof.hpp"
+#include "Commands/Extra/CommandDevFlag.hpp"
+#include "Commands/Online/CommandStreamerSpoof.hpp"
+#include "Commands/Player/CommandHideFromPlayerList.hpp"
+#include "Commands/Online/CommandPhoneModeSpoof.hpp"
 
 namespace Stand
 {

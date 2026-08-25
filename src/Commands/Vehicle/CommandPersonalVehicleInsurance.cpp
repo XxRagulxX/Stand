@@ -1,8 +1,8 @@
 #if false
-#include "CommandPersonalVehicleInsurance.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicleInsurance.hpp"
 
-#include "CommandPersonalVehicle.hpp"
-#include "PersonalVehicle.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicle.hpp"
+#include "Vehicle/PersonalVehicle.hpp"
 
 namespace Stand
 {

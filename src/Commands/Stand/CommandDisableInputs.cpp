@@ -1,12 +1,12 @@
-#include "CommandDisableInputs.hpp"
+#include "Commands/Stand/CommandDisableInputs.hpp"
 
 #include <array>
 
-#include "CommandListAction.hpp"
-#include "CommandListActionItem.hpp"
-#include "gta_input.hpp"
-#include "natives.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

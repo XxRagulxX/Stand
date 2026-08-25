@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandPlayerActionAggressive.hpp"
+#include "Commands/Player/CommandPlayerActionAggressive.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "gta_vehicle.hpp"
-#include "PlayerProvider.hpp"
-#include "pointers.hpp"
-#include "tse.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Game/pointers.hpp"
+#include "Util/tse.hpp"
 
 namespace Stand
 {

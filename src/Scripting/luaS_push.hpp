@@ -4,9 +4,9 @@
 
 #include <lua.h>
 
-#include "dx_common.hpp"
-#include "fwddecl.hpp"
-#include "vector.hpp"
+#include "Rendering/dx_common.hpp"
+#include "Game/fwddecl.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

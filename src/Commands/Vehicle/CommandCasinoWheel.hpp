@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
 #include <fmt/core.h>
 
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
-#include "ScriptGlobal.hpp"
-#include "Util.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

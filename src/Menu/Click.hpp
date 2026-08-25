@@ -3,11 +3,11 @@
 #include <cstdint>
 #include <functional>
 
-#include "fwddecl.hpp"
-#include "gta_player.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_player.hpp"
 
-#include "ClickType.hpp"
-#include "CommandPerm.hpp"
+#include "Menu/ClickType.hpp"
+#include "Commands/Online/CommandPerm.hpp"
 
 namespace Stand
 {

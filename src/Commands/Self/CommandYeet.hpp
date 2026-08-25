@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandTextslider.hpp"
+#include "Commands/Widgets/CommandTextslider.hpp"
 
-#include "yeet_flow.hpp"
+#include "Core/yeet_flow.hpp"
 
 namespace Stand
 {

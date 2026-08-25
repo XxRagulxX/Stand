@@ -1,14 +1,14 @@
-#include "Worker.hpp"
+#include "Core/Worker.hpp"
 
-#include <soup/os.hpp>
+#include "lib/soup/os.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "Gui.hpp"
-#include "PlayerHistory.hpp"
-#include "pointers.hpp"
-#include "regular_event.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Game/pointers.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

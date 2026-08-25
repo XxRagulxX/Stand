@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include <soup/compiletime.hpp>
+#include "lib/soup/compiletime.hpp"
 
-#include "atStringHash.hpp"
-#include "CommandName.hpp"
+#include "Game/atStringHash.hpp"
+#include "Commands/Online/CommandName.hpp"
 
 #define LOC(key) Label(ATSTRINGHASH(key), Label::TagLocalised{})
 #define LOC_RT(...) Label(__VA_ARGS__, Label::TagLocalised{})

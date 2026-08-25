@@ -1,6 +1,6 @@
 #pragma once
 
-#include <soup/IntStruct.hpp>
+#include "lib/soup/IntStruct.hpp"
 
 namespace rage
 {

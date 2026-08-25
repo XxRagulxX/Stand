@@ -1,7 +1,7 @@
 #pragma once
 
-#include "netMessageText.hpp"
-#include "netMessageId.hpp"
+#include "Network/netMessageText.hpp"
+#include "Network/netMessageId.hpp"
 
 namespace rage
 {

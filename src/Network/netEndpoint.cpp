@@ -1,15 +1,15 @@
-#include "netEndpoint.hpp"
+#include "Network/netEndpoint.hpp"
 
-#include "CNetworkSession.hpp"
-#include "IceQueen.hpp"
-#include "netConnectionManager.hpp"
-#include "NetworkSessionMessages.hpp"
-#include "pointers.hpp"
-#include "rlGamerId.hpp"
-#include "snet_messages.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Network/IceQueen.hpp"
+#include "Network/netConnectionManager.hpp"
+#include "Network/NetworkSessionMessages.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerId.hpp"
+#include "Network/snet_messages.hpp"
 
 #ifdef STAND_DEBUG
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace rage

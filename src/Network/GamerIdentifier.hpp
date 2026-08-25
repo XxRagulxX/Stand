@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/UniquePtr.hpp"
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 namespace Stand
 {

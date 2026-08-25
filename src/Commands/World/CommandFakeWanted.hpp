@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "natives.hpp"
-#include "FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Core/FiberPool.hpp"
 
 namespace Stand
 {

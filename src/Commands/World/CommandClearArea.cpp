@@ -1,14 +1,14 @@
-#include "CommandClearArea.hpp"
+#include "Commands/World/CommandClearArea.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "AbstractModel.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandSliderProximity.hpp"
-#include "CommandToggle.hpp"
-#include "get_current_time_millis.hpp"
-#include "Script.hpp"
-#include "vector.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Widgets/CommandSliderProximity.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

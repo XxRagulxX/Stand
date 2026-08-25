@@ -1,18 +1,18 @@
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
 #include <stdexcept>
 
 #include <fmt/xchar.h>
 
-#include "CommandSliderFloat.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "get_next_arg.hpp"
-#include "Gui.hpp"
-#include "input.hpp"
-#include "RelayCon.hpp"
-#include "str2int.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/input.hpp"
+#include "Network/RelayCon.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

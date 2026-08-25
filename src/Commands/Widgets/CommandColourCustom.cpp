@@ -1,20 +1,20 @@
-#include "CommandColourCustom.hpp"
+#include "Commands/Widgets/CommandColourCustom.hpp"
 
-#include <soup/Rgb.hpp>
+#include "lib/soup/Rgb.hpp"
 
-#include "Colour.hpp"
-#include "ColourUtil.hpp"
-#include "CommandColourHex.hpp"
-#include "CommandColourSlider.hpp"
-#include "CommandCurrentCustomColourHex.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLambdaAction.hpp"
-#include "get_next_arg.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Rendering/Colour.hpp"
+#include "Rendering/ColourUtil.hpp"
+#include "Commands/Widgets/CommandColourHex.hpp"
+#include "Commands/Widgets/CommandColourSlider.hpp"
+#include "Commands/Stand/CommandCurrentCustomColourHex.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

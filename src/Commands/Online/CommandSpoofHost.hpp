@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggleUltimate.hpp"
+#include "Commands/Widgets/CommandToggleUltimate.hpp"
 
-#include "SessionSpoofing.hpp"
-#include "Tunables.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

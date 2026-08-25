@@ -1,8 +1,8 @@
 #pragma once
 
-#include <soup/base.hpp>
+#include "lib/soup/base.hpp"
 
-#include "hashtype.hpp"
+#include "Game/hashtype.hpp"
 
 namespace Stand
 {

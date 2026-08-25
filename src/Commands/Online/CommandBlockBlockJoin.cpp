@@ -1,17 +1,17 @@
-#include "CommandBlockBlockJoin.hpp"
+#include "Commands/Online/CommandBlockBlockJoin.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CNetworkSession.hpp"
-#include "get_current_time_millis.hpp"
-#include "netComplaintMsg.hpp"
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionState.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/netComplaintMsg.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/TransitionState.hpp"
+#include "Util/Util.hpp"
 
 #ifdef STAND_DEBUG
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 #endif
 
 namespace Stand

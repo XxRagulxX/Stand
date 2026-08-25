@@ -1,6 +1,6 @@
-#include "GridItemHeader.hpp"
+#include "Menu/GridItemHeader.hpp"
 
-#include "MenuGrid.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

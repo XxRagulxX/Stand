@@ -3,8 +3,8 @@
 #include <cstdint>
 
 #ifdef STAND_DEBUG
-#include <soup/base.hpp>
-#include "FileLogger.hpp"
+#include "lib/soup/base.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace rage

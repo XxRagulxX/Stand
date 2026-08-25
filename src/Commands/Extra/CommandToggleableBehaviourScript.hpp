@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "tbToggleableBehaviourScript.hpp"
+#include "Core/tbToggleableBehaviourScript.hpp"
 
 namespace Stand
 {

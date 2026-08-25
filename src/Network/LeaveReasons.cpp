@@ -1,18 +1,18 @@
-#include "LeaveReasons.hpp"
+#include "Network/LeaveReasons.hpp"
 
 #include <fmt/core.h>
 
-#include "AbstractPlayer.hpp"
-#include "CNetworkSession.hpp"
-#include "eBailReason.hpp"
-#include "fmt_arg.hpp"
-#include "get_current_time_millis.hpp"
-#include "is_session.hpp"
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
-#include "ScriptGlobal.hpp"
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Game/eBailReason.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/is_session.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

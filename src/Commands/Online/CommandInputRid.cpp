@@ -1,10 +1,10 @@
-#include "CommandInputRid.hpp"
+#include "Commands/Online/CommandInputRid.hpp"
 
 #include <fmt/format.h>
 
-#include "get_next_arg.hpp"
-#include "lang.hpp"
-#include "str2int.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Localization/lang.hpp"
+#include "Util/str2int.hpp"
 
 namespace Stand
 {

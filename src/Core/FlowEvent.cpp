@@ -1,7 +1,7 @@
-#include "FlowEvent.hpp"
-#include "FlowEvent.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Core/FlowEvent.hpp"
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

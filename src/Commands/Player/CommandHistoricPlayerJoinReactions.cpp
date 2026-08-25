@@ -1,9 +1,9 @@
-#include "CommandHistoricPlayerJoinReactions.hpp"
+#include "Commands/Player/CommandHistoricPlayerJoinReactions.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "FlowEvent.hpp"
-#include "FlowEventReaction.hpp"
-#include "PlayerHistory.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Core/FlowEventReaction.hpp"
+#include "Network/PlayerHistory.hpp"
 
 namespace Stand
 {

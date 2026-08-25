@@ -2,13 +2,13 @@
 
 #include <cstdint>
 
-#include "gta_fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "pgBase.hpp"
+#include "Game/pgBase.hpp"
 
-#include "script_func.hpp"
-#include "script_id.hpp"
+#include "Game/script_func.hpp"
+#include "Game/script_id.hpp"
 
 #pragma pack(push, 1)
 namespace rage

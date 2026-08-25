@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "Mat34V.hpp"
+#include "Util/Mat34V.hpp"
 
 namespace rage
 {

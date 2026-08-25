@@ -1,9 +1,9 @@
-#include "CommandPlayerPong.hpp"
+#include "Commands/Player/CommandPlayerPong.hpp"
 
-#include "Auth.hpp"
-#include "CommandPlayer.hpp"
-#include "DirectPacket.hpp"
-#include "Pong.hpp"
+#include "Network/Auth.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Network/DirectPacket.hpp"
+#include "Game/Pong.hpp"
 
 namespace Stand
 {

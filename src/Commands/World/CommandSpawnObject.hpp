@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandWithEntityPreview.hpp"
-#include "CommandSpawnObjectBase.hpp"
+#include "Commands/Widgets/CommandWithEntityPreview.hpp"
+#include "Commands/World/CommandSpawnObjectBase.hpp"
 
-#include "ButtonInstructions.hpp"
-#include "CommandWorldEditor.hpp"
-#include "gta_input.hpp"
-#include "tbPositionSelection.hpp"
+#include "Menu/ButtonInstructions.hpp"
+#include "Commands/World/CommandWorldEditor.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/tbPositionSelection.hpp"
 
 namespace Stand
 {

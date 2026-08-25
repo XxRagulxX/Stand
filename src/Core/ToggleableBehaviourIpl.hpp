@@ -1,10 +1,10 @@
 #pragma once
 
-#include "tbToggleableBehaviour.hpp"
+#include "Core/tbToggleableBehaviour.hpp"
 
 #include <vector>
 
-#include "atStringHash.hpp"
+#include "Game/atStringHash.hpp"
 
 namespace Stand
 {

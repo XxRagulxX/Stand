@@ -1,9 +1,9 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "atArray.hpp"
-#include "vector.hpp"
+#include "Game/atArray.hpp"
+#include "Util/vector.hpp"
 
 namespace rage
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
-#include "gta_fwddecl.hpp"
-#include "fwRegdRef.hpp"
+#include "Util/struct_base.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/fwRegdRef.hpp"
 
 struct CPropellerCollisionProcessor
 {

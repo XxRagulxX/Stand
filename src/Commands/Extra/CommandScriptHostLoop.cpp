@@ -1,9 +1,9 @@
 #if false
-#include "CommandScriptHostLoop.hpp"
+#include "Commands/Extra/CommandScriptHostLoop.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "is_session.hpp"
-#include "ScriptHostUtil.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/is_session.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
 
 namespace Stand
 {

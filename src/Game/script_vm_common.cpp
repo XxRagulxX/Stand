@@ -1,9 +1,9 @@
-#include "script_vm_common.hpp"
+#include "Game/script_vm_common.hpp"
 
-#include "FunctionPointer.hpp"
-#include "PointerNames.hpp"
-#include "ScriptMgr.hpp"
-#include "Util.hpp"
+#include "Core/FunctionPointer.hpp"
+#include "Core/PointerNames.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

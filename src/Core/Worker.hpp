@@ -3,7 +3,7 @@
 #include <functional>
 #include <queue>
 
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

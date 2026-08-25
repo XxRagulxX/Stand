@@ -1,9 +1,9 @@
-#include "unrestrictGameplayCam.hpp"
+#include "Rendering/unrestrictGameplayCam.hpp"
 
-#include <soup/Bytepatch.hpp>
+#include "lib/soup/Bytepatch.hpp"
 
-#include "natives.hpp"
-#include "pointers.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandColour.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

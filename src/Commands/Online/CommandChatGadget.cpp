@@ -1,14 +1,14 @@
-#include "CommandChatGadget.hpp"
+#include "Commands/Online/CommandChatGadget.hpp"
 
-#include <soup/lyoDocument.hpp>
-#include <soup/lyoFlatDocument.hpp>
-#include <soup/lyoStylesheet.hpp>
-#include <soup/RenderTarget.hpp>
-#include <soup/xml.hpp>
+#include "lib/soup/lyoDocument.hpp"
+#include "lib/soup/lyoFlatDocument.hpp"
+#include "lib/soup/lyoStylesheet.hpp"
+#include "lib/soup/RenderTarget.hpp"
+#include "lib/soup/xml.hpp"
 
-#include "ChatHistory.hpp"
-#include "format_time_since_1970_for_user_locale.hpp"
-#include "StringUtils.hpp"
+#include "Network/ChatHistory.hpp"
+#include "Util/format_time_since_1970_for_user_locale.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

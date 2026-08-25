@@ -1,8 +1,8 @@
-#include "CommandModelBlacklist.hpp"
+#include "Commands/Online/CommandModelBlacklist.hpp"
 
-#include "CommandModelBlacklistAdd.hpp"
-#include "CommandModelBlacklistItem.hpp"
-#include "Hooking.hpp"
+#include "Commands/Online/CommandModelBlacklistAdd.hpp"
+#include "Commands/Online/CommandModelBlacklistItem.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

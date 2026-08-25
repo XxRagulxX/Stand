@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "natives.hpp"
-#include "TpUtil.hpp"
+#include "Game/natives.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

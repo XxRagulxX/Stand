@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "VehicleMods.hpp"
+#include "Vehicle/VehicleMods.hpp"
 
 namespace Stand
 {

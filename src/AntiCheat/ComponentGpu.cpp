@@ -1,13 +1,13 @@
-#include "ComponentGpu.hpp"
+#include "AntiCheat/ComponentGpu.hpp"
 
-#include <soup/os.hpp>
+#include "lib/soup/os.hpp"
 
-#include "get_current_time_millis.hpp"
+#include "Util/get_current_time_millis.hpp"
 #ifdef STAND_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {

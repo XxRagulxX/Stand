@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListNameshare.hpp"
+#include "Commands/Stand/CommandListNameshare.hpp"
 
 namespace Stand
 {

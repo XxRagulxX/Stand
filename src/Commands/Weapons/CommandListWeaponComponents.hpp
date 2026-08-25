@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandListViewport.hpp"
-#include "CommandListConcealer.hpp"
+#include "Commands/Stand/CommandListViewport.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandEspTagsItem.hpp"
+#include "Commands/Stand/CommandEspTagsItem.hpp"
 
 namespace Stand
 {

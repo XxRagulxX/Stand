@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
-#include "netMessage.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Network/netMessage.hpp"
 
-#include "CNetworkPlayerMgr.hpp"
-#include "pointers.hpp"
+#include "Network/CNetworkPlayerMgr.hpp"
+#include "Game/pointers.hpp"
 
 namespace rage
 {

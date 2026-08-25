@@ -1,7 +1,7 @@
-#include "TranscendentVehicle.hpp"
+#include "Vehicle/TranscendentVehicle.hpp"
 
-#include "natives.hpp"
-#include "VehicleEntityCustomisationIo.hpp"
+#include "Game/natives.hpp"
+#include "Vehicle/VehicleEntityCustomisationIo.hpp"
 
 namespace Stand
 {

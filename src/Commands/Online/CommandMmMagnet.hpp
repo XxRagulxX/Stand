@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "Hooking.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

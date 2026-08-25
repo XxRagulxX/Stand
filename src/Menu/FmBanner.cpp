@@ -1,11 +1,11 @@
-#include "FmBanner.hpp"
+#include "Menu/FmBanner.hpp"
 
 #include <fmt/format.h>
 
-#include "AbstractPlayer.hpp"
-#include "ScriptGlobal.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

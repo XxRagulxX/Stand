@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include <soup/Endian.hpp>
+#include "lib/soup/Endian.hpp"
 
-#include "BiString.hpp"
-#include "GeoIpField.hpp"
+#include "Util/BiString.hpp"
+#include "Network/GeoIpField.hpp"
 
 #pragma pack(push, 1)
 namespace rage

@@ -1,8 +1,8 @@
-#include "CommandListRadio.hpp"
+#include "Commands/Stand/CommandListRadio.hpp"
 
-#include "CommandListRadioStations.hpp"
-#include "CommandMobileRadio.hpp"
-#include "CommandLockRadio.hpp"
+#include "Commands/Stand/CommandListRadioStations.hpp"
+#include "Commands/World/CommandMobileRadio.hpp"
+#include "Commands/Vehicle/CommandLockRadio.hpp"
 
 namespace Stand
 {

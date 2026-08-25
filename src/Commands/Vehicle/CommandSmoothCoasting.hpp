@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandHandlingFlag.hpp"
+#include "Commands/Vehicle/CommandHandlingFlag.hpp"
 
-#include "CHandlingData.hpp"
+#include "Game/CHandlingData.hpp"
 
 namespace Stand
 {

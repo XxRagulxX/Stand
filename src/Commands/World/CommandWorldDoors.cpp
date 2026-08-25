@@ -1,27 +1,27 @@
-#include "CommandWorldDoors.hpp"
+#include "Commands/World/CommandWorldDoors.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "BlipUtil.hpp"
-#include "CommandInteriorBunker.hpp"
-#include "CommandInteriorVehware.hpp"
-#include "CommandListInteriors.hpp"
-#include "tbDeceiveInteriorChecks.hpp"
-#include "tbDisableDeathbarriers.hpp"
-#include "FiberPool.hpp"
-#include "force_door_open.hpp"
-#include "get_current_time_millis.hpp"
-#include "gta_input.hpp"
-#include "HudColour.hpp"
-#include "input.hpp"
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "ToggleableBehaviourIpl.hpp"
-#include "Util.hpp"
-#include "WorldState.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Rendering/BlipUtil.hpp"
+#include "Commands/World/CommandInteriorBunker.hpp"
+#include "Commands/Vehicle/CommandInteriorVehware.hpp"
+#include "Commands/World/CommandListInteriors.hpp"
+#include "Core/tbDeceiveInteriorChecks.hpp"
+#include "Core/tbDisableDeathbarriers.hpp"
+#include "Core/FiberPool.hpp"
+#include "Vehicle/force_door_open.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_input.hpp"
+#include "Rendering/HudColour.hpp"
+#include "Core/input.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Core/ToggleableBehaviourIpl.hpp"
+#include "Util/Util.hpp"
+#include "Config/WorldState.hpp"
 
 #define DOORS_DEV_MODE false
 
@@ -30,9 +30,9 @@ static_assert(!DOORS_DEV_MODE);
 #endif
 
 #if DOORS_DEV_MODE
-#include "drawDebugText.hpp"
-#include "DrawUtil3d.hpp"
-#include "Renderer.hpp"
+#include "Rendering/drawDebugText.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Rendering/Renderer.hpp"
 #endif
 
 namespace Stand

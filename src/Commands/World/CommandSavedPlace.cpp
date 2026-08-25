@@ -1,13 +1,13 @@
-#include "CommandSavedPlace.hpp"
+#include "Commands/World/CommandSavedPlace.hpp"
 
 #include <fstream>
 
-#include "AbstractEntity.hpp"
-#include "CommandListPlaces.hpp"
-#include "CommandListSavedPlaces.hpp"
-#include "DrawUtil3d.hpp"
-#include "parse_coord.hpp"
-#include "StringUtils.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/World/CommandListPlaces.hpp"
+#include "Commands/World/CommandListSavedPlaces.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Util/parse_coord.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

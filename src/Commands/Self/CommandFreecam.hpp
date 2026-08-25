@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Camgr.hpp"
-#include "tbFreecam.hpp"
-#include "TpUtil.hpp"
-#include "Vector2Plus.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Core/tbFreecam.hpp"
+#include "Core/TpUtil.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

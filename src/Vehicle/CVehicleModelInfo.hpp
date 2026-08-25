@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CBaseModelInfo.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
-#include <soup/BigBitset.hpp>
+#include "lib/soup/BigBitset.hpp"
 
-#include "VehicleType.hpp"
+#include "Vehicle/VehicleType.hpp"
 
 #pragma pack(push, 1)
 class CVehicleModelInfo : public CBaseModelInfo

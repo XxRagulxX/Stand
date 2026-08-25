@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
 namespace Stand
 {

@@ -1,17 +1,17 @@
-﻿#include "StringUtils.hpp"
+﻿#include "Util/StringUtils.hpp"
 
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
 
-#include <soup/unicode.hpp>
+#include "lib/soup/unicode.hpp"
 
 #include <fmt/format.h>
 #include <fmt/xchar.h>
 
-#include "IsolatedText.hpp"
-#include "lang.hpp"
-#include "UnicodePrivateUse.hpp"
+#include "Menu/IsolatedText.hpp"
+#include "Localization/lang.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
 
 namespace Stand
 {

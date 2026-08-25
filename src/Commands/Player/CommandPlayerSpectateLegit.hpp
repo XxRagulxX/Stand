@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerSpectate.hpp"
+#include "Commands/Player/CommandPlayerSpectate.hpp"
 
 namespace Stand
 {

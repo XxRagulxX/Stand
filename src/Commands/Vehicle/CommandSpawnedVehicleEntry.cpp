@@ -1,9 +1,9 @@
-#include "CommandSpawnedVehicleEntry.hpp"
+#include "Commands/Vehicle/CommandSpawnedVehicleEntry.hpp"
 
-#include "Box.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "dedsec_hacks.hpp"
-#include "Renderer.hpp"
+#include "Util/Box.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Weapons/dedsec_hacks.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

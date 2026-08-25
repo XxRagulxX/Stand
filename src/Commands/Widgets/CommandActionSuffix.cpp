@@ -1,11 +1,11 @@
-#include "CommandActionSuffix.hpp"
+#include "Commands/Widgets/CommandActionSuffix.hpp"
 
-#include "CommandListNameshare.hpp"
-#include "lang.hpp"
+#include "Commands/Stand/CommandListNameshare.hpp"
+#include "Localization/lang.hpp"
 
 #ifdef STAND_DEBUG
-#include "Exceptional.hpp"
-#include "Util.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

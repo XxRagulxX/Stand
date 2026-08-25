@@ -1,7 +1,7 @@
-#include "CommandAllPlayers.hpp"
+#include "Commands/Player/CommandAllPlayers.hpp"
 
-#include "lang.hpp"
-#include "PlayerProviderAll.hpp"
+#include "Localization/lang.hpp"
+#include "Network/PlayerProviderAll.hpp"
 
 namespace Stand
 {

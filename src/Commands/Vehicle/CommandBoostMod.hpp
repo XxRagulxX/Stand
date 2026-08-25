@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "gta_vehicle.hpp"
-#include "natives.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/natives.hpp"
 
 #define BOOST_MOD_NEVERENDING 1
 #define BOOST_MOD_INSTANTREFILL 2

@@ -1,29 +1,29 @@
-#include "RageConnector.hpp"
+#include "Network/RageConnector.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "AddressGamers.hpp"
-#include "FiberPool.hpp"
-#include "nettypes.hpp"
-#include "netConnection.hpp"
-#include "netConnectionManager.hpp"
-#include "netEndpoint.hpp"
-#include "netStatus.hpp"
-#include "NetworkSessionMessages.hpp"
-#include "pointers.hpp"
-#include "rl.hpp"
-#include "rlGamerInfo.hpp"
-#include "rlSessionDetail.hpp"
-#include "rlSessionInfo.hpp"
-#include "Script.hpp"
-#include "snet_messages.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/AddressGamers.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/nettypes.hpp"
+#include "Network/netConnection.hpp"
+#include "Network/netConnectionManager.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Network/netStatus.hpp"
+#include "Network/NetworkSessionMessages.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rl.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Network/rlSessionDetail.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "Scripting/Script.hpp"
+#include "Network/snet_messages.hpp"
 
 #define RC_DEBUG false
 
 #if RC_DEBUG
 static_assert(STAND_DEBUG);
-#include "ScAccount.hpp"
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Network/ScAccount.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

@@ -1,7 +1,7 @@
-#include "CommandTab.hpp"
+#include "Commands/Widgets/CommandTab.hpp"
 
-#include "Renderer.hpp"
-#include "UnicodePrivateUse.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
 
 namespace Stand
 {

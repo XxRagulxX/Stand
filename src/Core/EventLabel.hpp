@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

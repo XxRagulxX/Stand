@@ -7,12 +7,12 @@
 
 #include "ldo.h"
 
-#include "soup/ffi.hpp"
-#include "soup/Notifyable.hpp"
-#include "soup/rflFunc.hpp"
-#include "soup/rflParser.hpp"
-#include "soup/rflStruct.hpp"
-#include "soup/SharedLibrary.hpp"
+#include "lib/soup/ffi.hpp"
+#include "lib/soup/Notifyable.hpp"
+#include "lib/soup/rflFunc.hpp"
+#include "lib/soup/rflParser.hpp"
+#include "lib/soup/rflStruct.hpp"
+#include "lib/soup/SharedLibrary.hpp"
 
 static thread_local lua_State* callback_L = nullptr;
 

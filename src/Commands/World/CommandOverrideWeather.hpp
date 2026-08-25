@@ -1,11 +1,11 @@
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "is_session.hpp"
-#include "ManagedTunables.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "ScriptGlobal.hpp"
-#include "weather_names.hpp"
+#include "Network/is_session.hpp"
+#include "Config/ManagedTunables.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "World/weather_names.hpp"
 
 namespace Stand
 {

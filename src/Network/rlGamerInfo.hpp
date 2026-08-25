@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "rlPeerInfo.hpp"
+#include "Network/rlPeerInfo.hpp"
 
 namespace rage
 {

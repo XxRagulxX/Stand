@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Chat.hpp"
-#include "Commandbox.hpp"
-#include "tbScreenshotMode.hpp"
+#include "Network/Chat.hpp"
+#include "Commands/Widgets/Commandbox.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
 namespace Stand
 {

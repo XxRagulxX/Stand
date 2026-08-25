@@ -1,7 +1,7 @@
-#include "CommandSessionBrowserSession.hpp"
+#include "Commands/Online/CommandSessionBrowserSession.hpp"
 
-#include "CommandActionSliderJoinLambda.hpp"
-#include "JoinUtil.hpp"
+#include "Commands/Online/CommandActionSliderJoinLambda.hpp"
+#include "Network/JoinUtil.hpp"
 
 namespace Stand
 {

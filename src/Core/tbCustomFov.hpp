@@ -1,8 +1,8 @@
 #pragma once
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "tbToggleableBehaviourScript.hpp"
+#include "Core/tbToggleableBehaviourScript.hpp"
 
 namespace Stand
 {

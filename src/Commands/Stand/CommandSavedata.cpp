@@ -1,19 +1,19 @@
 #ifdef STAND_DEBUG
 
-#include "CommandSavedata.hpp"
+#include "Commands/Stand/CommandSavedata.hpp"
 
 #include <fstream>
 
-#include <soup/json.hpp>
-#include <soup/string.hpp>
+#include "lib/soup/json.hpp"
+#include "lib/soup/string.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "CommandToggle.hpp"
-#include "CommandTogglePointer.hpp"
-#include "ComponentSavedata.hpp"
-#include "drawDebugText.hpp"
-#include "get_appdata_path.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/ComponentSavedata.hpp"
+#include "Rendering/drawDebugText.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GridItemTextBigCentre.hpp"
+#include "Menu/GridItemTextBigCentre.hpp"
 
 namespace Stand
 {

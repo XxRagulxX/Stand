@@ -1,13 +1,13 @@
 #pragma once
 
 //#include "NetworkSessionMessages.hpp"
-#include "pointers.hpp"
-#include "RageConnector.hpp"
-#include "RemoteGamer.hpp"
-#include "rockstar_admins.hpp"
-#include "Script.hpp"
-#include "tbLoadingSessionDetails.hpp"
-#include "Util.hpp"
+#include "Game/pointers.hpp"
+#include "Network/RageConnector.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/rockstar_admins.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/tbLoadingSessionDetails.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "inmap.hpp"
-#include "netAddress.hpp"
-#include "rlGamerHandle.hpp"
+#include "Util/inmap.hpp"
+#include "Network/netAddress.hpp"
+#include "Network/rlGamerHandle.hpp"
 
-#include "conf.hpp"
-#include "main.hpp"
+#include "Config/conf.hpp"
+#include "Core/main.hpp"
 
 namespace rage
 {

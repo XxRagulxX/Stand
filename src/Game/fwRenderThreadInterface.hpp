@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sysThreadType.hpp"
+#include "Game/sysThreadType.hpp"
 
 namespace rage
 {

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandListActionItem.hpp"
-#include "CommandLockWeaponsLivery.hpp"
-#include "CommandLockWeaponsLiveryTint.hpp"
-#include "CommandSlider.hpp"
-#include "CommandToggleLockWeapon.hpp"
-#include "CommandToggleWeaponComponent.hpp"
-#include "StringUtils.hpp"
-#include "weapon_components.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Vehicle/CommandLockWeaponsLivery.hpp"
+#include "Commands/Vehicle/CommandLockWeaponsLiveryTint.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Weapons/CommandToggleLockWeapon.hpp"
+#include "Commands/Widgets/CommandToggleWeaponComponent.hpp"
+#include "Util/StringUtils.hpp"
+#include "Weapons/weapon_components.hpp"
 
 namespace Stand
 {

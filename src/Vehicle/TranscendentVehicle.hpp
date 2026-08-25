@@ -1,9 +1,9 @@
 #pragma once
 
-#include "AbstractEntity.hpp"
-#include "CustomisationData.hpp"
-#include "PositionStateVehData.hpp"
-#include "VehicleCustomisationIo.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Ped/CustomisationData.hpp"
+#include "Vehicle/PositionStateVehData.hpp"
+#include "Vehicle/VehicleCustomisationIo.hpp"
 
 namespace Stand
 {

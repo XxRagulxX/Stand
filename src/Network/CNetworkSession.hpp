@@ -1,16 +1,16 @@
 #pragma once
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "inlist.hpp"
-#include "net.hpp"
-#include "netConnectionManager.hpp"
-#include "netStatus.hpp"
-#include "NetworkSessionMessages.hpp"
-#include "rlGamerInfo.hpp"
-#include "rlSessionConfig.hpp"
-#include "rlSessionInfo.hpp"
-#include "sysObfuscated.hpp"
+#include "Util/inlist.hpp"
+#include "Network/net.hpp"
+#include "Network/netConnectionManager.hpp"
+#include "Network/netStatus.hpp"
+#include "Network/NetworkSessionMessages.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Network/rlSessionConfig.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
 #pragma pack(push, 1)
 namespace rage

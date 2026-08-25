@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandWithEntityPreview.hpp"
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandWithEntityPreview.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "vehicle_items.hpp"
+#include "Vehicle/vehicle_items.hpp"
 
 namespace Stand
 {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "netMessage.hpp"
-#include "netMessageId.hpp"
+#include "Network/netMessage.hpp"
+#include "Network/netMessageId.hpp"
 
-#include "gta_player.hpp"
-#include "netAddress.hpp"
-#include "rl.hpp"
-#include "rlGamerInfo.hpp"
+#include "Game/gta_player.hpp"
+#include "Network/netAddress.hpp"
+#include "Network/rl.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 #define SNET_MAX_SIZEOF_GAMER_DATA 512
 #define SNET_MAX_SIZEOF_JOIN_RESPONSE_DATA 512

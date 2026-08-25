@@ -1,11 +1,11 @@
-#include "CommandListSelectDrivingMode.hpp"
+#include "Commands/Stand/CommandListSelectDrivingMode.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandAutoDriveAction.hpp"
-#include "eDrivingFlags.hpp"
-#include "eScriptTaskStatus.hpp"
-#include "Gui.hpp"
-#include "Vector2Plus.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandAutoDriveAction.hpp"
+#include "Vehicle/eDrivingFlags.hpp"
+#include "Game/eScriptTaskStatus.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

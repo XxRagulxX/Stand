@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandTextslider.hpp"
-#include "CommandOnPlayerVehicle.hpp"
+#include "Commands/Widgets/CommandTextslider.hpp"
+#include "Commands/Vehicle/CommandOnPlayerVehicle.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

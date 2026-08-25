@@ -1,7 +1,7 @@
-#include "TimedTextCollection.hpp"
+#include "Menu/TimedTextCollection.hpp"
 
-#include "str2int.hpp"
-#include "StringUtils.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

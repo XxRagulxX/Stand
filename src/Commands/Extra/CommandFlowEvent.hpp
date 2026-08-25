@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandDivider.hpp"
-#include "FlowEvent.hpp"
-#include "FlowEventReaction.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Core/FlowEventReaction.hpp"
 
 namespace Stand
 {

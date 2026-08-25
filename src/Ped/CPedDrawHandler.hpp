@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gta_custom_shader_effect.hpp"
-#include "gta_draw_handler.hpp"
+#include "Game/gta_custom_shader_effect.hpp"
+#include "Game/gta_draw_handler.hpp"
 
-#include "PedVariationDS.hpp"
+#include "Ped/PedVariationDS.hpp"
 
 class CPedStreamRenderGfx
 {

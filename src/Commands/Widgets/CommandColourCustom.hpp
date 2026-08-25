@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "dx_common.hpp"
+#include "Rendering/dx_common.hpp"
 
 namespace Stand
 {

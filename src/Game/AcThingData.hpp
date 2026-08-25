@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
-#include "atMap.hpp"
-#include "sysObfuscated.hpp"
+#include "Game/atMap.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
 struct AcThingData
 {

@@ -1,8 +1,8 @@
-#include "CommandSpoofSlider.hpp"
+#include "Commands/Online/CommandSpoofSlider.hpp"
 
-#include "CommandSlider.hpp"
-#include "CommandSliderFloat.hpp"
-#include "CommandSpoof.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Commands/Online/CommandSpoof.hpp"
 
 namespace Stand
 {

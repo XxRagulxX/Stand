@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_extensible.hpp"
+#include "Game/gta_extensible.hpp"
 
 namespace rage
 {

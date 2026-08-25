@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "datBitBuffer.hpp"
+#include "Game/datBitBuffer.hpp"
 
 namespace rage
 {

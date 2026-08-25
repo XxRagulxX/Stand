@@ -4,15 +4,15 @@
 #include <functional>
 #include <string>
 
-#include <soup/fwd.hpp>
-#include <soup/TransientToken.hpp>
+#include "lib/soup/fwd.hpp"
+#include "lib/soup/TransientToken.hpp"
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "CommandFlags.hpp"
-#include "nullsub.hpp"
-#include "ThreadContext.hpp"
+#include "Commands/Widgets/CommandFlags.hpp"
+#include "Util/nullsub.hpp"
+#include "Core/ThreadContext.hpp"
 
 namespace Stand
 {

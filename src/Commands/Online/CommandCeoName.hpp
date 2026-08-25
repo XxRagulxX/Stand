@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "CommandExtraInfo.hpp"
-#include "ScriptGlobal.hpp"
-#include "StatUtil.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/StatUtil.hpp"
 
 namespace Stand
 {

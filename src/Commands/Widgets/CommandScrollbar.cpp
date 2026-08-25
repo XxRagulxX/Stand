@@ -1,6 +1,6 @@
-#include "CommandScrollbar.hpp"
+#include "Commands/Widgets/CommandScrollbar.hpp"
 
-#include "MenuGrid.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

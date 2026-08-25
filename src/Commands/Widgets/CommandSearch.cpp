@@ -1,9 +1,9 @@
-#include "CommandSearch.hpp"
+#include "Commands/Widgets/CommandSearch.hpp"
 
-#include "CommandLink.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
 //#include "get_next_arg.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

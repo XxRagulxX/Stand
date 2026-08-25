@@ -2,14 +2,14 @@
 
 #include <windows.h>
 
-#include <soup/Bytepatch.hpp>
+#include "lib/soup/Bytepatch.hpp"
 
-#include "dx_common.hpp"
-#include "function_types.hpp"
-#include "gta_fwddecl.hpp"
+#include "Rendering/dx_common.hpp"
+#include "Util/function_types.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "conf_antianticheat.hpp"
-#include "conf_netcode.hpp"
+#include "Config/conf_antianticheat.hpp"
+#include "Config/conf_netcode.hpp"
 
 namespace Stand
 {

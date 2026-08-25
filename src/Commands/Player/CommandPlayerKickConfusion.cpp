@@ -1,4 +1,4 @@
-#include "CommandPlayerKickConfusion.hpp"
+#include "Commands/Player/CommandPlayerKickConfusion.hpp"
 
 #if HAVE_BREAKUP_KICK
 

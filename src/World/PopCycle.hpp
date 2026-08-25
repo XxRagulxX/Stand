@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "atArray.hpp"
+#include "Game/atArray.hpp"
 
 struct CPopGroupPercentage
 {

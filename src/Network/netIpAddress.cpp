@@ -1,13 +1,13 @@
-#include "netIpAddress.hpp"
+#include "Network/netIpAddress.hpp"
 
 #include <stdexcept>
 
-#include <soup/country_names.hpp>
-#include <soup/netIntel.hpp>
-#include <soup/rand.hpp>
-#include <soup/string.hpp>
+#include "lib/soup/country_names.hpp"
+#include "lib/soup/netIntel.hpp"
+#include "lib/soup/rand.hpp"
+#include "lib/soup/string.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace rage
 {

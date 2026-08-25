@@ -3,13 +3,13 @@
 #include <functional>
 #include <string>
 
-#include <soup/rsa.hpp>
+#include "lib/soup/rsa.hpp"
 #include <unordered_set>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "GamerIdentifier.hpp"
+#include "Network/GamerIdentifier.hpp"
 
 namespace Stand
 {

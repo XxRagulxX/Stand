@@ -1,15 +1,15 @@
-#include "CommandArNotifications.hpp"
+#include "Commands/Self/CommandArNotifications.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandSliderFloat.hpp"
-#include "CommandToggleRegularSp.hpp"
-#include "tbFreecam.hpp"
-#include "pointers.hpp"
-#include "tbScreenshotMode.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionState.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
+#include "Core/tbFreecam.hpp"
+#include "Game/pointers.hpp"
+#include "Core/tbScreenshotMode.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/TransitionState.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

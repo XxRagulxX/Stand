@@ -1,7 +1,7 @@
-#include "gta_vehicle_layout.hpp"
+#include "Game/gta_vehicle_layout.hpp"
 
-#include "CDrivebyWeaponGroup.hpp"
-#include "DrivebyCommons.hpp"
+#include "Vehicle/CDrivebyWeaponGroup.hpp"
+#include "Vehicle/DrivebyCommons.hpp"
 
 bool CVehicleSeatAnimInfo::allowsWeapon(const Stand::Weapon& w) const
 {

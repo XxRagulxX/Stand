@@ -2,10 +2,10 @@
 
 #include <unordered_map>
 
-#include <soup/base.hpp>
+#include "lib/soup/base.hpp"
 
-#include "hashtype.hpp"
-#include "StringUtils.hpp"
+#include "Game/hashtype.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

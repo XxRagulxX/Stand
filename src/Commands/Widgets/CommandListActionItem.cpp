@@ -1,6 +1,6 @@
-#include "CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
 
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
 namespace Stand
 {

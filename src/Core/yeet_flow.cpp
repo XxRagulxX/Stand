@@ -1,13 +1,13 @@
-#include "yeet_flow.hpp"
+#include "Core/yeet_flow.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "Auth.hpp"
-#include "ConsoleLogger.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "NetInterface.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
+#include "Network/Auth.hpp"
+#include "Core/ConsoleLogger.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Network/NetInterface.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

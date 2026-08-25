@@ -1,16 +1,16 @@
-#include "CommandVehicleParachuteModel.hpp"
+#include "Commands/Vehicle/CommandVehicleParachuteModel.hpp"
 
-#include "AbstractEntity.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "ParachuteModels.hpp"
-#include "Script.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Ped/ParachuteModels.hpp"
+#include "Scripting/Script.hpp"
 
-#include "gta_vehicle.hpp"
-#include "CVehicleModelInfo.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
 
 #include <fmt/format.h>
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

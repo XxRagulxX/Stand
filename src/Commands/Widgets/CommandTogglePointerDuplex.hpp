@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandTogglePointer.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
 
 namespace Stand
 {

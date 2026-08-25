@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwInteriorLocation.hpp"
-#include "vector.hpp"
+#include "Game/fwInteriorLocation.hpp"
+#include "Util/vector.hpp"
 
 class CLightSource
 {

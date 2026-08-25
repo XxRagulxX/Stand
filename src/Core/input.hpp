@@ -5,10 +5,10 @@
 #include <array>
 #include <string>
 
-#include "gta_input.hpp"
-#include "hashtype.hpp"
-#include "Hotkey.hpp"
-#include "InstructionalButtonId.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/hashtype.hpp"
+#include "Menu/Hotkey.hpp"
+#include "Menu/InstructionalButtonId.hpp"
 
 // This input scheme is meh because while pressing A to sprint it's hard to make adjustments to rotation with the left stick.
 #define CONTROLLER_ANALOG_ASCDESC false

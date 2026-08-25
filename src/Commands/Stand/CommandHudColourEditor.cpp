@@ -1,10 +1,10 @@
-#include "CommandHudColourEditor.hpp"
+#include "Commands/Stand/CommandHudColourEditor.hpp"
 
-#include "CommandColour.hpp"
-#include "CommandColourSlider.hpp"
-#include "HudColour.hpp"
-#include "natives.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
+#include "Commands/Widgets/CommandColourSlider.hpp"
+#include "Rendering/HudColour.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

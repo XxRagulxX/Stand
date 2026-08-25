@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "set_aim_mode.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Weapons/set_aim_mode.hpp"
 
 namespace Stand
 {

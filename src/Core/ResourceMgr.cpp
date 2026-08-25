@@ -1,9 +1,9 @@
-#include "ResourceMgr.hpp"
+#include "Core/ResourceMgr.hpp"
 
-#include "AddressGamers.hpp"
-#include "ChatHistory.hpp"
-#include "RemoteGamer.hpp"
-#include "ScAccount.hpp"
+#include "Network/AddressGamers.hpp"
+#include "Network/ChatHistory.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/ScAccount.hpp"
 
 namespace Stand
 {

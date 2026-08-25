@@ -1,6 +1,6 @@
-#include "CommandInputIpAddress.hpp"
+#include "Commands/Online/CommandInputIpAddress.hpp"
 
-#include "get_next_arg.hpp"
+#include "Util/get_next_arg.hpp"
 
 namespace Stand
 {

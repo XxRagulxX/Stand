@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
 namespace Stand
 {

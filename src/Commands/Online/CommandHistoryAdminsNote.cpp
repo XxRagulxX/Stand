@@ -1,9 +1,9 @@
-#include "CommandHistoryAdminsNote.hpp"
+#include "Commands/Online/CommandHistoryAdminsNote.hpp"
 
-#include "lang.hpp"
-#include "PlayerHistory.hpp"
-#include "rockstar_admins.hpp"
-#include "StringUtils.hpp"
+#include "Localization/lang.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Network/rockstar_admins.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

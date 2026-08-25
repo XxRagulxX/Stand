@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandFlowEvent.hpp"
+#include "Commands/Extra/CommandFlowEvent.hpp"
 
 namespace Stand
 {

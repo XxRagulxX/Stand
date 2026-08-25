@@ -1,12 +1,12 @@
-#include "CommandPosition2d.hpp"
+#include "Commands/Widgets/CommandPosition2d.hpp"
 
 #include <fmt/format.h>
 
-#include "CommandLambdaSlider.hpp"
-#include "CommandPosition2dMouse.hpp"
-#include "CommandSlider.hpp"
-#include "CommandToggle.hpp"
-#include "lang.hpp"
+#include "Commands/Widgets/CommandLambdaSlider.hpp"
+#include "Commands/Widgets/CommandPosition2dMouse.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

@@ -1,18 +1,18 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Auth.hpp"
-#include "BackgroundBlur.hpp"
-#include "CommandPlayer.hpp"
-#include "huddecl.hpp"
-#include "pointers.hpp"
-#include "Renderer.hpp"
-#include "ScriptGlobal.hpp"
-#include "StringUtils.hpp"
-#include "tbScreenshotMode.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/Auth.hpp"
+#include "Rendering/BackgroundBlur.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Game/huddecl.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/StringUtils.hpp"
+#include "Core/tbScreenshotMode.hpp"
+#include "Util/Util.hpp"
 
 #define PLAYERBAR_DUMMY false
 

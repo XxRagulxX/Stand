@@ -1,16 +1,16 @@
 #pragma once
 
-#include "CommandList.hpp"
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Box.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandLambdaListSelectWeapons.hpp"
-#include "DrawUtil3d.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Box.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Weapons/CommandLambdaListSelectWeapons.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

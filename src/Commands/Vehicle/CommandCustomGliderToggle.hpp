@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 //#include "drawDebugText.hpp"
-#include "gta_input.hpp"
-#include "gta_vehicle.hpp"
-#include "input.hpp"
-#include "natives.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Core/input.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

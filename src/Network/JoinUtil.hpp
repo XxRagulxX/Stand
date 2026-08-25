@@ -3,13 +3,13 @@
 #include <cstdint>
 #include <string>
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "conf_netcode.hpp"
+#include "Config/conf_netcode.hpp"
 
-#include "JoinMethod.hpp"
-#include "rlSessionInfo.hpp"
+#include "Network/JoinMethod.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 namespace Stand
 {

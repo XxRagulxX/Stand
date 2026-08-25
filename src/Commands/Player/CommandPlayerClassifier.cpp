@@ -1,7 +1,7 @@
-#include "CommandPlayerClassifier.hpp"
+#include "Commands/Player/CommandPlayerClassifier.hpp"
 
-#include "CommandPlayerClassifierDetection.hpp"
-#include "lang.hpp"
+#include "Commands/Player/CommandPlayerClassifierDetection.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

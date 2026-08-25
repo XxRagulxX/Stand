@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CObject.hpp"
+#include "Game/CObject.hpp"
 
 class CProjectile : public CObject
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 namespace Stand
 {

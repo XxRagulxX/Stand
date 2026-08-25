@@ -1,25 +1,25 @@
-#include "AntiAntiCheat.hpp"
+#include "AntiCheat/AntiAntiCheat.hpp"
 
 #include <Windows.h>
 #include <timeapi.h>
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
-#include "conf_antianticheat.hpp"
+#include "Config/conf_antianticheat.hpp"
 
-#include "CNetworkSession.hpp"
-#include "AcThingData.hpp"
-#include "atStringHash.hpp"
-#include "Hooking.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "rlRosCredentials.hpp"
-#include "ScriptGlobal.hpp"
-#include "ScriptLocal.hpp"
-#include "script_thread.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Game/AcThingData.hpp"
+#include "Game/atStringHash.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlRosCredentials.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_thread.hpp"
 
 #ifdef STAND_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 #define ALLOWING_AC_THING_TO_RUN false
