@@ -1,7 +1,6 @@
 #include "Network/rl_matching.hpp"
 
 #include <cstring> // strcpy
-#include "Core/FunctionPointer.hpp"
 
 #include "lib/soup/ObfusString.hpp"
 

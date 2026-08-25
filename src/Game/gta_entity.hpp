@@ -4,7 +4,7 @@
 
 #include <soup/Matrix.hpp>
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
 #include "CBaseModelInfo.hpp"
 #include "datRef.hpp"
