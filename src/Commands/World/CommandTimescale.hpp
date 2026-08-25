@@ -18,7 +18,7 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				setTimescale((float)value / 100.0f);
 				if (value != 100 && aimtimescale->value == 100)

@@ -1,64 +1,64 @@
-﻿#include "Core/AbstractEntity.hpp"
+﻿#include "AbstractEntity.hpp"
 
 #include <fmt/core.h>
 
-#include "lib/soup/ObfusString.hpp"
-#include "lib/soup/rand.hpp"
+#include <soup/ObfusString.hpp>
+#include <soup/rand.hpp>
 
-#include "Core/AbstractModel.hpp"
-#include "Core/AbstractPlayer.hpp"
-#include "Game/atStringHash.hpp"
-#include "Util/Box.hpp"
-#include "Game/CObject.hpp"
-#include "Commands/Self/CommandLockOutfit.hpp"
-#include "Ped/CPedHeadBlendData.hpp"
-#include "Game/CPickup.hpp"
-#include "Game/CPlayerInfo.hpp"
-#include "Util/distance_sort.hpp"
-#include "Game/eDamageFlags.hpp"
-#include "Game/eEntityType.hpp"
-#include "Game/eExplosionTag.hpp"
-#include "Game/eMigrationType.hpp"
-#include "Ped/ePedConfigFlags.hpp"
-#include "Ped/eTaskType.hpp"
-#include "Core/Exceptional.hpp"
-#include "Core/ExecCtx.hpp"
-#include "Weapons/explosion.hpp"
-#include "Core/FiberPool.hpp"
-#include "Core/FileLogger.hpp"
-#include "Core/FlowEvent.hpp"
-#include "Game/fwPool.hpp"
-#include "Game/fwScriptGuid.hpp"
-#include "Util/get_current_time_millis.hpp"
-#include "Vehicle/get_vehicle_display_name.hpp"
-#include "Game/gta_input.hpp"
-#include "Game/gta_net_object_mgr.hpp"
-#include "Game/gta_ped.hpp"
-#include "Game/gta_replayinterface.hpp"
-#include "Game/gta_vehicle.hpp"
-#include "Rendering/Gui.hpp"
-#include "Network/is_session.hpp"
-#include "Game/joaatToString.hpp"
-#include "Core/Metrics.hpp"
-#include "Util/Names.hpp"
-#include "Game/natives.hpp"
-#include "Ped/PedBoneId.hpp"
-#include "Ped/PedModel.hpp"
-#include "Ped/PedType.hpp"
-#include "Game/pointers.hpp"
-#include "Rendering/Renderer.hpp"
-#include "Scripting/Script.hpp"
-#include "Scripting/ScriptGlobal.hpp"
-#include "Game/script_thread.hpp"
-#include "Network/SpectateMgr.hpp"
-#include "Util/TargetingData.hpp"
-#include "Core/tbFreecam.hpp"
-#include "Core/TickQueues.hpp"
-#include "Vehicle/TranscendentVehicle.hpp"
-#include "Util/Util.hpp"
-#include "Vehicle/vehicle_items.hpp"
-#include "Vehicle/VehicleMods.hpp"
-#include "Weapons/weapons.hpp"
+#include "AbstractModel.hpp"
+#include "AbstractPlayer.hpp"
+#include "atStringHash.hpp"
+#include "Box.hpp"
+#include "CObject.hpp"
+#include "CommandLockOutfit.hpp"
+#include "CPedHeadBlendData.hpp"
+#include "CPickup.hpp"
+#include "CPlayerInfo.hpp"
+#include "distance_sort.hpp"
+#include "eDamageFlags.hpp"
+#include "eEntityType.hpp"
+#include "eExplosionTag.hpp"
+#include "eMigrationType.hpp"
+#include "ePedConfigFlags.hpp"
+#include "eTaskType.hpp"
+#include "Exceptional.hpp"
+#include "ExecCtx.hpp"
+#include "explosion.hpp"
+#include "FiberPool.hpp"
+#include "FileLogger.hpp"
+#include "FlowEvent.hpp"
+#include "fwPool.hpp"
+#include "fwScriptGuid.hpp"
+#include "get_current_time_millis.hpp"
+#include "get_vehicle_display_name.hpp"
+#include "gta_input.hpp"
+#include "gta_net_object_mgr.hpp"
+#include "gta_ped.hpp"
+#include "gta_replayinterface.hpp"
+#include "gta_vehicle.hpp"
+#include "Gui.hpp"
+#include "is_session.hpp"
+#include "joaatToString.hpp"
+#include "Metrics.hpp"
+#include "Names.hpp"
+#include "natives.hpp"
+#include "PedBoneId.hpp"
+#include "PedModel.hpp"
+#include "PedType.hpp"
+#include "pointers.hpp"
+#include "Renderer.hpp"
+#include "Script.hpp"
+#include "ScriptGlobal.hpp"
+#include "script_thread.hpp"
+#include "SpectateMgr.hpp"
+#include "TargetingData.hpp"
+#include "tbFreecam.hpp"
+#include "TickQueues.hpp"
+#include "TranscendentVehicle.hpp"
+#include "Util.hpp"
+#include "vehicle_items.hpp"
+#include "VehicleMods.hpp"
+#include "weapons.hpp"
 
 namespace Stand
 {
@@ -1050,8 +1050,6 @@ namespace Stand
 			case ENTITY_TYPE_OBJECT:
 				pointers::CObjectPopulation_DestroyObject(static_cast<CObject*>(ptr), false);
 				return true;
-			default:
-				break;
 			}
 		}
 		return false;
@@ -1328,8 +1326,6 @@ namespace Stand
 
 			case ENTITY_TYPE_OBJECT:
 				ret = data.objects;
-				break;
-			default:
 				break;
 			}
 		}
@@ -2602,18 +2598,10 @@ namespace Stand
 		}
 
 		case Direction::RIGHT:
-		{
 			auto rot = this->getRot();
 			rot.z -= 90.0f;
 			this->setRot(rot);
 			force_vector = ENTITY::GET_ENTITY_FORWARD_VECTOR(*this) * 2000.0f;
-			break;
-		}
-
-		case Direction::NONE:
-			break;
-
-		default:
 			break;
 		}
 
@@ -2965,7 +2953,7 @@ namespace Stand
 			// The game tries to correct plate based on PV data, so we should override this as well.
 			if (isUserPersonalVehicle())
 			{
-				strcpy_s(ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(), GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>(),32,text);
+				strcpy(ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(), GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>(), text);
 			}
 
 			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(handle, text);

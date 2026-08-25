@@ -16,7 +16,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				HUD::SET_MINIMAP_IN_PROLOGUE(m_on);
 			});

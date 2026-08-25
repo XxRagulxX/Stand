@@ -36,7 +36,7 @@ namespace Stand
 	private:
 		void setWantedLevel(Click& click)
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				click.getEffectiveIssuer().setWantedLevel(value);
 			});

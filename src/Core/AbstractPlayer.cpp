@@ -1907,10 +1907,8 @@ if (cmd->flags & (1 << id)) \
 
 	void AbstractPlayer::setOrgName(bool is_mc, const char* name) const noexcept
 	{
-		auto* org_name = ScriptGlobal(GLOBAL_PLAYERREMOTE_BASE).at(p, GLOBAL_PLAYERREMOTE_SIZE).at(GLOBAL_PLAYERREMOTE_ORG).at(GLOBAL_ORG_NAME).as<char*>();
-		strcpy_s(org_name, 32, name);
-		auto* org_name_copy =  ScriptGlobal(GLOBAL_PLAYERREMOTE_BASE).at(p, GLOBAL_PLAYERREMOTE_SIZE).at(GLOBAL_PLAYERREMOTE_ORG).at(is_mc ? GLOBAL_ORG_NAME_MC_COPY : GLOBAL_ORG_NAME_CEO_COPY).as<char*>();
-		strcpy_s(org_name_copy, 32, name);
+		strcpy(ScriptGlobal(GLOBAL_PLAYERREMOTE_BASE).at(p, GLOBAL_PLAYERREMOTE_SIZE).at(GLOBAL_PLAYERREMOTE_ORG).at(GLOBAL_ORG_NAME).as<char*>(), name);
+		strcpy(ScriptGlobal(GLOBAL_PLAYERREMOTE_BASE).at(p, GLOBAL_PLAYERREMOTE_SIZE).at(GLOBAL_PLAYERREMOTE_ORG).at(is_mc ? GLOBAL_ORG_NAME_MC_COPY : GLOBAL_ORG_NAME_CEO_COPY).as<char*>(), name);
 	}
 
 	int AbstractPlayer::getColourSlot() const noexcept

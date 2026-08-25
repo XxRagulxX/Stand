@@ -20,9 +20,9 @@ namespace Stand
 
 		void onClick(Click& click) final
 		{
-			ensureScriptThread(click, [=]
+			ensureScriptThread(click, [this, &click]
 			{
-				on_click_impl(click);
+					on_click_impl(click);
 			});
 		}
 	};

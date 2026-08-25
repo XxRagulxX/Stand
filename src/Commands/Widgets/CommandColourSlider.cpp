@@ -34,9 +34,6 @@ namespace Stand
 			case HSV:
 				parent->updateRGB();
 				break;
-
-			case OPACITY:
-				break;
 			}
 			parent->processChange(click);
 		}

@@ -633,10 +633,7 @@ namespace rage
 		virtual ~netSyncDataNode() = 0;
 		virtual void vf_38() {};
 		virtual void vf_40() {};
-		virtual bool shouldTypeIdBeUsedForAppliedTypesFlag()
-		{
-			return false;
-		} // 0x48
+		virtual bool shouldTypeIdBeUsedForAppliedTypesFlag() {}; // 0x48
 		virtual void vf_50() {};
 		virtual void vf_58() {};
 		virtual void vf_60() {};
@@ -652,10 +649,7 @@ namespace rage
 		virtual void vf_B0() {};
 		virtual void ReadData(rage::datBitBuffer& bitBuffer, rage::netLoggingInterface* pLog) {}; // 0xB8
 		virtual void WriteData(rage::netSyncTreeTargetObject* pObj, rage::datBitBuffer& bitBuffer, rage::netLoggingInterface* pLog, bool extractFromObject = true) {}; // 0xC0
-		virtual unsigned GetDataSize(rage::netSyncTreeTargetObject& targetObject) const
-		{
-			return 0;
-		} // 0xC8
+		virtual unsigned GetDataSize(rage::netSyncTreeTargetObject& targetObject) const {} // 0xC8
 
 		/* 0x28 */ int32_t id_1;
 		/* 0x2C */ int32_t id_2;

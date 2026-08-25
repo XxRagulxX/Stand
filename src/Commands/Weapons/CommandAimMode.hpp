@@ -23,7 +23,7 @@ namespace Stand
 		void onItemClick(Click& click, CommandListActionItem* item) final
 		{
 			CommandListAction::onItemClick(click, item);
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				set_aim_mode((int)item->value);
 			});
