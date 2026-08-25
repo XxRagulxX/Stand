@@ -19,14 +19,7 @@ namespace rage
 		rlGamerInfo* m_Talkers[32];
 		uint32_t m_NumTalkers;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(VoiceChat, m_TalkerPool) == 0x2300); // 3028
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }
 
 class CNetworkVoice
@@ -37,16 +30,9 @@ class CNetworkVoice
 	/* 0x36F1 */ bool m_DisableReceivingTextMessages;
 	/* 0x36F2 */ bool m_IsTextFilterEnabled;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CNetworkVoice, m_VoiceChat) == 0x30);
 static_assert(offsetof(CNetworkVoice, m_TextAllowedSentFromGroups) == 0x36EC);
 static_assert(offsetof(CNetworkVoice, m_UsePresenceForTextMessages) == 0x36F0);
 static_assert(offsetof(CNetworkVoice, m_DisableReceivingTextMessages) == 0x36F1);
 static_assert(offsetof(CNetworkVoice, m_IsTextFilterEnabled) == 0x36F2);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 #pragma pack(pop)

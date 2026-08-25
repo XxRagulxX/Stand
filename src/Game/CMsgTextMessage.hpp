@@ -22,13 +22,6 @@ namespace rage
 				;
 		}*/
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(CMsgTextMessage, sender) == 296);
 	static_assert(offsetof(CMsgTextMessage, team_chat) == 312);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

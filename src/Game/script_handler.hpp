@@ -94,14 +94,7 @@ namespace rage
 
 		[[nodiscard]] rage::netHostBroadcastDataHandlerBase* GetHostBroadcastDataHandler(unsigned int handlerNum);
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(scriptHandlerNetComponent, num_participants) == 0x194); // b3411
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	class scriptHandler
 	{

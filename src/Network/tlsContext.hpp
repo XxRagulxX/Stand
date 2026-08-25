@@ -22,7 +22,15 @@ namespace rage
 			return *reinterpret_cast<tlsContext**>(__readgsqword(0x58));
 		}
 	};
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	//static_assert(sizeof(tlsContext) == 0x2A58 + sizeof(bool));
 	static_assert(offsetof(tlsContext, m_script_thread) == 0x2A48); // 3889: 0x2A50 -> 0x2A48 (-0x8)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 }
 #pragma pack(pop)

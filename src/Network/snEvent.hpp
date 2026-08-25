@@ -45,14 +45,7 @@ namespace rage
 		/* 0x20 */ rlGamerInfo gamer;
 		PAD(0x110, 0x118) int remove_reason;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(snEventRemovedGamer, remove_reason) == 0x118);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }
 
 using enum rage::snEventId;

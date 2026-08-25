@@ -59,14 +59,7 @@ namespace rage
 		PAD(0x2C, 0xB0) uint32_t m_CachedDataSize;
 		/* 0xB4 */ uint32_t m_keyId;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(fiPackfile, m_NameHeap) == 0x10);
 	static_assert(offsetof(fiPackfile, m_CachedDataSize) == 0xB0);
 	static_assert(offsetof(fiPackfile, m_keyId) == 0xB4);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

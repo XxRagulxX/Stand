@@ -50,7 +50,18 @@ namespace rage
 		}
 	};
 	static_assert(sizeof(phInst) == 0x20 + sizeof(soup::Matrix));
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
+
 	static_assert(offsetof(phInst, m_Matrix) == 0x20);
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
 
 	struct phInstBreakable : public phInst
 	{
