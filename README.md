@@ -2,7 +2,7 @@
 
 See `src/README.md` for how the source tree under `src/` is organized.
 
-## Building
+## Build
 
 The project is CMake-based (no `.sln`/`.vcxproj` to open - those were
 Visual Studio artifacts and have been removed). It builds `Stand.dll` two
