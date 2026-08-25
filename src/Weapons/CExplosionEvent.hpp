@@ -110,8 +110,6 @@ struct CExplosionEvent
 		case EXP_TAG_STUNGRENADE:
 		case EXP_TAG_EMPLAUNCHER_EMP:
 			return true;
-		default:
-			break;
 		}
 
 		return false;
@@ -146,8 +144,6 @@ struct CExplosionEvent
 		case EXP_TAG_DIR_WATER_HYDRANT:
 		case EXP_TAG_DIR_STEAM:
 			return true;
-		default:
-			break;
 		}
 
 		return false;
@@ -162,8 +158,6 @@ struct CExplosionEvent
 		case EXP_TAG_DIR_FLAME_EXPLODE:
 		case EXP_TAG_DIR_WATER_HYDRANT:
 			return true;
-		default:
-			break;
 		}
 
 		return false;

@@ -130,9 +130,6 @@ namespace Stand
 					}
 				}
 				break;
-
-			default:
-				break;
 			}
 		}
 	}
@@ -282,8 +279,6 @@ namespace Stand
 						release_cam(hijacked_cam);
 						break;
 #endif
-					default:
-						break;
 					}
 				}
 				else

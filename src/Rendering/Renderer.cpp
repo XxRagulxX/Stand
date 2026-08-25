@@ -2970,12 +2970,6 @@ namespace Stand
 							root_name_truncation_type = RootNameTruncationType::STAND;
 							truncated_root_name = L"" STAND_NAME;
 							break;
-
-						case RootNameTruncationType::STAND:
-							break;
-
-						case RootNameTruncationType::TRUNCATE:
-							break;
 						}
 						path_segments = og_path_segments;
 						continue;

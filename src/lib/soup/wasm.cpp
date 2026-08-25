@@ -2282,12 +2282,7 @@ NAMESPACE_SOUP
 				SOUP_UNUSED(fs_rights_base);
 				SOUP_UNUSED(fs_rights_inheriting);
 				SOUP_UNUSED(fdflags);
-#if SOUP_WINDOWS
-				FILE* f = nullptr;
-				if (fopen_s(&f, path_str.c_str(), "rb") == 0 && f != nullptr)
-#else
 				if (auto f = fopen(path_str.c_str(), "rb"))
-#endif
 				{
 					WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
 					if (uint32_t* pOutFd = vm.script.getMemoryByIndex(0)->getPointer<uint32_t>(out_fd))

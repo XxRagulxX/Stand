@@ -154,9 +154,6 @@ namespace Stand
 
 		case PlayerClassifier::ADMIN:
 			return LANG_GET("FLAG_AMN");
-
-		case PlayerClassifier::NONE:
-			return LANG_GET("NONE");
 		}
 		return LANG_GET("NONE");
 	}

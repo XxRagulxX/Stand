@@ -216,10 +216,6 @@ namespace Stand
 			return Util::GET_LABEL_TEXT_no_replacements(ATSTRINGHASH("VAULT_WMENUI_5"));
 		case HEAVY:
 			return Util::GET_LABEL_TEXT_no_replacements(ATSTRINGHASH("VAULT_WMENUI_6"));
-		case MELEE:
-			return Util::GET_LABEL_TEXT_no_replacements(ATSTRINGHASH("VAULT_WMENUI_8"));
-		case _NUM_CATEGORIES:
-			SOUP_ASSERT_UNREACHABLE;
 		}
 		return Util::GET_LABEL_TEXT_no_replacements(ATSTRINGHASH("VAULT_WMENUI_8"));
 	}
@@ -242,10 +238,6 @@ namespace Stand
 			return "Sniper Rifles";
 		case HEAVY:
 			return "Heavy Weapons";
-		case MELEE:
-			break;
-		case _NUM_CATEGORIES:
-			break;
 		}
 		return "Melee Weapons";
 	}
