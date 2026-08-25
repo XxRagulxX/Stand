@@ -114,7 +114,7 @@ namespace Stand
 			else
 			{
 				const char* const walk_style = walk_styles[value - 1].clipset;
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value == this->value)
 					{

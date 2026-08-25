@@ -345,7 +345,6 @@ namespace Stand
 			break;
 
 		case COMMAND_LIST_SELECT:
-		{
 			if (g_gui.show_slider_behaviour)
 			{
 				corner.emplace_back(LANG_GET_W("C2SEL"));
@@ -355,9 +354,6 @@ namespace Stand
 			{
 				corner.emplace_back(std::move(((const CommandListSelect*)this)->getCurrentValueMenuName().getLocalisedUtf16().append(L": ").append(value_help_text.getLocalisedUtf16())));
 			}
-			break;
-		}
-		default:
 			break;
 		}
 
