@@ -1,17 +1,16 @@
 #include "AntiAntiCheat.hpp"
 
+#include <Windows.h>
 #include <timeapi.h>
 
 #include <soup/rand.hpp>
 
 #include "conf_antianticheat.hpp"
 
+#include "CNetworkSession.hpp"
 #include "AcThingData.hpp"
 #include "atStringHash.hpp"
-#include "CNetworkSession.hpp"
-#include "gameSkeleton.hpp"
 #include "Hooking.hpp"
-#include "main.hpp"
 #include "natives.hpp"
 #include "pointers.hpp"
 #include "rlRosCredentials.hpp"
