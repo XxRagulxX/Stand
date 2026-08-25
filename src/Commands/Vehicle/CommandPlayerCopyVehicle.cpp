@@ -15,7 +15,7 @@ namespace Stand
 
 	void CommandPlayerCopyVehicle::onClick(Click& click)
 	{
-		ensureYieldableScriptThread(click, [=, this]
+		ensureYieldableScriptThread(click, [=]
 		{
 			PP_PTR->getPlayer().openThirdEye([click](const AbstractPlayer& p, AbstractEntity& ped, bool needs_cleanup)
 			{

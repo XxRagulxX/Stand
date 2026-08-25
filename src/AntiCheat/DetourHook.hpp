@@ -54,17 +54,6 @@ namespace Stand
 			this->target = target;
 		}
 
-		template <typename T>
-		void init(T detour, void* target, uint8_t flags) noexcept
-		{
-			static_assert(std::is_pointer_v<T>, "T must be a pointer type");
-			static_assert(sizeof(T) == sizeof(void*), "Pointer size mismatch");
-
-			this->flags = flags;
-			std::memcpy(&this->detour, &detour, sizeof(detour));
-			this->target = target;
-		}
-
 		void setTarget(void* target) noexcept
 		{
 			this->target = target;

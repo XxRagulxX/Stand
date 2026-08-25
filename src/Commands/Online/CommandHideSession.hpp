@@ -10,7 +10,7 @@
 
 namespace Stand
 {
-	class CommandHideSession final : public CommandListSelect
+	class CommandHideSession : public CommandListSelect
 	{
 	public:
 		inline static CommandHideSession* instance = nullptr;

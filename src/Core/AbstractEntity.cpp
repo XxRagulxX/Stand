@@ -1050,6 +1050,8 @@ namespace Stand
 			case ENTITY_TYPE_OBJECT:
 				pointers::CObjectPopulation_DestroyObject(static_cast<CObject*>(ptr), false);
 				return true;
+			default:
+				break;
 			}
 		}
 		return false;
@@ -1326,6 +1328,8 @@ namespace Stand
 
 			case ENTITY_TYPE_OBJECT:
 				ret = data.objects;
+				break;
+			default:
 				break;
 			}
 		}
@@ -2598,10 +2602,18 @@ namespace Stand
 		}
 
 		case Direction::RIGHT:
+		{
 			auto rot = this->getRot();
 			rot.z -= 90.0f;
 			this->setRot(rot);
 			force_vector = ENTITY::GET_ENTITY_FORWARD_VECTOR(*this) * 2000.0f;
+			break;
+		}
+
+		case Direction::NONE:
+			break;
+
+		default:
 			break;
 		}
 
@@ -2953,7 +2965,8 @@ namespace Stand
 			// The game tries to correct plate based on PV data, so we should override this as well.
 			if (isUserPersonalVehicle())
 			{
-				strcpy(ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(), GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>(), text);
+				auto* plate_text = ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(),GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>();
+				strcpy_s(plate_text, 16, text);
 			}
 
 			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(handle, text);

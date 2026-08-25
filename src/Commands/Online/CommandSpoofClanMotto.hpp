@@ -24,8 +24,7 @@ namespace Stand
 		{
 			if (checkArgsLength(click, args, 64))
 			{
-				const auto motto = StringUtils::utf16_to_utf8(args);
-				strcpy_s(g_hooking.spoofed_clan_membership.clan.motto, sizeof(g_hooking.spoofed_clan_membership.clan.motto), motto.c_str());
+				strcpy(g_hooking.spoofed_clan_membership.clan.motto, StringUtils::utf16_to_utf8(args).c_str());
 				if (g_hooking.spoof_clan_membership)
 				{
 					g_hooking.forceUpdateGamerDataNode();
