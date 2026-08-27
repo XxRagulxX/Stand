@@ -52,10 +52,11 @@ you're moving files around further.
   here is committed source, not fetched at configure time - see
   CMakeLists.txt for exactly which files each one compiles.
   `directxtk/shaderscompiled/` holds its shaders as already-compiled
-  `.inc` byte arrays (what actually gets built by default -
-  `directxtk/shaders/` is only their HLSL source, and is empty unless
-  you're using `STAND_COMPILE_DIRECTXTK_SHADERS` - see
-  cmake/directxtk-shaders.cmake - to regenerate them).
+  `.inc` byte arrays (what actually gets built by default);
+  `directxtk/shaders/` holds the `.hlsl`/`.fxh` source those were
+  compiled from, only used if you turn on
+  `STAND_COMPILE_DIRECTXTK_SHADERS` (see cmake/directxtk-shaders.cmake)
+  to regenerate them after changing one.
 
 ## How includes work
 

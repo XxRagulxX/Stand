@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248929
+// https://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
 #include "pch.h"
@@ -54,6 +54,7 @@ public:
     std::vector<uint32_t> glyphsIndex;
     Glyph const* defaultGlyph;
     float lineSpacing;
+    bool pixelAlignment;
 
 private:
     void CreateTextureResource(_In_ ID3D11Device* device,
@@ -101,6 +102,7 @@ SpriteFont::Impl::Impl(
     bool forceSRGB) noexcept(false) :
     defaultGlyph(nullptr),
     lineSpacing(0),
+    pixelAlignment(false),
     utfBufferSize(0)
 {
     if (!device || !reader)
@@ -140,6 +142,18 @@ SpriteFont::Impl::Impl(
     auto textureStride = reader->Read<uint32_t>();
     auto textureRows = reader->Read<uint32_t>();
 
+    if (!textureWidth
+        || !textureHeight
+        || !textureStride
+        || !textureRows
+        || (textureWidth > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION)
+        || (textureHeight > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION)
+        || LoaderHelpers::BitsPerPixel(textureFormat) == 0)
+    {
+        DebugTrace("ERROR: SpriteFont provided with an invalid .spritefont file\n");
+        throw std::runtime_error("Invalid .spritefont file");
+    }
+
     const uint64_t dataSize = uint64_t(textureStride) * uint64_t(textureRows);
     if (dataSize > UINT32_MAX)
     {
@@ -175,6 +189,7 @@ SpriteFont::Impl::Impl(
     glyphs(iglyphs, iglyphs + glyphCount),
     defaultGlyph(nullptr),
     lineSpacing(ilineSpacing),
+    pixelAlignment(false),
     utfBufferSize(0)
 {
     if (!itexture || !iglyphs)
@@ -480,6 +495,11 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
                 offset = XMVectorMultiplyAdd(glyphRect, axisIsMirroredTable[effects & 3], offset);
             }
 
+            if (pImpl->pixelAlignment)
+            {
+                offset = XMVectorRound(offset);
+            }
+
             spriteBatch->Draw(pImpl->texture.Get(), position, &glyph->Subrect, color, rotation, offset, scale, effects, layerDepth);
         }, true);
 }
@@ -610,9 +630,15 @@ float SpriteFont::GetLineSpacing() const noexcept
 }
 
 
-void SpriteFont::SetLineSpacing(float spacing)
+void SpriteFont::SetLineSpacing(float spacing) noexcept
 {
     pImpl->lineSpacing = spacing;
+}
+
+
+void SpriteFont::SetPixelAlignment(bool enable) noexcept
+{
+    pImpl->pixelAlignment = enable;
 }
 
 

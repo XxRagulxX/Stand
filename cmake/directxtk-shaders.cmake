@@ -148,6 +148,26 @@ set(STAND_DIRECTXTK_SHADER_SOURCES
     ToneMap
 )
 
+# Sources that DirectXTK's own Src/Shaders/CompileShaders.cmd always
+# compiles at plain SM4 (vs_4_0/ps_4_0), instead of the vs/ps_4_0_level_9_1
+# profile (feature-level-9.x-compatible) every other technique below
+# uses. EnvironmentMapEffect is a special case of its own: only a handful
+# of its own techniques need SM4 (see STAND_DIRECTXTK_SM4_ENTRIES) - the
+# rest of it is still 9.1-compatible like everything else.
+set(STAND_DIRECTXTK_SM4_ONLY_SOURCES
+    PostProcess
+    ToneMap
+)
+
+set(STAND_DIRECTXTK_SM4_ENTRIES
+    VSEnvMapPixelLightingSM4
+    VSEnvMapPixelLightingBnSM4
+    PSEnvMapDualParabolaPixelLighting
+    PSEnvMapDualParabolaPixelLightingNoFog
+    PSEnvMapDualParabolaPixelLightingFresnel
+    PSEnvMapDualParabolaPixelLightingFresnelNoFog
+)
+
 # ------------------------------------------------------------
 # stand_compile_directxtk_shaders(target compiled_dir)
 # ------------------------------------------------------------
@@ -159,6 +179,15 @@ set(STAND_DIRECTXTK_SHADER_SOURCES
 function(stand_compile_directxtk_shaders target compiled_dir)
     set(shader_src_dir "${compiled_dir}/../shaders")
     get_filename_component(shader_src_dir "${shader_src_dir}" ABSOLUTE)
+
+    # Shared *.fxh fragments (Common.fxh, Lighting.fxh, ...) that the
+    # top-level *.hlsl files #include - fxc resolves these itself by
+    # searching the including file's own directory (same as every
+    # top-level .hlsl sits in here), no /I flag needed. Listed as an
+    # extra dependency on every shader below so changing a shared
+    # fragment recompiles everything that could be affected, rather than
+    # only the one .hlsl whose mtime CMake happens to be watching.
+    file(GLOB shared_fxh_headers CONFIGURE_DEPENDS "${shader_src_dir}/*.fxh")
 
     file(GLOB existing_incs CONFIGURE_DEPENDS "${compiled_dir}/*.inc")
 
@@ -201,22 +230,34 @@ function(stand_compile_directxtk_shaders target compiled_dir)
         # DGSLLambert/Phong/Unlit (always the pixel shader, one per
         # lighting model) and SpriteEffect's two fixed entry points.
         if(entry_point MATCHES "^VS")
-            set(profile "vs_5_0")
+            set(shader_stage "vs")
         elseif(entry_point MATCHES "^PS")
-            set(profile "ps_5_0")
+            set(shader_stage "ps")
         elseif(matched_source STREQUAL "DGSLEffect")
-            set(profile "vs_5_0")
+            set(shader_stage "vs")
         elseif(matched_source MATCHES "^DGSL(Lambert|Phong|Unlit)$")
-            set(profile "ps_5_0")
+            set(shader_stage "ps")
         elseif(entry_point STREQUAL "SpriteVertexShader")
-            set(profile "vs_5_0")
+            set(shader_stage "vs")
         elseif(entry_point STREQUAL "SpritePixelShader")
-            set(profile "ps_5_0")
+            set(shader_stage "ps")
         else()
             message(FATAL_ERROR
                 "Don't know whether '${stem}' is a vertex or pixel shader "
                 "- add a case for it in cmake/directxtk-shaders.cmake."
             )
+        endif()
+
+        # Feature level: matches Src/Shaders/CompileShaders.cmd exactly -
+        # everything is vs/ps_4_0_level_9_1 (feature-level-9.x compatible)
+        # except the SM4-only sources and EnvironmentMapEffect's own
+        # handful of SM4 entries (both above).
+        if(matched_source IN_LIST STAND_DIRECTXTK_SM4_ONLY_SOURCES)
+            set(profile "${shader_stage}_4_0")
+        elseif(matched_source STREQUAL "EnvironmentMapEffect" AND entry_point IN_LIST STAND_DIRECTXTK_SM4_ENTRIES)
+            set(profile "${shader_stage}_4_0")
+        else()
+            set(profile "${shader_stage}_4_0_level_9_1")
         endif()
 
         set(hlsl_path "${shader_src_dir}/${matched_source}.hlsl")
@@ -230,13 +271,13 @@ function(stand_compile_directxtk_shaders target compiled_dir)
             OUTPUT "${inc_path}"
             COMMAND
                 ${STAND_FXC_COMMAND_PREFIX} "${STAND_FXC_EXECUTABLE}"
-                /nologo /Zpc /Ges
-                /T "${profile}"
-                /E "${entry_point}"
-                /Vn "${stem}"
-                /Fh "${inc_path}"
+                /nologo /WX /Ges /Zpc /Qstrip_reflect
+                "/T${profile}"
+                "/E${entry_point}"
+                "/Vn${stem}"
+                "/Fh${inc_path}"
                 "${hlsl_path}"
-            DEPENDS "${hlsl_path}"
+            DEPENDS "${hlsl_path}" ${shared_fxh_headers}
             COMMENT "Compiling DirectXTK shader ${stem} (${profile})"
             VERBATIM
         )

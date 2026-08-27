@@ -111,6 +111,8 @@ file(GLOB_RECURSE PLUTO_CPP CONFIGURE_DEPENDS
 # ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
+# Vendored from https://github.com/microsoft/DirectXTK, currently at the
+# "may2026" release tag (May 7, 2026).
 
 # Defines STAND_COMPILE_DIRECTXTK_SHADERS and, only if it's ON,
 # stand_compile_directxtk_shaders() - see cmake/directxtk-shaders.cmake.

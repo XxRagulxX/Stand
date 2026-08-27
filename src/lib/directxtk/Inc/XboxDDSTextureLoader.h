@@ -1,4 +1,4 @@
-s//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 // File: XboxDDSTextureLoader.h
 //
 // Functions for loading a DDS texture using the XBOX extended header and creating a
@@ -12,7 +12,7 @@ s//-----------------------------------------------------------------------------
 // Licensed under the MIT License.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248926
-// http://go.microsoft.com/fwlink/?LinkId=248929
+// https://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
 #pragma once
