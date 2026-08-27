@@ -112,6 +112,10 @@ file(GLOB_RECURSE PLUTO_CPP CONFIGURE_DEPENDS
 # DirectXTK library
 # ------------------------------------------------------------
 
+# Defines STAND_COMPILE_DIRECTXTK_SHADERS and, only if it's ON,
+# stand_compile_directxtk_shaders() - see cmake/directxtk-shaders.cmake.
+include(cmake/directxtk-shaders.cmake)
+
 set(DIRECTXTK_SOURCE_DIR "${LIB_DIR}/directxtk")
 
 set(DIRECTXTK_CPP_FILES
@@ -172,9 +176,12 @@ target_include_directories(DirectXTK
     PRIVATE
         "${DIRECTXTK_SOURCE_DIR}/Src"
 
-        # Provides the precompiled "*.inc" shader blobs the sources above
-        # #include by bare filename.
-        "${DIRECTXTK_SOURCE_DIR}/shaders"
+        # Provides the compiled "*.inc" shader blobs the sources above
+        # #include by bare filename. lib/directxtk/shaders/ holds the
+        # *.hlsl these were compiled from (empty unless
+        # STAND_COMPILE_DIRECTXTK_SHADERS is being used - see
+        # cmake/directxtk-shaders.cmake).
+        "${DIRECTXTK_SOURCE_DIR}/shaderscompiled"
 )
 
 target_link_libraries(DirectXTK
@@ -184,6 +191,10 @@ target_link_libraries(DirectXTK
         d3dcompiler
         windowscodecs
 )
+
+if(STAND_COMPILE_DIRECTXTK_SHADERS)
+    stand_compile_directxtk_shaders(DirectXTK "${DIRECTXTK_SOURCE_DIR}/shaderscompiled")
+endif()
 
 # ------------------------------------------------------------
 # fmt library

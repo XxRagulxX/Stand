@@ -48,10 +48,14 @@ you're moving files around further.
   VM), `discord-rpc/` (Discord Rich Presence), `soup/` (a general-purpose
   C++ toolkit used throughout Stand's own code, e.g.
   `#include "lib/soup/Rgb.hpp"`), `souplua/` (soup's Lua bindings), `fmt/`,
-  `rapidjson/`, `minhook/`, `stackwalker/`, and `directxtk/` (including
-  its precompiled shader blobs, under `directxtk/shaders/`). Everything
+  `rapidjson/`, `minhook/`, `stackwalker/`, and `directxtk/`. Everything
   here is committed source, not fetched at configure time - see
   CMakeLists.txt for exactly which files each one compiles.
+  `directxtk/shaderscompiled/` holds its shaders as already-compiled
+  `.inc` byte arrays (what actually gets built by default -
+  `directxtk/shaders/` is only their HLSL source, and is empty unless
+  you're using `STAND_COMPILE_DIRECTXTK_SHADERS` - see
+  cmake/directxtk-shaders.cmake - to regenerate them).
 
 ## How includes work
 
