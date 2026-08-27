@@ -14,7 +14,7 @@
 
 namespace Stand
 {
-	class CommandBodyguardMember final : public CommandWithOnTickFocused<CommandListWithOnTickAsActiveList<CommandList>>
+	class CommandBodyguardMember : public CommandWithOnTickFocused<CommandListWithOnTickAsActiveList<CommandList>>
 	{
 	public:
 		AbstractEntity entity;
@@ -56,7 +56,7 @@ namespace Stand
 			});
 		}
 
-		~CommandBodyguardMember()
+		~CommandBodyguardMember() final
 		{
 			entity.removeFromPlaneOfExistence();
 		}

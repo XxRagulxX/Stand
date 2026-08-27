@@ -55,7 +55,9 @@ namespace rage
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
+
 	static_assert(offsetof(phInst, m_Matrix) == 0x20);
+
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
@@ -140,14 +142,16 @@ namespace rage
 		/* 0x64 */ float m_fForceAddToBoundRadius;
 		/* 0x68 */ uint8_t m_nNoCollisionFlags;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+	#if defined(__clang__)
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Winvalid-offsetof"
+	#endif
+
 	static_assert(offsetof(fwDynamicEntityComponent, m_nNoCollisionFlags) == 0x68);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+
+	#if defined(__clang__)
+	#pragma clang diagnostic pop
+	#endif
 	static_assert(sizeof(fwDynamicEntityComponent) == 0x68 + 1 + 7);
 
 #pragma pack(push, 1)
@@ -399,7 +403,9 @@ static_assert(sizeof(CPhysical) == 0x284 + 4);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
+
 static_assert(offsetof(CPhysical, relationship_hash) == 0x194);
+
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif

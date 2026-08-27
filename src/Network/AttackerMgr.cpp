@@ -404,8 +404,6 @@ namespace Stand
 
 		switch (group.type)
 		{
-		case AttackerType::NORMAL:
-			break;
 		case AttackerType::PHANTOM:
 			{
 				if (ENTITY::IS_ENTITY_VISIBLE(attacker))
@@ -440,14 +438,11 @@ namespace Stand
 	{
 		switch (type)
 		{
-		case AttackerType::NORMAL:
-			return {};
 		case AttackerType::PHANTOM:
 			return { ATSTRINGHASH("DLC_TUNER/DLC_Tuner_Phantom_Car") };
 		}
 
 		SOUP_ASSERT(false);
-		return {};
 	}
 
 	bool AttackerMgr::isEntityAttacker(AbstractEntity& entity)

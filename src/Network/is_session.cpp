@@ -40,8 +40,6 @@ namespace Stand
 		case TRANSITION_STATE_FM_TRANSITION_CREATE_PLAYER:
 		case TRANSITION_STATE_FM_SWOOP_DOWN:
 			return when_almost_done;
-		default:
-			return true;
 		}
 		return true;
 	}

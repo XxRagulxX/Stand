@@ -35,7 +35,7 @@ namespace Stand
 				}
 				else if (dead_last_tick)
 				{
-					FiberPool::queueJob([=, this]
+					FiberPool::queueJob([=]
 					{
 						Particles::play(this->value, g_player_ped.getPos());
 					});

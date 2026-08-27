@@ -24,7 +24,7 @@ namespace Stand
 				int r = this->r->value;
 				int g = this->g->value;
 				int b = this->b->value;
-				ensureScriptThread(click, [=, this]
+				ensureScriptThread(click, [=]
 				{
 					Click click_(click);
 					auto veh = (click.type == CLICK_AUTO ? Util::getVehicle() : Util::getVehicle(click_));

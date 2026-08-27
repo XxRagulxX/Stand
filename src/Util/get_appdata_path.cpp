@@ -8,7 +8,8 @@ namespace Stand
 {
 	std::wstring get_roaming_path()
 	{
-		std::wstring path = get_appdata_path();
+		std::wstring path = StringUtils::utf8_to_utf16(soup::ObfusString("appdata").str());
+		path = _wgetenv(path.c_str());
 		path.push_back(L'\\');
 		return path;
 	}

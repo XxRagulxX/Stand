@@ -19,7 +19,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(m_on)
 				auto p = PP_PTR_SINGLE->getPlayer();

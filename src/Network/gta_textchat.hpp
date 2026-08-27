@@ -34,14 +34,7 @@ namespace rage
 			/* 0x08 */ Typer* m_Typers[1];
 			/* 0x10 */ uint32_t m_NumTypers;
 		};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 		static_assert(offsetof(Peer, m_NumTypers) == 0x10);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 		PAD(0, 0x80) char m_TextToSend[256];
 		/* 0x180 */ char unk_uuid[40];
@@ -65,15 +58,8 @@ namespace rage
 		/* 2BF8 */ bool m_InTransition : 1;
 		/* 2BF8 */ bool m_Initialized : 1;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(TextChat, m_TextToSend) == 0x80); // 1.69
 	static_assert(offsetof(TextChat, unk_uuid) == 0x180); // 1.69
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }
 
 namespace Stand
@@ -116,14 +102,7 @@ struct CNetworkTextChat
 	/* 0x2C80 */ rage::atMap<uint64_t, PlayerChatHistory> m_ChatHistory;
 
 	using ChatHistoryEntry = rage::atMapEntry<uint64_t, PlayerChatHistory>;
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(ChatHistoryEntry, next) == 0x3C08);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	// Does not list all messages, e.g. messages including colons.
 	[[nodiscard]] std::vector<Stand::ChatHistoryMessage> compileHistory() const;

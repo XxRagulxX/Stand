@@ -23,9 +23,9 @@ namespace Stand
 			}
 			if (click.isMenu())
 			{
-				showWarning(click, LANG_GET_W("GENWARN"), WARNING_COMMAND_BOUND, [=, this](ThreadContext thread_context)
+				showWarning(click, LANG_GET_W("GENWARN"), WARNING_COMMAND_BOUND, [=](ThreadContext thread_context)
 				{
-					ensureScriptThread(thread_context, [=, this]
+					ensureScriptThread(thread_context, [=]
 					{
 						Click click_(click);
 						g_gui.backToNormal(click_);

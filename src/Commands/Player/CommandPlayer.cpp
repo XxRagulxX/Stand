@@ -1465,7 +1465,7 @@ namespace Stand
 			const auto p = getPlayer();
 
 			auto classification_reactions = p.getReactions(FlowEvent::CLSFN_ANY);
-			classification_reactions |= p.getReactions(static_cast<flowevent_t>(static_cast<int>(FlowEvent::CLSFN_ANY)+ static_cast<int>(classification)));
+			classification_reactions |= p.getReactions(FlowEvent::CLSFN_ANY + classification);
 			return classification_reactions;
 		}
 
@@ -2186,8 +2186,8 @@ if (flags & (1 << id)) \
 #endif
 
 		case DP_HOSTSHARE_KICK_DESYNC:
-		{
-			ExecCtx::get().ensureScript([this, target{ (AbstractPlayer)(player_t)a1 }]
+			{
+				ExecCtx::get().ensureScript([this, target{ (AbstractPlayer)(player_t)a1 }]
 				{
 					if (g_player.isHost()
 						&& target != g_player
@@ -2195,31 +2195,19 @@ if (flags & (1 << id)) \
 						)
 					{
 #ifdef STAND_DEBUG
-						Util::toast(fmt::format(
-							"{} requested kick of {} via HostShare - Accepted.",
-							getPlayerName(),
-							target.getName()
-						));
+						Util::toast(fmt::format("{} requested kick of {} via HostShare - Accepted.", getPlayerName(), target.getName()));
 #endif
 						target.kickHostNoprekick(AbstractPlayer::DESYNC);
 						getPlayer().directPacketSend(DP_HOSTSHARE_ACK);
 					}
-				});
-		}
-		break;
-
-		case DP_DEV_CLEAR_DETECT:
-		case DP_DEV_FORCE_DETECT:
-			// Already handled before this switch.
-			break;
-
-#ifndef STAND_DEBUG
-		case DP_ADDR_RESPONSE:
-			// Debug-only packet handling.
-			break;
+					else
+					{
+#ifdef STAND_DEBUG
+						Util::toast(fmt::format("{} requested kick of {} via HostShare - Denied.", getPlayerName(), target.getName()));
 #endif
-
-		default:
+					}
+				});
+			}
 			break;
 		}
 	}

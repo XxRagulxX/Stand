@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 4.3.4)
 
 # Required for clang-cl cross-compilation
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)

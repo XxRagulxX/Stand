@@ -20,7 +20,7 @@ namespace Stand
 			const int value = this->value;
 			if (value != 540)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value != this->value)
 					{
@@ -36,7 +36,7 @@ namespace Stand
 			}
 			else
 			{
-				ensureScriptThread(click, [=, this]
+				ensureScriptThread(click, [=]
 				{
 					auto veh = g_player_ped.getVehicle(true);
 					if (veh.isValid() && veh.isOwnerOfVehicleAndDriver())

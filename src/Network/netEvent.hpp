@@ -82,16 +82,9 @@ namespace rage
 		/* 0x88 */ ReceivedMessageData* data;
 	};
 	static_assert(sizeof(netEventFrameReceived) == 0x88 + 8);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netEventFrameReceived, sender) == 0x60);
 	static_assert(offsetof(netEventFrameReceived, size) == 0x80);
 	static_assert(offsetof(netEventFrameReceived, data) == 0x88);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	class netEventOutOfMemory : public netEvent
 	{

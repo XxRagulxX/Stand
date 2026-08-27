@@ -5,8 +5,8 @@
 namespace Stand
 {
 	VehicleModelFlags::VehicleModelFlags(const soup::BigBitset<25>* flags)
-		: flags(*flags)
 	{
+		memcpy(&this->flags, flags, sizeof(this->flags));
 	}
 
 	void VehicleModelFlags::set(CVehicleModelInfo* info, CVehicleModelInfo::Flags flag, bool value)
@@ -49,7 +49,7 @@ namespace Stand
 
 	void VehicleModelFlags::reset(CVehicleModelInfo::Flags flag)
 	{
-		for (auto it = modified.begin(); it != modified.end();)
+		for (auto it = modified.begin(); it != modified.end(); )
 		{
 			unsigned int idx = 0xFFFF;
 			auto info = OG(rage_fwArchetypeManager_GetArchetypeFromHashKey)(*it, &idx);
@@ -59,7 +59,7 @@ namespace Stand
 			}
 			else
 			{
-				reset(static_cast<CVehicleModelInfo*>(info), flag, true);
+				reset((CVehicleModelInfo*)info, flag, true);
 				++it;
 			}
 		}
@@ -76,7 +76,7 @@ namespace Stand
 				auto info = OG(rage_fwArchetypeManager_GetArchetypeFromHashKey)(model, &idx);
 				if (idx != 0xFFFF)
 				{
-					static_cast<CVehicleModelInfo*>(info)->flags = og_e->second.flags;
+					memcpy(&((CVehicleModelInfo*)info)->flags, &og_e->second.flags, sizeof(og_e->second.flags));
 				}
 			}
 		}

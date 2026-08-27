@@ -1,6 +1,6 @@
 #pragma once
 
-#include <CommandListPlayer.hpp>
+#include <Commands/Player/CommandListPlayer.hpp>
 
 #include "Network/PlayerProviderAll.hpp"
 

@@ -74,7 +74,7 @@ namespace Stand
 
 		[[nodiscard]] Label getActivationName() const final
 		{
-			if (auto pc = Base::resolveParent(COMMAND_LIST_PLAYER)->template as<CommandListPlayer>())
+			if (auto pc = Base::resolveParent(COMMAND_LIST_PLAYER)->as<CommandListPlayer>())
 			{
 				return LIT(LANG_FMT("PLY_A_LUA", fmt::arg("script", Base::lua_data.script->menu_name.getLocalisedUtf8()), fmt::arg("command", Base::menu_name.getLocalisedUtf8()), fmt::arg("player", pc->getPlayerName())));
 			}

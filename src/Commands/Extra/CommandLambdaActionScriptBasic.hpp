@@ -19,7 +19,7 @@ namespace Stand
 		{
 			if (click.isBasicEdition())
 			{
-				ensureScriptThread(click, [=, this]
+				ensureScriptThread(click, [=]
 				{
 					on_click_impl(click);
 				});

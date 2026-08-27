@@ -27,16 +27,8 @@ namespace rage
 		struct Params
 		{
 			PAD(0, 0x2C) const Type type;
-			Params() = delete;
 		};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 		static_assert(offsetof(Params, type) == 0x2C);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 		virtual ~phConstraintBase() = default;
 		virtual void _0x08() = 0;

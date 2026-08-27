@@ -34,14 +34,7 @@ namespace rage
 
 		[[nodiscard]] rage::netEndpoint* getEndpoint() const;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netPlayer, player_id) == 0x61); // 3889: 0xC1 -> 0x61 (-0x60)
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }
 
 #define MAX_BUBBLES 10
@@ -94,12 +87,5 @@ public:
 	[[nodiscard]] bool IsRockstarQA() const { return flags & IS_QA; }
 	[[nodiscard]] bool IsCheater() const { return flags & IS_CHEATER; }
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CNetGamePlayer, player_info) == 0xE8); // 3889: 0x148 -> 0xE8 (-0x60)
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 #pragma pack(pop)

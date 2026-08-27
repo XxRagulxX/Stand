@@ -57,7 +57,7 @@ namespace rage
 
 	void netPeerAddress::reset()
 	{
-		ZeroMemory(static_cast<void*>(this), sizeof(*this));
+		ZeroMemory(this, sizeof(*this));
 	}
 
 	void netPeerAddress::fromBase64(const std::string& str)

@@ -30,12 +30,6 @@ namespace Stand
 
 		case SESSION_HOST:
 			return LOC("AUTOSTATE_H_HST");
-
-		case _NUM_TOGGLE_CORRELATIONS:
-			break;
-
-		case NONE:
-			break;
 		}
 		return NOLABEL;
 	}
@@ -68,15 +62,6 @@ namespace Stand
 
 		case ToggleCorrelation::SESSION_HOST:
 			value = g_player.isHost();
-			break;
-
-		case ToggleCorrelation::NONE:
-			break;
-
-		case ToggleCorrelation::CHATTING:
-			break;
-
-		case ToggleCorrelation::_NUM_TOGGLE_CORRELATIONS:
 			break;
 		}
 		return value;

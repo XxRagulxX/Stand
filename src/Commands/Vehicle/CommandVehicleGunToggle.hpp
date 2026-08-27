@@ -58,7 +58,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(this->m_on);
 
@@ -78,7 +78,7 @@ namespace Stand
 					}
 					else
 					{
-						FiberPool::queueJob([=, this]
+						FiberPool::queueJob([=]
 						{
 							using_model(hash, [this, hash]
 							{

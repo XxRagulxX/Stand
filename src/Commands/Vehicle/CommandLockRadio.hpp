@@ -24,13 +24,13 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				if (click.type != CLICK_BULK)
 				{
 					station = AUDIO::GET_PLAYER_RADIO_STATION_INDEX();
 				}
-				registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=, this]()
+				registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=]()
 				{
 					if (!m_on)
 					{

@@ -49,7 +49,6 @@
 #include "Network/RemoteStats.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Core/ResourceMgr.hpp"
-#include "Core/FunctionPointer.hpp"
 #include "Network/rlGamerInfo.hpp"
 #include "Core/Sanity.hpp"
 #include "Scripting/ScriptMgr.hpp"
@@ -139,7 +138,7 @@ namespace Stand
 			&& (
 				(GetAsyncKeyState(VK_F1) & 0x8000)
 				|| (GetAsyncKeyState(VK_F9) & 0x8000)
-			);
+				);
 	}
 
 	[[nodiscard]] static bool has_game_finished_loading()
@@ -222,9 +221,8 @@ namespace Stand
 		startManagedThreadFunc();
 		::exceptional_init(&Exceptional::handleCaughtException, &Exceptional::handleUncaughtException);
 		// Initialise CodeIntegrity
-		CodeIntegrity::add(function_pointer_to_void(&CommandHistoricPlayer::getStateImpl));
-		CodeIntegrity::add(function_pointer_to_void(static_cast<std::string(*)(const void*, size_t)>(&soup::sha1::hash))
-		);
+		CodeIntegrity::add(&CommandHistoricPlayer::getStateImpl);
+		CodeIntegrity::add(static_cast<std::string(*)(const void*, size_t)>(&soup::sha1::hash));
 		// Detect OS version (note that this does not work to detect Windows 8 or later)
 #pragma warning(push)
 #pragma warning(disable: 4996) // GetVersion was declared deprecated
@@ -275,11 +273,11 @@ namespace Stand
 		// Erase PE Header
 #if ERASE_PE_HEADER
 		/*call_with_time_limit*/([](uintptr_t)
-		{
-			DWORD OldProtect;
-			VirtualProtect(g_hmodule, 0x1000, PAGE_READWRITE, &OldProtect);
-			PeHeader::pe_header.initPatchZero((uint8_t*)g_hmodule, 4096);
-		});
+			{
+				DWORD OldProtect;
+				VirtualProtect(g_hmodule, 0x1000, PAGE_READWRITE, &OldProtect);
+				PeHeader::pe_header.initPatchZero((uint8_t*)g_hmodule, 4096);
+			});
 #endif
 
 		ensureAntiDump();
@@ -302,30 +300,30 @@ namespace Stand
 			{
 				PatternBatch batch;
 				BATCH_ADD("A0", "83 C8 01 48 8D 0D ? ? ? ? 41 B1 01 45 33 C0", [](soup::Pointer p)
-				{
-					if (*p.add(23).rip().as<uint32_t*>() & 1)
 					{
-						memory_pool_str_buf = soup::ObfusString("Can't modify memory pool size as it is already initiated. Pattern scan took {}.").str();
-					}
-					else
-					{
-						int mb = str2int<int>(g_gui.active_profile.data.at(soup::ObfusString("Game>Early Inject Enhancements>Memory Pool Size (MB)").str())).value();
-						if (mb == 2147)
+						if (*p.add(23).rip().as<uint32_t*>() & 1)
 						{
-							*p.add(17).as<int32_t*>() = 0x7FFFFFFF;
+							memory_pool_str_buf = soup::ObfusString("Can't modify memory pool size as it is already initiated. Pattern scan took {}.").str();
 						}
 						else
 						{
-							*p.add(17).as<int32_t*>() = (mb * 1000000);
+							int mb = str2int<int>(g_gui.active_profile.data.at(soup::ObfusString("Game>Early Inject Enhancements>Memory Pool Size (MB)").str())).value();
+							if (mb == 2147)
+							{
+								*p.add(17).as<int32_t*>() = 0x7FFFFFFF;
+							}
+							else
+							{
+								*p.add(17).as<int32_t*>() = (mb * 1000000);
+							}
+							memory_pool_str_buf = soup::ObfusString("Modified memory pool size in {}.").str();
+							modified_memory_pool_size = true;
 						}
-						memory_pool_str_buf = soup::ObfusString("Modified memory pool size in {}.").str();
-						modified_memory_pool_size = true;
-					}
-				});
+					});
 				auto time = TimedCall::run([&]
-				{
-					batch.runSingleThread();
-				});
+					{
+						batch.runSingleThread();
+					});
 				if (batch.error_message.empty())
 				{
 					g_logger.log(fmt::format(fmt::runtime(memory_pool_str_buf), time));
@@ -440,20 +438,20 @@ namespace Stand
 			}
 			PatternBatch batch;
 			BATCH_ADD("A1", "45 33 DB 44 8B D2 66 44 39 59 10 74 4B 44 0F B7 49 10", [](soup::Pointer p)
-			{
-				STORE_HOOK(rage_fwConfigManager_GetSizeOfPool);
-			});
+				{
+					STORE_HOOK(rage_fwConfigManager_GetSizeOfPool);
+				});
 			auto scan_time = TimedCall::run([&]
-			{
-				batch.runSingleThread();
-			});
+				{
+					batch.runSingleThread();
+				});
 			if (batch.error_message.empty())
 			{
 				auto hook_time = TimedCall::run([]
-				{
-					g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.createHook();
-					g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.enableHook();
-				});
+					{
+						g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.createHook();
+						g_hooking.rage_fwConfigManager_GetSizeOfPool_hook.enableHook();
+					});
 				g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Game Pools Size Multiplier: Scanned pattern in {} and hooked in {}").str()), scan_time, hook_time));
 			}
 			else
@@ -471,13 +469,13 @@ namespace Stand
 		{
 			PatternBatch batch;
 			BATCH_ADD("A2", "70 6C 61 74 66 6F 72 6D 3A 2F 6D 6F 76 69 65 73 2F 72 6F 63", [](soup::Pointer p)
-			{
-				pointers::game_logos = p.as<void*>();
-			});
+				{
+					pointers::game_logos = p.as<void*>();
+				});
 			BATCH_ADD("A3", "72 1F E8 ? ? ? ? 8B 0D", [](soup::Pointer p)
-			{
-				pointers::game_license = p.as<void*>();
-			});
+				{
+					pointers::game_license = p.as<void*>();
+				});
 			batch.run();
 			if (batch.error_message.empty())
 			{
@@ -581,9 +579,9 @@ namespace Stand
 		if (patched_is_explosion_type_valid)
 		{
 #if ENABLE_PASSIVE_DLL
-			*pointers::is_explosion_type_valid_patch = (g_game_has_passive_dll ? CS_PASSIVE : CS_NONE);
+			* pointers::is_explosion_type_valid_patch = (g_game_has_passive_dll ? CS_PASSIVE : CS_NONE);
 #else
-			*pointers::is_explosion_type_valid_patch = CS_NONE;
+			* pointers::is_explosion_type_valid_patch = CS_NONE;
 #endif
 		}
 		mainUnpatch();
@@ -721,8 +719,8 @@ namespace Stand
 		auto area = reinterpret_cast<uint8_t*>(VirtualAlloc(nullptr, sizeof(thread_asm), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
 		memcpy(area, thread_asm, sizeof(thread_asm));
 
-		*reinterpret_cast<void**>(&area[8 + 2]) = function_pointer_to_void(&Sleep);
-		*reinterpret_cast<void**>(&area[27 + 2]) = function_pointer_to_void(&memset);
+		*(void**)(&area[8 + 2]) = &Sleep;
+		*(void**)(&area[27 + 2]) = &memset;
 		*(void**)(&area[37 + 2]) = g_hmodule;
 		*(size_t*)(&area[50 + 2]) = g_stand_dll_range.size;
 
@@ -767,19 +765,19 @@ namespace Stand
 	static void mainDisableHooks()
 	{
 		TimedCall::log(soup::ObfusString("Disabled all hooks in {}."), []
-		{
-			std::vector<DetourHook*> hooks{};
-			Components::collectHooks(hooks);
-			for (const auto& hook : hooks)
 			{
-				if (hook->isHooked() && hook->isLongjump())
+				std::vector<DetourHook*> hooks{};
+				Components::collectHooks(hooks);
+				for (const auto& hook : hooks)
 				{
-					hook->disableHook();
+					if (hook->isHooked() && hook->isLongjump())
+					{
+						hook->disableHook();
+					}
 				}
-			}
 
-			g_hooking.disableAll();
-		});
+				g_hooking.disableAll();
+			});
 	}
 
 #define LOG_NATIVE_REG_ORDER false
@@ -965,9 +963,9 @@ namespace Stand
 		}
 
 		g_net_interface.updateConfig([](soup::netConfig& conf, soup::Capture&&) SOUP_EXCAL
-		{
-			HttpRequestBuilder::updateNetConfig(conf);
-		});
+			{
+				HttpRequestBuilder::updateNetConfig(conf);
+			});
 
 		g_running = true;
 
@@ -978,14 +976,14 @@ namespace Stand
 			{
 				SIG_INST("48 8B 05 ? ? ? ? 83 38 00 74 3A 48 8D 0D");
 				batch.add("A5", soup::Module("ScriptHookV.dll"), sig_inst, [](soup::Pointer p)
-				{
-					auto jz = p.add(10).as<uint8_t*>();
+					{
+						auto jz = p.add(10).as<uint8_t*>();
 
-					DWORD oldProtect;
-					VirtualProtect(jz, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+						DWORD oldProtect;
+						VirtualProtect(jz, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
 
-					*jz = soup::Bytepatch::JMP1; // jz -> jmp
-				});
+						*jz = soup::Bytepatch::JMP1; // jz -> jmp
+					});
 			}
 			batch.runSingleThread();
 
@@ -1049,7 +1047,7 @@ namespace Stand
 #if BLOCK_ALL_METRICS
 		// Set telemetry submission interval to 0 to disable telemetry submission.
 		// Although we handle this in HTTP hook, we'd still trip minority report.
-		*pointers::s_Policies_m_SubmissionIntervalSeconds = 0;
+		* pointers::s_Policies_m_SubmissionIntervalSeconds = 0;
 		pointers::s_Policies_m_SubmissionIntervalSeconds = nullptr;
 #endif
 
@@ -1057,13 +1055,13 @@ namespace Stand
 		{
 			enabled_hooks_prefix.append(soup::ObfusString("Did main hooks in {}.").str());
 			TimedCall::log(std::move(enabled_hooks_prefix), [&]
-			{
-				auto main = g_hooking.getMainHooks();
-				g_hooking.batchCreateHooks(main);
-				hooks.insert(hooks.end(), main.begin(), main.end());
-				g_hooking.batchEnableHooks(hooks);
-				g_hooking.hookWndproc();
-			});
+				{
+					auto main = g_hooking.getMainHooks();
+					g_hooking.batchCreateHooks(main);
+					hooks.insert(hooks.end(), main.begin(), main.end());
+					g_hooking.batchEnableHooks(hooks);
+					g_hooking.hookWndproc();
+				});
 		}
 		catch (const std::exception& e)
 		{
@@ -1075,7 +1073,7 @@ namespace Stand
 
 		mainRunningLoop();
 
-		SOUP_IF_UNLIKELY (g_gui.unload_state != UnloadState::HAND_OVER_TO_MAIN)
+		SOUP_IF_UNLIKELY(g_gui.unload_state != UnloadState::HAND_OVER_TO_MAIN)
 		{
 			g_logger.log(soup::ObfusString("Unloading in an unusual state. Attempting high-level cleanup..."));
 			g_gui.backToNormalNonScript();
@@ -1113,12 +1111,12 @@ namespace Stand
 		else
 		{
 			TimedCall::log(soup::ObfusString("Switched hooks in {}."), []
-			{
-				g_game_has_passive_dll = true;
-				g_this_dll_is_passive = true;
-				auto hooks = g_hooking.getNonPassiveHooks();
-				g_hooking.batchDisableAndRemoveHooks(hooks);
-			});
+				{
+					g_game_has_passive_dll = true;
+					g_this_dll_is_passive = true;
+					auto hooks = g_hooking.getNonPassiveHooks();
+					g_hooking.batchDisableAndRemoveHooks(hooks);
+				});
 		}
 #endif
 		//g_script_mgr.remove_scripts(g_hmodule);
@@ -1340,28 +1338,28 @@ namespace Stand
 		// Z - Debug Build
 
 		BATCH_ADD_OPTIONAL("A4", "48 8D 05 ? ? ? ? BE E8 03 00 00 48 89 83 40 01 00 00 48 8D 05", [](soup::Pointer p)
-		{
-			pointers::native_scramble_count = p.add(8).as<uint32_t*>();
-		});
+			{
+				pointers::native_scramble_count = p.add(8).as<uint32_t*>();
+			});
 
 		BATCH_ADD("B0", "4C 8D 05 ? ? ? ? 48 8D 15 ? ? ? ? 48 8B C8 E8 ? ? ? ? 48 8D 15 ? ? ? ? 48 8D 4C 24 20 E8", [](soup::Pointer p)
-		{
-			pointers::online_version = p.add(3).rip().as<const char*>();
-			pointers::build_version = p.sub(165).rip().as<const char*>();
-		});
+			{
+				pointers::online_version = p.add(3).rip().as<const char*>();
+				pointers::build_version = p.sub(165).rip().as<const char*>();
+			});
 		BATCH_ADD("B1", "8B 05 ? ? ? ? 85 C0 0F 84 ? ? ? ? 83 F8 06 74 08 83 C0 F8", [](soup::Pointer p)
-		{
-			pointers::CLoadingScreens_ms_Context = p.add(2).rip().as<int32_t*>();
-		});
+			{
+				pointers::CLoadingScreens_ms_Context = p.add(2).rip().as<int32_t*>();
+			});
 		BATCH_ADD("B2", "40 38 35 ? ? ? ? 75 0E 4C 8B C3 49 8B D7 49 8B CE", [](soup::Pointer p)
-		{
-			pointers::is_session_started = p.add(3).rip().as<bool*>(); // CNetwork::sm_bGameInProgress
-		});
+			{
+				pointers::is_session_started = p.add(3).rip().as<bool*>(); // CNetwork::sm_bGameInProgress
+			});
 		BATCH_ADD("B3", "48 8B 05 ? ? ? ? 48 83 78 08 00 74 EB 48 8B 0D", [](soup::Pointer p)
-		{
-			pointers::ped_factory = p.add(3).rip().as<CPedFactory**>();
-			pointers::network_player_mgr = p.add(17).rip().as<CNetworkPlayerMgr**>();
-		});
+			{
+				pointers::ped_factory = p.add(3).rip().as<CPedFactory**>();
+				pointers::network_player_mgr = p.add(17).rip().as<CNetworkPlayerMgr**>();
+			});
 		/*BATCH_ADD("B3", "50 ? 48 8B 42 ? 48 85", [](soup::Pointer p)
 		{
 			pointers::ped_factory = p.sub(9).rip().as<CPedFactory**>();
@@ -1371,213 +1369,213 @@ namespace Stand
 			pointers::network_player_mgr = p.add(3).rip().as<CNetworkPlayerMgr**>();
 		});*/
 		BATCH_ADD("B4", "48 89 5C 24 ? 57 48 83 EC 20 F3 0F 10 05 ? ? ? ? 48 8B FA 48 8B D9 0F 2F 41 44", [](soup::Pointer p)
-		{
-			pointers::CExplosionEvent_Trigger = p.as<CExplosionEvent_Trigger_t>();
-		});
+			{
+				pointers::CExplosionEvent_Trigger = p.as<CExplosionEvent_Trigger_t>();
+			});
 		BATCH_ADD("B5", "84 C0 74 14 48 8B CF E8 ? ? ? ? 48 8B CF", [](soup::Pointer p)
-		{
-			p = p.add(8).rip(); // now within rage::rlPresence::SetActingGamerInfo
-			pointers::rlPresence_m_ActingGamerInfo = p.add(6).rip().as<rage::rlGamerInfo*>();
-		});
+			{
+				p = p.add(8).rip(); // now within rage::rlPresence::SetActingGamerInfo
+				pointers::rlPresence_m_ActingGamerInfo = p.add(6).rip().as<rage::rlGamerInfo*>();
+			});
 		BATCH_ADD("B6", "48 8D 0D ? ? ? ? 48 8B 14 FA E8 ? ? ? ? 48 85 C0 75 0A", [](soup::Pointer p)
-		{
-			pointers::native_registration_table = p.add(3).rip().as<rage::scrNativeRegistrationTable*>();
-			//pointers::get_native_handler = p.add(12).rip().as<get_native_handler_t>();
-		});
+			{
+				pointers::native_registration_table = p.add(3).rip().as<rage::scrNativeRegistrationTable*>();
+				//pointers::get_native_handler = p.add(12).rip().as<get_native_handler_t>();
+			});
 		BATCH_ADD_OPTIONAL_FUNC("B7", register_file, "48 89 5C 24", "48 89 6C 24 ? 48 89 7C 24 ? 41 54 41 56 41 57 48 83 EC 50 48 8B EA 4C 8B FA 48 8B D9 4D 85 C9");
 		BATCH_ADD("B8", "45 33 F6 8B E9 85 C9 B8", [](soup::Pointer p)
-		{
-			pointers::script_threads = p.sub(4).rip().sub(8).as<decltype(pointers::script_threads)>();
-			p = p.sub(0x1F);
-			STORE_HOOK(rage_scrThread_UpdateAll);
-		});
+			{
+				pointers::script_threads = p.sub(4).rip().sub(8).as<decltype(pointers::script_threads)>();
+				p = p.sub(0x1F);
+				STORE_HOOK(rage_scrThread_UpdateAll);
+			});
 		BATCH_ADD("B9", "42 88 84 3A ? ? ? ? 0F B6 05 ? ? ? ? 49 89 9C C7", [](soup::Pointer p)
-		{
-			p = p.add(19).rva(g_gta_module);
-			pointers::script_programs_size = *p.sub(8).as<uint64_t*>();
-			pointers::script_programs = p.as<rage::scrProgram**>();
-		});
+			{
+				p = p.add(19).rva(g_gta_module);
+				pointers::script_programs_size = *p.sub(8).as<uint64_t*>();
+				pointers::script_programs = p.as<rage::scrProgram**>();
+			});
 		BATCH_ADD("BA", "4C 8B D9 33 D2 4C 8D 15 ? ? ? ? 4C 8D 05", [](soup::Pointer p)
-		{
-			pointers::rage_scrProgram_sm_GlobalSizes = p.add(8).rip().as<int*>();
-			pointers::rage_scrProgram_sm_Globals = p.add(15).rip().as<rage::scrValue**>();
-		});
+			{
+				pointers::rage_scrProgram_sm_GlobalSizes = p.add(8).rip().as<int*>();
+				pointers::rage_scrProgram_sm_Globals = p.add(15).rip().as<rage::scrValue**>();
+			});
 		BATCH_ADD("BC", "48 8B 0D ? ? ? ? 4C 8B CE E8 ? ? ? ? 48 85 C0 74 05 40 32 FF", [](soup::Pointer p)
-		{
-			pointers::script_handler_mgr = p.add(3).rip().as<CGameScriptHandlerMgr**>();
-		});
+			{
+				pointers::script_handler_mgr = p.add(3).rip().as<CGameScriptHandlerMgr**>();
+			});
 		BATCH_ADD("BD", "48 8D 0D ? ? ? ? 48 8B D7 E8 ? ? ? ? 48 8D 0D ? ? ? ? 8A D8 E8 ? ? ? ? 84 DB 75 13 48 8D 0D", [](soup::Pointer p)
-		{
-			pointers::replay_interface = p.add(3).rip().as<CReplayInterfaceGame**>();
-		});
+			{
+				pointers::replay_interface = p.add(3).rip().as<CReplayInterfaceGame**>();
+			});
 		BATCH_ADD("BE", "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 8B 15 ? ? ? ? 48 8B F9 48 83 C1 10 33 DB", [](soup::Pointer p)
-		{
-			pointers::CTheScripts_GetGUIDFromEntity = p.as<CTheScripts_GetGUIDFromEntity_t>();
-			pointers::extension_id_script_guid = p.add(17).rip().as<uint32_t*>();
-			pointers::script_guid_pool = p.add(0x2B).rip().as<rage::fwPool<rage::fwScriptGuid>**>();
-		});
+			{
+				pointers::CTheScripts_GetGUIDFromEntity = p.as<CTheScripts_GetGUIDFromEntity_t>();
+				pointers::extension_id_script_guid = p.add(17).rip().as<uint32_t*>();
+				pointers::script_guid_pool = p.add(0x2B).rip().as<rage::fwPool<rage::fwScriptGuid>**>();
+			});
 		// BF is unused
 		BATCH_ADD("BH", "84 C0 75 ? 48 8B 07 49 8B D6 48 8B CF FF 50 ? 84 C0 74 ? 8B 57 ? 8B CD E8", [](soup::Pointer p)
-		{
-			pointers::create_and_send_pickup_rewards_event = p.add(26).rip().as<create_and_send_pickup_rewards_event_t>();
-		});
+			{
+				pointers::create_and_send_pickup_rewards_event = p.add(26).rip().as<create_and_send_pickup_rewards_event_t>();
+			});
 		BATCH_ADD("BI", "F3 0F 10 ? ? ? ? ? 48 8B CE E8 ? ? ? ? 48 8B 4E", [](soup::Pointer p)
-		{
-			pointers::CVehicle_SetGravityForWheellIntegrator = p.add(12).rip().as<CVehicle_SetGravityForWheellIntegrator_t>();
-		});
+			{
+				pointers::CVehicle_SetGravityForWheellIntegrator = p.add(12).rip().as<CVehicle_SetGravityForWheellIntegrator_t>();
+			});
 		BATCH_ADD("BJ", "44 38 33 75 30 66 44", [](soup::Pointer p)
-		{
-			pointers::find_object_by_id = p.sub(0x40).as<find_object_by_id_t>();
-		});
+			{
+				pointers::find_object_by_id = p.sub(0x40).as<find_object_by_id_t>();
+			});
 		BATCH_ADD("BK", "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 20 49 8B F0 8B EA 8B F9 E8", [](soup::Pointer p)
-		{
-			pointers::create_and_send_increment_stat_event = p.as<create_and_send_increment_stat_event_t>();
-		});
+			{
+				pointers::create_and_send_increment_stat_event = p.as<create_and_send_increment_stat_event_t>();
+			});
 		BATCH_ADD("BL", "48 8D 0D ? ? ? ? 66 44 89 05 ? ? ? ? E8 ? ? ? ? 0F B7 05 ? ? ? ?", [](soup::Pointer p)
-		{
-			p = p.add(3).rip();
-			pointers::water_quads = p.as<WaterQuad**>();
-			pointers::water_quads_size = p.add(8).as<uint16_t*>();
-		});
+			{
+				p = p.add(3).rip();
+				pointers::water_quads = p.as<WaterQuad**>();
+				pointers::water_quads_size = p.add(8).as<uint16_t*>();
+			});
 		BATCH_ADD("BM", "B8 60 F0 FF FF 33 C9 C7 05 ? ? ? ? 94 11 00 00 89 05", [](soup::Pointer p)
-		{
-			pointers::world_x_max = p.add(9).rip().add(4).as<int32_t*>();
-			pointers::world_x_min = p.add(19).rip().as<int32_t*>();
-			pointers::world_y_min = p.add(25).rip().as<int32_t*>();
-			pointers::world_y_max = p.add(31).rip().add(4).as<int32_t*>();
-		});
+			{
+				pointers::world_x_max = p.add(9).rip().add(4).as<int32_t*>();
+				pointers::world_x_min = p.add(19).rip().as<int32_t*>();
+				pointers::world_y_min = p.add(25).rip().as<int32_t*>();
+				pointers::world_y_max = p.add(31).rip().add(4).as<int32_t*>();
+			});
 		BATCH_ADD("BN", "74 1B 8B 15 ? ? ? ? 48 8D 4F 10 E8", [](soup::Pointer p)
-		{
-			pointers::entity_extension_id_head_blend_data = p.add(4).rip().as<uint32_t*>(); // has to be a pointer to handle stand possibly initialising before autoids are generated
-		});
+			{
+				pointers::entity_extension_id_head_blend_data = p.add(4).rip().as<uint32_t*>(); // has to be a pointer to handle stand possibly initialising before autoids are generated
+			});
 		BATCH_ADD("BO", "75 0D 80 3D ? ? ? ? 00 75 04 B0 01 EB 02", [](soup::Pointer p)
-		{
-			pointers::hide_hud_and_radar_this_frame = p.add(4).rip().add(1).as<bool*>();
-		});
+			{
+				pointers::hide_hud_and_radar_this_frame = p.add(4).rip().add(1).as<bool*>();
+			});
 		BATCH_ADD("BP", "48 8B 0D ? ? ? ? 4C 8D 44 24 20 48 8B D7 E8 ? ? ? ? B0 01", [](soup::Pointer p)
-		{
-			pointers::network_session = p.add(3).rip().as<CNetworkSession**>();
-			pointers::send_MsgTextMessage = p.add(16).rip().add(
-				(0x00007FF7C1777D87 - 0x00007FF7C1777CF4) + 1
-			).rip().as<send_MsgTextMessage_t>();
-		});
+			{
+				pointers::network_session = p.add(3).rip().as<CNetworkSession**>();
+				pointers::send_MsgTextMessage = p.add(16).rip().add(
+					(0x00007FF7C1777D87 - 0x00007FF7C1777CF4) + 1
+				).rip().as<send_MsgTextMessage_t>();
+			});
 		BATCH_ADD("BQ", "7C E7 48 8D 54 24 40 48 8D 0D", [](soup::Pointer p)
-		{
-			pointers::vehicle_metadata = p.add(10).rip().as<CVehicleMetadataMgr*>();
-		});
+			{
+				pointers::vehicle_metadata = p.add(10).rip().as<CVehicleMetadataMgr*>();
+			});
 		BATCH_ADD("BR", "75 17 48 8D 0D ? ? ? ? E8", [](soup::Pointer p)
-		{
-			pointers::local_peer_id = p.add(5).rip().as<rage::netPeerId*>();
-			//pointers::get_peer_id = p.add(10).rip().as<void*>();
-		});
+			{
+				pointers::local_peer_id = p.add(5).rip().as<rage::netPeerId*>();
+				//pointers::get_peer_id = p.add(10).rip().as<void*>();
+			});
 		BATCH_ADD("BS", "48 8B E9 48 8B DA 49 8B CF E8 ? ? ? ? 48 8B 0D", [](soup::Pointer p)
-		{
-			pointers::voice_chat_data = p.add(17).rip().as<CNetworkVoice**>();
-		});
+			{
+				pointers::voice_chat_data = p.add(17).rip().as<CNetworkVoice**>();
+			});
 		BATCH_ADD("BT", "74 77 0F B7 57 10 48 8B 0D ? ? ? ? 45 33 C0 E8", [](soup::Pointer p)
-		{
-			pointers::network_object_mgr = p.add(9).rip().as<CNetworkObjectMgr**>();
-		});
+			{
+				pointers::network_object_mgr = p.add(9).rip().as<CNetworkObjectMgr**>();
+			});
 		BATCH_ADD("BU", "F3 0F 10 52 10 F3 0F 10 02 8B 05", [](soup::Pointer p)
-		{
-			pointers::particle_fx_asset = p.add(11).rip().as<hash_t*>();
-		});
+			{
+				pointers::particle_fx_asset = p.add(11).rip().as<hash_t*>();
+			});
 		BATCH_ADD_OPTIONAL("BV", "48 8B D9 48 8B 0D ? ? ? ? 40 8A FA", [](soup::Pointer p)
-		{
-			pointers::ui3d_draw_mgr = p.add(6).rip().as<UI3DDrawManager**>();
-		});
+			{
+				pointers::ui3d_draw_mgr = p.add(6).rip().as<UI3DDrawManager**>();
+			});
 		BATCH_ADD("BW", "83 A3 A8 0F 00 00 00 83 A3 A4 0F 00 00 00 83 A3 A0 0F 00 00 00 48 8D 05", [](soup::Pointer p)
-		{
-			g_hooking.CEventGroupScriptNetwork_DispatchEvent_hook.setTarget(*p.add(24).rip().add(8).as<void**>());
-		});
+			{
+				g_hooking.CEventGroupScriptNetwork_DispatchEvent_hook.setTarget(*p.add(24).rip().add(8).as<void**>());
+			});
 		BATCH_ADD("BX", "3D A3 06 00 00 77 1A 4C 8D 05", [](soup::Pointer p)
-		{
-			pointers::blips = p.add(10).rip().as<CMiniMapBlip**>();
-		});
+			{
+				pointers::blips = p.add(10).rip().as<CMiniMapBlip**>();
+			});
 		BATCH_ADD("BY", "4C 8B 05 ? ? ? ? 41 3B 50 10 7D 0A", [](soup::Pointer p)
-		{
-			pointers::cam_pool = p.add(3).rip().as<rage::fwPool<camBaseCamera>**>();
-		});
+			{
+				pointers::cam_pool = p.add(3).rip().as<rage::fwPool<camBaseCamera>**>();
+			});
 		BATCH_ADD("BZ", "8B 15 ? ? ? ? 4C 8B 43 20 48 8B 05", [](soup::Pointer p)
-		{
-			pointers::handling_data_mgr = p.add(13).rip().as<CHandlingDataMgr*>();
-		});
+			{
+				pointers::handling_data_mgr = p.add(13).rip().as<CHandlingDataMgr*>();
+			});
 		// BG is unused
 
 		BATCH_ADD("C0", "48 83 64 24 20 00 4C 8D 44 24 40 41 B9 01 00 00 00 E8", [](soup::Pointer p)
-		{
-			p = p.add(18).rip();
-			CHECK_EXISTING_HOOK("C0", "48 89 5C 24 08");
-			STORE_HOOK(send_CMsgTextMessage); // rage::netConnectionManager::Send<rage::CMsgTextMessage>
-		});
+			{
+				p = p.add(18).rip();
+				CHECK_EXISTING_HOOK("C0", "48 89 5C 24 08");
+				STORE_HOOK(send_CMsgTextMessage); // rage::netConnectionManager::Send<rage::CMsgTextMessage>
+			});
 		BATCH_ADD("C1", "48 8B EC 48 81 EC ? ? ? ? 4C 8B 11 48 8B 41 ? 48 83 65 C0 00 80 4D F8 01", [](soup::Pointer p)
-		{
-			p = p.sub(0x14);
-			CHECK_EXISTING_HOOK("C1", "48 89 5C 24 08");
-			STORE_HOOK(received_chat_message);
-		});
+			{
+				p = p.sub(0x14);
+				CHECK_EXISTING_HOOK("C1", "48 89 5C 24 08");
+				STORE_HOOK(received_chat_message);
+			});
 		BATCH_ADD("C2", "48 8B 3D ? ? ? ? 48 8B 10 48 8B C8 0F 94 C3 FF 52 68", [](soup::Pointer p)
-		{
-			pointers::text_chat = p.add(3).rip().as<CNetworkTextChat**>();
+			{
+				pointers::text_chat = p.add(3).rip().as<CNetworkTextChat**>();
 
-			// Advance & rip for CNetworkTextChat_SubmitText
-			p = p.add(32).rip();
-			CHECK_EXISTING_HOOK("C2", "48 8B C4 48 89");
-			STORE_HOOK(CNetworkTextChat_SubmitText);
-		});
+				// Advance & rip for CNetworkTextChat_SubmitText
+				p = p.add(32).rip();
+				CHECK_EXISTING_HOOK("C2", "48 8B C4 48 89");
+				STORE_HOOK(CNetworkTextChat_SubmitText);
+			});
 		BATCH_ADD("C3", "48 8B F1 B1 01 48 89", [](soup::Pointer p)
-		{
-			p = p.sub(0x00007FF7DA57F0F9 - 0x00007FF7DA57F0DC);
-			CHECK_EXISTING_HOOK("C3", "40 55 56 57 41");
-			STORE_HOOK(CMultiplayerChat_UpdateInputWhenTyping);
-		});
+			{
+				p = p.sub(0x00007FF7DA57F0F9 - 0x00007FF7DA57F0DC);
+				CHECK_EXISTING_HOOK("C3", "40 55 56 57 41");
+				STORE_HOOK(CMultiplayerChat_UpdateInputWhenTyping);
+			});
 		BATCH_ADD("C4", "74 04 C6 40 01 01 48 8B 0D", [](soup::Pointer p)
-		{
-			pointers::chat_box = p.add(9).rip().as<CMultiplayerChat**>();
-		});
+			{
+				pointers::chat_box = p.add(9).rip().as<CMultiplayerChat**>();
+			});
 		BATCH_ADD("C5", "33 F6 33 C9 66 89 35 ? ? ? ? 66 89 35 ? ? ? ? 89 35", [](soup::Pointer p)
-		{
-			pointers::rage_ioKeyboard_sm_TextBuffer = p.add(7).rip().as<wchar_t*>();
-		});
+			{
+				pointers::rage_ioKeyboard_sm_TextBuffer = p.add(7).rip().as<wchar_t*>();
+			});
 		BATCH_ADD_MANDATORY_HOOK("C6", scaleform_is_key_pressed_1, "44 3B 41 04 74", "0F 41 83 F8 1B 75 06 83 79 04 01 75 03 32 C0 C3 48 63 0D ? ? ? ? 48 63 C2 48 8D 15");
 		BATCH_ADD_OPTIONAL_HOOK("C7", is_chat_character_valid, "40 55 48 8B EC", "48 83 EC 70 0F B7 D1 33 C9 33 C0 C7 45 90 7F 00 60 00");
 		BATCH_ADD_OPTIONAL("C8", "48 8B D8 41 BD 1F 00 00 00", [](soup::Pointer p)
-		{
-			pointers::min_character_value = p.add(5).as<uint32_t*>();
-		});
+			{
+				pointers::min_character_value = p.add(5).as<uint32_t*>();
+			});
 		BATCH_ADD("C9", "48 39 B3 58 01 00 00 75 24 48 8D 05", [](soup::Pointer p)
-		{
-			p = p.add(12).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("C9", "4D 85 C9 0F 84");
-			STORE_POINTER(CMultiplayerChat_OnEvent);
-		});
+			{
+				p = p.add(12).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("C9", "4D 85 C9 0F 84");
+				STORE_POINTER(CMultiplayerChat_OnEvent);
+			});
 		BATCH_ADD("CA", "48 83 EC 20 8B 1D ? ? ? ? 48 8D 0D ? ? ? ? 8B D3", [](soup::Pointer p)
-		{
-			pointers::sm_systemTime_m_Time = p.add(6).rip().as<uint32_t*>();
-		});
+			{
+				pointers::sm_systemTime_m_Time = p.add(6).rip().as<uint32_t*>();
+			});
 		BATCH_ADD("CB", "E8 ? ? ? ? 83 23 00 8B 4B 04", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			pointers::CMultiplayerChat_SetFocus = p.as<CMultiplayerChat_SetFocus_t>();
-		});
+			{
+				p = p.add(1).rip();
+				pointers::CMultiplayerChat_SetFocus = p.as<CMultiplayerChat_SetFocus_t>();
+			});
 		BATCH_ADD("CC", "E8 ? ? ? ? 48 8D 43 4E", [](soup::Pointer p)
-		{
-			pointers::profanity_filter = p.sub(4).rip().as<rage::fwProfanityFilter*>();
+			{
+				pointers::profanity_filter = p.sub(4).rip().as<rage::fwProfanityFilter*>();
 
-			p = p.add(1).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("CC", "48 89 5C 24 08");
-			STORE_POINTER(rage_fwProfanityFilter_AsteriskProfanity);
-		});
+				p = p.add(1).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("CC", "48 89 5C 24 08");
+				STORE_POINTER(rage_fwProfanityFilter_AsteriskProfanity);
+			});
 		BATCH_ADD("CD", "45 33 F6 44 38 35 ? ? ? ? 41 8A DE", [](soup::Pointer p)
-		{
-			p = p.sub(0x00007FF749932B66 - 0x00007FF749932B48);
-			CHECK_EXISTING_HOOK_WONT_HOOK("CD", "48 89 5C 24 10");
-			STORE_POINTER(CNewHud_UpdateImeText);
-		});
+			{
+				p = p.sub(0x00007FF749932B66 - 0x00007FF749932B48);
+				CHECK_EXISTING_HOOK_WONT_HOOK("CD", "48 89 5C 24 10");
+				STORE_POINTER(CNewHud_UpdateImeText);
+			});
 		BATCH_ADD("CE", "48 8B D8 33 C0 38 05 ? ? ? ? 75", [](soup::Pointer p)
-		{
-			pointers::rage_ioKeyboard_sm_AllowLocalKeyboardLayout = p.add(7).rip().as<bool*>();
-		});
+			{
+				pointers::rage_ioKeyboard_sm_AllowLocalKeyboardLayout = p.add(7).rip().as<bool*>();
+			});
 
 		BATCH_ADD("D0", "FF ? 41 8B DE EB 1B", [](soup::Pointer p)
 			{
@@ -1592,397 +1590,397 @@ namespace Stand
 					jumpout = target;
 				}
 				swapchain_hook_init_present(
-					function_pointer_to_void(&hooks::swapchain_present),
+					&hooks::swapchain_present,
 					jumpout
 				);
 			});
 		BATCH_ADD_OPTIONAL("D1", "8B 44 24 50 4C 8B 17 44 8B 4E 04 44 8B 06 8B 54 24 68 48 8B CF C7 44 24 28 02 00 00 00 89 44 24 20 41 FF 52 68", [](soup::Pointer p)
-		{
-			swapchain_hook_init_resize_buffers(
-				p.sub(4).rip().as<void*>(),
-				function_pointer_to_void(&hooks::swapchain_resize_buffers),
-				p.as<void*>()
-			);
-			pointers::swapchain_resize_buffers = p.sub(5).as<void*>();
-		});
+			{
+				swapchain_hook_init_resize_buffers(
+					p.sub(4).rip().as<void*>(),
+					&hooks::swapchain_resize_buffers,
+					p.as<void*>()
+				);
+				pointers::swapchain_resize_buffers = p.sub(5).as<void*>();
+			});
 		{
 			// CDXGISwapChain::PresentImpl
 			SIG_INST("45 33 C0 44 89 74 24 20 48 8B CB E8");
 			batch.add_optional("D2", soup::Module("dxgi.dll"), sig_inst, [](soup::Pointer p)
-			{
-				p = p.add(12).rip();
-				STORE_HOOK(swapchain_present_streamproof);
-			}, [](PatternBatch& batch)
-			{
-				SIG_INST("83 64 24 20 00 45 33 C0 48 8B CB E8");
-				batch.add_optional("D3", soup::Module("dxgi.dll"), sig_inst, [](soup::Pointer p)
 				{
 					p = p.add(12).rip();
 					STORE_HOOK(swapchain_present_streamproof);
-				});
-			});
+				}, [](PatternBatch& batch)
+					{
+						SIG_INST("83 64 24 20 00 45 33 C0 48 8B CB E8");
+						batch.add_optional("D3", soup::Module("dxgi.dll"), sig_inst, [](soup::Pointer p)
+							{
+								p = p.add(12).rip();
+								STORE_HOOK(swapchain_present_streamproof);
+							});
+					});
 		}
 		BATCH_ADD("D4", "8B 05 ? ? ? ? 0F 44 05 ? ? ? ? 48 83 64 24 28 00 F3 0F 11 44 24 20 48 63 F0 48 8D 05", [](soup::Pointer p)
-		{
-			pointers::render_thread_interface = p.add(9).rip().sub(0x58).as<rage::fwRenderThreadInterface*>();
-			pointers::viewport_manager = p.add(31).rip().sub(0x00).as<CViewportManager*>();
-		});
+			{
+				pointers::render_thread_interface = p.add(9).rip().sub(0x58).as<rage::fwRenderThreadInterface*>();
+				pointers::viewport_manager = p.add(31).rip().sub(0x00).as<CViewportManager*>();
+			});
 
 		// F1 used by ComponentCrash
 		BATCH_ADD_OPTIONAL_HOOK("F2", CControl_StartPlayerPadShake, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 56 48 83 EC ? 83 B9 20 83 02 00 FF 45 8B F1 41 8B E8");
 		BATCH_ADD_OPTIONAL("F3", "E8 ? ? ? ? 48 8B 4B 20 48 8B 11", [](soup::Pointer p)
-		{
-			pointers::CRagdollRequestEvent_Trigger = p.add(1).rip().as<CRagdollRequestEvent_Trigger_t>();
-		});
+			{
+				pointers::CRagdollRequestEvent_Trigger = p.add(1).rip().as<CRagdollRequestEvent_Trigger_t>();
+			});
 		BATCH_ADD("F4", "E8 ? ? ? ? 44 8A E6 48 8B B3 ? ? ? ?", [](soup::Pointer p)
-		{
-			pointers::CAlterWantedLevelEvent_Trigger = p.add(1).rip().as<CAlterWantedLevelEvent_Trigger_t>();
-		});
+			{
+				pointers::CAlterWantedLevelEvent_Trigger = p.add(1).rip().as<CAlterWantedLevelEvent_Trigger_t>();
+			});
 		BATCH_ADD_OPTIONAL_HOOK("F5", rage_FriendsReaderTask_Complete, "48 89 5C 24 10", "48 89 74 24 20 55 57 41 55 41 56 41 57 48 8D AC 24 60 FF FF FF 48 81 EC A0 01 00 00 48 8B F9 83 FA 03");
 		BATCH_ADD("F6", "C6 44 24 20 01 E8 ? ? ? ? E9 ? ? ? ? 48 8B CB", [](soup::Pointer p)
-		{
-			pointers::CWeaponDamageEvent_Trigger = p.add(6).rip().as<CWeaponDamageEvent_Trigger_t>();
-		});
+			{
+				pointers::CWeaponDamageEvent_Trigger = p.add(6).rip().as<CWeaponDamageEvent_Trigger_t>();
+			});
 		BATCH_ADD("F7", "E8 ? ? ? ? 8A 87 ? ? ? ? 88 46 0D", [](soup::Pointer p)
-		{
-			pointers::CRotaryWingAircraft_BreakOffTailBoom = p.add(1).rip().as<CRotaryWingAircraft_BreakOffTailBoom_t>();
-		});
+			{
+				pointers::CRotaryWingAircraft_BreakOffTailBoom = p.add(1).rip().as<CRotaryWingAircraft_BreakOffTailBoom_t>();
+			});
 		BATCH_ADD("F8", "E8 ? ? ? ? 0F BA B7 ? ? ? ? ? 49 FF C6", [](soup::Pointer p)
-		{
-			pointers::CVehicleDamage_BreakOffWheel = p.add(1).rip().as<CVehicleDamage_BreakOffWheel_t>();
-		});
+			{
+				pointers::CVehicleDamage_BreakOffWheel = p.add(1).rip().as<CVehicleDamage_BreakOffWheel_t>();
+			});
 		BATCH_ADD("F9", "E8 ? ? ? ? 84 C0 75 27 48 8B CE", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CPed_WantsToUseActionMode);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CPed_WantsToUseActionMode);
+			});
 		BATCH_ADD("FA", "E8 ? ? ? ? EB 08 83 8C 3E ? ? ? ? ?", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CPlaySoundEvent_TriggerPos);
-			p = p.add(0x00007FF6F9CCB390 - 0x00007FF6F9CCB2F4);
-			CHECK_EXISTING_HOOK("FA", "48 89 5C 24 08");
-			STORE_POINTER(CPlaySoundEvent_TriggerEnt);
-			p = p.add(0x00007FF638B809EB - 0x00007FF638B809D4).add(3).rip();
-			STORE_POINTER(CNetwork_sm_EventMgr);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CPlaySoundEvent_TriggerPos);
+				p = p.add(0x00007FF6F9CCB390 - 0x00007FF6F9CCB2F4);
+				CHECK_EXISTING_HOOK("FA", "48 89 5C 24 08");
+				STORE_POINTER(CPlaySoundEvent_TriggerEnt);
+				p = p.add(0x00007FF638B809EB - 0x00007FF638B809D4).add(3).rip();
+				STORE_POINTER(CNetwork_sm_EventMgr);
+			});
 		BATCH_ADD("FB", "E8 ? ? ? ? 0F BE 0B FF C6", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CGiveControlEvent_Trigger);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CGiveControlEvent_Trigger);
+			});
 		BATCH_ADD("FC", "E8 ? ? ? ? 44 8B 0D ? ? ? ? FF C3", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CProjectile_TriggerExplosion);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CProjectile_TriggerExplosion);
+			});
 #if false
 		BATCH_ADD("FD", "E8 ? ? ? ? EB 08 66 41 0B CD", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CFireEvent_Trigger);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CFireEvent_Trigger);
+			});
 #endif
 		BATCH_ADD("FD", "C1 E8 0E 40 84 C7 75 5F", [](soup::Pointer p)
-		{
-			p = p.add(8);
-			STORE_POINTER(CPedIntelligence_GetCanCombatRoll_patch);
-		});
+			{
+				p = p.add(8);
+				STORE_POINTER(CPedIntelligence_GetCanCombatRoll_patch);
+			});
 		BATCH_ADD("FE", "4C 8D 4F 28 48 89 74 24 20 E8", [](soup::Pointer p)
-		{
-			p = p.add(10).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("FE", "8B 05");
-			STORE_POINTER(rage_rlProfileStats_ReadStatsByGamer);
-		});
+			{
+				p = p.add(10).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("FE", "8B 05");
+				STORE_POINTER(rage_rlProfileStats_ReadStatsByGamer);
+			});
 		BATCH_ADD("FF", "45 8B CF 44 8A C5 8B C8 48 8B D3 E8 ? ? ? ? E9", [](soup::Pointer p)
-		{
-			p = p.add(12).rip();
-			STORE_POINTER(CAudioBankRequestEvent_Trigger);
-		});
+			{
+				p = p.add(12).rip();
+				STORE_POINTER(CAudioBankRequestEvent_Trigger);
+			});
 		BATCH_ADD("FG", "E8 ? ? ? ? 84 C0 0F 84 ? ? ? ? 65 48 8B 0C 25 ? ? ? ? 8B 05 ? ? ? ? BA ? ? ? ? 48 8B 04 C1 48 83 3C 02 ? 75 0C", [](soup::Pointer p)
-		{
-			p = p.add(1).rip().add(0x2A);
-			STORE_POINTER(CTaskMotionInVehicle_CheckForThroughWindow_patch);
-		});
+			{
+				p = p.add(1).rip().add(0x2A);
+				STORE_POINTER(CTaskMotionInVehicle_CheckForThroughWindow_patch);
+			});
 		BATCH_ADD("FH", "48 8D 55 F0 48 8D 0D ? ? ? ? 48 98", [](soup::Pointer p)
-		{
-			pointers::gps_slots = p.add(7).rip().as<CGpsSlot*>();
-		});
+			{
+				pointers::gps_slots = p.add(7).rip().as<CGpsSlot*>();
+			});
 		BATCH_ADD("FI", "E8 ? ? ? ? 41 C6 45 ? ? FF C7", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CAircraftDamageBase_BreakOffSection);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CAircraftDamageBase_BreakOffSection);
+			});
 		BATCH_ADD("FJ", "E8 ? ? ? ? 83 25 ? ? ? ? ? 41 8A C6", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CNetworkPtFXEvent_Trigger);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CNetworkPtFXEvent_Trigger);
+			});
 		BATCH_ADD_OPTIONAL_HOOK("FK", CPhysical_TestNoCollision, "48 89 5C 24 08", "48 89 74 24 ? 57 48 83 EC 20 4C 8B 41 50 33 DB");
 		BATCH_ADD("FL", "E8 ? ? ? ? 48 8B 8C 1F ? ? ? ? 33 D2", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_POINTER(CStopSoundEvent_Trigger);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_POINTER(CStopSoundEvent_Trigger);
+			});
 		BATCH_ADD("FM", "E8 ? ? ? ? 49 8B CD 0F 28 F8", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			p = p.add(0x2C).add(4).rip();
-			STORE_POINTER(balanced_cannons_time_between_shots);
-		});
+			{
+				p = p.add(1).rip();
+				p = p.add(0x2C).add(4).rip();
+				STORE_POINTER(balanced_cannons_time_between_shots);
+			});
 		BATCH_ADD("FN", "E8 ? ? ? ? 8B 15 ? ? ? ? 8B 0D ? ? ? ? 0F 2F", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			p = p.add(0x2C).add(4).rip();
-			STORE_POINTER(balanced_cannons_alternate_wait_time);
-		});
+			{
+				p = p.add(1).rip();
+				p = p.add(0x2C).add(4).rip();
+				STORE_POINTER(balanced_cannons_alternate_wait_time);
+			});
 		BATCH_ADD("FO", "E8 ? ? ? ? 84 C0 0F 84 ? ? ? ? 89 7B 30", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_HOOK(rage_rlScMatchmaking_Advertise);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_HOOK(rage_rlScMatchmaking_Advertise);
+			});
 		BATCH_ADD("FP", "E8 ? ? ? ? EB 21 B9 ? ? ? ?", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_HOOK(rage_rlScMatchmaking_Unadvertise);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_HOOK(rage_rlScMatchmaking_Unadvertise);
+			});
 		BATCH_ADD("FQ", "E8 ? ? ? ? 48 8D 8D ? ? ? ? E8 ? ? ? ? 48 8D 8D ? ? ? ? E8 ? ? ? ? 48 8D 8D ? ? ? ? E8 ? ? ? ? 48 8D 8D ? ? ? ? E8 ? ? ? ? 48 8D 4D 28", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_HOOK(rage_netTransactor_SendResponse_rage_rlSessionDetailResponse);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_HOOK(rage_netTransactor_SendResponse_rage_rlSessionDetailResponse);
+			});
 		// F0 is unused
 
 		BATCH_ADD_OPTIONAL_HOOK("G0", CProjectileManager_CreateProjectile, "48 89 5C 24 08", "89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 F9 48 81 EC B0 00 00 00");
 		BATCH_ADD("G1", "48 63 0D ? ? ? ? 48 8D 15 ? ? ? ? 48 8D 45", [](soup::Pointer p)
-		{
-			p = p.add(10).rip();
-			STORE_POINTER(projectile_pool);
-		});
+			{
+				p = p.add(10).rip();
+				STORE_POINTER(projectile_pool);
+			});
 		// G2 & G3 is used by ComponentSavedata
 
 		BATCH_ADD_OPTIONAL("H0", "48 8B C8 FF 52 30 84 C0 74 05 48", [](soup::Pointer p)
-		{
-			pointers::model_spawn_bypass = p.add(8).as<uint8_t*>();
-			ColoadMgr::addCheck("H0", p.as<void*>(), "\x48\x8B\xC8\xFF\x52\x30\x84\xC0\x74\x05\x48", 11);
-		});
+			{
+				pointers::model_spawn_bypass = p.add(8).as<uint8_t*>();
+				ColoadMgr::addCheck("H0", p.as<void*>(), "\x48\x8B\xC8\xFF\x52\x30\x84\xC0\x74\x05\x48", 11);
+			});
 		BATCH_ADD("H1", "57 48 83 EC 20 8B D9 E8 ? ? ? ? 48 8B 10 48 8B C8", [](soup::Pointer p)
-		{
-			ColoadMgr::addCheck("H1", p.sub(5).as<void*>(), "\x48\x89\x5C\x24\x10", 5);
-			pointers::is_explosion_type_valid_patch = p.add(0x00007FF62B77D80C - 0x00007FF62B77D795).as<uint16_t*>(); // xor al, al
-		});
+			{
+				ColoadMgr::addCheck("H1", p.sub(5).as<void*>(), "\x48\x89\x5C\x24\x10", 5);
+				pointers::is_explosion_type_valid_patch = p.add(0x00007FF62B77D80C - 0x00007FF62B77D795).as<uint16_t*>(); // xor al, al
+			});
 		BATCH_ADD("H2", "0F 2F D0 73 05 0F 28 D0 EB 08 0F 2F D3 76 03 0F 28 D3 0F 2F C8 73 05 0F 28 C8 EB 08 0F 2F CB 76 03 0F 28 CB F3 0F 59 15 ? ? ? ? F3 0F 59 0D ? ? ? ? F3 0F 11 54 24 40 F3 0F 11 4C 24 44 E8 ? ? ? ? 48 8B 4C 24 40 48 89 88 E8 06 00 00 C6 80 FD 06 00 00 01 48 83 C4 28", [](soup::Pointer p)
-		{
-			pointers::clamp_gameplay_cam_pitch = p.sub(8).as<uint8_t*>();
-		});
+			{
+				pointers::clamp_gameplay_cam_pitch = p.sub(8).as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("H3", "C0 44 89 4C 24 20 E8", [](soup::Pointer p)
-		{
-			pointers::skybox_patch_ptr = p.add(0x7).rip().as<uint8_t*>();
-		});
+			{
+				pointers::skybox_patch_ptr = p.add(0x7).rip().as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("H4", "3D 16 AA BE F8 74 18", [](soup::Pointer p)
-		{
-			pointers::lock_radio_lsur_hash = p.add(1).as<hash_t*>();
-		});
+			{
+				pointers::lock_radio_lsur_hash = p.add(1).as<hash_t*>();
+			});
 		BATCH_ADD_OPTIONAL("H5", "37 87 59 E6", ([](soup::Pointer p)
-		{
-			pointers::radio_talk02_hash = p.as<hash_t*>();
-		}));
+			{
+				pointers::radio_talk02_hash = p.as<hash_t*>();
+			}));
 		BATCH_ADD_OPTIONAL("H6", "41 83 F8 02 48 8B C8 0F 9E C2 E8", [](soup::Pointer p)
-		{
-			pointers::self_radio_patch.initPatchNOP(p.add(10).as<uint8_t*>(), 5);
-		});
+			{
+				pointers::self_radio_patch.initPatchNOP(p.add(10).as<uint8_t*>(), 5);
+			});
 		BATCH_ADD("H7", "48 8B 11 0F 57 C0 0F 57 C9 8B 42 0C F3 48 0F 2A C0 8B 42 08 F3 48 0F 2A C8 F3 0F 5E C1 F3 0F 59", [](soup::Pointer p)
-		{
-			pointers::get_bink_movie_time_pre_ret = p.as<uint8_t*>();
-		});
+			{
+				pointers::get_bink_movie_time_pre_ret = p.as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("H8", "84 C0 74 8B 48 8D 15", [](soup::Pointer p)
-		{
-			pointers::watchdog_thread_crash_patch.initPatchNOP(p.add(2).as<uint8_t*>(), 2);
-		});
+			{
+				pointers::watchdog_thread_crash_patch.initPatchNOP(p.add(2).as<uint8_t*>(), 2);
+			});
 		BATCH_ADD_OPTIONAL("H9", "44 38 25 ? ? ? ? 0F 85 ? 00 00 00 84 C0 0F 84 ? 00 00 00 48 8B 05", [](soup::Pointer p)
-		{
-			// fire_commands::CommandAddOwnedExplosion
-			// set sm_BeenBusted to true so it won't try to do any funny shit anymore
-			*p.add(3).rip().as<bool*>() = true;
-		});
+			{
+				// fire_commands::CommandAddOwnedExplosion
+				// set sm_BeenBusted to true so it won't try to do any funny shit anymore
+				*p.add(3).rip().as<bool*>() = true;
+			});
 		BATCH_ADD_OPTIONAL("HA", "48 85 C0 0F 84 ? ? ? ? 8B 48 50", [](soup::Pointer p)
-		{
-			pointers::pseudo_object_check = p.as<uint8_t*>();
-		});
+			{
+				pointers::pseudo_object_check = p.as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("HB", "75 0C 33 C9 FF", [](soup::Pointer p)
-		{
-			pointers::hide_cursor_jnz = p.as<uint8_t*>();
-		});
+			{
+				pointers::hide_cursor_jnz = p.as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("HC", "8B D9 E8 ? ? ? ? 84 C0 75 6A 8B CB E8", [](soup::Pointer p)
-		{
-			pointers::request_control_spectating_check = p.add(2).as<uint8_t*>();
-		});
+			{
+				pointers::request_control_spectating_check = p.add(2).as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("HD", "75 17 44 38 3D ? ? ? ? 74 12", ([](soup::Pointer p)
-		{
-			pointers::sp_ground_snow_check = p.as<uint8_t*>();
-		}));
+			{
+				pointers::sp_ground_snow_check = p.as<uint8_t*>();
+			}));
 		BATCH_ADD("HE", "80 BC 1F ? ? ? ? 00 74 11 80 3D ? ? ? ? 00 74 08", [](soup::Pointer p)
-		{
-			pointers::stop_sound_dont_network = p.add(16).as<uint8_t*>();
-		});
+			{
+				pointers::stop_sound_dont_network = p.add(16).as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("HF", "48 85 DB 0F 84 D0 00 00 00 48 8B CB", [](soup::Pointer p)
-		{
-			pointers::ShouldPerformInVehicleHairScale_jz = p.add(3).as<uint8_t*>();
-		});
+			{
+				pointers::ShouldPerformInVehicleHairScale_jz = p.add(3).as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("HG", "40 8A DF E8 ? ? ? ? 84 C0 74 11", [](soup::Pointer p)
-		{
-			pointers::UpdateTypers_call_IsInSpectatorMode = p.add(3).as<uint8_t*>();
-		});
+			{
+				pointers::UpdateTypers_call_IsInSpectatorMode = p.add(3).as<uint8_t*>();
+			});
 		BATCH_ADD_OPTIONAL("HI", "74 09 41 B5 01 44 88 6D E0", [](soup::Pointer p)
-		{
-			pointers::weaponwheel_update_isinvehicle_true = p.add(4).as<bool*>();
-		});
+			{
+				pointers::weaponwheel_update_isinvehicle_true = p.add(4).as<bool*>();
+			});
 		BATCH_ADD_OPTIONAL("HJ", "48 83 EC 38 44 88 4C 24 20 4C 8D 0D ? ? ? ? E8", [](soup::Pointer p)
-		{
-			pointers::FormatInt64ToCash_mov_bAddCurrencyDeliminator = p.add(4).as<uint8_t*>();
+			{
+				pointers::FormatInt64ToCash_mov_bAddCurrencyDeliminator = p.add(4).as<uint8_t*>();
 
-			p = p.add(17).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("HJ", "48 89 5C 24 10");
-			STORE_POINTER(CTextConversion_FormatIntForHumans);
-		});
+				p = p.add(17).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("HJ", "48 89 5C 24 10");
+				STORE_POINTER(CTextConversion_FormatIntForHumans);
+			});
 		BATCH_ADD_OPTIONAL("HK", "C6 05 ? ? ? ? 00 F3 0F 10 35 ? ? ? ? 48 8D 05", [](soup::Pointer p)
-		{
-			pointers::rage_fwTimer_sm_aTimeScales = p.add(0x7 + 4).rip().as<float(*)[4]>();
-			pointers::authoritative_time_scale_offset = p.add(0x3D + 4).as<uint32_t*>();
-			pointers::rage_fwTimer_sm_fTimeScale = p.add(0x45 + 4).rip().as<float*>();
-		});
+			{
+				pointers::rage_fwTimer_sm_aTimeScales = p.add(0x7 + 4).rip().as<float(*)[4]>();
+				pointers::authoritative_time_scale_offset = p.add(0x3D + 4).as<uint32_t*>();
+				pointers::rage_fwTimer_sm_fTimeScale = p.add(0x45 + 4).rip().as<float*>();
+			});
 		BATCH_ADD_OPTIONAL("HL", "3B CB 74 09 45 84 D2 0F 85", [](soup::Pointer p)
-		{
-			pointers::model_blacklist_patch.initPatchNOP(p.add(7).as<uint8_t*>(), 6);
-		});
+			{
+				pointers::model_blacklist_patch.initPatchNOP(p.add(7).as<uint8_t*>(), 6);
+			});
 		BATCH_ADD_OPTIONAL("HM", "74 DA 0F B6 05 ? ? ? ? 3B F7 B9 01 00 00 00", [](soup::Pointer p)
-		{
-			pointers::rage__audRequestedSettings__sm_IgnoreBlockedAudioThread = p.add(5).rip().as<bool*>();
-		});
+			{
+				pointers::rage__audRequestedSettings__sm_IgnoreBlockedAudioThread = p.add(5).rip().as<bool*>();
+			});
 		BATCH_ADD_OPTIONAL("HN", "E8 ? ? ? ? 40 38 35 ? ? ? ? 75 05", [](soup::Pointer p)
-		{
-			pointers::audNorthAudioEngine__sm_RunUpdateInSeperateThread = p.add(8).rip().as<bool*>();
-		});
+			{
+				pointers::audNorthAudioEngine__sm_RunUpdateInSeperateThread = p.add(8).rip().as<bool*>();
+			});
 
 		// rage::ioMapper::Update
 		BATCH_ADD_OPTIONAL("I0", "0F 28 F7 83 FF 09", [](soup::Pointer p)
-		{
-			STORE_HOOK(set_value_from_keyboard);
-			set_value_from_keyboard_init(p.add(6).as<void*>());
-		});
+			{
+				STORE_HOOK(set_value_from_keyboard);
+				set_value_from_keyboard_init(p.add(6).as<void*>());
+			});
 		BATCH_ADD_OPTIONAL("I1", "8B C7 45 8A C2", [](soup::Pointer p)
-		{
-			STORE_HOOK(set_value_from_mkb_axis);
-			set_value_from_mkb_axis_init_ret_og(p.add(5).as<void*>());
-		});
+			{
+				STORE_HOOK(set_value_from_mkb_axis);
+				set_value_from_mkb_axis_init_ret_og(p.add(5).as<void*>());
+			});
 		BATCH_ADD_OPTIONAL("I2", "49 8B 9C DE 68 1A 00 00", [](soup::Pointer p)
-		{
-			set_value_from_mkb_axis_init_ret_bail(p.as<void*>());
-		});
+			{
+				set_value_from_mkb_axis_init_ret_bail(p.as<void*>());
+			});
 
 		BATCH_ADD_MANDATORY_HOOK("L0", CTextFile_Get, "48 89 5C 24", "57 48 83 EC 20 48 8B DA 48 8B F9 48 85 D2 75 44 E8");
 		BATCH_ADD("L1", "83 8B B0 02 00 00 FF", [](soup::Pointer p)
-		{
-			p = p.sub(0x00007FF6C3ABDEE0 - 0x00007FF6C3ABDEB8);
-			CHECK_EXISTING_HOOK("L1", "48 89 5C 24 08");
-			STORE_HOOK(CTextFile_GetInternal);
-		});
+			{
+				p = p.sub(0x00007FF6C3ABDEE0 - 0x00007FF6C3ABDEB8);
+				CHECK_EXISTING_HOOK("L1", "48 89 5C 24 08");
+				STORE_HOOK(CTextFile_GetInternal);
+			});
 		BATCH_ADD("L2", "48 8D 0D ? ? ? ? 33 D2 E8 ? ? ? ? 33 D2 40 88 2D", [](soup::Pointer p)
-		{
-			pointers::thetext = p.add(3).rip().as<CTextFile*>();
-		});
+			{
+				pointers::thetext = p.add(3).rip().as<CTextFile*>();
+			});
 		BATCH_ADD("L3", "E8 ? ? ? ? 48 8B 1D ? ? ? ? 44 8B C7 48 8B CB BA CE 00 00 00 E8", [](soup::Pointer p)
-		{
-			pointers::CPauseMenu_SetMenuPreference = p.add(1).rip().as<CPauseMenu_SetMenuPreference_t>();
-			pointers::profile_settings = p.add(8).rip().as<CProfileSettings**>();
-			pointers::CProfileSettings_Set = p.add(24).rip().as<CProfileSettings_Set_t>();
-			pointers::rage_rlSetLanguage = p.add(47).rip().as<rage_rlSetLanguage_t>();
-		});
+			{
+				pointers::CPauseMenu_SetMenuPreference = p.add(1).rip().as<CPauseMenu_SetMenuPreference_t>();
+				pointers::profile_settings = p.add(8).rip().as<CProfileSettings**>();
+				pointers::CProfileSettings_Set = p.add(24).rip().as<CProfileSettings_Set_t>();
+				pointers::rage_rlSetLanguage = p.add(47).rip().as<rage_rlSetLanguage_t>();
+			});
 		BATCH_ADD_FUNC("L4", CPauseMenu_UpdateProfileFromMenuOptions, "48 89 5C 24 08", "48 89 74 24 10 57 48 83 EC 20 48 8B 1D ? ? ? ? 44 8B 05 ? ? ? ? 40 8A F2 40 8A F9 BA 02 00 00 00");
 
 		BATCH_ADD_OPTIONAL_HOOK("N0", rage_rlTelemetry_Export, "48 89 5C 24 08", "48 89 6C 24 18 56 57 41 56 48 83 EC 20 4D 8B F1 49 8B D8 48 8B F2 48 8B F9 C6 02 00");
 #if HTTP_HOOK
 		BATCH_ADD("N1", "48 8D 6C 24 30 48 89 9D 30 04 00 00 48 89 B5 40 04 00 00", [](soup::Pointer p)
-		{
-			p = p.sub(16);
-			if (pointers::is_explosion_type_valid_patch != nullptr && *pointers::is_explosion_type_valid_patch != CS_PASSIVE)
 			{
-				CHECK_EXISTING_HOOK("N1", "40 55 57 41 54 41 55 41 57");
-			}
-			STORE_HOOK(rage_netHttpRequest_Update);
-		});
+				p = p.sub(16);
+				if (pointers::is_explosion_type_valid_patch != nullptr && *pointers::is_explosion_type_valid_patch != CS_PASSIVE)
+				{
+					CHECK_EXISTING_HOOK("N1", "40 55 57 41 54 41 55 41 57");
+				}
+				STORE_HOOK(rage_netHttpRequest_Update);
+			});
 #endif
 		BATCH_ADD_MANDATORY_HOOK("N2", rage_netEventMgr_SendEvent, "48 89 5C 24 10", "48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 81 EC 80 00 00 00 4C 8B 3D");
 #if BLOCK_ALL_METRICS
 		BATCH_ADD("N3", "83 3D ? ? ? ? 00 0F 86 ? ? ? ? 48 83", [](soup::Pointer p)
-		{
-			pointers::s_Policies_m_SubmissionIntervalSeconds = p.add(2).rip().add(1).as<uint32_t*>();
-		});
+			{
+				pointers::s_Policies_m_SubmissionIntervalSeconds = p.add(2).rip().add(1).as<uint32_t*>();
+			});
 #endif
 #if CLEAR_BONUS_ON_DL
 		BATCH_ADD("N4", "48 8B 0D ? ? ? ? 48 85 C9 75 05 41 8A F7 EB 14 44 8B 42 20 48 8B 52 18 E8", [](soup::Pointer p)
-		{
-			auto og = p;
+			{
+				auto og = p;
 
-			p = p.sub(0x7A);
-			CHECK_EXISTING_HOOK("N4", "48 8B C4 48 89");
-			STORE_HOOK(CTunables_OnCloudEvent);
+				p = p.sub(0x7A);
+				CHECK_EXISTING_HOOK("N4", "48 8B C4 48 89");
+				STORE_HOOK(CTunables_OnCloudEvent);
 
-			p = og;
+				p = og;
 
-			pointers::rage_AES_ms_cloudAes = p.add(3).rip().as<void**>();
+				pointers::rage_AES_ms_cloudAes = p.add(3).rip().as<void**>();
 
-			p = p.add(26).rip();
-			STORE_POINTER(rage_AES_Decrypt);
-		});
+				p = p.add(26).rip();
+				STORE_POINTER(rage_AES_Decrypt);
+			});
 		BATCH_ADD("N5", "48 8B 53 ? 48 8D 4C ? ? E8 ? ? ? ? 48 8D 4C ? ? E8 ? ? ? ? B0 01 48 81 C4", [](soup::Pointer p)
-		{
-			p = p.add(10).rip();
-			STORE_POINTER(rage_AES_Encrypt);
-		});
+			{
+				p = p.add(10).rip();
+				STORE_POINTER(rage_AES_Encrypt);
+			});
 #endif
 #if PREVENT_PGSTREAMER_CRASH
 		BATCH_ADD_OPTIONAL("N6", "89 15 ? ? ? ? 85 C0 0F 8E", ([](soup::Pointer p)
-		{
-			pointers::rage_pgStreamer_smTamperCrash = p.add(2).rip().sub(4).as<rage::sysObfuscated_Mutate<int>*>();
+			{
+				pointers::rage_pgStreamer_smTamperCrash = p.add(2).rip().sub(4).as<rage::sysObfuscated_Mutate<int>*>();
 
-			uint8_t	patch[] = {
-				0x90, 0xE9,
-			};
-			pointers::pgstreamer_crash_patch.initPatch(p.add(8).as<uint8_t*>(), patch, COUNT(patch));
-		}));
+				uint8_t	patch[] = {
+					0x90, 0xE9,
+				};
+				pointers::pgstreamer_crash_patch.initPatch(p.add(8).as<uint8_t*>(), patch, COUNT(patch));
+			}));
 #endif
 #if PREVENT_GBUFFER_CRASH
 		BATCH_ADD_OPTIONAL("N7", "8B 05 ? ? ? ? 4C 8B 05 ? ? ? ? 33 C9 85 C0 8B D1 0F 94 C2 48 0F AF", ([](soup::Pointer p)
-		{
-			pointers::GBuffer_m_Attached = p.add(2).rip().as<uint32_t*>();
-			
-			uint8_t patch[] = {
-				0x31, 0xc0, // xor eax, eax
-				0x90, 0x90, 0x90, 0x90
-			};
-			pointers::gbuffer_crash_patch.initPatch(p.as<uint8_t*>(), patch, COUNT(patch));
-		}));
+			{
+				pointers::GBuffer_m_Attached = p.add(2).rip().as<uint32_t*>();
+
+				uint8_t patch[] = {
+					0x31, 0xc0, // xor eax, eax
+					0x90, 0x90, 0x90, 0x90
+				};
+				pointers::gbuffer_crash_patch.initPatch(p.as<uint8_t*>(), patch, COUNT(patch));
+			}));
 #endif
 		BATCH_ADD_OPTIONAL("N8", "40 53 48 83 EC 20 48 8B 59 20 EB 0D 48 8B 03 48 8B CB FF 50 08 48 8B 5B 18", [](soup::Pointer p)
-		{
-			STORE_HOOK(rage_gameSkeleton_updateGroup_Update);
-		});
+			{
+				STORE_HOOK(rage_gameSkeleton_updateGroup_Update);
+			});
 		BATCH_ADD_OPTIONAL("N9", "E8 ? ? ? ? 44 8B B6 ? ? ? ? 48 8B CE", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_HOOK(network_bail);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_HOOK(network_bail);
+			});
 #if PREVENT_GRCDEVICE_CRASH
 		BATCH_ADD_OPTIONAL("NA", "8B 05 ? ? ? ? A9 10 10 10 10 74", ([](soup::Pointer p)
-		{
-			pointers::rage_grcDevice_sm_KillSwitch = p.add(2).rip().as<uint32_t*>();
+			{
+				pointers::rage_grcDevice_sm_KillSwitch = p.add(2).rip().as<uint32_t*>();
 
-			uint8_t patch[] = {
-				soup::Bytepatch::JMP1
-			};
-			pointers::grcdevice_crash_patch.initPatch(p.add(11).as<uint8_t*>(), patch, COUNT(patch));
-		}));
+				uint8_t patch[] = {
+					soup::Bytepatch::JMP1
+				};
+				pointers::grcdevice_crash_patch.initPatch(p.add(11).as<uint8_t*>(), patch, COUNT(patch));
+			}));
 #endif
 		/*BATCH_ADD("NB", "48 8B 0D ? ? ? ? E8 ? ? ? ? 44 38 63 0C 74", [](soup::Pointer p)
 		{
@@ -1991,145 +1989,145 @@ namespace Stand
 			STORE_POINTER(CNetworkAssetVerifier_RefreshEnvironmentCRC);
 		});*/
 		BATCH_ADD("ND", "48 8B 1D ? ? ? ? 33 F6 BD C3 9E 26 00", [](soup::Pointer p)
-		{
-			pointers::ac_thing_data = p.add(3).rip().as<AcThingData**>();
-		});
+			{
+				pointers::ac_thing_data = p.add(3).rip().as<AcThingData**>();
+			});
 #if false
 		BATCH_ADD("NE", "48 8D 0D ? ? ? ? BA ? ? ? ? 74 05 BA ? ? ? ? E8 ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? ? 48 8D 0D ? ? ? ? BA ? ? ? ? 84 DB 75 05 BA ? ? ? ? E8 ? ? ? ? 48 8B CD C6 05 ? ? ? ? ? E8 ? ? ? ? 84", [](soup::Pointer p)
-		{
-			pointers::game_skeleton = p.add(3).rip().as<rage::gameSkeleton*>();
-		});
+			{
+				pointers::game_skeleton = p.add(3).rip().as<rage::gameSkeleton*>();
+			});
 #endif
 		BATCH_ADD_OPTIONAL_HOOK("NE", rage_sysDependencyScheduler_InsertInternal, "48 89 5C 24 08", "57 48 83 EC 20 0F B6 99 ? 00 00 00 4C 8B C1");
 		BATCH_ADD_OPTIONAL("NF", "E8 ? ? ? ? 8B 54 24 30 89 13", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			STORE_HOOK(network_can_access_multiplayer);
-		});
+			{
+				p = p.add(1).rip();
+				STORE_HOOK(network_can_access_multiplayer);
+			});
 
 		BATCH_ADD_OPTIONAL("O1", "E8 ? ? ? ? 48 8B 53 20 44 8B C7 41 8B CE E8", [](soup::Pointer p)
-		{
-			const auto og = p;
+			{
+				const auto og = p;
 
-			p = p.add(1).rip();
-			CHECK_EXISTING_HOOK("O1", "81 E1 00 00 F0 0F");
-			//STORE_HOOK(rage_AES_isTransformITKeyId);
+				p = p.add(1).rip();
+				CHECK_EXISTING_HOOK("O1", "81 E1 00 00 F0 0F");
+				//STORE_HOOK(rage_AES_isTransformITKeyId);
 
-			p = og.add(16).rip();
-			CHECK_EXISTING_HOOK("O2", "48 8B C4 48 89");
-			g_hooking.aes_initfile_hook.setTarget(og.as<void*>());
-			aes_initfile_init(p.as<void*>(), og.add(20).as<void*>());
-		});
+				p = og.add(16).rip();
+				CHECK_EXISTING_HOOK("O2", "48 8B C4 48 89");
+				g_hooking.aes_initfile_hook.setTarget(og.as<void*>());
+				aes_initfile_init(p.as<void*>(), og.add(20).as<void*>());
+			});
 		BATCH_ADD_OPTIONAL("O3", "E8 ? ? ? ? 8B 55 F8 48 8B 43 10 48 03 D0 48 8B CB 48 89 53 18 66 44 89 22 33 D2 E8", [](soup::Pointer p)
-		{
-			g_hooking.aes_decrypt_callsite_hook.setTarget(p.as<void*>());
-			aes_decrypt_init(p.add(1).rip().as<void*>(), p.add(5).as<void*>());
+			{
+				g_hooking.aes_decrypt_callsite_hook.setTarget(p.as<void*>());
+				aes_decrypt_init(p.add(1).rip().as<void*>(), p.add(5).as<void*>());
 
-			p = p.add(1).rip();
-			CHECK_EXISTING_HOOK("O3", "48 89 5C 24 08");
-		});
+				p = p.add(1).rip();
+				CHECK_EXISTING_HOOK("O3", "48 89 5C 24 08");
+			});
 		BATCH_ADD("O5", "41 B0 01 E8 ? ? ? ? EB 05 E8 ? ? ? ? 48 8B 5C 24 30", [](soup::Pointer p)
-		{
-			const auto og = p;
+			{
+				const auto og = p;
 
-			p = p.sub(103);
-			CHECK_EXISTING_HOOK("O5", "48 89 5C 24 08");
-			STORE_HOOK(CModelInfo_AddVehicleModel);
+				p = p.sub(103);
+				CHECK_EXISTING_HOOK("O5", "48 89 5C 24 08");
+				STORE_HOOK(CModelInfo_AddVehicleModel);
 
-			p = og.add(11).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("O6", "48 89 5C 24 08");
-			STORE_POINTER(rage_fwArchetypeManager_RegisterStreamedArchetype);
-		});
+				p = og.add(11).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("O6", "48 89 5C 24 08");
+				STORE_POINTER(rage_fwArchetypeManager_RegisterStreamedArchetype);
+			});
 		BATCH_ADD("O7", "48 8D 05 ? ? ? ? 48 8D BB ? 00 00 00 41 8D 48", [](soup::Pointer p)
-		{
-			p = p.sub(21);
-			CHECK_EXISTING_HOOK_WONT_HOOK("O7", "48 89 5C 24 08");
-			STORE_POINTER(CVehicleModelInfo_ctor);
-		});
+			{
+				p = p.sub(21);
+				CHECK_EXISTING_HOOK_WONT_HOOK("O7", "48 89 5C 24 08");
+				STORE_POINTER(CVehicleModelInfo_ctor);
+			});
 		BATCH_ADD("O8", "4C 8B C3 E8 ? ? ? ? 48 8D 1D ? ? ? ? 48 8D", [](soup::Pointer p)
-		{
-			p = p.sub(70);
-			CHECK_EXISTING_HOOK_WONT_HOOK("O8", "48 8B C4 48 89");
-			STORE_POINTER(CExtraContentManager_AddContentFolder);
-		});
+			{
+				p = p.sub(70);
+				CHECK_EXISTING_HOOK_WONT_HOOK("O8", "48 8B C4 48 89");
+				STORE_POINTER(CExtraContentManager_AddContentFolder);
+			});
 		BATCH_ADD("O9", "48 8B CE C6 80 F0 00 00 00 01 E8", [](soup::Pointer p)
-		{
-			p = p.add(11).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("O9", "48 89 5C 24 18");
-			STORE_POINTER(CExtraContentManager_LoadContent);
-		});
+			{
+				p = p.add(11).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("O9", "48 89 5C 24 18");
+				STORE_POINTER(CExtraContentManager_LoadContent);
+			});
 		BATCH_ADD_OPTIONAL("OA", "48 8B 89 50 FE FF FF 48 8B DA 48 8B 41 20", [](soup::Pointer p)
-		{
-			p = p.sub(13);
-			CHECK_EXISTING_HOOK("OA", "48 89 5C 24 08");
-			STORE_HOOK(CNetObjVehicle_GetVehicleCreateData);
-		});
+			{
+				p = p.sub(13);
+				CHECK_EXISTING_HOOK("OA", "48 89 5C 24 08");
+				STORE_HOOK(CNetObjVehicle_GetVehicleCreateData);
+			});
 		// O4 is unused
 
 		BATCH_ADD("P0", "89 44 24 28 8B 44 24 4C 4D 8B C6 49 8B D7 49 8B CC 89 44 24 20 E8", [](soup::Pointer p)
-		{
-			p = p.add(22).rip();
-			STORE_HOOK(rage_netEventMgr_ProcessEventData);
-		});
+			{
+				p = p.add(22).rip();
+				STORE_HOOK(rage_netEventMgr_ProcessEventData);
+			});
 		BATCH_ADD("P1", "48 89 74 24 18 57 48 83 EC 20 48 8B D9 33 C9 41 8B F0", [](soup::Pointer p)
-		{
-			p = p.sub(5);
-			CHECK_EXISTING_HOOK_WONT_HOOK("P1", "48 89 5C 24 10");
-			pointers::read_bitbuffer_dword = p.as<read_bitbuffer_dword_t>();
-		});
+			{
+				p = p.sub(5);
+				CHECK_EXISTING_HOOK_WONT_HOOK("P1", "48 89 5C 24 10");
+				pointers::read_bitbuffer_dword = p.as<read_bitbuffer_dword_t>();
+			});
 		BATCH_ADD("P2", "57 48 83 EC ? 41 8B ? 4C 8B ? 48 8B ? 45 85 ? 74", [](soup::Pointer p)
-		{
-			pointers::rage_datBitBuffer_ReadBits = p.sub(5).as<rage_datBitBuffer_ReadBits_t>();
-		});
+			{
+				pointers::rage_datBitBuffer_ReadBits = p.sub(5).as<rage_datBitBuffer_ReadBits_t>();
+			});
 		BATCH_ADD_FUNC("P3", rage_datBitBuffer_WriteBits, "48 89 5C 24 08", "57 48 83 EC 30 F6 41 1C 01 45 8B D1");
 		BATCH_ADD("P4", "4C 8B DC 49 89 5B 08 49 89 6B 10 49 89 73 18 57 41 56 41 57 48 83 EC ? 80 7A 61 FF", [](soup::Pointer p)
-		{
-			pointers::send_net_event_ack = p.as<send_net_event_ack_t>();
-		});
+			{
+				pointers::send_net_event_ack = p.as<send_net_event_ack_t>();
+			});
 		BATCH_ADD("P5", "75 11 48 8B 89 D0 00 00 00 48 85 C9 74 05", [](soup::Pointer p)
-		{
-			p = p.sub(0x29);
-			CHECK_EXISTING_HOOK_WONT_HOOK("P4", "48 83 EC 28 48");
-			STORE_POINTER(rage_fwEntity_GetAttachedTo);
-			// This function is actually entity_commands::GetEntityAttachParent which calls rage::fwEntity::GetAttachParent and CNetObjPhysical::GetEntityAttachedTo as a fallback.
-		});
+			{
+				p = p.sub(0x29);
+				CHECK_EXISTING_HOOK_WONT_HOOK("P4", "48 83 EC 28 48");
+				STORE_POINTER(rage_fwEntity_GetAttachedTo);
+				// This function is actually entity_commands::GetEntityAttachParent which calls rage::fwEntity::GetAttachParent and CNetObjPhysical::GetEntityAttachedTo as a fallback.
+			});
 		BATCH_ADD_OPTIONAL_HOOK("P6", rage_netPlayerMgrBase_SendBuffer, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 60 48 8B 84 24 B0 00 00 00");
 		BATCH_ADD("P7", "45 33 C9 4C 8B DA 66 85 C0 0F 84 ? ? ? ? 44 0F B7 C0 33 D2 8B C1 41 F7 F0 48 8B 05 ? ? ? ? 4C 8B 14 D0 EB 09 41 3B 0A 74 54", [](soup::Pointer p)
-		{
-			p = p.sub(7);
-			CHECK_EXISTING_HOOK("P7", "0F B7 05");
-			STORE_HOOK(rage_fwArchetypeManager_GetArchetypeFromHashKey);
-		});
+			{
+				p = p.sub(7);
+				CHECK_EXISTING_HOOK("P7", "0F B7 05");
+				STORE_HOOK(rage_fwArchetypeManager_GetArchetypeFromHashKey);
+			});
 		BATCH_ADD("P8", "74 0C 48 8B D7 E8 ? ? ? ? 48 83 27 00", [](soup::Pointer p)
-		{
-			p = p.add(6).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("P8", "48 89 5C 24 08");
-			STORE_POINTER(remove_known_ref);
-		});
+			{
+				p = p.add(6).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("P8", "48 89 5C 24 08");
+				STORE_POINTER(remove_known_ref);
+			});
 		BATCH_ADD_FUNC("PA", CGameWorld_Remove, "48 89 5C 24 08", "48 89 74 24 10 57 48 83 EC 20 48 89 0D");
 		BATCH_ADD("PB", "48 85 FF 48 89 1D", [](soup::Pointer p)
-		{
-			p = p.sub(4).rip();
-			STORE_HOOK(script_vm);
-			p = p.add(134);
-			/* "PC" */ pointers::script_vm_switch = p.as<void*>();
-			const auto jmp_table_p = p.add(27).rva(g_gta_module);
-			for (uint8_t i = 0; i != pointers::script_vm_num_opcodes; ++i)
 			{
-				pointers::script_vm_jump_table[i] = jmp_table_p.add(i * 4).rva(g_gta_module).as<void*>();
-			}
-			script_vm_helper_init_1(pointers::script_vm_jump_table, &ScriptVmErrorHandling::onInvalidScriptOpCode);
-			script_vm_op_native_init(&pointers::script_vm_jump_table[Native]);
-		});
+				p = p.sub(4).rip();
+				STORE_HOOK(script_vm);
+				p = p.add(134);
+				/* "PC" */ pointers::script_vm_switch = p.as<void*>();
+				const auto jmp_table_p = p.add(27).rva(g_gta_module);
+				for (uint8_t i = 0; i != pointers::script_vm_num_opcodes; ++i)
+				{
+					pointers::script_vm_jump_table[i] = jmp_table_p.add(i * 4).rva(g_gta_module).as<void*>();
+				}
+				script_vm_helper_init_1(pointers::script_vm_jump_table, &ScriptVmErrorHandling::onInvalidScriptOpCode);
+				script_vm_op_native_init(&pointers::script_vm_jump_table[Native]);
+			});
 		BATCH_ADD_OPTIONAL("PD", "45 89 57 08 41 8B C2 EB", [](soup::Pointer p)
-		{
-			script_vm_helper_init_2(&ScriptVmErrorHandling::onScriptThreadError, p.add(8).ripT<int8_t>().as<void*>());
-			pointers::script_thread_error_kill_1 = p.as<void*>();
-		});
+			{
+				script_vm_helper_init_2(&ScriptVmErrorHandling::onScriptThreadError, p.add(8).ripT<int8_t>().as<void*>());
+				pointers::script_thread_error_kill_1 = p.as<void*>();
+			});
 		BATCH_ADD_OPTIONAL("PE", "B8 02 00 00 00 41 89 47 08 48 81 C4 B8 00 00 00", [](soup::Pointer p)
-		{
-			pointers::script_thread_error_kill_2 = p.as<void*>();
-		});
+			{
+				pointers::script_thread_error_kill_2 = p.as<void*>();
+			});
 		BATCH_ADD_OPTIONAL_HOOK("PF", received_clone_create_ack, "48 8b c4 48 89", "58 ? 48 89 68 ? 48 89 70 ? 48 89 78 ? 41 54 41 56 41 57 48 83 ec ? 4c 8b fa 49 8b d8");
 		BATCH_ADD_OPTIONAL_HOOK("PG", received_clone_sync_ack, "48 89 5c 24", "48 89 74 24 ? 48 89 7c 24 ? 41 54 41 56 41 57 48 83 ec ? 4c 8b e2");
 		BATCH_ADD_OPTIONAL_HOOK("PH", received_clone_remove_ack, "48 8b c4 48 89", "58 ? 48 89 68 ? 48 89 70 ? 57 41 56 41 57 48 83 ec ? 4c 8b fa 49 8b d8");
@@ -2141,68 +2139,68 @@ namespace Stand
 		//BATCH_ADD_OPTIONAL_HOOK("PN", send_clone_remove, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 80 78 ? FF 41 8A E9 49 8B F8 48 8B DA 48 8B F1 74");
 		BATCH_ADD_OPTIONAL_HOOK("PO", rage_netSyncTree_Read, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 20 44 89 40 18 57 48 83 EC 30 44 8B 05");
 		BATCH_ADD("PP", "49 8B CE FF 90 A0 00 00 00 84 C0 74 31 33 FF", [](soup::Pointer p)
-		{
-			p = p.sub(0x2C);
-			STORE_HOOK(sync_can_apply);
-		});
+			{
+				p = p.sub(0x2C);
+				STORE_HOOK(sync_can_apply);
+			});
 		BATCH_ADD_OPTIONAL("PQ", "48 89 4C 24 20 48 8B 0D ? ? ? ? 48 8B D0 E8 ? ? ? ? F6 C3 02 74", [](soup::Pointer p)
-		{
-			p = p.add(16).rip();
-			CHECK_EXISTING_HOOK("PQ", "48 8B C4 48 89");
-			STORE_HOOK(parse_presence_event);
-		});
+			{
+				p = p.add(16).rip();
+				CHECK_EXISTING_HOOK("PQ", "48 8B C4 48 89");
+				STORE_HOOK(parse_presence_event);
+			});
 		BATCH_ADD("PR", "4C 8D 15 ? ? ? ? 49 63 C0 48 8D 0C 40", [](soup::Pointer p)
-		{
-			p = p.add(3).rip();
-			STORE_POINTER(pop_multiplier_areas);
-		});
+			{
+				p = p.add(3).rip();
+				STORE_POINTER(pop_multiplier_areas);
+			});
 		BATCH_ADD("PS", "48 8B 0D ? ? ? ? 45 33 C0 49 8B D7 E8", [](soup::Pointer p)
-		{
-			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("PS", "48 89 5C 24 08");
-			STORE_POINTER(CPedFactory_DestroyPed);
-		});
+			{
+				p = p.add(14).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("PS", "48 89 5C 24 08");
+				STORE_POINTER(CPedFactory_DestroyPed);
+			});
 		BATCH_ADD_FUNC("PT", vehicle_commands__DeleteScriptVehicle, "48 85 C9 74 38", "53 48 83 EC 20 80 89 ? ? 00 00 10 48 8B D9 48 8B 89 D0 00 00 00");
 		BATCH_ADD("PU", "76 09 48 83 C4 28 E9 ? ? ? ? E8", [](soup::Pointer p)
-		{
-			p = p.add(12).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("PU", "48 8B C4 48 89");
-			STORE_POINTER(CObjectPopulation_DestroyObject);
-		});
+			{
+				p = p.add(12).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("PU", "48 8B C4 48 89");
+				STORE_POINTER(CObjectPopulation_DestroyObject);
+			});
 		BATCH_ADD_OPTIONAL_HOOK("PV", CNetObjVehicle_SetVehicleControlData, "48 89 5C 24 10", "48 89 6C 24 18 48 89 74 24 20 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 8B B1 50 FE FF FF 8A 9A");
 		BATCH_ADD_OPTIONAL_HOOK("PW", rage_ropeManager_Remove, "48 89 5C 24 08", "48 89 74 24 10 57 48 83 EC 20 48 8B D9 48 8D 0D ? ? ? ? 48 8B FA E8 ? ? ? ? 48 8B 0F E8");
 		BATCH_ADD_OPTIONAL("PX", "BA 6E 79 00 00 E8 ? ? ? ? 83 F8 01", [](soup::Pointer p)
-		{
-			// I'm pretty sure they meant to compare the bone index to -1 instead of 1...
-			// Although, it should be fair to assume that a ped would always have a head bone.
-			// This seems to mess up with head blend data on a non-online ped.
-			uint8_t byte = -1;
-			pointers::point_gun_at_head_patch.initPatch(p.add(12).as<uint8_t*>(), &byte, 1);
-		});
+			{
+				// I'm pretty sure they meant to compare the bone index to -1 instead of 1...
+				// Although, it should be fair to assume that a ped would always have a head bone.
+				// This seems to mess up with head blend data on a non-online ped.
+				uint8_t byte = -1;
+				pointers::point_gun_at_head_patch.initPatch(p.add(12).as<uint8_t*>(), &byte, 1);
+			});
 		// P9 is unused
 
 		// Q0 is added by ComponentNetcode
 		BATCH_ADD("Q1", "4D 8B C5 49 8B D7 49 8B CE 89 5C 24 20 E8", [](soup::Pointer p)
-		{
-			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK("Q1", "48 89 5C 24 18");
-			STORE_HOOK(InviteMgr_AcceptInvite);
-		});
+			{
+				p = p.add(14).rip();
+				CHECK_EXISTING_HOOK("Q1", "48 89 5C 24 18");
+				STORE_HOOK(InviteMgr_AcceptInvite);
+			});
 		BATCH_ADD("Q2", "48 8B CB 48 89 44 24 28 83 64 24 20 00 E8", [](soup::Pointer p)
-		{
-			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("Q2", "48 89 5C 24 08");
-			pointers::CNetworkSession_KickPlayer = p.as<CNetworkSession_KickPlayer_t>();
-		});
+			{
+				p = p.add(14).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("Q2", "48 89 5C 24 08");
+				pointers::CNetworkSession_KickPlayer = p.as<CNetworkSession_KickPlayer_t>();
+			});
 		BATCH_ADD("Q3", "39 3D ? ? ? ? 0F 85 ? ? ? ? 48 89", [](soup::Pointer p)
-		{
-			pointers::connection_mgr = p.add(2).rip().as<rage::netConnectionManager**>();
-		});
+			{
+				pointers::connection_mgr = p.add(2).rip().as<rage::netConnectionManager**>();
+			});
 		BATCH_ADD_MANDATORY_HOOK("Q4", CNetworkSession_OnSessionEvent, "48 8B C4 48 89", "58 08 48 89 70 10 48 89 78 18 55 41 54 41 55 41 56 41 57 48 8D 68 ? 48 81 EC ? ? ? ? 49 8B F8");
 		BATCH_ADD_OPTIONAL("Q5", "74 52 44 39 67 0C 7F 4C", [](soup::Pointer p)
-		{
-			pointers::netIceSession_terminationTimer_IsTimedOut = p.as<uint8_t*>();
-		});
+			{
+				pointers::netIceSession_terminationTimer_IsTimedOut = p.as<uint8_t*>();
+			});
 		BATCH_ADD_FUNC("Q6", rage_datBitBuffer_WriteUnsigned, "48 89 5C 24 08", "44 8B DA 83 CB FF 4D 63 D1 49 C1 FA 03");
 		/*BATCH_ADD("Q7", "45 33 E4 4C 8B F1 48 8D 4D B0", [](soup::Pointer p)
 		{
@@ -2212,18 +2210,18 @@ namespace Stand
 		})*/;
 		// to help locate this: 83 7F 44 07
 		BATCH_ADD("Q8", "83 64 24 20 00 4C 8D 4C 24 30 44 8B C6 48 8B D0 48 8B CF E8", [](soup::Pointer p)
-		{
-			p = p.add(20).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("Q8", "48 89 5C 24 08");
-			STORE_POINTER(send_netComplaintMsg); // rage::netConnectionManager::SendOutOfBand<rage::netComplaintMsg>
-		});
+			{
+				p = p.add(20).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("Q8", "48 89 5C 24 08");
+				STORE_POINTER(send_netComplaintMsg); // rage::netConnectionManager::SendOutOfBand<rage::netComplaintMsg>
+			});
 		BATCH_ADD_OPTIONAL_FUNC("Q9", rage_netConnectionManager_SendConnectionless, "48 8B C4 48 89", "58 08 48 89 70 10 48 89 78 18 4C 89 48 20 55 41 54 41 55 41 56 41 57 48 8D A8 ? ? ? ? 48 81 EC ? ? ? ? 44 8B BD");
 		BATCH_ADD("QA", "4C 8D 85 40 06 00 00 48 8B CE 48 8B D0 E8", [](soup::Pointer p)
-		{
-			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QA", "48 85 D2 0F 84");
-			STORE_POINTER(rage_snSession_HandleRemoveGamerCmd);
-		});
+			{
+				p = p.add(14).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QA", "48 85 D2 0F 84");
+				STORE_POINTER(rage_snSession_HandleRemoveGamerCmd);
+			});
 		BATCH_ADD_FUNC("QB", CBlacklistedGamers_BlacklistGamer, "48 89 5C 24 08", "48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 30 41 8B E8 48 8B F2 48 8B F9 E8");
 		/*BATCH_ADD("QC", "48 8B 05 ? ? ? ? 48 89 3D ? ? ? ? 39 B8 B0", [](soup::Pointer p)
 		{
@@ -2233,23 +2231,23 @@ namespace Stand
 		BATCH_ADD_FUNC("QC", rage_netConnection_QueueFrame, "4C 8B DC 49 89", "5B 08 49 89 6B 10 49 89 73 18 57 41 54 41 55 41 56 41 57 48 83 EC 60 33 F6 F6 81");
 #endif
 		BATCH_ADD("QD", "48 8B 0D ? ? ? ? E8 ? ? ? ? 33 DB 84 C0 74 41", [](soup::Pointer p)
-		{
-			pointers::network_clock = p.add(3).rip().as<rage::netTimeSync**>();
-		});
+			{
+				pointers::network_clock = p.add(3).rip().as<rage::netTimeSync**>();
+			});
 #if I_CAN_SPY
 		BATCH_ADD("QE", "75 1A 45 8B C6 48 8B D5 48 8B CE E8", [](soup::Pointer p)
-		{
-			p = p.add(12).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QE", "48 89 5C 24 08");
-			STORE_POINTER(rage_netConnectionManager_CreateConnection);
-		});
+			{
+				p = p.add(12).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QE", "48 89 5C 24 08");
+				STORE_POINTER(rage_netConnectionManager_CreateConnection);
+			});
 		BATCH_ADD_FUNC("QF", CNetworkSession_BuildJoinRequest, "48 8B C4 4C 89", "48 20 44 89 40 18 48 89 50 10 48 89 48 08 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 ? ? ? ? 48 81 EC ? ? ? ? 33 F6"); // They obfuscated the caller (E8 ? ? ? ? 84 C0 0F 85 ? ? ? ? 83 4C 24 68 FF) in b3351
 		BATCH_ADD("QG", "48 8B D3 48 8B CD E8 ? ? ? ? 40 B7 01 49 8B CF", [](soup::Pointer p)
-		{
-			p = p.add(7).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QG", "48 89 5C 24 10");
-			STORE_POINTER(rage_netConnectionManager_DestroyConnection);
-		});
+			{
+				p = p.add(7).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QG", "48 89 5C 24 10");
+				STORE_POINTER(rage_netConnectionManager_DestroyConnection);
+			});
 #endif
 		// QH is used by ComponentSpoofPos
 		/*BATCH_ADD("QI", "74 0B 41 BF 18 00 00 00", [](soup::Pointer p)
@@ -2258,37 +2256,37 @@ namespace Stand
 			pointers::custombjmsg_responsecode = p.add(4).as<int32_t*>();
 		});*/
 		BATCH_ADD("QJ", "E8 ? ? ? ? 44 8B 86 80 00 00 00 48 8B 96 88 00 00 00 48 8D 8D F0 00 00 00 45 33 C9 E8", [](soup::Pointer p)
-		{
-			// now within rage::netIceTunneler::OnCxnEvent
-			auto og = p;
+			{
+				// now within rage::netIceTunneler::OnCxnEvent
+				auto og = p;
 
-			p = og.add(1).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QJ", "48 89 5C 24 08");
-			STORE_POINTER(rage_netIceSessionOffer_ctor);
+				p = og.add(1).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QJ", "48 89 5C 24 08");
+				STORE_POINTER(rage_netIceSessionOffer_ctor);
 
-			p = og.add(30).rip();
-			// now within rage::netIceSessionOffer::Import
-			p = p.add((0x00007FF7C1A15AD9 - 0x00007FF7C1A15A70) + 1).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QI", "48 89 5C 24 08");
-			STORE_POINTER(rage_netIceSessionOffer_SerMsgPayload_datImportBuffer);
-		});
+				p = og.add(30).rip();
+				// now within rage::netIceSessionOffer::Import
+				p = p.add((0x00007FF7C1A15AD9 - 0x00007FF7C1A15A70) + 1).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QI", "48 89 5C 24 08");
+				STORE_POINTER(rage_netIceSessionOffer_SerMsgPayload_datImportBuffer);
+			});
 		BATCH_ADD("QK", "45 33 C9 E8 ? ? ? ? 84 C0 0F 84 48 01 00 00", [](soup::Pointer p)
-		{
-			// now within rage::netIceTunneler::OnCxnEvent
-			p = p.add(4).rip();
-			// now within rage::netIceSessionAnswer::Import
-			p = p.add((0x00007FF7C1A15A1D - 0x00007FF7C1A159B4) + 1).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QK", "48 89 5C 24 08");
-			STORE_POINTER(rage_netIceSessionAnswer_SerMsgPayload_datImportBuffer);
-		});
+			{
+				// now within rage::netIceTunneler::OnCxnEvent
+				p = p.add(4).rip();
+				// now within rage::netIceSessionAnswer::Import
+				p = p.add((0x00007FF7C1A15A1D - 0x00007FF7C1A159B4) + 1).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QK", "48 89 5C 24 08");
+				STORE_POINTER(rage_netIceSessionAnswer_SerMsgPayload_datImportBuffer);
+			});
 		BATCH_ADD("QL", "41 80 BC 08 30 01 00 00 FF 75 5F 48 8B 05", [](soup::Pointer p)
-		{
-			pointers::net_array_mgr = p.add(14).rip().as<rage::netArrayManager**>();
-		});
+			{
+				pointers::net_array_mgr = p.add(14).rip().as<rage::netArrayManager**>();
+			});
 		BATCH_ADD("QM", "48 8B 0D ? ? ? ? E8 ? ? ? ? 48 85 C0 74 ? 45 85 ED", [](soup::Pointer p)
-		{
-			pointers::rage_netGameEvent_ms_pPool = p.add(3).rip().as<rage::fwBasePool**>();
-		});
+			{
+				pointers::rage_netGameEvent_ms_pPool = p.add(3).rip().as<rage::fwBasePool**>();
+			});
 #if I_CAN_SPY
 		/*BATCH_ADD("QO", "41 B8 16 00 00 00 E8 ? ? ? ? E8", [](soup::Pointer p)
 		{
@@ -2297,23 +2295,23 @@ namespace Stand
 			STORE_POINTER(rage_netRelay_GetMyRelayAddress);
 		});*/
 		BATCH_ADD("QO", "49 8D BF B4 02 00 00 E8 ? ? ? ? 49 8B 8F A0 00 00 00", [](soup::Pointer p)
-		{
-			auto og = p;
+			{
+				auto og = p;
 
-			p = p.add(8).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QO", "40 53 48 83 EC");
-			STORE_POINTER(rage_netRelay_GetMyRelayAddress);
+				p = p.add(8).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QO", "40 53 48 83 EC");
+				STORE_POINTER(rage_netRelay_GetMyRelayAddress);
 
-			p = og.add(0x00007FF725548DEA - 0x00007FF725548D51).add(1).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("QO", "48 8B C4 48 89");
-			STORE_POINTER(rage_snMsgJoinRequest_Export);
-		});
+				p = og.add(0x00007FF725548DEA - 0x00007FF725548D51).add(1).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("QO", "48 8B C4 48 89");
+				STORE_POINTER(rage_snMsgJoinRequest_Export);
+			});
 		BATCH_ADD("QP", "48 8D BB 1C 01 00 00 41 B8 0A 00 00 00", [](soup::Pointer p)
-		{
-			p = p.sub(0x00007FF7254ABB92 - 0x00007FF7254ABB24);
-			CHECK_EXISTING_HOOK_WONT_HOOK("QP", "48 89 5C 24 08");
-			STORE_POINTER(rage_snMsgAddGamerToSessionBase_SerMsgPayload_datImportBuffer);
-		});
+			{
+				p = p.sub(0x00007FF7254ABB92 - 0x00007FF7254ABB24);
+				CHECK_EXISTING_HOOK_WONT_HOOK("QP", "48 89 5C 24 08");
+				STORE_POINTER(rage_snMsgAddGamerToSessionBase_SerMsgPayload_datImportBuffer);
+			});
 #if SPY_CAN_KICK
 		BATCH_ADD_FUNC("QQ", rage_netConnectionManager_OpenTunnel, "48 89 5C 24 08", "4C 89 4C 24 20 48 89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 60 4D 8D 60 08");
 #endif
@@ -2323,66 +2321,66 @@ namespace Stand
 
 		BATCH_ADD_OPTIONAL_HOOK("R0", rlGamerHandle_from_friend_index, "40 53 48 83 EC", "20 8B D9 83 F9 FE 75 1C E8");
 		BATCH_ADD("R1", "48 8D 34 80 48 C1 E6 04 48 03 35 ? ? ? ? 48 8B CE E8", [](soup::Pointer p)
-		{
-			pointers::menu_ptr = p.add(11).rip().as<uint64_t*>();
-		});
+			{
+				pointers::menu_ptr = p.add(11).rip().as<uint64_t*>();
+			});
 		BATCH_ADD("R2", "48 89 74 24 20 55 57 41 54 41 56 41 57 48 8D AC 24 10 FF FF FF", [](soup::Pointer p)
-		{
-			p = p.sub(5);
-			CHECK_EXISTING_HOOK_WONT_HOOK("R2", "48 89 5C 24 10");
-			pointers::CPlayerListMenu_HandleContextOption = p.as<CPlayerListMenu_HandleContextOption_t>();
-			pointers::CPlayerListMenu_handler_jnz = p.add(0x00007FF7C0A5C424 - 0x00007FF7C0A5C3E0).as<uint8_t*>();
-			pointers::CPlayerListMenu_handler_jz = p.add(0x00007FF7C0A5C450 - 0x00007FF7C0A5C3E0).as<uint8_t*>();
-			pointers::rlGamerHandle_buffer = p.add(0x00007FF7C0A5C452 - 0x00007FF7C0A5C3E0).add(3).rip().as<rage::rlGamerHandle*>();
-		});
+			{
+				p = p.sub(5);
+				CHECK_EXISTING_HOOK_WONT_HOOK("R2", "48 89 5C 24 10");
+				pointers::CPlayerListMenu_HandleContextOption = p.as<CPlayerListMenu_HandleContextOption_t>();
+				pointers::CPlayerListMenu_handler_jnz = p.add(0x00007FF7C0A5C424 - 0x00007FF7C0A5C3E0).as<uint8_t*>();
+				pointers::CPlayerListMenu_handler_jz = p.add(0x00007FF7C0A5C450 - 0x00007FF7C0A5C3E0).as<uint8_t*>();
+				pointers::rlGamerHandle_buffer = p.add(0x00007FF7C0A5C452 - 0x00007FF7C0A5C3E0).add(3).rip().as<rage::rlGamerHandle*>();
+			});
 		/*BATCH_ADD("R3", "48 8B 0D ? ? ? ? 48 8D 3D ? ? ? ? F3 0F 7F 40 D8 8B 51 20 E8", [](soup::Pointer p)
 		{
 			pointers::get_card_mgr_args = p.add(3).rip().as<uint64_t*>();
 			pointers::get_card_mgr = p.add(23).rip().as<get_card_mgr_t>();
 		});*/
 		BATCH_ADD("R3", "48 8B 0D ? ? ? ? 33 D2 E8 ? ? ? ? 45 33 C0 48 8D 4C 24 30 41 8D 70 04 89 44 24 30 8B D6 E8 ? ? ? ? 8B D8 E8", [](soup::Pointer p)
-		{
-			auto og = p;
+			{
+				auto og = p;
 
-			pointers::extra_content_manager = p.add(3).rip().as<CExtraContentManager**>();
+				pointers::extra_content_manager = p.add(3).rip().as<CExtraContentManager**>();
 
-			p = og.add(10).rip();
-			CHECK_EXISTING_HOOK("R3", "48 89 5C 24 08");
-			STORE_HOOK(CExtraContentManager_GetCRC);
+				p = og.add(10).rip();
+				CHECK_EXISTING_HOOK("R3", "48 89 5C 24 08");
+				STORE_HOOK(CExtraContentManager_GetCRC);
 
-			p = og.add(40).rip();
-			CHECK_EXISTING_HOOK("R4", "48 89 5C 24 10");
-			STORE_HOOK(get_matchmaking_pool);
+				p = og.add(40).rip();
+				CHECK_EXISTING_HOOK("R4", "48 89 5C 24 10");
+				STORE_HOOK(get_matchmaking_pool);
 
-			p = og.add(95);
-			CHECK_EXISTING_HOOK("R5", "48 8B 0D");
-			p = p.add(3).rip();
-			STORE_POINTER(asset_verifier);
-		});
+				p = og.add(95);
+				CHECK_EXISTING_HOOK("R5", "48 8B 0D");
+				p = p.add(3).rip();
+				STORE_POINTER(asset_verifier);
+			});
 		BATCH_ADD("R6", "49 8D 57 10 48 8D 4C 24 20 40 8A FD E8", [](soup::Pointer p)
-		{
-			pointers::rage_datImport_netPeerAddress = p.add(13).rip().as<rage_datImport_netPeerAddress_t>();
-		});
+			{
+				pointers::rage_datImport_netPeerAddress = p.add(13).rip().as<rage_datImport_netPeerAddress_t>();
+			});
 		BATCH_ADD("R7", "48 63 B9 ? ? 00 00 48 8D 05", [](soup::Pointer p)
-		{
-			pointers::ros_credentials = p.add(10).rip().as<rage::rlRosCredentials*>();
-		});
+			{
+				pointers::ros_credentials = p.add(10).rip().as<rage::rlRosCredentials*>();
+			});
 		BATCH_ADD("R8", "4C 8D 4D 88 4C 8D 44 24 60 48 8D 15", [](soup::Pointer p)
-		{
-			pointers::rlPresence_GamerPresences_0_GamerInfo = p.add(12).rip().as<rage::rlGamerInfo*>();
-			// Could also get rage::rlPresence::m_Delegator and rage::atDelegator::Dispatch here
-		});
+			{
+				pointers::rlPresence_GamerPresences_0_GamerInfo = p.add(12).rip().as<rage::rlGamerInfo*>();
+				// Could also get rage::rlPresence::m_Delegator and rage::atDelegator::Dispatch here
+			});
 		BATCH_ADD("R9", "80 78 ? 00 75 10 48 8D 0D ? ? ? ? E8", [](soup::Pointer p)
-		{
-			pointers::g_rlPc = p.add(9).rip().as<rage::rlPc*>();
-		});
+			{
+				pointers::g_rlPc = p.add(9).rip().as<rage::rlPc*>();
+			});
 		{
 			SIG_INST("8B 05 ? ? ? ? 4C 8D 15 ? ? ? ? 45 33 C0");
 			batch.add_optional("RA", soup::Module("socialclub.dll"), sig_inst, [](soup::Pointer p)
-			{
-				pointers::num_presence_attributes = p.add(2).rip().as<uint32_t*>();
-				pointers::presence_attributes = p.add(2).rip().add(12).as<rage::rlScPresenceAttribute*>();
-			});
+				{
+					pointers::num_presence_attributes = p.add(2).rip().as<uint32_t*>();
+					pointers::presence_attributes = p.add(2).rip().add(12).as<rage::rlScPresenceAttribute*>();
+				});
 		}
 		BATCH_ADD_FUNC("RB", rage_netPeerAddress_Export, "48 89 5C 24 10", "48 89 74 24 18 48 89 7C 24 20 55 41 56 41 57 48 8B EC 48 83 EC 50 48 8B F1");
 		// RC pattern would need to be updated for b3351
@@ -2395,14 +2393,14 @@ namespace Stand
 		BATCH_ADD_OPTIONAL_HOOK("RD", rage_rlScMatchmakingFindTask_ReadSession, "40 53 48 83 EC", "20 48 8B CA 49 8B D8");
 		BATCH_ADD_OPTIONAL_HOOK("RE", rage_rlScMatchmakingFindTask_ProcessSuccess, "48 89 5C 24 08", "48 89 74 24 10 57 48 81 EC F0 00 00 00 41 83 21 00");*/
 		BATCH_ADD("RF", "48 89 44 ? ? E8 ? ? ? ? 48 8D 15 ? ? ? ? 48 8D 4C ? ? E8 ? ? ? ? 48 8D 54", [](soup::Pointer p)
-		{
-			pointers::rlRos_s_GeoLocInfo = p.add(13).rip().as<rage::rlRosGeoLocInfo*>();
-		});
+			{
+				pointers::rlRos_s_GeoLocInfo = p.add(13).rip().as<rage::rlRosGeoLocInfo*>();
+			});
 		BATCH_ADD("RG", "48 8D 0D ? ? ? ? 4C 8B CF 48 8B D6 4C 8B C0 44 89 64 24 20 E8", [](soup::Pointer p)
-		{
-			pointers::invite_mgr = p.add(3).rip().as<InviteMgr*>();
-			pointers::InviteMgr_HandleJoinRequest = p.add(22).rip().as<InviteMgr_HandleJoinRequest_t>();
-		});
+			{
+				pointers::invite_mgr = p.add(3).rip().as<InviteMgr*>();
+				pointers::InviteMgr_HandleJoinRequest = p.add(22).rip().as<InviteMgr_HandleJoinRequest_t>();
+			});
 		BATCH_ADD_FUNC("RH", rage_rlSessionManager_QueryDetail, "48 8B C4 44 89", "48 20 44 89 40 18 89 50 10 89 48 08");
 		BATCH_ADD_FUNC("RI", rage_rlScPresence_GetAttributesForGamer, "48 8B C4 48 89", "58 08 48 89 68 10 48 89 70 18 4C 89 70 20 41 57 48 83 EC 40 4C 8B F2");
 		/*BATCH_ADD("RJ", "E8 ? ? ? ? 0F B6 CB 84 C0 41 0F 44 CD", [](soup::Pointer p)
@@ -2411,21 +2409,21 @@ namespace Stand
 			STORE_HOOK(CNetworkSession_JoinSession);
 		});*/
 		BATCH_ADD_OPTIONAL("RK", "E8 ? ? ? ? 84 C0 74 04 B0 01 EB 02 32 C0 48 8B 5C 24 ? 48 8B 74 24 ? 48 8B 7C 24 ? 48 83 C4 20", [](soup::Pointer p)
-		{
-			p = p.add(1).rip();
-			CHECK_EXISTING_HOOK("RK", "48 89 5C 24 08");
-			STORE_HOOK(rage_playerDataMsg_SerMsgPayload_datExportBuffer);
-		});
+			{
+				p = p.add(1).rip();
+				CHECK_EXISTING_HOOK("RK", "48 89 5C 24 08");
+				STORE_HOOK(rage_playerDataMsg_SerMsgPayload_datExportBuffer);
+			});
 		BATCH_ADD_OPTIONAL("RL", "48 83 EC 40 48 8B 05 ? ? ? ? 66 44 89 4C 24", [](soup::Pointer p)
-		{
-			p = p.sub(0x15);
-			CHECK_EXISTING_HOOK("RL", "48 89 5C 24 18");
-			STORE_HOOK(rage_netArrayHandlerBase_WriteUpdate);
-		});
+			{
+				p = p.sub(0x15);
+				CHECK_EXISTING_HOOK("RL", "48 89 5C 24 18");
+				STORE_HOOK(rage_netArrayHandlerBase_WriteUpdate);
+			});
 		BATCH_ADD("RM", "74 73 FF 90 ? ? ? ? 8B D5 4C 8B 00 48 8B C8 41 FF 50 30", [](soup::Pointer p)
-		{
-			pointers::rage_netArrayHandlerBase_WriteUpdate_patch = p.as<uint8_t*>();
-		});
+			{
+				pointers::rage_netArrayHandlerBase_WriteUpdate_patch = p.as<uint8_t*>();
+			});
 		/*BATCH_ADD("RN", "8A 84 24 30 01 00 00 48 89 15 ? ? ? ? 8B 94 24 20 01 00 00", [](soup::Pointer p)
 		{
 			pointers::session_id = p.add(10).rip().as<uint64_t*>();
@@ -2443,39 +2441,39 @@ namespace Stand
 		{
 			SIG_INST("40 53 48 83 EC 40 48 8B 01 48 8B D9");
 			batch.add_optional("RP", soup::Module("socialclub.dll"), sig_inst, [](soup::Pointer p)
-			{
-				STORE_POINTER(rgsc_Script_CallFunction);
-			});
+				{
+					STORE_POINTER(rgsc_Script_CallFunction);
+				});
 		}
 		{
 			SIG_INST("48 89 45 C8 48 8B CE E8");
 			batch.add_optional("RQ", soup::Module("socialclub.dll"), sig_inst, [](soup::Pointer p)
-			{
-				p = p.add(8).rip();
+				{
+					p = p.add(8).rip();
 #ifdef STAND_DEBUG
-				CHECK_EXISTING_HOOK("RQ", "48 89 5C 24 08");
+					CHECK_EXISTING_HOOK("RQ", "48 89 5C 24 08");
 #endif
-				STORE_HOOK(rgsc_RgscPresenceManager_OnSocialClubEvent);
-			});
+					STORE_HOOK(rgsc_RgscPresenceManager_OnSocialClubEvent);
+				});
 		}
 
 		BATCH_ADD("S0", "0F 84 E1 00 00 00 48 8D 57 08 48 8B CB E8 ? ? ? ? 84 C0 0F 84 CD 00 00 00", [](soup::Pointer p)
-		{
-			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK("S0", "48 89 5C 24 08");
-			STORE_HOOK(send_net_info_to_lobby_wrap);
-		});
+			{
+				p = p.add(14).rip();
+				CHECK_EXISTING_HOOK("S0", "48 89 5C 24 08");
+				STORE_HOOK(send_net_info_to_lobby_wrap);
+			});
 		BATCH_ADD_OPTIONAL("S3", "48 8B 81 E8 00 00 00 48 83 C0 20 C3", [](soup::Pointer p)
-		{
-			STORE_HOOK(CNetGamePlayer_GetGamerInfo);
-		});
+			{
+				STORE_HOOK(CNetGamePlayer_GetGamerInfo);
+			});
 		BATCH_ADD("S4", "84 C0 74 23 8B CB E8 ? ? ? ? 48 83 38 00", [](soup::Pointer p)
-		{
-			p = p.add(7).rip();
-			CHECK_EXISTING_HOOK("S4", "85 C9 75 19 48");
-			pointers::rage_rlClan_GetPrimaryMembership = p.as<rage_rlClan_GetPrimaryMembership_t>();
-			pointers::clan_client = p.add(10).rip().as<rage::rlClanClient*>();
-		});
+			{
+				p = p.add(7).rip();
+				CHECK_EXISTING_HOOK("S4", "85 C9 75 19 48");
+				pointers::rage_rlClan_GetPrimaryMembership = p.as<rage_rlClan_GetPrimaryMembership_t>();
+				pointers::clan_client = p.add(10).rip().as<rage::rlClanClient*>();
+			});
 		/*BATCH_ADD("S5", "8A 4B 33 E8 ? ? ? ? EB 23 48 8D 4B 3C C6 44 24 30 01", [](soup::Pointer p)
 		{
 			auto og = p;
@@ -2489,91 +2487,84 @@ namespace Stand
 			STORE_HOOK(on_crc_hash_check_reply);
 		});*/
 		BATCH_ADD_OPTIONAL("S7", "49 8B D6 48 8B CE E8 ? ? ? ? 0F 2E 07 74 03", [](soup::Pointer p)
-		{
-			p = p.add(7).rip();
-			CHECK_EXISTING_HOOK("S6", "48 8B C4 48 89");
-			STORE_HOOK(get_player_card_stat);
-		});
+			{
+				p = p.add(7).rip();
+				CHECK_EXISTING_HOOK("S6", "48 8B C4 48 89");
+				STORE_HOOK(get_player_card_stat);
+			});
 		BATCH_ADD_OPTIONAL_HOOK("S8", CPlayerGamerDataNode_Serialise, "48 89 5C 24 10", "48 89 6C 24 18 56 57 41 56 48 83 EC 20 48 8D 99 C0 00 00 00");
 		BATCH_ADD_OPTIONAL("S9", "C6 44 24 20 01 41 FF 92 C0 00 00 00 8B 5E 3C", [](soup::Pointer p) // optional for when loading Stand on top of Stand
-		{
-			STORE_HOOK(data_node_write);
-			data_node_helper_init(&hooks::data_node_write, p.add(12).as<void*>());
-		});
+			{
+				STORE_HOOK(data_node_write);
+				data_node_helper_init(&hooks::data_node_write, p.add(12).as<void*>());
+			});
 		BATCH_ADD_OPTIONAL("SA", "48 8B FA 4C 8D 4D 50 4C 8D 45", [](soup::Pointer p)
-		{
-			p = p.sub(0x32);
-			CHECK_EXISTING_HOOK("SA", "48 89 4C 24 08");
-			STORE_HOOK(CNetObjVehicle_GetVehicleMigrationData);
-		});
+			{
+				p = p.sub(0x32);
+				CHECK_EXISTING_HOOK("SA", "48 89 4C 24 08");
+				STORE_HOOK(CNetObjVehicle_GetVehicleMigrationData);
+			});
 		// S1 & S2 are unused
 		BATCH_ADD_OPTIONAL("SY", "48 8B 05 ? ? ? ? 8B CB 48 69 C9 E0 01 00 00 48 63 94 01 B0 00 00 00 48 8B 05", [](soup::Pointer p)
-		{
-		   pointers::scaleform_array = p.add(3).rip().as<rage::atArray<ScaleformMovieStruct>*>();
-		   using PoolType = std::remove_reference_t<decltype(std::declval<CScaleformStore>().m_pool)>;
-
-		   const auto pool_offset = member_offset(&CScaleformStore::m_pool);
-
-		   const auto flags_offset = member_offset(&PoolType::m_aFlags);
-
-		   pointers::scaleform_store = p.add(27).rip().sub(pool_offset + flags_offset).as<CScaleformStore*>();
-		}
-		);
+			{
+				pointers::scaleform_array = p.add(3).rip().as<rage::atArray<ScaleformMovieStruct>*>();
+				pointers::scaleform_store = p.add(27).rip().sub(offsetof(CScaleformStore, m_pool.m_aFlags)).as<CScaleformStore*>();
+			});
 		BATCH_ADD_OPTIONAL("SZ", "0F 94 C0 88 44 24 20 E8 ? ? ? ? 48 8B 05", [](soup::Pointer p)
-		{
-			// ped_factory is also here if we needed it
-			p = p.add(8).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("SZ", "48 89 5C 24 08");
-			STORE_POINTER(GFxValue_ObjectInterface_GetMember);
-		});
+			{
+				// ped_factory is also here if we needed it
+				p = p.add(8).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("SZ", "48 89 5C 24 08");
+				STORE_POINTER(GFxValue_ObjectInterface_GetMember);
+			});
 
 		BATCH_ADD("V0", "48 83 25 ? ? ? ? 00 48 8D 0D ? ? ? ? E8 ? ? ? ? E8", [](soup::Pointer p)
-		{
-			p = p.add(16).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("V0", "48 83 EC 28 48");
-			STORE_POINTER(CVisualSettings_LoadAll);
-		});
+			{
+				p = p.add(16).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("V0", "48 83 EC 28 48");
+				STORE_POINTER(CVisualSettings_LoadAll);
+			});
 		BATCH_ADD_OPTIONAL("V1", "41 B1 01 48 8B CB 0F 28 00 0F 29 05 ? ? ? ? E8", [](soup::Pointer p)
-		{
-			auto og = p;
+			{
+				auto og = p;
 
-			p = og.sub(19).rip();
-			CHECK_EXISTING_HOOK("V1", "48 8B C4 48 89");
-			STORE_HOOK(get_visual_config_colour);
+				p = og.sub(19).rip();
+				CHECK_EXISTING_HOOK("V1", "48 8B C4 48 89");
+				STORE_HOOK(get_visual_config_colour);
 
-			p = og.add(17).rip();
-			CHECK_EXISTING_HOOK("V2", "48 89 5C 24 08");
-			STORE_HOOK(get_visual_config_float);
-		});
+				p = og.add(17).rip();
+				CHECK_EXISTING_HOOK("V2", "48 89 5C 24 08");
+				STORE_HOOK(get_visual_config_float);
+			});
 		BATCH_ADD_OPTIONAL("V3", "41 0F 28 D9 48 8B CB E8 ? ? ? ? 48 8D 15", [](soup::Pointer p)
-		{
-			p = p.add(8).rip();
-			CHECK_EXISTING_HOOK("V3", "40 53 48 83 EC");
-			STORE_HOOK(get_visual_config_float_with_directory);
-		});
+			{
+				p = p.add(8).rip();
+				CHECK_EXISTING_HOOK("V3", "40 53 48 83 EC");
+				STORE_HOOK(get_visual_config_float_with_directory);
+			});
 		BATCH_ADD_OPTIONAL("V4", "74 ? 48 8D 15 ? ? ? ? 48 8B C8 E8 ? ? ? ? 48 8B 0E", [](soup::Pointer p)
-		{
-			p = p.add(13).rip();
-			CHECK_EXISTING_HOOK("V4", "48 89 5C 24 08");
-			STORE_HOOK(camFactory_CreateObject);
-		});
+			{
+				p = p.add(13).rip();
+				CHECK_EXISTING_HOOK("V4", "48 89 5C 24 08");
+				STORE_HOOK(camFactory_CreateObject);
+			});
 		// V5 & V6 are used by ComponentGpu
 		// V7, V8, V9, & VA are used by ComponentDrawPatch
 		BATCH_ADD_MANDATORY_HOOK("VB", camFrame_copy, "48 89 5C 24 08", "57 48 83 EC 20 8B 42 40 F3 0F 10 4A 48");
 
 		//BATCH_ADD_OPTIONAL_HOOK("X0", some_player_sync, "48 89 5C 24 10", "48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 B8 ? ? ? ? E8 ? ? ? ? 48 2B E0 48 8B FA 48 8B F1");
 		BATCH_ADD_OPTIONAL("X1", "0F 28 D6 48 8B D3 48 8B CF E8 ? ? ? ? 8B F0 EB 4F", [](soup::Pointer p)
-		{
-			p = p.add(10).rip();
-			CHECK_EXISTING_HOOK("X1", "48 89 5C 24 10");
-			STORE_HOOK(rage_aiTaskTree_UpdateTask);
-		});
+			{
+				p = p.add(10).rip();
+				CHECK_EXISTING_HOOK("X1", "48 89 5C 24 10");
+				STORE_HOOK(rage_aiTaskTree_UpdateTask);
+			});
 		BATCH_ADD_OPTIONAL("X2", "48 8B 48 20 48 85 C9 0F 84 E3 00 00 00 E8", [](soup::Pointer p)
-		{
-			p = p.add(14).rip();
-			CHECK_EXISTING_HOOK_WONT_HOOK("X2", "33 C0 F6 41 50");
-			STORE_POINTER(rage_fwArchetype_GetFragType);
-		});
+			{
+				p = p.add(14).rip();
+				CHECK_EXISTING_HOOK_WONT_HOOK("X2", "33 C0 F6 41 50");
+				STORE_POINTER(rage_fwArchetype_GetFragType);
+			});
 		// The rest is in ComponentCrashPatch
 
 #ifdef STAND_DEBUG
@@ -2584,18 +2575,18 @@ namespace Stand
 #endif
 
 		BATCH_ADD("ZC", "C3", [](soup::Pointer p)
-		{
-			STORE_POINTER(nullsub);
-		});
+			{
+				STORE_POINTER(nullsub);
+			});
 
 		Components::addPatterns(batch);
 
 		// Scan
 		auto scan_patterns = batch.entries.size();
 		auto scan_time = TimedCall::run([&]
-		{
-			batch.run();
-		});
+			{
+				batch.run();
+			});
 
 		// Determine game version
 		std::string game_version{};
@@ -2615,7 +2606,7 @@ namespace Stand
 				game_version = pointers::build_version;
 			}
 		}
-		
+
 		// Failed to scan any patterns?
 		if (!batch.error_message.empty())
 		{
@@ -2749,7 +2740,7 @@ namespace Stand
 			g_game_has_passive_dll = true;
 		}
 #endif
-		*pointers::is_explosion_type_valid_patch = CS_ACTIVE;
+		* pointers::is_explosion_type_valid_patch = CS_ACTIVE;
 		patched_is_explosion_type_valid = true;
 
 		return true;
@@ -2871,9 +2862,9 @@ namespace Stand
 			st.keypress_fallback_unload = 0;
 		}
 		// Manage PointerCache + killswitch
-		SOUP_IF_LIKELY (g_tunables.ready)
+		SOUP_IF_LIKELY(g_tunables.ready)
 		{
-			SOUP_IF_UNLIKELY (PointerCache::isInited())
+			SOUP_IF_UNLIKELY(PointerCache::isInited())
 			{
 				if (PointerCache::cache.contains(soup::ObfusString(STAND_VERSION).str()))
 				{
@@ -3136,7 +3127,7 @@ namespace Stand
 						}
 					}
 				}
-				SOUP_IF_UNLIKELY (handled)
+				SOUP_IF_UNLIKELY(handled)
 				{
 					Util::copy_to_clipboard_utf8(clipboard_backup);
 				}

@@ -111,14 +111,7 @@ public:
 	PAD(0x58 + 1, 0x60) CGameScriptId m_ScriptId;
 	/* 0xA0 */ int m_nRange;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPlaySoundEvent, m_nRange) == 0xA0);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CStopSoundEvent : public rage::netGameEvent
 {

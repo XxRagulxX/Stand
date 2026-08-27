@@ -80,12 +80,5 @@ namespace rage
 			m_Records.Init(records, recordSpan, maxRows);
 		}
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(rlProfileStatsReadResults, m_NumStatIds) == 8);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

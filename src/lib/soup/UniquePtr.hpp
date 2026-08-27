@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility> // std::forward
+#include <utility> // forward
 
 #include "base.hpp"
 #include "type_traits.hpp"
@@ -20,7 +20,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		UniquePtr(UniquePtr&& b) noexcept
+		UniquePtr(UniquePtr<T>&& b) noexcept
 			: data(b.data)
 		{
 			b.data = nullptr;
@@ -33,56 +33,46 @@ NAMESPACE_SOUP
 			b.data = nullptr;
 		}
 
-		UniquePtr(const UniquePtr&) = delete;
-		UniquePtr& operator=(const UniquePtr&) = delete;
-
-		~UniquePtr() noexcept
+		~UniquePtr()
 		{
-			delete data;
+			free();
 		}
 
+	private:
+		void free()
+		{
+			// "if ptr is a null pointer, the standard library deallocation functions do nothing"
+			//if (data != nullptr)
+			{
+				delete data;
+			}
+		}
+
+	public:
 		void reset() noexcept
 		{
-			delete data;
-			data = nullptr;
-		}
-
-		void reset(T* ptr) noexcept
-		{
-			if (data != ptr)
+			// "if ptr is a null pointer, the standard library deallocation functions do nothing"
+			//if (data != nullptr)
 			{
 				delete data;
-				data = ptr;
+				data = nullptr;
 			}
 		}
 
-		UniquePtr& operator=(UniquePtr&& b) noexcept
+		UniquePtr<T>& operator =(UniquePtr<T>&& b) noexcept
 		{
-			if (this != &b)
+			const auto old_data = data;
+			data = b.data;
+			b.data = nullptr;
+			// "if ptr is a null pointer, the standard library deallocation functions do nothing"
+			//if (old_data != nullptr)
 			{
-				delete data;
-
-				data = b.data;
-				b.data = nullptr;
-			}
-
-			return *this;
-		}
-
-		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2> || std::is_base_of_v<T2, T>)>
-		UniquePtr& operator=(UniquePtr<T2>&& b) noexcept
-		{
-			if (data != b.data)
-			{
-				delete data;
-
-				data = static_cast<T*>(b.data);
-				b.data = nullptr;
+				delete old_data;
 			}
 			return *this;
 		}
 
-		[[nodiscard]] explicit operator bool() const noexcept
+		[[nodiscard]] operator bool() const noexcept
 		{
 			return data != nullptr;
 		}
@@ -99,19 +89,19 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] T& operator*() const noexcept
 		{
-			return *data;
+			return *get();
 		}
 
 		[[nodiscard]] T* operator->() const noexcept
 		{
-			return data;
+			return get();
 		}
 
 		[[nodiscard]] T* release() noexcept
 		{
-			T* ptr = data;
+			T* val = data;
 			data = nullptr;
-			return ptr;
+			return val;
 		}
 	};
 

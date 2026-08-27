@@ -12,7 +12,6 @@ namespace Stand
 	class GamerIdentifier
 	{
 	public:
-		virtual ~GamerIdentifier() = default;
 		bool is_on_devdbg;
 
 	protected:

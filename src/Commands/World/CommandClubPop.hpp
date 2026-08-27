@@ -20,7 +20,7 @@ namespace Stand
 			const int char_slot = Util::getCharSlot(click);
 			if (char_slot != -1)
 			{
-				ensureScriptThread(click, [=, this]
+				ensureScriptThread(click, [=]
 				{
 					STATS::STAT_SET_INT(CHAR_STAT(char_slot, "CLUB_POPULARITY"), value * 10, true);
 				});

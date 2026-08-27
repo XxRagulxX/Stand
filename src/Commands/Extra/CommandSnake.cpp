@@ -100,6 +100,7 @@ namespace Stand
 				}
 				break;
 
+			default:
 			case RIGHT:
 				moveRight(snake_head);
 				if (updateSnakeHead())
@@ -114,10 +115,6 @@ namespace Stand
 				{
 					squares[snake_head] = SNAKE_FROM_RIGHT;
 				}
-				break;
-			case NONE:
-			case FORWARD:
-			case BACK:
 				break;
 			}
 			if (g_gui.last_directional_input_processed != g_gui.last_directional_input)
@@ -139,10 +136,6 @@ namespace Stand
 					{
 						AUDIO::PLAY_SOUND_FRONTEND(-1, "NAV_LEFT_RIGHT", "HUD_FRONTEND_DEFAULT_SOUNDSET", true);
 					});
-					break;
-				case NONE:
-				case FORWARD:
-				case BACK:
 					break;
 				}
 			}
@@ -182,8 +175,6 @@ namespace Stand
 						Circle::inst_100.setRadius(size.x / 2.0f);
 						g_renderer.drawCircleS(pos.x, pos.y, Circle::inst_100, g_renderer.minigameColour);
 					}
-					break;
-				case EMPTY:
 					break;
 				}
 				//g_renderer.drawText(x, y, fmt::to_wstring(i), 2.0, g_renderer.focusTextAndSpriteColour);
@@ -251,9 +242,6 @@ namespace Stand
 			case SNAKE_FROM_LEFT:
 				moveLeft(i);
 				break;
-			case EMPTY:
-			case FRUIT:
-				break;
 			}
 		} while (++j < snake_length);
 		squares[i] = EMPTY;
@@ -274,13 +262,8 @@ namespace Stand
 			[[fallthrough]];
 		case EMPTY:
 			return true;
-		case SNAKE_FROM_UP:
-		case SNAKE_FROM_DOWN:
-		case SNAKE_FROM_RIGHT:
-		case SNAKE_FROM_LEFT:
-			resetGame();
-			return false;
 		}
+		resetGame();
 		return false;
 	}
 

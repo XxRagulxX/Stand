@@ -19,15 +19,8 @@ namespace rage
 		/* 0x190 */ netSocketAddress m_Candidates[8];
 		char please_dont_buffer_overflow_me_daddy_rockstar[0x600];
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netIceSessionOffer, m_DestPeerAddr) == 0xD0);
 	static_assert(offsetof(netIceSessionOffer, m_Candidates) == 0x190);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	struct netIceSessionAnswer
 	{
@@ -42,14 +35,7 @@ namespace rage
 		PAD(0x14, 0x18) netPeerAddress m_SourcePeerAddr;
 		/* 0xD8 */ netSocketAddress m_Candidates[8];
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netIceSessionAnswer, m_TransactionId) == 0x10);
 	static_assert(offsetof(netIceSessionAnswer, m_SourcePeerAddr) == 0x18);
 	static_assert(offsetof(netIceSessionAnswer, m_Candidates) == 0xD8);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

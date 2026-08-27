@@ -168,12 +168,5 @@ public:
 	PAD(0x4E8 + 8, 0x4F4) float age;
 	PAD(0x4F4 + 4, 0x5C3) bool m_bProximityMineTriggered;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CProjectile, age) == 0x4F4);
 static_assert(offsetof(CProjectile, m_bProximityMineTriggered) == 0x5C3);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
