@@ -171,6 +171,11 @@ add_library(DirectXTK STATIC
     ${DIRECTXTK_SOURCES}
 )
 
+target_compile_options(DirectXTK
+    PRIVATE
+        /w
+)
+
 target_include_directories(DirectXTK
     PUBLIC
         "${DIRECTXTK_SOURCE_DIR}/Inc"
@@ -269,6 +274,11 @@ add_library(MinHook STATIC
     ${MINHOOK_SOURCES}
 )
 
+target_compile_options(MinHook
+    PRIVATE
+        /w
+)
+
 target_include_directories(MinHook
     PUBLIC
         "${MINHOOK_SOURCE_DIR}/include"
@@ -293,6 +303,11 @@ add_library(StackWalker STATIC
     "${STACKWALKER_SOURCE_DIR}/StackWalker.cpp"
 )
 
+target_compile_options(StackWalker
+    PRIVATE
+        /w
+)
+
 target_include_directories(StackWalker
     PUBLIC
         "${LIB_DIR}"
@@ -309,6 +324,11 @@ add_library(DiscordRPC STATIC
     "${DISCORD_RPC_DIR}/src/discord_rpc.cpp"
     "${DISCORD_RPC_DIR}/src/rpc_connection.cpp"
     "${DISCORD_RPC_DIR}/src/serialization.cpp"
+)
+
+target_compile_options(DiscordRPC
+    PRIVATE
+        /w
 )
 
 target_link_libraries(DiscordRPC
@@ -334,6 +354,11 @@ add_library(Pluto STATIC
 
     ${PLUTO_C}
     ${PLUTO_CPP}
+)
+
+target_compile_options(Pluto
+    PRIVATE
+        /w
 )
 
 target_include_directories(Pluto
