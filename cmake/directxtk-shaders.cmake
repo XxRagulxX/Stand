@@ -14,14 +14,21 @@
 # source, or Stand keeps silently running the old compiled shader.
 # STAND_COMPILE_DIRECTXTK_SHADERS (default OFF) turns that regeneration
 # on: place the updated *.hlsl source under lib/directxtk/shaders/ (see
-# STAND_DIRECTXTK_SHADER_SOURCES below for the exact filename each
-# lib/directxtk/shaderscompiled/*.inc expects), and configuring with
-# this ON recompiles every one of them with fxc (the D3D shader
-# compiler) - overwriting the checked-in .inc files in that folder in
-# place - on both native Windows and the Linux -> Windows cross build
-# (via Wine, the same way cmake/cross-compile.cmake already runs the
-# rest of the MSVC toolchain on Linux). Leave it OFF to just use the
-# .inc files as they are; no shader compiler needed at all.
+# STAND_DIRECTXTK_SHADERS below for the exact filename and entry point
+# each lib/directxtk/shaderscompiled/*.inc comes from), and configuring
+# with this ON recompiles every one of them with fxc (the D3D shader
+# compiler) - writing the resulting .inc into that folder - on both
+# native Windows and the Linux -> Windows cross build (via Wine, the
+# same way cmake/cross-compile.cmake already runs the rest of the MSVC
+# toolchain on Linux). Leave it OFF to just use the .inc files as they
+# are; no shader compiler needed at all.
+#
+# STAND_DIRECTXTK_SHADERS is the full list of shaders to produce - it's
+# authoritative on its own (taken straight from DirectXTK's own
+# Src/Shaders/CompileShaders.cmd), not derived from whatever already
+# happens to exist in lib/directxtk/shaderscompiled/. That's what makes
+# it possible to regenerate that folder from a clean/empty state, not
+# just refresh files already sitting there.
 #
 # This intentionally writes back into the source tree (lib/directxtk/
 # shaderscompiled/), not the build directory - unusual for a CMake
@@ -123,62 +130,190 @@ else()
 endif()
 
 # ------------------------------------------------------------
-# Which .hlsl source file each shader technique comes from
+# Every shader technique Stand's compiled subset of DirectXTK needs
 # ------------------------------------------------------------
-# Every lib/directxtk/shaderscompiled/*.inc is named "<Source>_<Entry>",
-# e.g. EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc is the
-# "VSEnvMapOneLightFresnel" technique compiled from
-# lib/directxtk/shaders/EnvironmentMapEffect.hlsl. This list is exactly
-# the "<Source>" part of every .inc currently checked in; a shader whose
-# name doesn't start with one of these (entry point included) needs an
-# entry added here first.
-
-set(STAND_DIRECTXTK_SHADER_SOURCES
-    AlphaTestEffect
-    BasicEffect
-    DGSLEffect
-    DGSLLambert
-    DGSLPhong
-    DGSLUnlit
-    DualTextureEffect
-    EnvironmentMapEffect
-    PostProcess
-    SkinnedEffect
-    SpriteEffect
-    ToneMap
-)
-
-# Sources that DirectXTK's own Src/Shaders/CompileShaders.cmd always
-# compiles at plain SM4 (vs_4_0/ps_4_0), instead of the vs/ps_4_0_level_9_1
-# profile (feature-level-9.x-compatible) every other technique below
-# uses. EnvironmentMapEffect is a special case of its own: only a handful
-# of its own techniques need SM4 (see STAND_DIRECTXTK_SM4_ENTRIES) - the
-# rest of it is still 9.1-compatible like everything else.
-set(STAND_DIRECTXTK_SM4_ONLY_SOURCES
-    PostProcess
-    ToneMap
-)
-
-set(STAND_DIRECTXTK_SM4_ENTRIES
-    VSEnvMapPixelLightingSM4
-    VSEnvMapPixelLightingBnSM4
-    PSEnvMapDualParabolaPixelLighting
-    PSEnvMapDualParabolaPixelLightingNoFog
-    PSEnvMapDualParabolaPixelLightingFresnel
-    PSEnvMapDualParabolaPixelLightingFresnelNoFog
+# Each entry is "<hlsl source, without extension>;<entry point>;<fxc
+# target profile>" - e.g. the first one below means: compile
+# lib/directxtk/shaders/AlphaTestEffect.hlsl's "VSAlphaTest" entry point
+# as vs_4_0_level_9_1, into
+# lib/directxtk/shaderscompiled/AlphaTestEffect_VSAlphaTest.inc.
+#
+# Taken directly from DirectXTK's own Src/Shaders/CompileShaders.cmd
+# (same order, same profiles - vs/ps_4_0_level_9_1 by default,
+# vs/ps_4_0 for PostProcess, ToneMap, and the handful of
+# EnvironmentMapEffect entries its own script marks SM4-only), trimmed
+# to the effects Stand's CMakeLists.txt actually compiles (no NormalMap/
+# PBR/Debug - see DIRECTXTK_CPP_FILES). If DirectXTK adds a new
+# technique to one of these effects, or Stand starts compiling another
+# effect, its entry needs adding here too - EXISTS-checking every
+# lib/directxtk/shaders/*.hlsl this list expects (see below) will catch
+# a source file with no matching entry, but not the other way around.
+set(STAND_DIRECTXTK_SHADERS
+    "AlphaTestEffect\;VSAlphaTest\;vs_4_0_level_9_1"
+    "AlphaTestEffect\;VSAlphaTestNoFog\;vs_4_0_level_9_1"
+    "AlphaTestEffect\;VSAlphaTestVc\;vs_4_0_level_9_1"
+    "AlphaTestEffect\;VSAlphaTestVcNoFog\;vs_4_0_level_9_1"
+    "AlphaTestEffect\;PSAlphaTestLtGt\;ps_4_0_level_9_1"
+    "AlphaTestEffect\;PSAlphaTestLtGtNoFog\;ps_4_0_level_9_1"
+    "AlphaTestEffect\;PSAlphaTestEqNe\;ps_4_0_level_9_1"
+    "AlphaTestEffect\;PSAlphaTestEqNeNoFog\;ps_4_0_level_9_1"
+    "BasicEffect\;VSBasic\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicNoFog\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVcNoFog\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicTx\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicTxNoFog\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicTxVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicTxVcNoFog\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLighting\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingVcBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingTx\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingTxBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingTxVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicVertexLightingTxVcBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLight\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightVcBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightTx\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightTxBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightTxVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicOneLightTxVcBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLighting\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingVcBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingTx\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingTxBn\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingTxVc\;vs_4_0_level_9_1"
+    "BasicEffect\;VSBasicPixelLightingTxVcBn\;vs_4_0_level_9_1"
+    "BasicEffect\;PSBasic\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicNoFog\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicTx\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicTxNoFog\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicVertexLighting\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicVertexLightingNoFog\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicVertexLightingTx\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicVertexLightingTxNoFog\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicPixelLighting\;ps_4_0_level_9_1"
+    "BasicEffect\;PSBasicPixelLightingTx\;ps_4_0_level_9_1"
+    "DualTextureEffect\;VSDualTexture\;vs_4_0_level_9_1"
+    "DualTextureEffect\;VSDualTextureNoFog\;vs_4_0_level_9_1"
+    "DualTextureEffect\;VSDualTextureVc\;vs_4_0_level_9_1"
+    "DualTextureEffect\;VSDualTextureVcNoFog\;vs_4_0_level_9_1"
+    "DualTextureEffect\;PSDualTexture\;ps_4_0_level_9_1"
+    "DualTextureEffect\;PSDualTextureNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMap\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapBn\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapFresnel\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapFresnelBn\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapOneLight\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapOneLightBn\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapOneLightFresnel\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapOneLightFresnelBn\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapPixelLighting\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapPixelLightingBn\;vs_4_0_level_9_1"
+    "EnvironmentMapEffect\;VSEnvMapPixelLightingSM4\;vs_4_0"
+    "EnvironmentMapEffect\;VSEnvMapPixelLightingBnSM4\;vs_4_0"
+    "EnvironmentMapEffect\;PSEnvMap\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapSpecular\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapSpecularNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapPixelLighting\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapPixelLightingNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapPixelLightingFresnel\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapPixelLightingFresnelNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapSpherePixelLighting\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapSpherePixelLightingNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapSpherePixelLightingFresnel\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapSpherePixelLightingFresnelNoFog\;ps_4_0_level_9_1"
+    "EnvironmentMapEffect\;PSEnvMapDualParabolaPixelLighting\;ps_4_0"
+    "EnvironmentMapEffect\;PSEnvMapDualParabolaPixelLightingNoFog\;ps_4_0"
+    "EnvironmentMapEffect\;PSEnvMapDualParabolaPixelLightingFresnel\;ps_4_0"
+    "EnvironmentMapEffect\;PSEnvMapDualParabolaPixelLightingFresnelNoFog\;ps_4_0"
+    "SkinnedEffect\;VSSkinnedVertexLightingOneBone\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedVertexLightingOneBoneBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedVertexLightingTwoBones\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedVertexLightingTwoBonesBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedVertexLightingFourBones\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedVertexLightingFourBonesBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedOneLightOneBone\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedOneLightOneBoneBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedOneLightTwoBones\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedOneLightTwoBonesBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedOneLightFourBones\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedOneLightFourBonesBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedPixelLightingOneBone\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedPixelLightingOneBoneBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedPixelLightingTwoBones\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedPixelLightingTwoBonesBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedPixelLightingFourBones\;vs_4_0_level_9_1"
+    "SkinnedEffect\;VSSkinnedPixelLightingFourBonesBn\;vs_4_0_level_9_1"
+    "SkinnedEffect\;PSSkinnedVertexLighting\;ps_4_0_level_9_1"
+    "SkinnedEffect\;PSSkinnedVertexLightingNoFog\;ps_4_0_level_9_1"
+    "SkinnedEffect\;PSSkinnedPixelLighting\;ps_4_0_level_9_1"
+    "SpriteEffect\;SpriteVertexShader\;vs_4_0_level_9_1"
+    "SpriteEffect\;SpritePixelShader\;ps_4_0_level_9_1"
+    "DGSLEffect\;main\;vs_4_0_level_9_1"
+    "DGSLEffect\;mainVc\;vs_4_0_level_9_1"
+    "DGSLEffect\;main1Bones\;vs_4_0_level_9_1"
+    "DGSLEffect\;main1BonesVc\;vs_4_0_level_9_1"
+    "DGSLEffect\;main2Bones\;vs_4_0_level_9_1"
+    "DGSLEffect\;main2BonesVc\;vs_4_0_level_9_1"
+    "DGSLEffect\;main4Bones\;vs_4_0_level_9_1"
+    "DGSLEffect\;main4BonesVc\;vs_4_0_level_9_1"
+    "DGSLUnlit\;main\;ps_4_0_level_9_1"
+    "DGSLLambert\;main\;ps_4_0_level_9_1"
+    "DGSLPhong\;main\;ps_4_0_level_9_1"
+    "DGSLUnlit\;mainTk\;ps_4_0_level_9_1"
+    "DGSLLambert\;mainTk\;ps_4_0_level_9_1"
+    "DGSLPhong\;mainTk\;ps_4_0_level_9_1"
+    "DGSLUnlit\;mainTx\;ps_4_0_level_9_1"
+    "DGSLLambert\;mainTx\;ps_4_0_level_9_1"
+    "DGSLPhong\;mainTx\;ps_4_0_level_9_1"
+    "DGSLUnlit\;mainTxTk\;ps_4_0_level_9_1"
+    "DGSLLambert\;mainTxTk\;ps_4_0_level_9_1"
+    "DGSLPhong\;mainTxTk\;ps_4_0_level_9_1"
+    "PostProcess\;VSQuad\;vs_4_0"
+    "PostProcess\;PSCopy\;ps_4_0"
+    "PostProcess\;PSMonochrome\;ps_4_0"
+    "PostProcess\;PSSepia\;ps_4_0"
+    "PostProcess\;PSDownScale2x2\;ps_4_0"
+    "PostProcess\;PSDownScale4x4\;ps_4_0"
+    "PostProcess\;PSGaussianBlur5x5\;ps_4_0"
+    "PostProcess\;PSBloomExtract\;ps_4_0"
+    "PostProcess\;PSBloomBlur\;ps_4_0"
+    "PostProcess\;PSMerge\;ps_4_0"
+    "PostProcess\;PSBloomCombine\;ps_4_0"
+    "ToneMap\;VSQuad\;vs_4_0"
+    "ToneMap\;PSCopy\;ps_4_0"
+    "ToneMap\;PSSaturate\;ps_4_0"
+    "ToneMap\;PSReinhard\;ps_4_0"
+    "ToneMap\;PSACESFilmic\;ps_4_0"
+    "ToneMap\;PS_SRGB\;ps_4_0"
+    "ToneMap\;PSSaturate_SRGB\;ps_4_0"
+    "ToneMap\;PSReinhard_SRGB\;ps_4_0"
+    "ToneMap\;PSACESFilmic_SRGB\;ps_4_0"
+    "ToneMap\;PSHDR10\;ps_4_0"
 )
 
 # ------------------------------------------------------------
 # stand_compile_directxtk_shaders(target compiled_dir)
 # ------------------------------------------------------------
-# Adds one add_custom_command() per lib/directxtk/shaderscompiled/*.inc
-# that already exists, recompiling it from its .hlsl source, and makes
-# `target` depend on all of them so they're rebuilt before anything
-# that #includes one gets compiled.
+# Adds one add_custom_command() per entry in STAND_DIRECTXTK_SHADERS,
+# compiling it into compiled_dir, and makes `target` depend on all of
+# them so they're rebuilt before anything that #includes one gets
+# compiled. Works regardless of what (if anything) already exists in
+# compiled_dir - including nothing at all, e.g. right after clearing it
+# out to force a full regeneration.
 
 function(stand_compile_directxtk_shaders target compiled_dir)
     set(shader_src_dir "${compiled_dir}/../shaders")
     get_filename_component(shader_src_dir "${shader_src_dir}" ABSOLUTE)
+
+    file(MAKE_DIRECTORY "${compiled_dir}")
 
     # Shared *.fxh fragments (Common.fxh, Lighting.fxh, ...) that the
     # top-level *.hlsl files #include - fxc resolves these itself by
@@ -189,78 +324,17 @@ function(stand_compile_directxtk_shaders target compiled_dir)
     # only the one .hlsl whose mtime CMake happens to be watching.
     file(GLOB shared_fxh_headers CONFIGURE_DEPENDS "${shader_src_dir}/*.fxh")
 
-    file(GLOB existing_incs CONFIGURE_DEPENDS "${compiled_dir}/*.inc")
-
-    if(NOT existing_incs)
-        message(FATAL_ERROR
-            "STAND_COMPILE_DIRECTXTK_SHADERS is ON, but no *.inc files "
-            "were found under:\n"
-            "  ${compiled_dir}\n"
-            "There's nothing here to tell us which shaders to recompile."
-        )
-    endif()
-
     set(missing_hlsl "")
     set(all_incs "")
 
-    foreach(inc_path IN LISTS existing_incs)
-        get_filename_component(stem "${inc_path}" NAME_WE)
+    foreach(shader_spec IN LISTS STAND_DIRECTXTK_SHADERS)
+        list(GET shader_spec 0 source)
+        list(GET shader_spec 1 entry_point)
+        list(GET shader_spec 2 profile)
 
-        # Longest/only matching "<Source>_" prefix from the table above.
-        set(matched_source "")
-
-        foreach(candidate IN LISTS STAND_DIRECTXTK_SHADER_SOURCES)
-            if(stem MATCHES "^${candidate}_(.+)$")
-                set(matched_source "${candidate}")
-                set(entry_point "${CMAKE_MATCH_1}")
-            endif()
-        endforeach()
-
-        if(NOT matched_source)
-            message(FATAL_ERROR
-                "Don't know which .hlsl source '${stem}.inc' should come "
-                "from - add its source file's name to "
-                "STAND_DIRECTXTK_SHADER_SOURCES in cmake/directxtk-shaders.cmake."
-            )
-        endif()
-
-        # Vertex vs. pixel shader: almost all of DirectXTK's entry points
-        # say so themselves (VS.../PS...); the exceptions are DGSLEffect
-        # (always the vertex shader, one per skinning bone count) and
-        # DGSLLambert/Phong/Unlit (always the pixel shader, one per
-        # lighting model) and SpriteEffect's two fixed entry points.
-        if(entry_point MATCHES "^VS")
-            set(shader_stage "vs")
-        elseif(entry_point MATCHES "^PS")
-            set(shader_stage "ps")
-        elseif(matched_source STREQUAL "DGSLEffect")
-            set(shader_stage "vs")
-        elseif(matched_source MATCHES "^DGSL(Lambert|Phong|Unlit)$")
-            set(shader_stage "ps")
-        elseif(entry_point STREQUAL "SpriteVertexShader")
-            set(shader_stage "vs")
-        elseif(entry_point STREQUAL "SpritePixelShader")
-            set(shader_stage "ps")
-        else()
-            message(FATAL_ERROR
-                "Don't know whether '${stem}' is a vertex or pixel shader "
-                "- add a case for it in cmake/directxtk-shaders.cmake."
-            )
-        endif()
-
-        # Feature level: matches Src/Shaders/CompileShaders.cmd exactly -
-        # everything is vs/ps_4_0_level_9_1 (feature-level-9.x compatible)
-        # except the SM4-only sources and EnvironmentMapEffect's own
-        # handful of SM4 entries (both above).
-        if(matched_source IN_LIST STAND_DIRECTXTK_SM4_ONLY_SOURCES)
-            set(profile "${shader_stage}_4_0")
-        elseif(matched_source STREQUAL "EnvironmentMapEffect" AND entry_point IN_LIST STAND_DIRECTXTK_SM4_ENTRIES)
-            set(profile "${shader_stage}_4_0")
-        else()
-            set(profile "${shader_stage}_4_0_level_9_1")
-        endif()
-
-        set(hlsl_path "${shader_src_dir}/${matched_source}.hlsl")
+        set(stem "${source}_${entry_point}")
+        set(hlsl_path "${shader_src_dir}/${source}.hlsl")
+        set(inc_path "${compiled_dir}/${stem}.inc")
 
         if(NOT EXISTS "${hlsl_path}")
             list(APPEND missing_hlsl "${hlsl_path}")
