@@ -28,6 +28,8 @@
 #include "lib/soup/ObfusString.hpp"
 
 // Stand
+#include "Core/fmt_enum_formatter.hpp"
+
 #include "Game/fwddecl.hpp"
 #include "Game/typedecl.hpp"
 
