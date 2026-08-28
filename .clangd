@@ -49,23 +49,3 @@ Diagnostics:
   # either - so both are turned off rather than fought file by file.
   UnusedIncludes: None
   MissingIncludes: None
----
-# fmt is header-only (FMT_HEADER_ONLY, see CMakeLists.txt) and has no
-# .cpp of its own anywhere, so clangd can never borrow real compile
-# flags for fmt/format.h or fmt/chrono.h from a matching source file the
-# way it can for most other headers - opening one of fmt's own headers
-# directly always falls back to the generic Add: flags above, with no
-# -std and no FMT_HEADER_ONLY. Without an explicit C++20+ standard,
-# fmt's SFINAE-heavy overloads (e.g. detail::isfinite in format.h vs.
-# chrono.h) can misresolve as ambiguous under clangd's older default - a
-# clangd-only false positive matching neither this project's real
-# -std:c++23 build nor FMT_HEADER_ONLY. Scoped to just fmt's own headers
-# (a separate fragment, rather than adding to Add: above) so it can't
-# interact with the real per-file flags every other file already gets
-# from compile_commands.json.
-If:
-  PathMatch: .*/lib/fmt/include/.*
-CompileFlags:
-  Add:
-    - -std=c++23
-    - -DFMT_HEADER_ONLY
