@@ -2655,9 +2655,9 @@ namespace Stand
 				message.append(game_version);
 			}
 			message.append(soup::ObfusString(" for ").str()).append(fmt::to_string(scan_patterns)).append(soup::ObfusString(" sigs in ").str()).append(scan_time);
-			if (batch.cache_utilisation != 0)
+			if (batch.cache_utilisation.load() != 0)
 			{
-				message.append(fmt::format(fmt::runtime(soup::ObfusString(" ({} from cache)").str()), batch.cache_utilisation));
+				message.append(fmt::format(fmt::runtime(soup::ObfusString(" ({} from cache)").str()), batch.cache_utilisation.load()));
 			}
 			if (pointers::is_explosion_type_valid_patch == nullptr)
 			{
