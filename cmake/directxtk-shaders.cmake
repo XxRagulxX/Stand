@@ -341,6 +341,26 @@ function(stand_compile_directxtk_shaders target compiled_dir)
             continue()
         endif()
 
+        # fxc.exe parses its own command line the normal Windows way -
+        # anything starting with "/" is a switch. A POSIX absolute path
+        # (which is exactly what CMake generates for hlsl_path/inc_path
+        # when cross-compiling on Linux) also starts with "/", so fxc
+        # mistakes it for an unrecognized option instead of a filename.
+        # Wine maps the whole POSIX filesystem under Z:\, so converting
+        # to that form first (only needed when actually running through
+        # Wine) sidesteps the ambiguity entirely. Native Windows already
+        # gets real Windows-style paths from CMake, so this is a no-op
+        # there.
+        if(CROSSCOMPILE)
+            string(REPLACE "/" "\\" fxc_hlsl_path "${hlsl_path}")
+            string(REPLACE "/" "\\" fxc_inc_path "${inc_path}")
+            set(fxc_hlsl_path "Z:${fxc_hlsl_path}")
+            set(fxc_inc_path "Z:${fxc_inc_path}")
+        else()
+            set(fxc_hlsl_path "${hlsl_path}")
+            set(fxc_inc_path "${inc_path}")
+        endif()
+
         add_custom_command(
             OUTPUT "${inc_path}"
             COMMAND
@@ -349,8 +369,8 @@ function(stand_compile_directxtk_shaders target compiled_dir)
                 "/T${profile}"
                 "/E${entry_point}"
                 "/Vn${stem}"
-                "/Fh${inc_path}"
-                "${hlsl_path}"
+                "/Fh${fxc_inc_path}"
+                "${fxc_hlsl_path}"
             DEPENDS "${hlsl_path}" ${shared_fxh_headers}
             COMMENT "Compiling DirectXTK shader ${stem} (${profile})"
             VERBATIM
