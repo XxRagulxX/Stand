@@ -201,6 +201,8 @@ endif()
 # ------------------------------------------------------------
 # fmt library
 # ------------------------------------------------------------
+# Vendored from https://github.com/fmtlib/fmt, currently at the
+# "12.2.0" release tag.
 
 set(FMT_SOURCE_DIR "${LIB_DIR}/fmt")
 
