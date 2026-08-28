@@ -41,6 +41,18 @@ namespace Stand
 			return v_getZFromHeightmap(((const T*)this)->x, ((const T*)this)->y);
 		}
 	};
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// std::string() above) as enough to make a type formattable on its
+	// own - it needs a format_as() overload it can find via ADL instead.
+	// This covers every vector type derived from VectorBase (directly, or
+	// transitively through Vector3Base's CRTP mixin below), e.g. v3,
+	// Vector2Plus, rage::Vector2, rage::scrVector3.
+	template<uint8_t axes, typename T>
+	auto format_as(const VectorBase<axes, T>& v) -> std::string
+	{
+		return static_cast<std::string>(v);
+	}
 }
 
 namespace rage

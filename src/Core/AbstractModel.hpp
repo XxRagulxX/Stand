@@ -112,4 +112,12 @@ namespace Stand
 	};
 #pragma pack(pop)
 	static_assert(sizeof(AbstractModel) == sizeof(int));
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// Hash() above) as enough to make a type formattable on its own - it
+	// needs a format_as() overload it can find via ADL instead.
+	constexpr auto format_as(const AbstractModel& v) noexcept -> Hash
+	{
+		return static_cast<Hash>(v);
+	}
 }

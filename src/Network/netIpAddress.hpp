@@ -76,5 +76,15 @@ namespace rage
 		[[nodiscard]] std::string getGeoIpField(Stand::GeoIpField field);
 	};
 	static_assert(sizeof(netIpAddress) == 4);
+
+	// fmt no longer treats an implicit conversion operator (this class
+	// has two - uint32_t and std::string) as enough to make a type
+	// formattable on its own - it needs a format_as() overload it can
+	// find via ADL instead. The dotted-decimal string is the useful one
+	// to log/display, so that's what fmt::format() produces.
+	inline auto format_as(const netIpAddress& v) -> std::string
+	{
+		return static_cast<std::string>(v);
+	}
 }
 #pragma pack(pop)

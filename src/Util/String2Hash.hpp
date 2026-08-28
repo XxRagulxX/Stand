@@ -33,4 +33,12 @@ namespace Stand
 		void convertToHash();
 	};
 	static_assert(sizeof(String2Hash) == sizeof(const char*));
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// hash_t() above) as enough to make a type formattable on its own -
+	// it needs a format_as() overload it can find via ADL instead.
+	inline auto format_as(const String2Hash& v) noexcept -> hash_t
+	{
+		return static_cast<hash_t>(v);
+	}
 }

@@ -78,4 +78,13 @@ namespace Stand
 			return value.c_str();
 		}
 	};
+
+	// fmt no longer treats an implicit conversion operator (all of the
+	// ones above) as enough to make a type formattable on its own - it
+	// needs a format_as() overload it can find via ADL instead. Without
+	// this, fmt::format()-ing a StringCastable directly fails to compile.
+	inline auto format_as(const StringCastable& v) -> const std::string&
+	{
+		return v.value;
+	}
 }

@@ -385,4 +385,12 @@ namespace Stand
 	{
 		return reinterpret_cast<const rage::netPlayer*>(getCNetGamePlayer());
 	}
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// player_t() above) as enough to make a type formattable on its own -
+	// it needs a format_as() overload it can find via ADL instead.
+	constexpr auto format_as(const AbstractPlayer& v) noexcept -> player_t
+	{
+		return v.p;
+	}
 }

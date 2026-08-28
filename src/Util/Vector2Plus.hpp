@@ -32,4 +32,14 @@ namespace Stand
 		operator std::string() const;
 	};
 #pragma pack(pop)
+
+	// A non-template overload beats VectorBase's format_as() template
+	// (in Util/vector.hpp) in overload resolution, so this - not the
+	// base class's own operator std::string() - is what fmt::format()
+	// actually calls; Vector2Plus's own conversion accounts for
+	// z_is_guessed and the others don't.
+	inline auto format_as(const Vector2Plus& v) -> std::string
+	{
+		return static_cast<std::string>(v);
+	}
 }

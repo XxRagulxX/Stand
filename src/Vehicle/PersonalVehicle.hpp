@@ -31,4 +31,12 @@ namespace Stand
 
 		static void saveStats();
 	};
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// uint32_t() above) as enough to make a type formattable on its own -
+	// it needs a format_as() overload it can find via ADL instead.
+	constexpr auto format_as(const PersonalVehicle& v) noexcept -> uint32_t
+	{
+		return v.slot;
+	}
 }
