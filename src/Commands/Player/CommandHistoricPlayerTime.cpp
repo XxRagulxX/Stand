@@ -1,8 +1,8 @@
-#include "CommandHistoricPlayerTime.hpp"
+#include "Commands/Player/CommandHistoricPlayerTime.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "format_time_since_1970_for_user_locale.hpp"
-#include "lang.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Util/format_time_since_1970_for_user_locale.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

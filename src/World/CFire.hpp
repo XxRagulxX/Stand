@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fwRegdRef.hpp"
+#include "Game/fwRegdRef.hpp"
 
 enum FireType_e : uint32_t
 {
@@ -44,13 +44,6 @@ struct CFire
   /* 0xA4 */ float m_maxStrengthTime;
   /* 0xA8 */ float m_spreadChanceAccumTime;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CFire, m_spreadChanceAccumTime) == 0xA8);
 static_assert(offsetof(CFire, m_entityTestTime) == 0x70);
 static_assert(offsetof(CFire, m_boneIndex) == 0x38);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

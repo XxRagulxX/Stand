@@ -1,16 +1,16 @@
-#include "CommandListAssetHashes.hpp"
+#include "Commands/Stand/CommandListAssetHashes.hpp"
 
-#include "CNetworkAssetVerifier.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandTogglePointer.hpp"
-#include "Hooking.hpp"
-#include "pointers.hpp"
+#include "Network/CNetworkAssetVerifier.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/pointers.hpp"
 
-#include "CommandFixAssetHashes.hpp"
-#include "CommandSetAssetChecksum.hpp"
-#include "CommandSpoofedExtraCrc.hpp"
-#include "CommandExtraCrcPresets.hpp"
+#include "Commands/Extra/CommandFixAssetHashes.hpp"
+#include "Commands/Extra/CommandSetAssetChecksum.hpp"
+#include "Commands/Online/CommandSpoofedExtraCrc.hpp"
+#include "Commands/Stand/CommandExtraCrcPresets.hpp"
 
 namespace Stand
 {

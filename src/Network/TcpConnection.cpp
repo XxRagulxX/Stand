@@ -1,8 +1,8 @@
-#include "TcpConnection.hpp"
+#include "Network/TcpConnection.hpp"
 
 #include <fmt/format.h>
 
-#include <soup/Socket.hpp>
+#include "lib/soup/Socket.hpp"
 
 namespace Stand
 {

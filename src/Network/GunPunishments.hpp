@@ -1,8 +1,8 @@
 #pragma once
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include <soup/Bitset.hpp>
+#include "lib/soup/Bitset.hpp"
 
 namespace Stand
 {

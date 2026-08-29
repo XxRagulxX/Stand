@@ -1,14 +1,14 @@
-#include "PatternBatch.hpp"
+#include "AntiCheat/PatternBatch.hpp"
 
 #include <thread>
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "Codename.hpp"
-#include "Exceptional.hpp"
-#include "main.hpp"
-#include "RecursiveSpinlock.hpp"
-#include "StringUtils.hpp"
+#include "Util/Codename.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/main.hpp"
+#include "Core/RecursiveSpinlock.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

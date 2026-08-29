@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandOnPlayer.hpp"
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
 namespace Stand
 {

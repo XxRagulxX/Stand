@@ -1,6 +1,6 @@
-#include "gta_task.hpp"
+#include "Game/gta_task.hpp"
 
-#include "eTaskType.hpp"
+#include "Ped/eTaskType.hpp"
 
 bool CTask::IsValidNMControlSubTask() const noexcept
 {

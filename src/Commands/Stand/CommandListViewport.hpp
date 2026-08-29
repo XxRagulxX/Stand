@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

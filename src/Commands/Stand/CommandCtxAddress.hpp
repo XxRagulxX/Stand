@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandTextslider.hpp"
+#include "Commands/Widgets/CommandTextslider.hpp"
 
-#include <soup/urlenc.hpp>
+#include "lib/soup/urlenc.hpp"
 
-#include "CommandLink.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

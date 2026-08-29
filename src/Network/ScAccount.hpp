@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
 namespace Stand
 {

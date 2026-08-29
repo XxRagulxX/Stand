@@ -1,12 +1,12 @@
-#include "CommandEditLabels.hpp"
+#include "Commands/Widgets/CommandEditLabels.hpp"
 
-#include "CommandReadonlyLink.hpp"
-#include "Hooking.hpp"
-#include "Label.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Util/Label.hpp"
 
-#include "CommandAddLabel.hpp"
-#include "CommandLabel.hpp"
-#include "CommandRevealLabels.hpp"
+#include "Commands/Widgets/CommandAddLabel.hpp"
+#include "Commands/Widgets/CommandLabel.hpp"
+#include "Commands/Stand/CommandRevealLabels.hpp"
 
 namespace Stand
 {

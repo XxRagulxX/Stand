@@ -1,7 +1,7 @@
-#include "ScriptFuncPatch.hpp"
+#include "AntiCheat/ScriptFuncPatch.hpp"
 
-#include "script_program.hpp"
-#include "ScriptVmOpCode.hpp"
+#include "Game/script_program.hpp"
+#include "Scripting/ScriptVmOpCode.hpp"
 
 namespace Stand
 {

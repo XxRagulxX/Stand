@@ -1,11 +1,11 @@
 #pragma once
 
-#include "natives_decl.hpp"
+#include "Game/natives_decl.hpp"
 
 #include <memory>
 
-#include "Script.hpp"
-#include "VectorMap.hpp"
+#include "Scripting/Script.hpp"
+#include "Rendering/VectorMap.hpp"
 
 #define USE_ENTRYPOINT_DETOURS true
 

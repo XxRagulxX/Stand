@@ -1,10 +1,10 @@
-#include "CommandSaveOutfit.hpp"
+#include "Commands/Self/CommandSaveOutfit.hpp"
 
-#include "AbstractEntity.hpp"
-#include "get_appdata_path.hpp"
-#include "CommandListRefreshable.hpp"
-#include "lang.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Commands/Widgets/CommandListRefreshable.hpp"
+#include "Localization/lang.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

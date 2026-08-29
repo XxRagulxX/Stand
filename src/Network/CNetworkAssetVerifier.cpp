@@ -1,5 +1,5 @@
 #if false
-#include "CNetworkAssetVerifier.hpp"
+#include "Network/CNetworkAssetVerifier.hpp"
 
 void CNetworkAssetVerifier::refreshCrc()
 {

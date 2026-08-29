@@ -1,12 +1,12 @@
-#include "CommandSearchPlayer.hpp"
+#include "Commands/Player/CommandSearchPlayer.hpp"
 
-#include <soup/string.hpp>
+#include "lib/soup/string.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandHistoricPlayer.hpp"
-#include "CommandLink.hpp"
-#include "PlayerHistory.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,4 +1,4 @@
-#include "LangBuiltins.hpp"
+#include "Localization/LangBuiltins.hpp"
 
 namespace Stand
 {

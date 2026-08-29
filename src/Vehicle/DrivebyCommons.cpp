@@ -1,8 +1,8 @@
-#include "DrivebyCommons.hpp"
+#include "Vehicle/DrivebyCommons.hpp"
 
-#include "CDrivebyWeaponGroup.hpp"
-#include "CVehicleMetadataMgr.hpp"
-#include "pointers.hpp"
+#include "Vehicle/CDrivebyWeaponGroup.hpp"
+#include "Vehicle/CVehicleMetadataMgr.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

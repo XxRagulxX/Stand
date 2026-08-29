@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
-#include "atMap.hpp"
-#include "sysObfuscated.hpp"
+#include "Game/atMap.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
 struct AcThingData
 {
@@ -28,13 +28,4 @@ struct AcThingData
 		mm_metric_reported_modules.insert(hash, 1);
 	}
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
-
 static_assert(offsetof(AcThingData, mm_metric_interval) == 0xA8C);
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

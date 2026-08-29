@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandReadonlyValueCopy.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
 
-#include "Offset.hpp"
+#include "Core/Offset.hpp"
 
 namespace Stand
 {

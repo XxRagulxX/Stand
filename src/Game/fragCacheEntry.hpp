@@ -1,6 +1,6 @@
 #pragma once
 
-#include "crSkeleton.hpp"
+#include "Game/crSkeleton.hpp"
 
 namespace rage
 {

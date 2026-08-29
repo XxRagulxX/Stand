@@ -1,6 +1,6 @@
-#include "fwRefAwareBase.hpp"
+#include "Game/fwRefAwareBase.hpp"
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 void rage::fwRefAwareBase::RemoveKnownRef(void** ppReference)
 {

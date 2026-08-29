@@ -1,21 +1,21 @@
-#include "script_vm_reimpl.hpp"
+#include "Game/script_vm_reimpl.hpp"
 
 #if SVM_REIMPL
 
-#include <soup/base.hpp>
+#include "lib/soup/base.hpp"
 
-#include "atStringHash.hpp"
-#include "FileLogger.hpp"
-#include "Metrics.hpp"
-#include "scrOpcodes.hpp"
-#include "script_thread.hpp"
-#include "ScriptVmErrorHandling.hpp"
+#include "Game/atStringHash.hpp"
+#include "Core/FileLogger.hpp"
+#include "Core/Metrics.hpp"
+#include "Game/scrOpcodes.hpp"
+#include "Game/script_thread.hpp"
+#include "Scripting/ScriptVmErrorHandling.hpp"
 
 #define DEBUG_VFTCORRUPTION false
 
 #if DEBUG_VFTCORRUPTION
-#include "atArray.hpp"
-#include "pointers.hpp"
+#include "Game/atArray.hpp"
+#include "Game/pointers.hpp"
 #endif
 
 // This adds 5+ minutes to the compile time and saves maybe 0.01 ms per tick...

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
-#include "Hooking.hpp"
-#include "lang.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
-#include "CommandListWarning.hpp"
+#include "Commands/Stand/CommandListWarning.hpp"
 
-#include "Gui.hpp"
-#include "Auth.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/Auth.hpp"
 
 namespace Stand
 {
@@ -13,7 +13,7 @@ namespace Stand
 		}
 		else
 		{
-			showWarning(click, Lang::getW(m_warning), WARNING_COMMAND_BOUND, [=, this](ThreadContext thread_context) mutable
+			showWarning(click, Lang::getW(m_warning), WARNING_COMMAND_BOUND, [=](ThreadContext thread_context) mutable
 			{
 				m_warning_acknowledged = true;
 				click.thread_context = thread_context;

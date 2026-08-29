@@ -1,7 +1,7 @@
-#include "GridItemTextBigCentreBordered.hpp"
+#include "Menu/GridItemTextBigCentreBordered.hpp"
 
-#include "CommandboxGrid.hpp"
-#include "Renderer.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

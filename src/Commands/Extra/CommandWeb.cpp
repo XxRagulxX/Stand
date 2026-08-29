@@ -1,10 +1,10 @@
-#include "CommandWeb.hpp"
+#include "Commands/Extra/CommandWeb.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "Auth.hpp"
+#include "Network/Auth.hpp"
 
-#include "CommandWebOpen.hpp"
+#include "Commands/Extra/CommandWebOpen.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <CommandListPlayer.hpp>
+#include <Commands/Player/CommandListPlayer.hpp>
 
-#include "PlayerProviderAll.hpp"
+#include "Network/PlayerProviderAll.hpp"
 
 namespace Stand
 {

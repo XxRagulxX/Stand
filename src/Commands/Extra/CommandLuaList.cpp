@@ -1,4 +1,4 @@
-#include "CommandLuaList.hpp"
+#include "Commands/Extra/CommandLuaList.hpp"
 
 namespace Stand
 {

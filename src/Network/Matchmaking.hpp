@@ -1,14 +1,14 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "hashtype.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/hashtype.hpp"
 
 #include <functional>
 #include <unordered_map>
 
-#include "netStatus.hpp"
-#include "SessionAttributes.hpp"
+#include "Network/netStatus.hpp"
+#include "Network/SessionAttributes.hpp"
 
 namespace Stand
 {

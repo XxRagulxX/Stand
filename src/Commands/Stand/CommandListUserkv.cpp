@@ -1,8 +1,8 @@
-#include "CommandListUserkv.hpp"
+#include "Commands/Stand/CommandListUserkv.hpp"
 
-#include "extract_delimited_string_with_escaping.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Util/extract_delimited_string_with_escaping.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

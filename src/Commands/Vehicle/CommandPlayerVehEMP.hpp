@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandPlayerVehicleAction.hpp"
+#include "Commands/Vehicle/CommandPlayerVehicleAction.hpp"
 
-#include "eExplosionTag.hpp"
-#include "natives.hpp"
+#include "Game/eExplosionTag.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

@@ -1,13 +1,13 @@
-#include "luaS_push.hpp"
+#include "Scripting/luaS_push.hpp"
 
 #include <lapi.h>
 #include <lstring.h>
 
-#include <soup/unicode.hpp>
+#include "lib/soup/unicode.hpp"
 
-#include "CommandLuaScript.hpp"
-#include "Label.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Util/Label.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

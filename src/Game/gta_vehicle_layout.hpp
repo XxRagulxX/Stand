@@ -1,8 +1,8 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "hashtype.hpp"
-#include "atArray.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/hashtype.hpp"
+#include "Game/atArray.hpp"
 
 class CVehicleDriveByAnimInfo
 {
@@ -65,11 +65,5 @@ public:
 	/* 0x008 */ CModelSeatInfo m_SeatInfo;
 };
 static_assert(sizeof(CVehicleModelInfoData) == 0x008 + sizeof(CModelSeatInfo));
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 static_assert(offsetof(CVehicleModelInfoData, m_SeatInfo.m_pLayoutinfo) == 0x350);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

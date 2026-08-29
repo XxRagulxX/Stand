@@ -1,6 +1,6 @@
-#include "force_door_open.hpp"
+#include "Vehicle/force_door_open.hpp"
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

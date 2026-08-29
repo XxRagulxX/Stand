@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rl.hpp"
-#include "rl_matching.hpp"
+#include "Network/rl.hpp"
+#include "Network/rl_matching.hpp"
 
 namespace rage
 {
@@ -16,12 +16,5 @@ namespace rage
 		uint64_t session_id;
 		uint64_t arbitration_cookie;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(rlSessionConfig, m_Attrs) == 0x0C);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

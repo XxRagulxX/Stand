@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandActionModel.hpp"
+#include "Commands/Widgets/CommandActionModel.hpp"
 
-#include "CommandInput.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 namespace Stand
 {

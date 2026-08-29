@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "natives_decl.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

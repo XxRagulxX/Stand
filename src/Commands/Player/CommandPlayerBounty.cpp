@@ -1,13 +1,13 @@
-#include "CommandPlayerBounty.hpp"
+#include "Commands/Player/CommandPlayerBounty.hpp"
 
 #include <fmt/xchar.h>
 
-#include "AbstractPlayer.hpp"
-#include "CommandToggle.hpp"
-#include "script_events.hpp"
-#include "ScriptGlobal.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Network/script_events.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandListActionItem.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandSliderFloat.hpp"
-#include "eBlip.hpp"
-#include "get_current_time_millis.hpp"
-#include "Vector2Plus.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Game/eBlip.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

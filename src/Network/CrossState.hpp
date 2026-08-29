@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CVehicleModelInfo.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
 
-#include <soup/StructMap.hpp>
+#include "lib/soup/StructMap.hpp"
 
 namespace Stand
 {
@@ -12,16 +12,9 @@ namespace Stand
 		CustomVehicleModel* next;
 		char hash_name[1];
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(CustomVehicleModel, dlc_rpf_hash_name) == sizeof(CVehicleModelInfo) + 0);
 	static_assert(offsetof(CustomVehicleModel, next) == sizeof(CVehicleModelInfo) + 8);
 	static_assert(offsetof(CustomVehicleModel, hash_name) == sizeof(CVehicleModelInfo) + 16);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	struct CrossState
 	{
@@ -40,13 +33,6 @@ namespace Stand
 
 		soup::StructMap struct_map{};
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(CrossState, custom_vehicle_models_head) == 0x08);
 	static_assert(offsetof(CrossState, struct_map) == 0x10);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

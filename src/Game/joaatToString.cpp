@@ -1,16 +1,16 @@
-#include "joaatToString.hpp"
+#include "Game/joaatToString.hpp"
 
 #include <unordered_map>
 
 #include <fmt/format.h>
 
-#include "atStringHash.hpp"
-#include "joaat_hash_db.hpp"
-#include "PedModel.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
-#include "vehicle_items.hpp"
-#include "weapon_components.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/joaat_hash_db.hpp"
+#include "Ped/PedModel.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/vehicle_items.hpp"
+#include "Weapons/weapon_components.hpp"
 
 #define REVERSE_JOAAT(name) { ATSTRINGHASH(name), name }
 

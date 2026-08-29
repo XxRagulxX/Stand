@@ -1,9 +1,9 @@
-#include "is_session.hpp"
+#include "Network/is_session.hpp"
 
-#include "CNetworkSession.hpp"
-#include "pointers.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionState.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {
@@ -40,8 +40,6 @@ namespace Stand
 		case TRANSITION_STATE_FM_TRANSITION_CREATE_PLAYER:
 		case TRANSITION_STATE_FM_SWOOP_DOWN:
 			return when_almost_done;
-		default:
-			return true;
 		}
 		return true;
 	}

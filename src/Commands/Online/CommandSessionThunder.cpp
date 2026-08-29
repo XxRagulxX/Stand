@@ -1,10 +1,10 @@
-#include "CommandSessionThunder.hpp"
+#include "Commands/Online/CommandSessionThunder.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandTogglePointer.hpp"
-#include "GlobalsWatcher.hpp"
-#include "ScriptGlobal.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Core/GlobalsWatcher.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

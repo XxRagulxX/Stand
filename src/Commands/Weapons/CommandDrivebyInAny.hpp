@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CVehicleModelInfo.hpp"
-#include "gta_vehicle_layout.hpp"
-#include "CVehicleMetadataMgr.hpp"
-#include "DrivebyCommons.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Game/gta_vehicle_layout.hpp"
+#include "Vehicle/CVehicleMetadataMgr.hpp"
+#include "Vehicle/DrivebyCommons.hpp"
 
 namespace Stand
 {

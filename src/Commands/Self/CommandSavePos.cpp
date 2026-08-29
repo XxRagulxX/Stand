@@ -1,11 +1,11 @@
-#include "CommandSavePos.hpp"
+#include "Commands/Self/CommandSavePos.hpp"
 
 #include <filesystem>
 #include <fstream>
 
-#include "get_appdata_path.hpp"
-#include "ensure_folder.hpp"
-#include "lang.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/ensure_folder.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

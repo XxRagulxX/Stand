@@ -144,10 +144,9 @@ NAMESPACE_SOUP
 	Datetime time::datetimeUtc(std::time_t ts) noexcept
 	{
 #if SOUP_WINDOWS
-		struct tm t {};
-		if (::gmtime_s(&t, &ts) == 0)
+		if (auto t = ::gmtime(&ts))
 		{
-			return Datetime::fromTm(t);
+			return Datetime::fromTm(*t);
 		}
 		return {};
 #else
@@ -160,12 +159,7 @@ NAMESPACE_SOUP
 	Datetime time::datetimeLocal(std::time_t ts) noexcept
 	{
 #if SOUP_WINDOWS
-		struct tm t {};
-		if (::localtime_s(&t, &ts) == 0)
-		{
-			return Datetime::fromTm(t);
-		}
-		return {};
+		return Datetime::fromTm(*::localtime(&ts));
 #else
 		struct tm t;
 		::localtime_r(&ts, &t);

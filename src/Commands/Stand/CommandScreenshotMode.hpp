@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "tbScreenshotMode.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
 namespace Stand
 {

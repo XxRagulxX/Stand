@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "WeaponMgr.hpp"
+#include "Weapons/WeaponMgr.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
-#include "get_ground_z.hpp"
+#include "Util/get_ground_z.hpp"
 
-#include "AbstractEntity.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "WaterQuad.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/WaterQuad.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "Stat.hpp"
+#include "Config/Stat.hpp"
 
-#include "Stats.hpp"
+#include "Config/Stats.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
-#include "ConfigTree.hpp"
+#include "Config/ConfigTree.hpp"
 
-#include <soup/cat.hpp>
+#include "lib/soup/cat.hpp"
 
-#include "CommandLuaScript.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "Util.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

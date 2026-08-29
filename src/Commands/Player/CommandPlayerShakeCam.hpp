@@ -1,9 +1,9 @@
-#include "CommandPlayerToggleBatch.hpp"
+#include "Commands/Player/CommandPlayerToggleBatch.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "explosion.hpp"
-#include "gta_ped.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Weapons/explosion.hpp"
+#include "Game/gta_ped.hpp"
 
 namespace Stand
 {

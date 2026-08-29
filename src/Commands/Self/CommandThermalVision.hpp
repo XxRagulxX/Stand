@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "tbBlockVisionSounds.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
+#include "Core/tbBlockVisionSounds.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
 
 namespace Stand
 {

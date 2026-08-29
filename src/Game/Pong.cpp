@@ -1,14 +1,14 @@
-#include "Pong.hpp"
+#include "Game/Pong.hpp"
 
 #include <fmt/xchar.h>
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
-#include "CommandPlayer.hpp"
-#include "DirectPacket.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "Renderer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Network/DirectPacket.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {
@@ -101,12 +101,6 @@ namespace Stand
 					i_am_left ? participant->my_pong_wins : participant->their_pong_wins,
 					!i_am_left ? participant->my_pong_wins : participant->their_pong_wins
 				));
-				break;
-
-			case INACTIVE:
-				break;
-
-			case PLAYING:
 				break;
 			}
 		}

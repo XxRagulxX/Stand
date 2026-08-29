@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandAestheticLightPlacement.hpp"
-#include "CommandColour.hpp"
-#include "CommandSlider.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/World/CommandAestheticLightPlacement.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

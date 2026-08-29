@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandSessionScript.hpp"
+#include "Commands/Online/CommandSessionScript.hpp"
 
-#include "CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
 
-#include "CommandSessionScriptPennedinCagedin.hpp"
+#include "Commands/Online/CommandSessionScriptPennedinCagedin.hpp"
 
 namespace Stand
 {

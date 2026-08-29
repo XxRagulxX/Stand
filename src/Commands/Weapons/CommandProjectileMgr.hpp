@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ProjectileMgr.hpp"
-#include "regular_event.hpp"
+#include "Weapons/ProjectileMgr.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

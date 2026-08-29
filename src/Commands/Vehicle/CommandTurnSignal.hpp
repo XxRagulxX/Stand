@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandListActionItemData.hpp"
-#include "CommandLightSignals.hpp"
-#include "ExecCtx.hpp"
-#include "get_current_time_millis.hpp"
-#include "gta_vehicle.hpp"
-#include "Gui.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandListActionItemData.hpp"
+#include "Commands/Vehicle/CommandLightSignals.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -99,7 +99,7 @@ namespace Stand
 		{
 			handler_on = true;
 
-			registerScriptTickEventHandler([=, this]
+			registerScriptTickEventHandler([=]
 			{
 				auto vehicle = Util::getVehicle();
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CVehicleModelInfo.hpp"
-#include "gta_entity.hpp"
-#include "VehicleModelFlags.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Game/gta_entity.hpp"
+#include "Vehicle/VehicleModelFlags.hpp"
 
 namespace Stand
 {

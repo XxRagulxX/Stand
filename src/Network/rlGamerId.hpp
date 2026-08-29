@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include <soup/IntStruct.hpp>
+#include "lib/soup/IntStruct.hpp"
 
 namespace rage
 {

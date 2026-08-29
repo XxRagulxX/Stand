@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "get_next_arg.hpp"
-#include "lang.hpp"
-#include "ScAccount.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Localization/lang.hpp"
+#include "Network/ScAccount.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,19 +1,19 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "AttackerMgr.hpp"
-#include "CommandAttackerPresets.hpp"
-#include "CommandDivider.hpp"
-#include "CommandTogglePointer.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandLambdaListSelect.hpp"
-#include "CommandListSelectPedModels.hpp"
-#include "CommandListSelectVehicleModel.hpp"
-#include "CommandListSelectWeapons.hpp"
-#include "CommandSlider.hpp"
-#include "CommandSliderPointer.hpp"
-#include "PedType.hpp"
+#include "Network/AttackerMgr.hpp"
+#include "Commands/Online/CommandAttackerPresets.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Widgets/CommandLambdaListSelect.hpp"
+#include "Commands/Ped/CommandListSelectPedModels.hpp"
+#include "Commands/Vehicle/CommandListSelectVehicleModel.hpp"
+#include "Commands/Weapons/CommandListSelectWeapons.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderPointer.hpp"
+#include "Ped/PedType.hpp"
 
 namespace Stand
 {

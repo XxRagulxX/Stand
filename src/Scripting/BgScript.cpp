@@ -1,17 +1,17 @@
-#include "BgScript.hpp"
+#include "Scripting/BgScript.hpp"
 
-#include "CommandLuaScript.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
 
 #include <lualib.h>
 #include <lstate.h>
 
-#include <soup/aes.hpp>
-#include <soup/base64.hpp>
+#include "lib/soup/aes.hpp"
+#include "lib/soup/base64.hpp"
 
-#include "bin.hpp"
-#include "Exceptional.hpp"
-#include "Spinlock.hpp"
-#include "StringUtils.hpp"
+#include "Util/bin.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/Spinlock.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

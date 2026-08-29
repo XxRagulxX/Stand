@@ -1,8 +1,8 @@
-#include "GridItemHeaderLoading.hpp"
+#include "Menu/GridItemHeaderLoading.hpp"
 
 #include <fmt/xchar.h>
 
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

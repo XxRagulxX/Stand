@@ -1,11 +1,11 @@
-#include "tbScreenshotMode.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
-#include "ExecCtx.hpp"
-#include "hud_component.hpp"
-#include "natives.hpp"
-#include "NotifyGrid.hpp"
-#include "pointers.hpp"
-#include "ScriptGlobal.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Rendering/hud_component.hpp"
+#include "Game/natives.hpp"
+#include "Menu/NotifyGrid.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

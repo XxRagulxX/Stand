@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "RateLimit.hpp"
-#include "Spinlock.hpp"
+#include "Network/RateLimit.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

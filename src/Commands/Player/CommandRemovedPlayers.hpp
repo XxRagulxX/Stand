@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandList.hpp"
-#include "HistoricPlayer.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Network/HistoricPlayer.hpp"
 
 namespace Stand
 {

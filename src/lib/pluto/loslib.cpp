@@ -25,9 +25,12 @@
 #include "lstate.h"
 #endif
 
-#include "soup/base.hpp"
-#include "soup/dnsOsResolver.hpp"
-#include "soup/os.hpp"
+#include "lib/soup/base.hpp"
+#include "lib/soup/dnsOsResolver.hpp"
+#include "lib/soup/os.hpp"
+#if SOUP_WINDOWS
+#include "lib/soup/unicode.hpp"
+#endif
 
 
 /*
@@ -154,7 +157,12 @@ static int os_execute (lua_State *L) {
   const char *cmd = luaL_optstring(L, 1, NULL);
   int stat;
   errno = 0;
+#if SOUP_WINDOWS
+  std::wstring& wcmd = *pluto_newclassinst(L, std::wstring, soup::unicode::utf8_to_utf16(cmd));
+  stat = _wsystem(wcmd.c_str());
+#else
   stat = l_system(cmd);
+#endif
   if (cmd != NULL)
     return luaL_execresult(L, stat);
   else {
@@ -177,7 +185,14 @@ static int os_tmpname (lua_State *L) {
 
 
 static int os_getenv (lua_State *L) {
+#if SOUP_WINDOWS
+  size_t len;
+  const char *key = luaL_checklstring(L, 1, &len);
+  std::wstring wkey = luaL_utf8_to_utf16(key, len); // may not error after this point
+  pluto_pushstring(L, soup::unicode::utf16_to_utf8<std::wstring>(_wgetenv(wkey.c_str())));
+#else
   lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
+#endif
   return 1;
 }
 

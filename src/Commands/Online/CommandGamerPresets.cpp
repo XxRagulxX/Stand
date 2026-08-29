@@ -1,7 +1,7 @@
-#include "CommandGamerPresets.hpp"
+#include "Commands/Online/CommandGamerPresets.hpp"
 
-#include "CommandGamerPreset.hpp"
-#include "rockstar_admins.hpp"
+#include "Commands/Online/CommandGamerPreset.hpp"
+#include "Network/rockstar_admins.hpp"
 
 namespace Stand
 {

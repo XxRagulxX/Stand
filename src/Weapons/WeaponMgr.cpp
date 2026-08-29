@@ -1,12 +1,12 @@
-#include "WeaponMgr.hpp"
+#include "Weapons/WeaponMgr.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ExecCtx.hpp"
-#include "gta_ped.hpp"
-#include "gta_vehicle.hpp"
-#include "Gui.hpp"
-#include "pointers.hpp"
-#include "weapons.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/pointers.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {

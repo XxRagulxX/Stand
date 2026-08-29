@@ -1,7 +1,7 @@
-#include "CommandListOfSpawnedVehicles.hpp"
+#include "Commands/Vehicle/CommandListOfSpawnedVehicles.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandSpawnedVehicleEntry.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandSpawnedVehicleEntry.hpp"
 
 namespace Stand
 {

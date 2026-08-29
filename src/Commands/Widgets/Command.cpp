@@ -1,30 +1,30 @@
-#include "Command.hpp"
+#include "Commands/Widgets/Command.hpp"
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
-#include "CommandAction.hpp"
-#include "CommandInput.hpp"
-#include "CommandColour.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLink.hpp"
-#include "CommandListConcealer.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandLua.hpp"
-#include "CommandPlayerListPlayersShortcut.hpp"
-#include "CommandReadonlyLink.hpp"
-#include "CommandReadonlyName.hpp"
-#include "CommandReadonlyValue.hpp"
-#include "CommandSlider.hpp"
-#include "CommandSliderFloat.hpp"
-#include "CommandTextsliderStateful.hpp"
-#include "CommandToggle.hpp"
-#include "ContextMenu.hpp"
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
+#include "Commands/Widgets/CommandColour.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Extra/CommandLua.hpp"
+#include "Commands/Player/CommandPlayerListPlayersShortcut.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandReadonlyName.hpp"
+#include "Commands/Widgets/CommandReadonlyValue.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandTextsliderStateful.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
@@ -601,9 +601,6 @@ namespace Stand
 
 		case COMMAND_LIST_SELECT:
 			return as<CommandListSelect>()->getCurrentValueHelpText().empty();
-
-		default:
-			break;
 		}
 		return true;
 	}
@@ -729,8 +726,6 @@ namespace Stand
 			return &((CommandLua<CommandReadonlyValue>*)this)->lua_data;
 		case COMMAND_READONLY_LINK:
 			return &((CommandLua<CommandReadonlyLink>*)this)->lua_data;
-		default:
-			break;
 		}
 		SOUP_ASSERT_UNREACHABLE;
 		return nullptr;

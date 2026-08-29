@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/AnalogueKeyboard.hpp>
-#include <soup/os.hpp>
+#include "lib/soup/AnalogueKeyboard.hpp"
+#include "lib/soup/os.hpp"
 
-#include "Exceptional.hpp"
-#include "pointers.hpp"
+#include "Core/Exceptional.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

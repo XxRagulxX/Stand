@@ -1,9 +1,8 @@
-#include "rl_matching.hpp"
+#include "Network/rl_matching.hpp"
 
 #include <cstring> // strcpy
-#include "FunctionPointer.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
 namespace rage
 {

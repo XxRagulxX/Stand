@@ -1,10 +1,10 @@
-#include "CommandListTransform.hpp"
+#include "Commands/Stand/CommandListTransform.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandFindModel.hpp"
-#include "CommandTransformModel.hpp"
-#include "PedModel.hpp"
-#include "CommandListTransform.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Extra/CommandFindModel.hpp"
+#include "Commands/Extra/CommandTransformModel.hpp"
+#include "Ped/PedModel.hpp"
+#include "Commands/Stand/CommandListTransform.hpp"
 
 namespace Stand
 {

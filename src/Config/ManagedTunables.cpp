@@ -1,6 +1,6 @@
-#include "ManagedTunables.hpp"
+#include "Config/ManagedTunables.hpp"
 
-#include "is_session.hpp"
+#include "Network/is_session.hpp"
 
 namespace Stand
 {

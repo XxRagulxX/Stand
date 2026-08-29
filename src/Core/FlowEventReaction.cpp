@@ -1,11 +1,11 @@
-#include "FlowEventReaction.hpp"
+#include "Core/FlowEventReaction.hpp"
 
-#include <soup/string.hpp>
+#include "lib/soup/string.hpp"
 
-#include "FlowEvent.hpp"
-#include "Gui.hpp"
-#include "is_session.hpp"
-#include "Util.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/is_session.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

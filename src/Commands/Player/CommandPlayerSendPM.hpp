@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "Chat.hpp"
-#include "evtChatEvent.hpp"
+#include "Network/Chat.hpp"
+#include "Network/evtChatEvent.hpp"
 
 namespace Stand
 {

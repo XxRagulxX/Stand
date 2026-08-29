@@ -1,10 +1,10 @@
-#include "CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
 
 #include <fmt/core.h>
 
-#include "Gui.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
+#include "Rendering/Gui.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

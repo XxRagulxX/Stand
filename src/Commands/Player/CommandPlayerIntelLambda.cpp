@@ -1,8 +1,8 @@
-#include "CommandPlayerIntelLambda.hpp"
+#include "Commands/Player/CommandPlayerIntelLambda.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "PlayerProvider.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

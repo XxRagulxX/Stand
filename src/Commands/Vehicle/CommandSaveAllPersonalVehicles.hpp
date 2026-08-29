@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "CommandPersonalVehicles.hpp"
-#include "CommandSavePv.hpp"
-#include "get_appdata_path.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicles.hpp"
+#include "Commands/Stand/CommandSavePv.hpp"
+#include "Util/get_appdata_path.hpp"
 
 namespace Stand
 {

@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "gta_fwddecl.hpp"
-#include "Renderer.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

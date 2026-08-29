@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandWithEntityPreview.hpp"
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandWithEntityPreview.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 namespace Stand
 {

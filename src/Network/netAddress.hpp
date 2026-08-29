@@ -1,10 +1,10 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "netPeerId.hpp"
-#include "netRelayToken.hpp"
-#include "netSocketAddress.hpp"
+#include "Network/netPeerId.hpp"
+#include "Network/netRelayToken.hpp"
+#include "Network/netSocketAddress.hpp"
 
 #pragma pack(push, 1)
 namespace rage

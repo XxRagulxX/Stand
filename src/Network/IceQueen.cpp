@@ -1,6 +1,6 @@
-#include "IceQueen.hpp"
+#include "Network/IceQueen.hpp"
 
-#include "CrossState.hpp"
+#include "Network/CrossState.hpp"
 
 namespace Stand
 {

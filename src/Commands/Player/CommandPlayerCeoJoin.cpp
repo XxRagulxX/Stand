@@ -1,14 +1,14 @@
-#include "CommandPlayerCeoJoin.hpp"
+#include "Commands/Player/CommandPlayerCeoJoin.hpp"
 
 #include <fmt/core.h>
 
-#include "FiberPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "lang.hpp"
-#include "OrgHelper.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "Util.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Localization/lang.hpp"
+#include "Network/OrgHelper.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

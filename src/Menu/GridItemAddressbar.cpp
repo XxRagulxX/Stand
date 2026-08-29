@@ -1,10 +1,10 @@
-#include "GridItemAddressbar.hpp"
+#include "Menu/GridItemAddressbar.hpp"
 
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
-#include "RootNameMgr.hpp"
-#include "StringUtils.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/RootNameMgr.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

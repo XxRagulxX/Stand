@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPosition2d.hpp"
+#include "Commands/Widgets/CommandPosition2d.hpp"
 
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandLuaSliderBase.hpp"
+#include "Commands/Extra/CommandLuaSliderBase.hpp"
 
 namespace Stand
 {

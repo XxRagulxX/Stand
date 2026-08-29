@@ -1,6 +1,6 @@
-#include "CommandNoLscBarriers.hpp"
+#include "Commands/World/CommandNoLscBarriers.hpp"
 
-#include "script_func.hpp"
+#include "Game/script_func.hpp"
 
 namespace Stand
 {

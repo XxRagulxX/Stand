@@ -1,13 +1,13 @@
-#include "CommandDebugNatives.hpp"
+#include "Commands/Extra/CommandDebugNatives.hpp"
 
-#include "AbstractEntity.hpp"
-#include "drawDebugText.hpp"
-#include "DrawUtil3d.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "regular_event.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/drawDebugText.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

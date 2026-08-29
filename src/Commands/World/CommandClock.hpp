@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "TimeOfDay.hpp"
+#include "World/TimeOfDay.hpp"
 
 namespace Stand
 {

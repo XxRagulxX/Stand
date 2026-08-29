@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandInputText.hpp"
+#include "Commands/Widgets/CommandInputText.hpp"
 
-#include "CommandExtraInfo.hpp"
-#include "fmt_arg.hpp"
-#include "Gui.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "AbstractEntity.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {

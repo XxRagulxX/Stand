@@ -1,17 +1,17 @@
-#include "CommandListPlaces.hpp"
+#include "Commands/World/CommandListPlaces.hpp"
 
 #include <array>
 
-#include "PlaceWaypoint.hpp"
-#include "PlaceObjective.hpp"
-#include "PlaceSimple.hpp"
-#include "PlaceSingle3d.hpp"
-#include "PlaceClipboard.hpp"
+#include "World/PlaceWaypoint.hpp"
+#include "World/PlaceObjective.hpp"
+#include "World/PlaceSimple.hpp"
+#include "World/PlaceSingle3d.hpp"
+#include "World/PlaceClipboard.hpp"
 
-#include "CommandAutoTpWp.hpp"
-#include "CommandListSavedPlaces.hpp"
-#include "CommandPlace.hpp"
-#include "CommandWaypointPortal.hpp"
+#include "Commands/Self/CommandAutoTpWp.hpp"
+#include "Commands/World/CommandListSavedPlaces.hpp"
+#include "Commands/World/CommandPlace.hpp"
+#include "Commands/World/CommandWaypointPortal.hpp"
 
 namespace Stand
 {

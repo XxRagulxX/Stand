@@ -1,15 +1,15 @@
-#include "AntiDbg.hpp"
+#include "AntiCheat/AntiDbg.hpp"
 
 #undef UNICODE
 #include <tlhelp32.h>
 
-#include <soup/ObfusString.hpp>
-#include <soup/os.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/os.hpp"
 
-#include "atStringHash.hpp"
-#include "Codename.hpp"
-#include "PointerCache.hpp"
-#include "FileLogger.hpp"
+#include "Game/atStringHash.hpp"
+#include "Util/Codename.hpp"
+#include "Core/PointerCache.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

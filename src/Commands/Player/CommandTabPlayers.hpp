@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandTab.hpp"
+#include "Commands/Widgets/CommandTab.hpp"
 
-#include "CommandDivider.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
 
 namespace Stand
 {

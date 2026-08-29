@@ -1,9 +1,9 @@
-#include "CommandPlayerIntel.hpp"
+#include "Commands/Player/CommandPlayerIntel.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "CommandListReadonly.hpp"
-#include "PlayerProvider.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Commands/Widgets/CommandListReadonly.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

@@ -1,12 +1,12 @@
-#include "CTunables.hpp"
+#include "Config/CTunables.hpp"
 
-#include <soup/sha1.hpp>
+#include "lib/soup/sha1.hpp"
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 #ifdef STAND_DEBUG
-#include "conf.hpp" // IDA_ADDR
-#include "main.hpp" // IDA_ADDR
+#include "Config/conf.hpp" // IDA_ADDR
+#include "Core/main.hpp" // IDA_ADDR
 #endif
 
 using namespace Stand;

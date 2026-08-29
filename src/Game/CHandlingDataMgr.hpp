@@ -1,7 +1,7 @@
 #pragma once
 
-#include "atArray.hpp"
-#include "CHandlingData.hpp"
+#include "Game/atArray.hpp"
+#include "Game/CHandlingData.hpp"
 
 class CHandlingDataMgr
 {

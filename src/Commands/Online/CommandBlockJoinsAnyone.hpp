@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggleUltimate.hpp"
+#include "Commands/Widgets/CommandToggleUltimate.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "evtHostChangeEvent.hpp"
-#include "natives.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/evtHostChangeEvent.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

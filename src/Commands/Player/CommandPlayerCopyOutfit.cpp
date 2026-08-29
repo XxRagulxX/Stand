@@ -1,11 +1,11 @@
-#include "CommandPlayerCopyOutfit.hpp"
+#include "Commands/Player/CommandPlayerCopyOutfit.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "lang.hpp"
-#include "PlayerProvider.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Localization/lang.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

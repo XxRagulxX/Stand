@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "set_aim_mode.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Weapons/set_aim_mode.hpp"
 
 namespace Stand
 {
@@ -23,7 +23,7 @@ namespace Stand
 		void onItemClick(Click& click, CommandListActionItem* item) final
 		{
 			CommandListAction::onItemClick(click, item);
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				set_aim_mode((int)item->value);
 			});

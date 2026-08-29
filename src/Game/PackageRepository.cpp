@@ -1,12 +1,12 @@
-#include "PackageRepository.hpp"
+#include "Game/PackageRepository.hpp"
 
-#include <soup/JsonArray.hpp>
-#include <soup/JsonBool.hpp>
-#include <soup/JsonInt.hpp>
-#include <soup/JsonObject.hpp>
-#include <soup/JsonString.hpp>
+#include "lib/soup/JsonArray.hpp"
+#include "lib/soup/JsonBool.hpp"
+#include "lib/soup/JsonInt.hpp"
+#include "lib/soup/JsonObject.hpp"
+#include "lib/soup/JsonString.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

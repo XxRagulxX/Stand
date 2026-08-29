@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {
@@ -114,7 +114,7 @@ namespace Stand
 			else
 			{
 				const char* const walk_style = walk_styles[value - 1].clipset;
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value == this->value)
 					{

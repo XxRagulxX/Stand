@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Colour.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/Colour.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

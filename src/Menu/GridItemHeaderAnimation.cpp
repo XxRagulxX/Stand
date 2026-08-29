@@ -1,8 +1,8 @@
-#include "GridItemHeaderAnimation.hpp"
+#include "Menu/GridItemHeaderAnimation.hpp"
 
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
-#include "Renderer.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

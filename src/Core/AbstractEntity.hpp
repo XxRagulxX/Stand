@@ -3,11 +3,11 @@
 #include <functional>
 #include <unordered_map>
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "nullsub.hpp"
+#include "Util/nullsub.hpp"
 
 namespace Stand
 {

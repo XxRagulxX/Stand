@@ -1,6 +1,6 @@
 #pragma once
 
-#include "asi_decl.hpp"
+#include "AntiCheat/asi_decl.hpp"
 
 namespace Stand
 {

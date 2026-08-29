@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "typedecl.hpp"
+#include "Game/typedecl.hpp"
 
 namespace Stand
 {

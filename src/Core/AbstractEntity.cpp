@@ -1,64 +1,64 @@
-﻿#include "AbstractEntity.hpp"
+﻿#include "Core/AbstractEntity.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/ObfusString.hpp>
-#include <soup/rand.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/rand.hpp"
 
-#include "AbstractModel.hpp"
-#include "AbstractPlayer.hpp"
-#include "atStringHash.hpp"
-#include "Box.hpp"
-#include "CObject.hpp"
-#include "CommandLockOutfit.hpp"
-#include "CPedHeadBlendData.hpp"
-#include "CPickup.hpp"
-#include "CPlayerInfo.hpp"
-#include "distance_sort.hpp"
-#include "eDamageFlags.hpp"
-#include "eEntityType.hpp"
-#include "eExplosionTag.hpp"
-#include "eMigrationType.hpp"
-#include "ePedConfigFlags.hpp"
-#include "eTaskType.hpp"
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "explosion.hpp"
-#include "FiberPool.hpp"
-#include "FileLogger.hpp"
-#include "FlowEvent.hpp"
-#include "fwPool.hpp"
-#include "fwScriptGuid.hpp"
-#include "get_current_time_millis.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "gta_input.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "gta_ped.hpp"
-#include "gta_replayinterface.hpp"
-#include "gta_vehicle.hpp"
-#include "Gui.hpp"
-#include "is_session.hpp"
-#include "joaatToString.hpp"
-#include "Metrics.hpp"
-#include "Names.hpp"
-#include "natives.hpp"
-#include "PedBoneId.hpp"
-#include "PedModel.hpp"
-#include "PedType.hpp"
-#include "pointers.hpp"
-#include "Renderer.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_thread.hpp"
-#include "SpectateMgr.hpp"
-#include "TargetingData.hpp"
-#include "tbFreecam.hpp"
-#include "TickQueues.hpp"
-#include "TranscendentVehicle.hpp"
-#include "Util.hpp"
-#include "vehicle_items.hpp"
-#include "VehicleMods.hpp"
-#include "weapons.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/atStringHash.hpp"
+#include "Util/Box.hpp"
+#include "Game/CObject.hpp"
+#include "Commands/Self/CommandLockOutfit.hpp"
+#include "Ped/CPedHeadBlendData.hpp"
+#include "Game/CPickup.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "Util/distance_sort.hpp"
+#include "Game/eDamageFlags.hpp"
+#include "Game/eEntityType.hpp"
+#include "Game/eExplosionTag.hpp"
+#include "Game/eMigrationType.hpp"
+#include "Ped/ePedConfigFlags.hpp"
+#include "Ped/eTaskType.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Weapons/explosion.hpp"
+#include "Core/FiberPool.hpp"
+#include "Core/FileLogger.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Game/fwPool.hpp"
+#include "Game/fwScriptGuid.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/gta_replayinterface.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/is_session.hpp"
+#include "Game/joaatToString.hpp"
+#include "Core/Metrics.hpp"
+#include "Util/Names.hpp"
+#include "Game/natives.hpp"
+#include "Ped/PedBoneId.hpp"
+#include "Ped/PedModel.hpp"
+#include "Ped/PedType.hpp"
+#include "Game/pointers.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_thread.hpp"
+#include "Network/SpectateMgr.hpp"
+#include "Util/TargetingData.hpp"
+#include "Core/tbFreecam.hpp"
+#include "Core/TickQueues.hpp"
+#include "Vehicle/TranscendentVehicle.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/vehicle_items.hpp"
+#include "Vehicle/VehicleMods.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {
@@ -253,15 +253,15 @@ namespace Stand
 	AbstractEntity AbstractEntity::getNearestVisible(std::vector<AbstractEntity>& entites, bool los_check)
 	{
 		HashedDistanceSort<AbstractEntity>::sort(entites, [](AbstractEntity& ent)
-		{
-			const v3 pos = ent.getPos();
-			if (pos.isNull())
 			{
-				return FLT_MAX;
-			}
-			const rage::Vector2 screen_pos = pos.getScreenPos();
-			return abs(0.5f - screen_pos.x) + abs(0.5f - screen_pos.y);
-		});
+				const v3 pos = ent.getPos();
+				if (pos.isNull())
+				{
+					return FLT_MAX;
+				}
+				const rage::Vector2 screen_pos = pos.getScreenPos();
+				return abs(0.5f - screen_pos.x) + abs(0.5f - screen_pos.y);
+			});
 		const Vector3 cam_pos = CAM::GET_FINAL_RENDERED_CAM_COORD();
 		for (AbstractEntity& ent : entites)
 		{
@@ -383,37 +383,37 @@ namespace Stand
 	void AbstractEntity::getAllPeds(std::vector<AbstractEntity>& vec)
 	{
 		getAllPeds([&](AbstractEntity&& ent)
-		{
-			vec.push_back(std::move(ent));
-			return true;
-		});
+			{
+				vec.push_back(std::move(ent));
+				return true;
+			});
 	}
 
 	void AbstractEntity::getAllVehicles(std::vector<AbstractEntity>& vec)
 	{
 		getAllVehicles([&](AbstractEntity&& ent)
-		{
-			vec.push_back(std::move(ent));
-			return true;
-		});
+			{
+				vec.push_back(std::move(ent));
+				return true;
+			});
 	}
 
 	void AbstractEntity::getAllObjects(std::vector<AbstractEntity>& vec)
 	{
 		getAllObjects([&](AbstractEntity&& ent)
-		{
-			vec.push_back(std::move(ent));
-			return true;
-		});
+			{
+				vec.push_back(std::move(ent));
+				return true;
+			});
 	}
 
 	void AbstractEntity::getAllPickups(std::vector<AbstractEntity>& vec)
 	{
 		getAllPickups([&](AbstractEntity&& ent)
-		{
-			vec.push_back(std::move(ent));
-			return true;
-		});
+			{
+				vec.push_back(std::move(ent));
+				return true;
+			});
 	}
 
 	bool AbstractEntity::hasHandle() const
@@ -797,7 +797,7 @@ namespace Stand
 				if (isParachuting() // Can't keep this task if we want the coords to be updated.
 					|| PED::IS_PED_IN_COVER(*this, FALSE) // Can keep the task, but it would be buggy.
 					)
-				{	
+				{
 					graceful = FALSE;
 				}
 			}
@@ -967,12 +967,12 @@ namespace Stand
 			else
 			{
 				requestControl(ATSTRINGHASH("delete"), [](AbstractEntity& ent)
-				{
-					ent.removeFromPlaneOfExistenceAfterControlRequest();
-				}, [](AbstractEntity& ent)
-				{
-					ent.removeFromPlaneOfExistenceForce();
-				});
+					{
+						ent.removeFromPlaneOfExistenceAfterControlRequest();
+					}, [](AbstractEntity& ent)
+						{
+							ent.removeFromPlaneOfExistenceForce();
+						});
 			}
 		}
 	}
@@ -982,7 +982,7 @@ namespace Stand
 		if (isVehicle())
 		{
 			makePassengersLeave();
-			
+
 			if (TranscendentVehicle::active && TranscendentVehicle::ent == *this)
 			{
 				TranscendentVehicle::active = false;
@@ -999,23 +999,23 @@ namespace Stand
 	void AbstractEntity::removeFromPlaneOfExistenceAfterControlRequest()
 	{
 		ExecCtx::get().ensureScript([this]
-		{
-			removeFromPlaneOfExistenceRemoveRelationships();
-
-			if (auto handle = operator Entity())
 			{
-				// Reduce performance impact of entity
-				ENTITY::SET_ENTITY_HAS_GRAVITY(handle, FALSE);
-				ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(handle, FALSE, FALSE);
-				if (isPed())
-				{
-					TASK::CLEAR_PED_TASKS_IMMEDIATELY(handle);
-				}
-				ENTITY::SET_ENTITY_VELOCITY(handle, 0.0f, 0.0f, 0.0f);
-			}
+				removeFromPlaneOfExistenceRemoveRelationships();
 
-			removeFromPlaneOfExistenceInner();
-		});
+				if (auto handle = operator Entity())
+				{
+					// Reduce performance impact of entity
+					ENTITY::SET_ENTITY_HAS_GRAVITY(handle, FALSE);
+					ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(handle, FALSE, FALSE);
+					if (isPed())
+					{
+						TASK::CLEAR_PED_TASKS_IMMEDIATELY(handle);
+					}
+					ENTITY::SET_ENTITY_VELOCITY(handle, 0.0f, 0.0f, 0.0f);
+				}
+
+				removeFromPlaneOfExistenceInner();
+			});
 	}
 
 	bool AbstractEntity::removeFromPlaneOfExistenceForce()
@@ -1050,8 +1050,6 @@ namespace Stand
 			case ENTITY_TYPE_OBJECT:
 				pointers::CObjectPopulation_DestroyObject(static_cast<CObject*>(ptr), false);
 				return true;
-			default:
-				break;
 			}
 		}
 		return false;
@@ -1156,7 +1154,7 @@ namespace Stand
 			{
 				return ((CPed*)ptr)->m_health <= 0.0f;
 			}
-			else if(ensureHandle())
+			else if (ensureHandle())
 			{
 				return ENTITY::IS_ENTITY_DEAD(handle, false);
 			}
@@ -1190,10 +1188,10 @@ namespace Stand
 		else
 		{
 			requestControl(ATSTRINGHASH("freeze"), [](AbstractEntity& ent)
-			{
-				ENTITY::FREEZE_ENTITY_POSITION(ent, true);
-				ent.setCanMigrate(false);
-			});
+				{
+					ENTITY::FREEZE_ENTITY_POSITION(ent, true);
+					ent.setCanMigrate(false);
+				});
 		}
 	}
 
@@ -1206,10 +1204,10 @@ namespace Stand
 		else
 		{
 			requestControl(ATSTRINGHASH("unfreeze"), [](AbstractEntity& ent)
-			{
-				ENTITY::FREEZE_ENTITY_POSITION(ent, false);
-				ent.setCanMigrate(true);
-			});
+				{
+					ENTITY::FREEZE_ENTITY_POSITION(ent, false);
+					ent.setCanMigrate(true);
+				});
 		}
 	}
 
@@ -1328,8 +1326,6 @@ namespace Stand
 
 			case ENTITY_TYPE_OBJECT:
 				ret = data.objects;
-				break;
-			default:
 				break;
 			}
 		}
@@ -1464,7 +1460,7 @@ namespace Stand
 
 	float AbstractEntity::getSpeed()
 	{
-		SOUP_IF_UNLIKELY (isParachuting())
+		SOUP_IF_UNLIKELY(isParachuting())
 		{
 			return std::max(ENTITY::GET_ENTITY_SPEED(*this), ENTITY::GET_ENTITY_SPEED(ENTITY::GET_ENTITY_ATTACHED_TO(*this)));
 		}
@@ -1557,7 +1553,7 @@ namespace Stand
 
 	void AbstractEntity::setMaxHealth(float max_health)
 	{
-		SOUP_IF_LIKELY (auto cped = getCPed())
+		SOUP_IF_LIKELY(auto cped = getCPed())
 		{
 			const bool was_at_max = cped->m_health == cped->max_health;
 			cped->max_health = max_health;
@@ -1624,18 +1620,18 @@ namespace Stand
 		if (!isAPlayer() || *this == g_player_ped)
 		{
 			requestControl(ATSTRINGHASH("arm"), [force, weapons{ std::move(weapons) }](AbstractEntity& ped)
-			{
-				if (ped.ensureHandle())
 				{
-					for (const auto& weapon : weapons)
+					if (ped.ensureHandle())
 					{
-						if (!WEAPON::HAS_PED_GOT_WEAPON(ped, weapon, FALSE))
+						for (const auto& weapon : weapons)
 						{
-							WEAPON::GIVE_WEAPON_TO_PED(ped.handle, weapon, 9999, force, force);
+							if (!WEAPON::HAS_PED_GOT_WEAPON(ped, weapon, FALSE))
+							{
+								WEAPON::GIVE_WEAPON_TO_PED(ped.handle, weapon, 9999, force, force);
+							}
 						}
 					}
-				}
-			});
+				});
 		}
 		else
 		{
@@ -1662,15 +1658,15 @@ namespace Stand
 		if (!isAPlayer() || *this == g_player_ped)
 		{
 			requestControl(ATSTRINGHASH("disarm"), [weapons{ std::move(weapons) }](AbstractEntity& ped)
-			{
-				if (ped.ensureHandle())
 				{
-					for (const auto& weapon : weapons)
+					if (ped.ensureHandle())
 					{
-						WEAPON::REMOVE_WEAPON_FROM_PED(ped.handle, weapon);
+						for (const auto& weapon : weapons)
+						{
+							WEAPON::REMOVE_WEAPON_FROM_PED(ped.handle, weapon);
+						}
 					}
-				}
-			});
+				});
 		}
 		else
 		{
@@ -1896,73 +1892,73 @@ namespace Stand
 		switch (cage_hash)
 		{
 		case ATSTRINGHASH("prop_gold_cont_01"):
-			{
-				Util::createObject(cage_hash, this->getPos()).freeze();
+		{
+			Util::createObject(cage_hash, this->getPos()).freeze();
 
-				break;
-			}
+			break;
+		}
 
 		case ATSTRINGHASH("stt_prop_stunt_tube_s"):
-			{
-				auto obj = Util::createObject(cage_hash, this->getPos());
-				auto rot = obj.getRot();
-				rot.y += 90.0f;
+		{
+			auto obj = Util::createObject(cage_hash, this->getPos());
+			auto rot = obj.getRot();
+			rot.y += 90.0f;
 
-				obj.setRot(rot);
-				obj.freeze();
+			obj.setRot(rot);
+			obj.freeze();
 
-				break;
-			}
+			break;
+		}
 
 		case ATSTRINGHASH("prop_rub_cage01a"):
-			{
-				auto pos = this->getPos();
-				pos.z -= 1.0f;
+		{
+			auto pos = this->getPos();
+			pos.z -= 1.0f;
 
-				auto obj1 = Util::createObject(cage_hash, pos);
-				auto obj2 = Util::createObject(cage_hash, pos);
+			auto obj1 = Util::createObject(cage_hash, pos);
+			auto obj2 = Util::createObject(cage_hash, pos);
 
-				auto rot = obj1.getRot();
-				rot.z += 90.0f;
+			auto rot = obj1.getRot();
+			rot.z += 90.0f;
 
-				obj2.setRot(rot);
-				obj2.freeze();
-				obj1.freeze();
+			obj2.setRot(rot);
+			obj2.freeze();
+			obj1.freeze();
 
-				break;
-			}
+			break;
+		}
 
 		case ATSTRINGHASH("prop_fnclink_03e"):
-			{
-				auto pos = this->getPos() - 1.0f;
+		{
+			auto pos = this->getPos() - 1.0f;
 
-				auto obj1 = Util::createObject(cage_hash, pos);
-				auto obj2 = Util::createObject(cage_hash, pos);
+			auto obj1 = Util::createObject(cage_hash, pos);
+			auto obj2 = Util::createObject(cage_hash, pos);
 
-				pos.x += 2.9f;
-				pos.y += 2.9f;
+			pos.x += 2.9f;
+			pos.y += 2.9f;
 
-				auto obj3 = Util::createObject(cage_hash, pos);
-				auto obj4 = Util::createObject(cage_hash, pos);
+			auto obj3 = Util::createObject(cage_hash, pos);
+			auto obj4 = Util::createObject(cage_hash, pos);
 
-				auto rot = obj1.getRot();
+			auto rot = obj1.getRot();
 
-				rot.z += 90.0f;
-				obj2.setRot(rot);
+			rot.z += 90.0f;
+			obj2.setRot(rot);
 
-				rot.z += 180.0f;
-				obj3.setRot(rot);
+			rot.z += 180.0f;
+			obj3.setRot(rot);
 
-				rot.z += 270.0f;
-				obj4.setRot(rot);
+			rot.z += 270.0f;
+			obj4.setRot(rot);
 
-				obj1.freeze();
-				obj2.freeze();
-				obj3.freeze();
-				obj4.freeze();
+			obj1.freeze();
+			obj2.freeze();
+			obj3.freeze();
+			obj4.freeze();
 
-				break;
-			}
+			break;
+		}
 		}
 	}
 
@@ -2136,7 +2132,7 @@ namespace Stand
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -2192,14 +2188,14 @@ namespace Stand
 			{
 				// Can't do this in the same tick, so doing it in the next tick.
 				FiberPool::queueJob([veh{ *this }, vtol_was_on]() mutable
-				{
-					if (!vtol_was_on
-						&& VEHICLE::GET_VEHICLE_FLIGHT_NOZZLE_POSITION(veh) != 0.0f
-						)
 					{
-						veh.toggleVtolOff();
-					}
-				});
+						if (!vtol_was_on
+							&& VEHICLE::GET_VEHICLE_FLIGHT_NOZZLE_POSITION(veh) != 0.0f
+							)
+						{
+							veh.toggleVtolOff();
+						}
+					});
 			}
 
 			// If the vehicle was exploded, it'll be on fire, which would cause the vehicle to just blow up again after being fixed.
@@ -2439,40 +2435,40 @@ namespace Stand
 	{
 		makePassengersLeave();
 		FiberPool::queueJob([veh{ *this }]() mutable
-		{
-			const auto deadline = get_current_time_millis() + 3000;
-			while (!veh.isDead() && !IS_DEADLINE_REACHED(deadline))
 			{
-				auto pos = veh.getPos();
-				FIRE::ADD_EXPLOSION(pos.x, pos.y, pos.z, EXP_TAG_STICKYBOMB, 1.0f, true, false, 0.0f, false);
-				if (is_session_started())
+				const auto deadline = get_current_time_millis() + 3000;
+				while (!veh.isDead() && !IS_DEADLINE_REACHED(deadline))
 				{
-					CExplosionManager::CExplosionArgs args{ EXP_TAG_STICKYBOMB, pos };
-					args.m_bMakeSound = false;
-					args.m_bNoFx = true;
-					args.m_sizeScale = 1.0f;
-					args.m_fCamShake = 0.0f;
-					args.m_bAttachedToVehicle = true;
-					args.m_pAttachEntity = (CEntity*)veh.getPointer();
-					pointers::CExplosionEvent_Trigger(&args, nullptr);
+					auto pos = veh.getPos();
+					FIRE::ADD_EXPLOSION(pos.x, pos.y, pos.z, EXP_TAG_STICKYBOMB, 1.0f, true, false, 0.0f, false);
+					if (is_session_started())
+					{
+						CExplosionManager::CExplosionArgs args{ EXP_TAG_STICKYBOMB, pos };
+						args.m_bMakeSound = false;
+						args.m_bNoFx = true;
+						args.m_sizeScale = 1.0f;
+						args.m_fCamShake = 0.0f;
+						args.m_bAttachedToVehicle = true;
+						args.m_pAttachEntity = (CEntity*)veh.getPointer();
+						pointers::CExplosionEvent_Trigger(&args, nullptr);
+					}
+					Script::current()->yield();
 				}
-				Script::current()->yield();
-			}
-		});
+			});
 	}
 
 	void AbstractEntity::call()
 	{
 		requestControl(ATSTRINGHASH("call"), [](AbstractEntity& veh)
-		{
-			const v3 pos = g_player_ped.getPos();
-			PED::SET_PED_INTO_VEHICLE(g_player_ped, veh, -1);
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(veh, pos.x, pos.y, pos.z, false, false, false);
-			ENTITY::SET_ENTITY_ROTATION(veh, 0, 0, CAM::GET_GAMEPLAY_CAM_ROT(0).z, 0, true);
-		}, [](auto)
-		{
-			Util::toast(LOC("VEHCTRL"));
-		});
+			{
+				const v3 pos = g_player_ped.getPos();
+				PED::SET_PED_INTO_VEHICLE(g_player_ped, veh, -1);
+				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(veh, pos.x, pos.y, pos.z, false, false, false);
+				ENTITY::SET_ENTITY_ROTATION(veh, 0, 0, CAM::GET_GAMEPLAY_CAM_ROT(0).z, 0, true);
+			}, [](auto)
+				{
+					Util::toast(LOC("VEHCTRL"));
+				});
 	}
 
 	int AbstractEntity::getHeadlightsVariation()
@@ -2602,18 +2598,10 @@ namespace Stand
 		}
 
 		case Direction::RIGHT:
-		{
 			auto rot = this->getRot();
 			rot.z -= 90.0f;
 			this->setRot(rot);
 			force_vector = ENTITY::GET_ENTITY_FORWARD_VECTOR(*this) * 2000.0f;
-			break;
-		}
-
-		case Direction::NONE:
-			break;
-
-		default:
 			break;
 		}
 
@@ -2710,21 +2698,21 @@ namespace Stand
 		case ATSTRINGHASH("vigero2"):
 			switch (modType)
 			{
-				case VehicleMods::livery: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12 };
-				case VehicleMods::spoiler: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-				case VehicleMods::sideskirt: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-				case VehicleMods::suspension: return std::vector<uint8_t>{ 0, 1, 2, 3 };
-				case VehicleMods::front_bumper: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
-				case VehicleMods::rear_bumper: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-				case VehicleMods::hood: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
-				case VehicleMods::roof: return std::vector<uint8_t>{ 0, 1 };
-				case VehicleMods::fender: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-				case VehicleMods::right_fender: return std::vector<uint8_t>{ 0, 1, 2, 3, 4 };
-				case VehicleMods::shifter_leavers: return std::vector<uint8_t>{};
-				case VehicleMods::speakers: return std::vector<uint8_t>{};
-				case VehicleMods::brakes: return std::vector<uint8_t>{ 0, 1, 2 };
-				case VehicleMods::engine: return std::vector<uint8_t>{ 0, 1, 2, 3 };
-				case VehicleMods::transmission: return std::vector<uint8_t>{ 0, 1, 2 };
+			case VehicleMods::livery: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12 };
+			case VehicleMods::spoiler: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+			case VehicleMods::sideskirt: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+			case VehicleMods::suspension: return std::vector<uint8_t>{ 0, 1, 2, 3 };
+			case VehicleMods::front_bumper: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+			case VehicleMods::rear_bumper: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+			case VehicleMods::hood: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+			case VehicleMods::roof: return std::vector<uint8_t>{ 0, 1 };
+			case VehicleMods::fender: return std::vector<uint8_t>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+			case VehicleMods::right_fender: return std::vector<uint8_t>{ 0, 1, 2, 3, 4 };
+			case VehicleMods::shifter_leavers: return std::vector<uint8_t>{};
+			case VehicleMods::speakers: return std::vector<uint8_t>{};
+			case VehicleMods::brakes: return std::vector<uint8_t>{ 0, 1, 2 };
+			case VehicleMods::engine: return std::vector<uint8_t>{ 0, 1, 2, 3 };
+			case VehicleMods::transmission: return std::vector<uint8_t>{ 0, 1, 2 };
 			}
 			break;
 
@@ -2828,7 +2816,7 @@ namespace Stand
 			case VehicleMods::transmission: return std::vector<uint8_t>{ 0, 1, 2 };
 			}
 			break;
-			
+
 		case ATSTRINGHASH("stingertt"):
 			switch (modType)
 			{
@@ -2965,7 +2953,7 @@ namespace Stand
 			// The game tries to correct plate based on PV data, so we should override this as well.
 			if (isUserPersonalVehicle())
 			{
-				strcpy_s(ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(), GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>(),32,text);
+				strcpy(ScriptGlobal(GLOBAL_PVS).at(ScriptGlobal(GLOBAL_MOST_RECENT_PV_INDEX).get<int>(), GLOBAL_PVS_ELMSIZE).at(GLOBAL_PVS_PLATE_TEXT).as<char*>(), text);
 			}
 
 			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(handle, text);

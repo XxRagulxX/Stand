@@ -1,9 +1,9 @@
-#include "CommandDisableOutfitRestrictions.hpp"
+#include "Commands/Self/CommandDisableOutfitRestrictions.hpp"
 
 #include <windows.h>
 
-#include "NativeTableHooks.hpp"
-#include "scrNativeCallContext.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandLua.hpp"
-#include "CommandListAction.hpp"
+#include "Commands/Extra/CommandLua.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
 namespace Stand
 {

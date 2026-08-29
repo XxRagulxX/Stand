@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "input.hpp"
-#include "tbPositionSelection.hpp"
-#include "TpUtil.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/input.hpp"
+#include "Core/tbPositionSelection.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

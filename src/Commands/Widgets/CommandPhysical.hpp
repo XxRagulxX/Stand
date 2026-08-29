@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandIssuable.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
-#include "Click.hpp"
-#include "Direction.hpp"
-#include "Hotkey.hpp"
-#include "Label.hpp"
+#include "Menu/Click.hpp"
+#include "Util/Direction.hpp"
+#include "Menu/Hotkey.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

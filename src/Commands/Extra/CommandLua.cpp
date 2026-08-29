@@ -1,7 +1,7 @@
-#include "CommandLua.hpp"
+#include "Commands/Extra/CommandLua.hpp"
 
-#include "FiberPool.hpp"
-#include "Gui.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

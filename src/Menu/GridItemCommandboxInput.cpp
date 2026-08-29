@@ -1,6 +1,6 @@
-#include "GridItemCommandboxInput.hpp"
+#include "Menu/GridItemCommandboxInput.hpp"
 
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

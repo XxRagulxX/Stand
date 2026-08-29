@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandTurnSignal.hpp"
-#include "CommandUseBrakelights.hpp"
-#include "CommandMuteEmergencySirens.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandTurnSignal.hpp"
+#include "Commands/Vehicle/CommandUseBrakelights.hpp"
+#include "Commands/Vehicle/CommandMuteEmergencySirens.hpp"
 
 namespace Stand
 {

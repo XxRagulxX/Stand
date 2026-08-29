@@ -1,15 +1,15 @@
-#include "CommandAsiMods.hpp"
+#include "Commands/Extra/CommandAsiMods.hpp"
 
 #include <filesystem>
 
-#include "asi_decl.hpp"
-#include "CommandAsiMod.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandTogglePointer.hpp"
-#include "get_appdata_path.hpp"
-#include "Gui.hpp"
-#include "Label.hpp"
-#include "StringUtils.hpp"
+#include "AntiCheat/asi_decl.hpp"
+#include "Commands/Extra/CommandAsiMod.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Label.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
@@ -41,8 +41,7 @@ namespace Stand
 
 	void CommandAsiMods::populateBody()
 	{
-		const auto stand_asi_directory = get_appdata_path(L"ASI Mods\\");
-
+		const auto stand_asi_directory = std::move(std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\ASI Mods\)"));
 		if (!std::filesystem::exists(stand_asi_directory))
 		{
 			std::filesystem::create_directory(stand_asi_directory);

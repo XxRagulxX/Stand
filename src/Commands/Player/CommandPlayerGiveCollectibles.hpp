@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "CollectablesGiver.hpp"
-#include "PlayerProviderSingle.hpp"
-#include "Script.hpp"
+#include "Ped/CollectablesGiver.hpp"
+#include "Network/PlayerProviderSingle.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

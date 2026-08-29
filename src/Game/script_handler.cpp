@@ -1,11 +1,11 @@
-#include "script_handler.hpp"
+#include "Game/script_handler.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CNetGamePlayer.hpp"
-#include "net_array.hpp"
-#include "Script.hpp"
-#include "scriptHandlerMgr.hpp"
-#include "script_packets.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Network/net_array.hpp"
+#include "Scripting/Script.hpp"
+#include "Game/scriptHandlerMgr.hpp"
+#include "Network/script_packets.hpp"
 
 namespace rage
 {

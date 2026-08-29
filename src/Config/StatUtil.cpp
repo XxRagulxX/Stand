@@ -1,10 +1,10 @@
-#include "StatUtil.hpp"
+#include "Config/StatUtil.hpp"
 
 #include <fmt/core.h>
 
-#include "atStringHash.hpp"
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

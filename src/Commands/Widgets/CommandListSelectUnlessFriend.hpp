@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "ReactionExemption.hpp"
+#include "Network/ReactionExemption.hpp"
 
 namespace Stand
 {

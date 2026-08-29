@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "FiberPool.hpp"
-#include "LuaConfig.hpp"
-#include "Tunables.hpp"
+#include "Core/FiberPool.hpp"
+#include "Scripting/LuaConfig.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

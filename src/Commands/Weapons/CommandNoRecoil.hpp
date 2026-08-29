@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "WeaponMgr.hpp"
+#include "Weapons/WeaponMgr.hpp"
 
 namespace Stand
 {

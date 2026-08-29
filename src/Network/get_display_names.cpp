@@ -1,12 +1,12 @@
-#include "get_display_names.hpp"
+#include "Network/get_display_names.hpp"
 
-#include "AptHelper.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "radio_stations.hpp"
-#include "Util.hpp"
-#include "vehicle_items.hpp"
-#include "weapons.hpp"
-#include "weapon_components.hpp"
+#include "Network/AptHelper.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "Vehicle/radio_stations.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/vehicle_items.hpp"
+#include "Weapons/weapons.hpp"
+#include "Weapons/weapon_components.hpp"
 
 namespace Stand
 {

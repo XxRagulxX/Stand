@@ -1,7 +1,7 @@
-#include "CommandReadonlyValueCopy.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
 
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

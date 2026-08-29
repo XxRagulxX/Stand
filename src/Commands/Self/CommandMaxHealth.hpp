@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSliderNamedValue.hpp"
+#include "Commands/Widgets/CommandSliderNamedValue.hpp"
 
-#include "StatCache.hpp"
+#include "Config/StatCache.hpp"
 
 namespace Stand
 {

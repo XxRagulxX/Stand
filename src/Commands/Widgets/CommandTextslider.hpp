@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPhysical.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 
-#include "CommandTextsliderData.hpp"
+#include "Commands/Widgets/CommandTextsliderData.hpp"
 
 namespace Stand
 {

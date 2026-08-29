@@ -5,7 +5,7 @@
 #if ERASE_PE_HEADER
 #include <cstdint>
 
-#include <soup/Bytepatch.hpp>
+#include "lib/soup/Bytepatch.hpp"
 #endif
 
 namespace Stand

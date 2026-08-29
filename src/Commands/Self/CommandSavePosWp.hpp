@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSavePos.hpp"
+#include "Commands/Self/CommandSavePos.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "ePedConfigFlags.hpp"
-#include "natives.hpp"
-#include "tbTempEmptyParachute.hpp"
+#include "Ped/ePedConfigFlags.hpp"
+#include "Game/natives.hpp"
+#include "Core/tbTempEmptyParachute.hpp"
 
 namespace Stand
 {

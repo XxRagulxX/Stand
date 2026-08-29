@@ -1,6 +1,6 @@
-﻿#include "UnicodePrivateUse.hpp"
+﻿#include "Menu/UnicodePrivateUse.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

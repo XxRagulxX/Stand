@@ -1,11 +1,11 @@
-#include "using_model.hpp"
+#include "Game/using_model.hpp"
 
-#include "atStringHash.hpp"
-#include "Label.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
-#include "ThreadContext.hpp"
-#include "Util.hpp"
+#include "Game/atStringHash.hpp"
+#include "Util/Label.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

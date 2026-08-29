@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rlclancommon.hpp"
+#include "Network/rlclancommon.hpp"
 
 #pragma pack(push, 1)
 namespace rage

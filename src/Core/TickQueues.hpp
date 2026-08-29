@@ -3,8 +3,8 @@
 #include <queue>
 #include <unordered_map>
 
-#include "gta_player.hpp"
-#include "typedecl.hpp"
+#include "Game/gta_player.hpp"
+#include "Game/typedecl.hpp"
 
 namespace Stand
 {

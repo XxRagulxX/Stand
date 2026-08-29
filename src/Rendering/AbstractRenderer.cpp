@@ -1,7 +1,7 @@
-#include "AbstractRenderer.hpp"
+#include "Rendering/AbstractRenderer.hpp"
 
-#include "DrawUtil3d.hpp"
-#include "vector.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

@@ -1,30 +1,30 @@
-﻿#include "CommandPhysical.hpp"
+﻿#include "Commands/Widgets/CommandPhysical.hpp"
 
 #include <fmt/core.h>
 
-#include "Click.hpp"
-#include "CommandCtxHotkeys.hpp"
-#include "CommandDivider.hpp"
-#include "CommandExtraInfo.hpp"
-#include "CommandLink.hpp"
-#include "CommandList.hpp"
-#include "CommandListActionItem.hpp"
-#include "CommandListConcealer.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandLua.hpp"
-#include "CommandReadonlyLink.hpp"
-#include "CommandSlider.hpp"
-#include "CommandToggle.hpp"
-#include "ContextMenu.hpp"
-#include "ExecCtx.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "regular_event.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
-#include "validate_file_name.hpp"
-#include "Worker.hpp"
+#include "Menu/Click.hpp"
+#include "Commands/Stand/CommandCtxHotkeys.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Extra/CommandLua.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Core/regular_event.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
+#include "Util/validate_file_name.hpp"
+#include "Core/Worker.hpp"
 
 namespace Stand
 {
@@ -345,7 +345,6 @@ namespace Stand
 			break;
 
 		case COMMAND_LIST_SELECT:
-		{
 			if (g_gui.show_slider_behaviour)
 			{
 				corner.emplace_back(LANG_GET_W("C2SEL"));
@@ -355,9 +354,6 @@ namespace Stand
 			{
 				corner.emplace_back(std::move(((const CommandListSelect*)this)->getCurrentValueMenuName().getLocalisedUtf16().append(L": ").append(value_help_text.getLocalisedUtf16())));
 			}
-			break;
-		}
-		default:
 			break;
 		}
 

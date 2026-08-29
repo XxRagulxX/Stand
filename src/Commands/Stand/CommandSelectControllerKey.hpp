@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "gta_input.hpp"
+#include "Game/gta_input.hpp"
 
 namespace Stand
 {

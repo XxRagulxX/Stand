@@ -1,30 +1,30 @@
-#include "HttpRequestBuilder.hpp"
+#include "Network/HttpRequestBuilder.hpp"
 
 #include <fmt/format.h>
 
-#include <soup/dnsHttpResolver.hpp>
-#include <soup/dnsOsResolver.hpp>
-#include <soup/dnsSmartResolver.hpp>
-#include <soup/dnsUdpResolver.hpp>
-#include <soup/HttpRequestTask.hpp>
-#include <soup/HttpResponse.hpp>
-#include <soup/netConfig.hpp>
-#include <soup/netStatus.hpp>
-#include <soup/ObfusString.hpp>
-#include <soup/Socket.hpp>
-#include <soup/X509Certchain.hpp>
+#include "lib/soup/dnsHttpResolver.hpp"
+#include "lib/soup/dnsOsResolver.hpp"
+#include "lib/soup/dnsSmartResolver.hpp"
+#include "lib/soup/dnsUdpResolver.hpp"
+#include "lib/soup/HttpRequestTask.hpp"
+#include "lib/soup/HttpResponse.hpp"
+#include "lib/soup/netConfig.hpp"
+#include "lib/soup/netStatus.hpp"
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/Socket.hpp"
+#include "lib/soup/X509Certchain.hpp"
 
-#include "Exceptional.hpp"
-#include "lang.hpp"
-#include "LangId.hpp"
-#include "NetInterface.hpp"
-#include "Util.hpp"
+#include "Core/Exceptional.hpp"
+#include "Localization/lang.hpp"
+#include "Localization/LangId.hpp"
+#include "Network/NetInterface.hpp"
+#include "Util/Util.hpp"
 
 // Intended to reduce load on DoH server, but our usage patterns + keep-alive + low TTL has us missing the cache too much.
 #define USE_DNS_CACHE false
 
 #if USE_DNS_CACHE
-#include <soup/dnsCacheResolver.hpp>
+#include "lib/soup/dnsCacheResolver.hpp"
 #endif
 
 namespace Stand

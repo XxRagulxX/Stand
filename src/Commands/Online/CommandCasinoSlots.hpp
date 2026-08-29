@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "FiberPool.hpp"
-#include "NativeTableHooks.hpp"
-#include "StringUtils.hpp"
-#include "Tunables.hpp"
+#include "Core/FiberPool.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Util/StringUtils.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

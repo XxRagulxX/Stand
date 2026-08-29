@@ -20,21 +20,23 @@
 #include <vector>
 
 // GTA V
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "rlGamerInfo.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 // Soup
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
 // Stand
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Core/fmt_enum_formatter.hpp"
 
-#include "CommandPhysical.hpp"
-#include "CommandList.hpp"
-#include "CommandToggle.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "lang.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "natives.hpp"
+#include "Localization/lang.hpp"
+
+#include "Game/natives.hpp"

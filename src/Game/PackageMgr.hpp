@@ -5,13 +5,13 @@
 #include <unordered_set>
 #include <vector>
 
-#include <soup/fwd.hpp>
-#include <soup/Promise.hpp>
+#include "lib/soup/fwd.hpp"
+#include "lib/soup/Promise.hpp"
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "Package.hpp"
-#include "PackageRepository.hpp"
+#include "Game/Package.hpp"
+#include "Game/PackageRepository.hpp"
 
 namespace Stand
 {

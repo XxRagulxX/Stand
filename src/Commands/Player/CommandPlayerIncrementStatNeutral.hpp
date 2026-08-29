@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "pointers.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

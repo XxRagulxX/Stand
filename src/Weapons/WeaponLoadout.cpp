@@ -1,12 +1,12 @@
-#include "WeaponLoadout.hpp"
+#include "Weapons/WeaponLoadout.hpp"
 
 #include <unordered_set>
 
-#include "AbstractEntity.hpp"
-#include "joaatToString.hpp"
-#include "natives.hpp"
-#include "weapons.hpp"
-#include "weapon_components.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/joaatToString.hpp"
+#include "Game/natives.hpp"
+#include "Weapons/weapons.hpp"
+#include "Weapons/weapon_components.hpp"
 
 namespace Stand
 {

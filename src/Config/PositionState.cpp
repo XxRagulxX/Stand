@@ -1,8 +1,8 @@
-#include "PositionState.hpp"
+#include "Config/PositionState.hpp"
 
-#include "AbstractEntity.hpp"
-#include "atStringHash.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandSaveCommandBoxPreset.hpp"
+#include "Commands/Stand/CommandSaveCommandBoxPreset.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandSliderFloat.hpp"
-#include "StringUtils.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

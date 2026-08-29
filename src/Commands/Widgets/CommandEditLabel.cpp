@@ -1,10 +1,10 @@
-#include "CommandEditLabel.hpp"
+#include "Commands/Widgets/CommandEditLabel.hpp"
 
-#include "CommandExtraInfo.hpp"
-#include "CommandLabel.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Commands/Widgets/CommandLabel.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

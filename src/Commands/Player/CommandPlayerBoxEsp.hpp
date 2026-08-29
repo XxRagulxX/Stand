@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandBirenderPlayerEsp.hpp"
+#include "Commands/Player/CommandBirenderPlayerEsp.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Box.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Box.hpp"
 
 namespace Stand
 {

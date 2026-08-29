@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandVehInvisibility.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Vehicle/CommandVehInvisibility.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

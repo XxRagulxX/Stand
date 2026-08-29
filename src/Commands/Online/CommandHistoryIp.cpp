@@ -1,12 +1,12 @@
 #if false
 #ifdef STAND_DEBUG
 
-#include "CommandHistoryIp.hpp"
+#include "Commands/Online/CommandHistoryIp.hpp"
 
-#include "HistoricPlayer.hpp"
-#include "RageConnector.hpp"
+#include "Network/HistoricPlayer.hpp"
+#include "Network/RageConnector.hpp"
 #include "rage_netcode.hpp"
-#include "RemoteGamer.hpp"
+#include "Network/RemoteGamer.hpp"
 
 namespace Stand
 {

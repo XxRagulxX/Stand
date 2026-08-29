@@ -1,18 +1,18 @@
-#include "CommandOutfit.hpp"
+#include "Commands/Self/CommandOutfit.hpp"
 
 #include <fstream>
 
 #include <fmt/core.h>
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "AbstractModel.hpp"
-#include "ColonsAndTabs.hpp"
-#include "CommandListFolder.hpp"
-#include "lang.hpp"
-#include "PedType.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Util/ColonsAndTabs.hpp"
+#include "Commands/Widgets/CommandListFolder.hpp"
+#include "Localization/lang.hpp"
+#include "Ped/PedType.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "CommandToggleRegularSp.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
 
-#include "Camgr.hpp"
-#include "get_current_time_millis.hpp"
-#include "GhostDriver.hpp"
-#include "gta_input.hpp"
-#include "gta_vehicle.hpp"
-#include "input.hpp"
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "Util.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Vehicle/GhostDriver.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Core/input.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

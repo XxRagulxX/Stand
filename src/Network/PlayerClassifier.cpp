@@ -1,9 +1,9 @@
-#include "PlayerClassifier.hpp"
+#include "Network/PlayerClassifier.hpp"
 
-#include "Exceptional.hpp"
-#include "FlowEvent.hpp"
-#include "lang.hpp"
-#include "Tunables.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Localization/lang.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {
@@ -154,9 +154,6 @@ namespace Stand
 
 		case PlayerClassifier::ADMIN:
 			return LANG_GET("FLAG_AMN");
-
-		case PlayerClassifier::NONE:
-			return LANG_GET("NONE");
 		}
 		return LANG_GET("NONE");
 	}

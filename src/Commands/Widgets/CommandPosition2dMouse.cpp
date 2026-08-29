@@ -1,8 +1,8 @@
-#include "CommandPosition2dMouse.hpp"
+#include "Commands/Widgets/CommandPosition2dMouse.hpp"
 
-#include "CommandPosition2d.hpp"
-#include "Gui.hpp"
-#include "Renderer.hpp"
+#include "Commands/Widgets/CommandPosition2d.hpp"
+#include "Rendering/Gui.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

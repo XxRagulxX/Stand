@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "CNetworkAssetVerifier.hpp"
-#include "CommandExtraInfo.hpp"
-#include "get_next_arg.hpp"
-#include "pointers.hpp"
-#include "Util.hpp"
+#include "Network/CNetworkAssetVerifier.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Game/pointers.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

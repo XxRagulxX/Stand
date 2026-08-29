@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerToggleBatch.hpp"
+#include "Commands/Player/CommandPlayerToggleBatch.hpp"
 
 namespace Stand
 {

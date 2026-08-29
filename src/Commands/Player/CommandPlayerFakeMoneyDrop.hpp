@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
 namespace Stand
 {
@@ -34,7 +34,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(this->m_on);
 

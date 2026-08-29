@@ -1,12 +1,12 @@
-#include "CommandArSpeed.hpp"
+#include "Commands/Self/CommandArSpeed.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandSlider.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
-#include "Scaleform.hpp"
-#include "tbScreenshotMode.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Rendering/Scaleform.hpp"
+#include "Core/tbScreenshotMode.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

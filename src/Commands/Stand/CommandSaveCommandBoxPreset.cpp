@@ -1,7 +1,7 @@
-#include "CommandListCommandBoxPresets.hpp"
-#include "Exceptional.hpp"
-#include "get_appdata_path.hpp"
-#include "Gui.hpp"
+#include "Commands/Stand/CommandListCommandBoxPresets.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

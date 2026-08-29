@@ -1,12 +1,12 @@
-#include "DrawUtil3d.hpp"
+#include "Rendering/DrawUtil3d.hpp"
 
-#include <soup/Poly.hpp>
-#include <soup/UvSphere.hpp>
+#include "lib/soup/Poly.hpp"
+#include "lib/soup/UvSphere.hpp"
 
-#include "AbstractEntity.hpp"
-#include "huddecl.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/huddecl.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

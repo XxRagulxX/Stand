@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

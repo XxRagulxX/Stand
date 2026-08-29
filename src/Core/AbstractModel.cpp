@@ -1,14 +1,14 @@
-#include "AbstractModel.hpp"
+#include "Core/AbstractModel.hpp"
 
-#include "CBaseModelInfo.hpp"
-#include "CVehicleModelInfo.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "Hooking.hpp"
-#include "atStringHash.hpp"
-#include "joaatToString.hpp"
-#include "natives.hpp"
-#include "PedModel.hpp"
-#include "Util.hpp"
+#include "Game/CBaseModelInfo.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/joaatToString.hpp"
+#include "Game/natives.hpp"
+#include "Ped/PedModel.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

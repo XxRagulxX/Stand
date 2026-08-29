@@ -1,18 +1,18 @@
-#include "CommandLuaScripts.hpp"
+#include "Commands/Extra/CommandLuaScripts.hpp"
 
 #include <filesystem>
 
-#include "CommandListSelect.hpp"
-#include "CommandLuaConfigToggle.hpp"
-#include "CommandSlider.hpp"
-#include "LuaConfig.hpp"
-#include "PackageMgr.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Extra/CommandLuaConfigToggle.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Scripting/LuaConfig.hpp"
+#include "Game/PackageMgr.hpp"
 
-#include "CommandLuaConfigPresets.hpp"
-#include "CommandLuaConfigEnforceSilentStop.hpp"
+#include "Commands/Extra/CommandLuaConfigPresets.hpp"
+#include "Commands/Extra/CommandLuaConfigEnforceSilentStop.hpp"
 
-#include "CommandLuaScript.hpp"
-#include "CommandPackages.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Commands/Extra/CommandPackages.hpp"
 
 namespace Stand
 {

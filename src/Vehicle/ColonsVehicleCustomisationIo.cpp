@@ -1,17 +1,17 @@
-#include "ColonsVehicleCustomisationIo.hpp"
+#include "Vehicle/ColonsVehicleCustomisationIo.hpp"
 
 #include <fstream>
 
 #include <fmt/format.h>
 
-#include <soup/Rgb.hpp>
+#include "lib/soup/Rgb.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ColonsAndTabs.hpp"
-#include "joaatToString.hpp"
-#include "get_appdata_path.hpp"
-#include "str2int.hpp"
-#include "VehicleColour.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/ColonsAndTabs.hpp"
+#include "Game/joaatToString.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/str2int.hpp"
+#include "Vehicle/VehicleColour.hpp"
 
 namespace Stand
 {

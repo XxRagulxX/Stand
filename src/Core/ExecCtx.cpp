@@ -1,9 +1,9 @@
-#include "ExecCtx.hpp"
+#include "Core/ExecCtx.hpp"
 
-#include <soup/os.hpp>
+#include "lib/soup/os.hpp"
 
-#include "FiberPool.hpp"
-#include "Script.hpp"
+#include "Core/FiberPool.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

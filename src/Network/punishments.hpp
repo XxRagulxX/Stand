@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 #define PUNISHMENT_EXPLODE_ANON		0b1
 #define PUNISHMENT_EXPLODE_OWNED	0b10

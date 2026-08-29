@@ -1,9 +1,9 @@
 #pragma once
 
-#include "natives.hpp"
-#include "AbstractEntity.hpp"
-#include "CommandAction.hpp"
-#include "weapons.hpp"
+#include "Game/natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand {
 	class CommandRemoveAmmo : public CommandAction {

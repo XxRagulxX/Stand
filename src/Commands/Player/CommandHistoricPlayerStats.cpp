@@ -1,12 +1,12 @@
-#include "CommandHistoricPlayerStats.hpp"
+#include "Commands/Player/CommandHistoricPlayerStats.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandHistoricPlayer.hpp"
-#include "CommandReadonlyValueCopy.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "RemoteStats.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/RemoteStats.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

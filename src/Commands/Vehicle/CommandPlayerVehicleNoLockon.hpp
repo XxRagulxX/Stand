@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_vehicle.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

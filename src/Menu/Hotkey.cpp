@@ -1,14 +1,14 @@
-#include "Hotkey.hpp"
+#include "Menu/Hotkey.hpp"
 
-#include <soup/Key.hpp>
+#include "lib/soup/Key.hpp"
 
-#include "input.hpp"
-#include "is_number_char.hpp"
-#include "lang.hpp"
-#include "LangId.hpp"
-#include "str2int.hpp"
-#include "StringUtils.hpp"
-#include "vk_string_map.hpp"
+#include "Core/input.hpp"
+#include "Util/is_number_char.hpp"
+#include "Localization/lang.hpp"
+#include "Localization/LangId.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/vk_string_map.hpp"
 
 namespace Stand
 {

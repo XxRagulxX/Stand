@@ -1,7 +1,7 @@
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
 
 namespace Stand
 {

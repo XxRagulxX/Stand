@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "get_next_arg.hpp"
-#include "Gui.hpp"
-#include "Util.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

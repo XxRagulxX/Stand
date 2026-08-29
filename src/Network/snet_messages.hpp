@@ -1,12 +1,12 @@
 #pragma once
 
-#include "netMessage.hpp"
-#include "netMessageId.hpp"
+#include "Network/netMessage.hpp"
+#include "Network/netMessageId.hpp"
 
-#include "gta_player.hpp"
-#include "netAddress.hpp"
-#include "rl.hpp"
-#include "rlGamerInfo.hpp"
+#include "Game/gta_player.hpp"
+#include "Network/netAddress.hpp"
+#include "Network/rl.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 #define SNET_MAX_SIZEOF_GAMER_DATA 512
 #define SNET_MAX_SIZEOF_JOIN_RESPONSE_DATA 512
@@ -80,17 +80,10 @@ namespace rage
 		}*/
 	};
 	static_assert(sizeof(snMsgAddGamerToSessionBase) == 0x120 + SNET_MAX_SIZEOF_GAMER_DATA);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(snMsgAddGamerToSessionBase, m_RelayAddr) == 0xF8);
 	static_assert(offsetof(snMsgAddGamerToSessionBase, m_SlotType) == 0x118);
 	static_assert(offsetof(snMsgAddGamerToSessionBase, m_SizeofData) == 0x11C);
 	static_assert(offsetof(snMsgAddGamerToSessionBase, m_Data) == 0x120);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	struct snMsgAddGamerToSessionCmd : public snMsgAddGamerToSessionBase
 	{
@@ -125,15 +118,8 @@ namespace rage
 			return false;
 		}*/
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(snMsgJoinRequest, m_GroupSize) == 0x320);
 	static_assert(offsetof(snMsgJoinRequest, m_GroupMembers) == 0x328);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }
 
 struct MsgKickPlayer : public rage::netMessage

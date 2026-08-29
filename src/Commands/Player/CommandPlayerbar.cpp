@@ -1,13 +1,13 @@
-#include "CommandPlayerbar.hpp"
+#include "Commands/Player/CommandPlayerbar.hpp"
 
-#include "CommandColourPointerDirectx.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLambdaSlider.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandSlider.hpp"
-#include "CommandTogglePointer.hpp"
+#include "Commands/Widgets/CommandColourPointerDirectx.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaSlider.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
 
-#include "CommandPlayerbarMain.hpp"
+#include "Commands/Player/CommandPlayerbarMain.hpp"
 
 namespace Stand
 {

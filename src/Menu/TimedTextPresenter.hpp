@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TimedTextCollection.hpp"
+#include "Menu/TimedTextCollection.hpp"
 
 namespace Stand
 {

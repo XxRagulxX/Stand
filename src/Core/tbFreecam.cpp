@@ -1,14 +1,14 @@
-#include "tbFreecam.hpp"
+#include "Core/tbFreecam.hpp"
 
-#include "AbstractEntity.hpp"
-#include "ButtonInstructions.hpp"
-#include "Camgr.hpp"
-#include "CommandSlider.hpp"
-#include "CommandToggleNoCorrelation.hpp"
-#include "free_movement.hpp"
-#include "gta_input.hpp"
-#include "natives.hpp"
-#include "unrestrictGameplayCam.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Menu/ButtonInstructions.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Ped/free_movement.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/unrestrictGameplayCam.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandReadonlyValueCopy.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
 
 namespace Stand
 {

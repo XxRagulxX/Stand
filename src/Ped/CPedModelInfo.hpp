@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CBaseModelInfo.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
-#include "atString.hpp"
-#include "PedVariationDS.hpp"
+#include "Game/atString.hpp"
+#include "Ped/PedVariationDS.hpp"
 
 class CPedModelInfo : public CBaseModelInfo
 {
@@ -31,12 +31,5 @@ class CPedModelInfo : public CBaseModelInfo
 	}
 };
 static_assert(sizeof(CPedModelInfo) == 0x286 + 10);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPedModelInfo, m_StreamFolder) == 0x1C8);
 static_assert(offsetof(CPedModelInfo, m_propStreamFolder) == 0x1D8);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

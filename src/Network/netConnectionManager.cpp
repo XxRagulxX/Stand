@@ -1,12 +1,12 @@
-#include "netConnectionManager.hpp"
+#include "Network/netConnectionManager.hpp"
 
-#include "Exceptional.hpp"
-#include "netConnection.hpp"
-#include "netEndpoint.hpp"
-#include "pointers.hpp"
+#include "Core/Exceptional.hpp"
+#include "Network/netConnection.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Game/pointers.hpp"
 
-#include "conf.hpp"
-#include "main.hpp"
+#include "Config/conf.hpp"
+#include "Core/main.hpp"
 
 namespace rage
 {

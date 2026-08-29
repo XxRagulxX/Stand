@@ -1,10 +1,10 @@
-#include "CommandPlayerBail.hpp"
+#include "Commands/Player/CommandPlayerBail.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "CommandSlider.hpp"
-#include "Gui.hpp"
-#include "PlayerProvider.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

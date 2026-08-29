@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "MenuKey.hpp"
+#include "Menu/MenuKey.hpp"
 
 namespace Stand
 {

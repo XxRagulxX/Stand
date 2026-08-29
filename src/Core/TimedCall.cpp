@@ -1,12 +1,12 @@
-#include "TimedCall.hpp"
+#include "Core/TimedCall.hpp"
 
 #include <cstdint>
 
 #include <fmt/core.h>
 #include <windows.h>
 
-#include "drawDebugText.hpp"
-#include "FileLogger.hpp"
+#include "Rendering/drawDebugText.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

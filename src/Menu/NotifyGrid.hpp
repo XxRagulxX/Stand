@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Grid.hpp"
+#include "Menu/Grid.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "GridItemNotify.hpp"
-#include "Spinlock.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Menu/GridItemNotify.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

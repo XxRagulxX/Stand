@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "get_next_arg.hpp"
-#include "PlayerHistory.hpp"
-#include "ScAccount.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Network/ScAccount.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "CommandRepeatTeleport.hpp"
+#include "Commands/Self/CommandRepeatTeleport.hpp"
 
-#include "TpUtil.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

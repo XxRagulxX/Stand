@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "ScriptGlobal.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

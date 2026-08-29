@@ -1,11 +1,11 @@
-#include "CommandPlayerCeopay.hpp"
+#include "Commands/Player/CommandPlayerCeopay.hpp"
 
-#include "FiberPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "script_events.hpp"
-#include "ScriptGlobal.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/script_events.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,13 +1,13 @@
-#include "CommandRootName.hpp"
+#include "Commands/Stand/CommandRootName.hpp"
 
-#include "Auth.hpp"
-#include "conf.hpp"
-#include "Gui.hpp"
-#include "Label.hpp"
-#include "MenuGrid.hpp"
-#include "StringUtils.hpp"
-#include "Renderer.hpp"
-#include "RootNameMgr.hpp"
+#include "Network/Auth.hpp"
+#include "Config/conf.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/Label.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Util/StringUtils.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/RootNameMgr.hpp"
 
 namespace Stand
 {

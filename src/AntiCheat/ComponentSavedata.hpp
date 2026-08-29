@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Component.hpp"
+#include "AntiCheat/Component.hpp"
 
 #ifdef STAND_DEBUG
-#include <soup/JsonObject.hpp>
+#include "lib/soup/JsonObject.hpp"
 #endif
 
 namespace Stand

@@ -1,11 +1,11 @@
-#include "CommandPackages.hpp"
+#include "Commands/Extra/CommandPackages.hpp"
 
-#include "CommandListRefreshable.hpp"
-#include "PackageMgr.hpp"
-#include "Tunables.hpp"
+#include "Commands/Widgets/CommandListRefreshable.hpp"
+#include "Game/PackageMgr.hpp"
+#include "Config/Tunables.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandPackage.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Extra/CommandPackage.hpp"
 
 namespace Stand
 {

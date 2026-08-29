@@ -1,6 +1,6 @@
-#include "ScriptLocal.hpp"
+#include "Scripting/ScriptLocal.hpp"
 
-#include "script_thread.hpp"
+#include "Game/script_thread.hpp"
 
 namespace Stand
 {

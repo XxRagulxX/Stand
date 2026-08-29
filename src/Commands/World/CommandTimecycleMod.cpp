@@ -1,9 +1,9 @@
-#include "CommandTimecycleMod.hpp"
+#include "Commands/World/CommandTimecycleMod.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "natives.hpp"
-#include "StringUtils.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

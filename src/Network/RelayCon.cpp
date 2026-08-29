@@ -1,17 +1,17 @@
-#include "RelayCon.hpp"
+#include "Network/RelayCon.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/ObfusString.hpp>
-#include <soup/Socket.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/Socket.hpp"
 
-#include "Auth.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Network/Auth.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 #define RELAY_PORT 25769
 

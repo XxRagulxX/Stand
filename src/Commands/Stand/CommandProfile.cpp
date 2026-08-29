@@ -1,12 +1,12 @@
-#include "CommandProfile.hpp"
+#include "Commands/Stand/CommandProfile.hpp"
 
-#include "CommandProfileSave.hpp"
-#include "CommandProfileLoad.hpp"
-#include "CommandProfileDelete.hpp"
-#include "CommandProfileAutoload.hpp"
-#include "CommandProfileAutosave.hpp"
+#include "Commands/Stand/CommandProfileSave.hpp"
+#include "Commands/Stand/CommandProfileLoad.hpp"
+#include "Commands/Stand/CommandProfileDelete.hpp"
+#include "Commands/Stand/CommandProfileAutoload.hpp"
+#include "Commands/Stand/CommandProfileAutosave.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

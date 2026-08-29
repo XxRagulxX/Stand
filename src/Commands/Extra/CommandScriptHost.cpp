@@ -1,7 +1,7 @@
-#include "CommandScriptHost.hpp"
+#include "Commands/Extra/CommandScriptHost.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "ScriptHostUtil.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "evtChatEvent.hpp"
-#include "FileLogger.hpp"
-#include "get_appdata_path.hpp"
-#include "StringUtils.hpp"
+#include "Network/evtChatEvent.hpp"
+#include "Core/FileLogger.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

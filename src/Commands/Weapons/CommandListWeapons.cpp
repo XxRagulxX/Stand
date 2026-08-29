@@ -1,6 +1,6 @@
-#include "CommandListWeapons.hpp"
+#include "Commands/Weapons/CommandListWeapons.hpp"
 
-#include "weapons.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {

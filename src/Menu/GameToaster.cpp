@@ -1,10 +1,10 @@
-﻿#include "GameToaster.hpp"
+﻿#include "Menu/GameToaster.hpp"
 
-#include "natives.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

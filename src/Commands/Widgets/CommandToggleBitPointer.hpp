@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/BitPointer.hpp>
+#include "lib/soup/BitPointer.hpp"
 
 namespace Stand
 {

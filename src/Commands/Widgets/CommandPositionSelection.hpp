@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandWithOnTickFocused.hpp"
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "vector.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

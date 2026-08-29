@@ -1,7 +1,7 @@
-#include "CViewportManager.hpp"
+#include "Rendering/CViewportManager.hpp"
 
-#include "fwRenderThreadInterface.hpp"
-#include "pointers.hpp"
+#include "Game/fwRenderThreadInterface.hpp"
+#include "Game/pointers.hpp"
 
 const rage::grcViewport* CViewportManager::GetCurrentGameGrcViewport() const
 {

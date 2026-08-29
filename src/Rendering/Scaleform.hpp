@@ -1,6 +1,6 @@
 #pragma once
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {
@@ -143,4 +143,14 @@ namespace Stand
 			call("UPDATE_PROPERTY")(0, 2, hud_colour);
 		}
 	};
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// int() on Scaleform above) as enough to make a type formattable on
+	// its own - it needs a format_as() overload it can find via ADL
+	// instead. Covers ScaleformTextcanvas too, since it derives from
+	// Scaleform.
+	constexpr auto format_as(const Scaleform& v) noexcept -> int
+	{
+		return static_cast<int>(v);
+	}
 }

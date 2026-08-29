@@ -1,12 +1,12 @@
-#include "PathFind.hpp"
+#include "Ped/PathFind.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 #if USE_SOUP_PATHFIND
-#include <soup/Pathfind.hpp>
+#include "lib/soup/Pathfind.hpp"
 #endif
 
 namespace Stand

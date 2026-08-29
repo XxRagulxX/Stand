@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "Gui.hpp"
-#include "is_session.hpp"
-#include "regular_event.hpp"
-#include "ScriptGlobal.hpp"
-#include "Util.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/is_session.hpp"
+#include "Core/regular_event.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

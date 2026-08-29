@@ -1,8 +1,8 @@
-#include "OnlineVersion.hpp"
+#include "Network/OnlineVersion.hpp"
 
 #include <fmt/format.h>
 
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

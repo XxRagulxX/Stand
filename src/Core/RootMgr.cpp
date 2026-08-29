@@ -1,18 +1,18 @@
-#include "RootMgr.hpp"
+#include "Core/RootMgr.hpp"
 
 #include <string>
 
-#include "CommandboxGrid.hpp"
-#include "ContextMenu.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "get_root_list.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "PlayerHistory.hpp"
-#include "regular_event.hpp"
-#include "Script.hpp"
-#include "Worker.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_root_list.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Core/regular_event.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/Worker.hpp"
 
 namespace Stand
 {

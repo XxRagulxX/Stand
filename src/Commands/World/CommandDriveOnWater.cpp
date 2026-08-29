@@ -1,7 +1,7 @@
-#include "CommandDriveOnWater.hpp"
+#include "Commands/World/CommandDriveOnWater.hpp"
 
-#include "AbstractModel.hpp"
-#include "Util.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -12,7 +12,7 @@ namespace Stand
 
 	void CommandDriveOnWater::onEnable(Click& click)
 	{
-		registerScriptTickEventHandler(click, [=, this]()
+		registerScriptTickEventHandler([this]
 		{
 			HANDLER_CHECK(m_on);
 

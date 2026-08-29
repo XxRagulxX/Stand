@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandBoneEsp.hpp"
+#include "Commands/Stand/CommandBoneEsp.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

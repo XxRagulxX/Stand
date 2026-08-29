@@ -1,7 +1,7 @@
-#include "NuancedEventWithExtraData.hpp"
+#include "Core/NuancedEventWithExtraData.hpp"
 
-#include "FlowEvent.hpp"
-#include "Label.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
-#include "WorldState.hpp"
+#include "Config/WorldState.hpp"
 
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

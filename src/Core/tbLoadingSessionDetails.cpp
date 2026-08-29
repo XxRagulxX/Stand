@@ -1,6 +1,6 @@
-#include "tbLoadingSessionDetails.hpp"
+#include "Core/tbLoadingSessionDetails.hpp"
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

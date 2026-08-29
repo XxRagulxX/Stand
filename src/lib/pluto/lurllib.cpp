@@ -1,8 +1,8 @@
 #define LUA_LIB
 #include "lualib.h"
 
-#include "soup/Uri.hpp"
-#include "soup/urlenc.hpp"
+#include "lib/soup/Uri.hpp"
+#include "lib/soup/urlenc.hpp"
 
 
 static int url_encode (lua_State* L) {

@@ -1,9 +1,9 @@
-#include "gta_vehicle.hpp"
+#include "Game/gta_vehicle.hpp"
 
-#include "CommandDlcpacks.hpp"
-#include "CustomDlcMgr.hpp"
-#include "Hooking.hpp"
-#include "VehicleType.hpp"
+#include "Commands/Extra/CommandDlcpacks.hpp"
+#include "Game/CustomDlcMgr.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Vehicle/VehicleType.hpp"
 
 bool CVehicle::InheritsFromHeli() const noexcept
 {

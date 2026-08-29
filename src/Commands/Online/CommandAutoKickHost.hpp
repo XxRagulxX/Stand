@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggleUltimate.hpp"
+#include "Commands/Widgets/CommandToggleUltimate.hpp"
 
-#include "PlayerExcludes.hpp"
+#include "Network/PlayerExcludes.hpp"
 
 namespace Stand
 {

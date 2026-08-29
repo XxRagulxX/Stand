@@ -1,13 +1,13 @@
-#include "CommandSpecialFlight.hpp"
+#include "Commands/Self/CommandSpecialFlight.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CHandlingData.hpp"
-#include "CHandlingDataMgr.hpp"
-#include "ComponentCrashPatch.hpp"
-#include "gta_vehicle.hpp"
-#include "pointers.hpp"
-#include "regular_event.hpp"
-#include "Script.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/CHandlingData.hpp"
+#include "Game/CHandlingDataMgr.hpp"
+#include "AntiCheat/ComponentCrashPatch.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/pointers.hpp"
+#include "Core/regular_event.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

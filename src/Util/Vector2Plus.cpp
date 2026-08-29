@@ -1,8 +1,8 @@
-#include "Vector2Plus.hpp"
+#include "Util/Vector2Plus.hpp"
 
 #include <fmt/core.h>
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

@@ -1,29 +1,29 @@
-#include "ComponentCrashPatch.hpp"
+#include "AntiCheat/ComponentCrashPatch.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CLightEntity.hpp"
-#include "cloth.hpp"
-#include "ComponentNetcode.hpp" // packet_src
-#include "CPedDrawHandler.hpp"
-#include "CPickup.hpp"
-#include "crSkeleton.hpp"
-#include "eEntityType.hpp"
-#include "FlowEvent.hpp"
-#include "grmShaderGroup.hpp"
-#include "gta_custom_shader_effect.hpp"
-#include "gta_ped.hpp"
-#include "gta_vehicle.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "Label.hpp"
-#include "phBoundComposite.hpp"
-#include "phConstraint.hpp"
-#include "pointers.hpp"
-#include "Util.hpp"
-#include "VehicleGadgets.hpp"
-#include "VehicleType.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/CLightEntity.hpp"
+#include "Game/cloth.hpp"
+#include "AntiCheat/ComponentNetcode.hpp" // packet_src
+#include "Ped/CPedDrawHandler.hpp"
+#include "Game/CPickup.hpp"
+#include "Game/crSkeleton.hpp"
+#include "Game/eEntityType.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Game/grmShaderGroup.hpp"
+#include "Game/gta_custom_shader_effect.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Util/Label.hpp"
+#include "Game/phBoundComposite.hpp"
+#include "Game/phConstraint.hpp"
+#include "Game/pointers.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleGadgets.hpp"
+#include "Vehicle/VehicleType.hpp"
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {
@@ -645,13 +645,6 @@ namespace Stand
 			{
 				pManifold = nullptr;
 			}
-			break;
-		case rage::phConstraintBase::HALFSPACE:
-		case rage::phConstraintBase::DISTANCE:
-		case rage::phConstraintBase::SPHERICAL:
-		case rage::phConstraintBase::ROTATION:
-		case rage::phConstraintBase::HINGE:
-		case rage::phConstraintBase::CYLINDRICAL:
 			break;
 		}
 		COMP_OG(rage_phConstraintBase_ctor)(_this, params);

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 
 namespace Stand
 {

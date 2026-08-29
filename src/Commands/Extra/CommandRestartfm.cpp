@@ -1,12 +1,12 @@
-#include "CommandRestartfm.hpp"
+#include "Commands/Extra/CommandRestartfm.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "Script.hpp"
-#include "script_handler.hpp"
-#include "ScriptHostUtil.hpp"
-#include "script_thread.hpp"
-#include "ScriptVmErrorHandling.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Scripting/Script.hpp"
+#include "Game/script_handler.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
+#include "Game/script_thread.hpp"
+#include "Scripting/ScriptVmErrorHandling.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "CommandStatPos.hpp"
+#include "Commands/Widgets/CommandStatPos.hpp"
 
-#include "CommandStatPosField.hpp"
+#include "Commands/Widgets/CommandStatPosField.hpp"
 
 namespace Stand
 {

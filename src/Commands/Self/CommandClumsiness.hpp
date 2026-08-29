@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -26,7 +26,7 @@ namespace Stand
 			{
 				Util::toast(LANG_FMT("NO_GRACE", FMT_ARG("feature_name", this->menu_name.getLocalisedUtf8())));
 			}
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler(click, [=]()
 			{
 				if (!m_on)
 				{

@@ -1,9 +1,8 @@
-#include "script_vm_common.hpp"
+#include "Game/script_vm_common.hpp"
 
-#include "FunctionPointer.hpp"
-#include "PointerNames.hpp"
-#include "ScriptMgr.hpp"
-#include "Util.hpp"
+#include "Core/PointerNames.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -143,7 +142,7 @@ namespace Stand
 
 	uint32_t getOpcodeArgLength(const uint8_t* op_ptr)
 	{
-		switch(*op_ptr)
+		switch (*op_ptr)
 		{
 		case 37:
 			return 1;
@@ -227,7 +226,7 @@ namespace Stand
 		auto entry = g_script_mgr.reverse_entrypoint_map.find(entrypoint);
 		if (entry == g_script_mgr.reverse_entrypoint_map.end())
 		{
-			return std::string("@ ").append(PointerNames::format(function_pointer_to_void(entrypoint)));
+			return std::move(std::string("@ ").append(PointerNames::format(entrypoint)));
 		}
 		std::string str{};
 		for (auto i = entry->second.begin(); i != entry->second.end(); ++i)

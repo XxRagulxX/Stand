@@ -1,7 +1,7 @@
-#include "CommandTab.hpp"
+#include "Commands/Widgets/CommandTab.hpp"
 
-#include "Renderer.hpp"
-#include "UnicodePrivateUse.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
 
 namespace Stand
 {
@@ -34,7 +34,7 @@ namespace Stand
 	void CommandTab::updateRenderName()
 	{
 		std::wstring render_name{};
-		if ((render_mode & TABRENDER_LICON) && tab_type != TAB_NONE)
+		if ((render_mode & TABRENDER_LICON) && tab_type != NONE)
 		{
 			render_name.push_back(L'\uE700' + tab_type);
 		}
@@ -46,7 +46,7 @@ namespace Stand
 			}
 			render_name.append(menu_name.getLocalisedUtf16());
 		}
-		if ((render_mode & TABRENDER_RICON) && tab_type != TAB_NONE)
+		if ((render_mode & TABRENDER_RICON) && tab_type != NONE)
 		{
 			if (!render_name.empty())
 			{

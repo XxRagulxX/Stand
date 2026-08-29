@@ -1,7 +1,7 @@
 #pragma once
 
-#include "netPeerId.hpp"
-#include "netSocketAddress.hpp"
+#include "Network/netPeerId.hpp"
+#include "Network/netSocketAddress.hpp"
 
 namespace Stand
 {

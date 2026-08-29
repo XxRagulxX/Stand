@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

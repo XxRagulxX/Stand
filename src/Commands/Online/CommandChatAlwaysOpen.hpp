@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Chat.hpp"
-#include "Commandbox.hpp"
-#include "tbScreenshotMode.hpp"
+#include "Network/Chat.hpp"
+#include "Commands/Widgets/Commandbox.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
 namespace Stand
 {
@@ -18,7 +18,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(this->m_on);
 				if (is_session_started())

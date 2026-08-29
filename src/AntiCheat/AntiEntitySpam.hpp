@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
-#include "hashtype.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/hashtype.hpp"
 #include <unordered_map>
 #include <unordered_set>
 

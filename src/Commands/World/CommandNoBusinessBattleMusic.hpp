@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "NativeTableHooks.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
 #ifdef STAND_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

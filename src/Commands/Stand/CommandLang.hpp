@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "CommandboxGrid.hpp"
-#include "Gui.hpp"
-#include "RelayCon.hpp"
-#include "RootMgr.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/RelayCon.hpp"
+#include "Core/RootMgr.hpp"
 
 #define LANG_ENTRY(id, ...) \
 if (Lang::isEnabled(id)) \
@@ -65,7 +65,7 @@ namespace Stand
 				onChangeImplUnavailable(click, prev_value);
 				return;
 			}
-			FiberPool::queueJob([=, this]
+			FiberPool::queueJob([=]
 			{
 				if (Lang::active_id != (lang_t)value && !working && !g_gui.isUnloadPending())
 				{

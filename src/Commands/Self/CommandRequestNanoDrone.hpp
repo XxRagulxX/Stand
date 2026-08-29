@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "ScriptGlobal.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

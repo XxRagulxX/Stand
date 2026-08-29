@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandPhysical.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 
 #include <memory>
 #include <functional>
 
-#include <soup/WeakRef.hpp>
+#include "lib/soup/WeakRef.hpp"
 
-#include "CommandBuilder.hpp"
+#include "Commands/Widgets/CommandBuilder.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "ConfigSimple.hpp"
+#include "Config/ConfigSimple.hpp"
 
-#include "ColonsAndTabs.hpp"
+#include "Util/ColonsAndTabs.hpp"
 
 namespace Stand
 {

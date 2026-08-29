@@ -1,6 +1,6 @@
-#include "CommandLuaListAction.hpp"
+#include "Commands/Extra/CommandLuaListAction.hpp"
 
-#include "CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
 
 namespace Stand
 {

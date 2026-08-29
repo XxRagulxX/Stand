@@ -1,11 +1,11 @@
-#include "CommandToggleNoCorrelation.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
-#include "get_next_arg.hpp"
-#include "Gui.hpp"
-#include "regular_event.hpp"
-#include "RelayCon.hpp"
-#include "Script.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/regular_event.hpp"
+#include "Network/RelayCon.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

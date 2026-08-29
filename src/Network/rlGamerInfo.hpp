@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "rlPeerInfo.hpp"
+#include "Network/rlPeerInfo.hpp"
 
 namespace rage
 {
@@ -54,15 +54,8 @@ namespace rage
 			return false;
 		}*/
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	//static_assert(sizeof(rlGamerInfo) == 0xEE);
 	static_assert(offsetof(rlGamerInfo, local_index) == 0xD8);
 	static_assert(offsetof(rlGamerInfo, name) == 0xDC);
 	static_assert(offsetof(rlGamerInfo, flags) == 0xED);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

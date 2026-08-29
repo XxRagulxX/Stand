@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fwRefAwareBase.hpp"
+#include "Game/fwRefAwareBase.hpp"
 
 namespace rage
 {

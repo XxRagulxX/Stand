@@ -1,6 +1,6 @@
-#include "CommandPlayerKickBreakup.hpp"
+#include "Commands/Player/CommandPlayerKickBreakup.hpp"
 
-#include "PlayerProvider.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

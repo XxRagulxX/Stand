@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionState.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {

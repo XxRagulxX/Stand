@@ -1,7 +1,7 @@
 #pragma once
 
 #if false
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 namespace Stand
 {

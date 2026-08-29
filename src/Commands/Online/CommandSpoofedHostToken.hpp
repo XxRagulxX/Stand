@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "CommandSpoofHostToken.hpp"
-#include "get_next_arg.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Commands/Online/CommandSpoofHostToken.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

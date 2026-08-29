@@ -1,9 +1,9 @@
 #pragma once
 
-#include "RemoteGlobalWriter.hpp"
+#include "Network/RemoteGlobalWriter.hpp"
 #if REMOTE_STAT_WRITING
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
 namespace Stand
 {

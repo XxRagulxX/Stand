@@ -1,13 +1,13 @@
-#include "ScriptHostUtil.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "atStringHash.hpp"
-#include "get_current_time_millis.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_thread.hpp"
-#include "TransitionHelper.hpp"
-#include "TransitionState.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/atStringHash.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_thread.hpp"
+#include "Core/TransitionHelper.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {

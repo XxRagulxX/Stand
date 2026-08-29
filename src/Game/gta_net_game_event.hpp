@@ -1,8 +1,8 @@
 #pragma once
 
-#include "gta_player.hpp"
-#include "gta_node_list.hpp"
-#include "script_id.hpp"
+#include "Game/gta_player.hpp"
+#include "Game/gta_node_list.hpp"
+#include "Game/script_id.hpp"
 
 #pragma pack(push, 1)
 namespace rage
@@ -111,14 +111,7 @@ public:
 	PAD(0x58 + 1, 0x60) CGameScriptId m_ScriptId;
 	/* 0xA0 */ int m_nRange;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPlaySoundEvent, m_nRange) == 0xA0);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CStopSoundEvent : public rage::netGameEvent
 {

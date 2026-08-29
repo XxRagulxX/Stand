@@ -1,8 +1,8 @@
-#include "ControllerInputConfig.hpp"
+#include "Config/ControllerInputConfig.hpp"
 
 #include <fmt/core.h>
 
-#include "lang.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {
@@ -52,8 +52,7 @@ namespace Stand
 		case INPUT_FRONTEND_RIGHT: return LANG_GET("CK_D_R");
 		case INPUT_FRONTEND_PAUSE: return LANG_GET("CK_STRT");
 		case INPUT_FRONTEND_SELECT: return LANG_GET("CK_BCK");
-		default:
-			return "???";
 		}
+		return "???";
 	}
 }

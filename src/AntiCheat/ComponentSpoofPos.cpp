@@ -1,9 +1,9 @@
-#include "ComponentSpoofPos.hpp"
+#include "AntiCheat/ComponentSpoofPos.hpp"
 
-#include "AbstractEntity.hpp"
-#include "is_session.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Network/is_session.hpp"
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {

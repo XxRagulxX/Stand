@@ -4,9 +4,9 @@
 #include <deque>
 #include <vector>
 
-#include "conf_netcode.hpp"
-#include "gta_fwddecl.hpp"
-#include "rlGamerInfo.hpp"
+#include "Config/conf_netcode.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "Toaster.hpp"
+#include "Menu/Toaster.hpp"
 
-#include "GridToaster.hpp"
+#include "Menu/GridToaster.hpp"
 
 namespace Stand
 {

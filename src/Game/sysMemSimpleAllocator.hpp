@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtti_shim.hpp"
+#include "AntiCheat/rtti_shim.hpp"
 
 namespace rage
 {

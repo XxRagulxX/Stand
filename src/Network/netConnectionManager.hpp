@@ -1,12 +1,12 @@
 #pragma once
 
-#include "struct_base.hpp"
-#include "netMessage.hpp"
-#include "atDelegate.hpp"
-#include "inlist.hpp"
-#include "nettypes.hpp"
-#include "netEndpoint.hpp"
-#include "sysCriticalSection.hpp"
+#include "Util/struct_base.hpp"
+#include "Network/netMessage.hpp"
+#include "Game/atDelegate.hpp"
+#include "Util/inlist.hpp"
+#include "Network/nettypes.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Game/sysCriticalSection.hpp"
 
 namespace rage
 {
@@ -103,16 +103,9 @@ namespace rage
 				;
 		}
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netConnectionManager, m_EndpointsByEndpointId) == 0x98); // 3337
 	static_assert(offsetof(netConnectionManager, m_EndpointsByAddr) == 0xC8); // 3337
 	static_assert(offsetof(netConnectionManager, m_EndpointsByPeerId) == 0xE0); // 3337
 	static_assert(offsetof(netConnectionManager, cxns) == 0x110); // 3337
 	static_assert(offsetof(netConnectionManager, critical_section) == 0x968); // 3337
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

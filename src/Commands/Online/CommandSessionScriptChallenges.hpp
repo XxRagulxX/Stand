@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandSessionScript.hpp"
+#include "Commands/Online/CommandSessionScript.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
-#include "CommandSessionScriptChallengesType.hpp"
-#include "CommandSessionScriptChallengesScore.hpp"
+#include "Commands/Online/CommandSessionScriptChallengesType.hpp"
+#include "Commands/Online/CommandSessionScriptChallengesScore.hpp"
 
 namespace Stand
 {

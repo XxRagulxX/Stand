@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 namespace Stand
 {
@@ -18,7 +18,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(this->m_on);
 				for (const auto& p : AbstractPlayer::listExcept(true))

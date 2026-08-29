@@ -1,13 +1,13 @@
-#include "Matchmaking.hpp"
+#include "Network/Matchmaking.hpp"
 
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "is_session.hpp"
-#include "MatchmakingConfig.hpp"
-#include "pointers.hpp"
-#include "rl_matching.hpp"
-#include "rlRosGeoLocInfo.hpp"
-#include "rlSessionInfo.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_session.hpp"
+#include "Network/MatchmakingConfig.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rl_matching.hpp"
+#include "Network/rlRosGeoLocInfo.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 namespace Stand
 {

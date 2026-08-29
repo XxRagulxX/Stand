@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandTextslider.hpp"
+#include "Commands/Widgets/CommandTextslider.hpp"
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
 namespace Stand
 {

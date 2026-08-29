@@ -1,8 +1,8 @@
-#include "PlayerExcludes.hpp"
+#include "Network/PlayerExcludes.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandList.hpp"
-#include "CommandTogglePointer.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
 
 namespace Stand
 {

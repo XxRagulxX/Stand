@@ -1,10 +1,10 @@
-#include "CommandHistoryFriendsNote.hpp"
+#include "Commands/Online/CommandHistoryFriendsNote.hpp"
 
-#include "lang.hpp"
-#include "natives.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
 #include "fmt/format.h"
-#include "PlayerHistory.hpp"
-#include "StringUtils.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

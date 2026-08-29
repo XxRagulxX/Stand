@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandReadonlyValue.hpp"
+#include "Commands/Widgets/CommandReadonlyValue.hpp"
 
 namespace Stand
 {

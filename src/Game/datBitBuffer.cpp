@@ -1,8 +1,8 @@
-#include "datBitBuffer.hpp"
+#include "Game/datBitBuffer.hpp"
 
-#include "pointers.hpp"
-#include "rlGamerHandle.hpp"
-#include "rlGamerId.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerHandle.hpp"
+#include "Network/rlGamerId.hpp"
 
 namespace rage
 {

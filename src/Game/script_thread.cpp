@@ -1,14 +1,14 @@
-#include "script_thread.hpp"
+#include "Game/script_thread.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "atArray.hpp"
-#include "CNetGamePlayer.hpp"
-#include "get_current_time_millis.hpp"
-#include "Label.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "script_handler.hpp"
-#include "script_program.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/atArray.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/Label.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Game/script_handler.hpp"
+#include "Game/script_program.hpp"
 
 using namespace Stand;
 
@@ -330,7 +330,14 @@ namespace rage
 
 	void scrThread::spoofAsOpt(const std::function<void()>& func)
 	{
-		spoofAs(func);
+		if (this == nullptr)
+		{
+			func();
+		}
+		else
+		{
+			spoofAs(func);
+		}
 	}
 
 	scriptHandlerNetComponent* scrThread::getNetComponent() const noexcept
@@ -365,7 +372,11 @@ namespace rage
 
 	bool scrThread::snatchScriptHost()
 	{
-		return snatchScriptHostInner();
+		if (this != nullptr)
+		{
+			return snatchScriptHostInner();
+		}
+		return false;
 	}
 
 	bool scrThread::snatchScriptHostInner()
@@ -380,27 +391,29 @@ namespace rage
 
 	bool scrThread::fiberSnatchScriptHost()
 	{
-		if (hostedByUser())
+		if (this != nullptr)
 		{
-			return true;
-		}
-		if (snatchScriptHostInner())
-		{
-			time_t request_time = get_current_time_millis();
-			do
+			if (hostedByUser())
 			{
-				Script::current()->yield();
-				if (GtaThread::fromHash(m_context.m_script_hash) != this)
+				return true;
+			}
+			if (snatchScriptHostInner())
+			{
+				time_t request_time = get_current_time_millis();
+				do
 				{
-					break;
-				}
-				if (hostedByUser())
-				{
-					return true;
-				}
-			} while (GET_MILLIS_SINCE(request_time) < 6000);
+					Script::current()->yield();
+					if (GtaThread::fromHash(m_context.m_script_hash) != this)
+					{
+						break;
+					}
+					if (hostedByUser())
+					{
+						return true;
+					}
+				} while (GET_MILLIS_SINCE(request_time) < 6000);
+			}
 		}
-
 		return false;
 	}
 }

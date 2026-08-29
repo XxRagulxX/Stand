@@ -1,9 +1,9 @@
-#include "CommandWaterHeight.hpp"
+#include "Commands/World/CommandWaterHeight.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandToggleNoCorrelation.hpp"
-#include "vector.hpp"
-#include "WaterQuad.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Util/vector.hpp"
+#include "Rendering/WaterQuad.hpp"
 
 namespace Stand
 {

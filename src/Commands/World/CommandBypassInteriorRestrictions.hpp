@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "tbDeceiveInteriorChecks.hpp"
+#include "Core/tbDeceiveInteriorChecks.hpp"
 
 namespace Stand
 {

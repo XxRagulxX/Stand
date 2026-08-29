@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sysObfuscated.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
 namespace rage
 {
@@ -43,12 +43,5 @@ public:
 	void refreshCrc() {}
 	[[nodiscard]] int32_t calculateCrc() const;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CNetworkAssetVerifier, m_memoryTamperCRC) == 0x84); // 2845, might be wrong for 2944
 static_assert(offsetof(CNetworkAssetVerifier, m_CRC) == 0xD4); // 2944
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

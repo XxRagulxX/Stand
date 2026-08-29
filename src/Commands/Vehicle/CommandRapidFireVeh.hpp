@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "VehicleMods.hpp"
-#include "WeaponMgr.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Vehicle/VehicleMods.hpp"
+#include "Weapons/WeaponMgr.hpp"
 
 namespace Stand
 {

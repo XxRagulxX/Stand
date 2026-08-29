@@ -1,10 +1,10 @@
-#include "CommandBlipTags.hpp"
+#include "Commands/World/CommandBlipTags.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "natives.hpp"
-#include "NativeTableHooks.hpp"
-#include "scrNativeCallContext.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Game/natives.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace Stand
 {

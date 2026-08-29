@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerEsp.hpp"
-#include "CommandEspBase.hpp"
+#include "Commands/Player/CommandPlayerEsp.hpp"
+#include "Commands/Widgets/CommandEspBase.hpp"
 
-#include "AbstractEntity.hpp"
-#include "DrawUtil3d.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/DrawUtil3d.hpp"
 
 namespace Stand
 {

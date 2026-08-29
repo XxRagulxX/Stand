@@ -1,10 +1,10 @@
-#include "CommandProfiles.hpp"
+#include "Commands/Stand/CommandProfiles.hpp"
 
-#include "CommandProfilesCreate.hpp"
-#include "CommandProfile.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "Script.hpp"
+#include "Commands/Stand/CommandProfilesCreate.hpp"
+#include "Commands/Stand/CommandProfile.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

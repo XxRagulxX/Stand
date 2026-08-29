@@ -1,7 +1,7 @@
-#include "tbStareAtSky.hpp"
+#include "Core/tbStareAtSky.hpp"
 
-#include "Camgr.hpp"
-#include "natives.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
-#include "CommandWaterOpacityDifferential.hpp"
+#include "Commands/World/CommandWaterOpacityDifferential.hpp"
 
 #include <algorithm>
 
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

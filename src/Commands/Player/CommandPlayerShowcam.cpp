@@ -1,8 +1,8 @@
-#include "CommandPlayerShowcam.hpp"
+#include "Commands/Player/CommandPlayerShowcam.hpp"
 
-#include "CommandPlayer.hpp"
-#include "DrawUtil3d.hpp"
-#include "tbScreenshotMode.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
 namespace Stand
 {

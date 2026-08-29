@@ -1,7 +1,7 @@
 #pragma once
 
-#include "natives_decl.hpp"
-#include "Vector2Plus.hpp"
+#include "Game/natives_decl.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

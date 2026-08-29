@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Box.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Box.hpp"
 
 namespace Stand
 {

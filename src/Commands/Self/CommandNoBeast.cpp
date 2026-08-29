@@ -1,9 +1,9 @@
-#include "CommandNoBeast.hpp"
+#include "Commands/Self/CommandNoBeast.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "ScriptLocal.hpp"
-#include "script_thread.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_thread.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

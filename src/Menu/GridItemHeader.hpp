@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GridItem.hpp"
+#include "Menu/GridItem.hpp"
 
-#include "Texture.hpp"
+#include "Rendering/Texture.hpp"
 
 namespace Stand
 {

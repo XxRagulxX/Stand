@@ -1,6 +1,6 @@
-#include "UniqueThread.hpp"
+#include "Core/UniqueThread.hpp"
 
-#include "Exceptional.hpp"
+#include "Core/Exceptional.hpp"
 
 namespace Stand
 {

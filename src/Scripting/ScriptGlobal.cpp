@@ -1,12 +1,12 @@
-#include "ScriptGlobal.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 #if REPORT_OFFTHREAD_SG_WRITE
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
 #endif
-#include "pointers.hpp"
-#include "script_program.hpp"
-#include "scrValue.hpp"
+#include "Game/pointers.hpp"
+#include "Game/script_program.hpp"
+#include "Game/scrValue.hpp"
 
 namespace Stand
 {

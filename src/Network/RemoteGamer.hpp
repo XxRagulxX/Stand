@@ -3,13 +3,13 @@
 #include <optional>
 #include <string>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include <soup/GarbageCollector.hpp>
+#include "lib/soup/GarbageCollector.hpp"
 
-#include "rlSessionInfo.hpp"
-#include "ToastConfig.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "Config/ToastConfig.hpp"
 
 #define RG_PEERADDR false
 #define RG_HAS_BULK false

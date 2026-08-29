@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "CommandExtraInfo.hpp"
-#include "Hooking.hpp"
-#include "pointers.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Game/pointers.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

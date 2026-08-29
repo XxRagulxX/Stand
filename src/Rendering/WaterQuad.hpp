@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 struct WaterOpacityData
 {

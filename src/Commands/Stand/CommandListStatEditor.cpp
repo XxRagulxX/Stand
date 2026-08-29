@@ -1,16 +1,16 @@
-#include "CommandListStatEditor.hpp"
+#include "Commands/Stand/CommandListStatEditor.hpp"
 
-#include "CommandKdEditor.hpp"
-#include "CommandLink.hpp"
-#include "CommandListWarning.hpp"
-#include "CommandSearchLiterals.hpp"
-#include "CommandStatBoolSlider.hpp"
-#include "CommandStatDate.hpp"
-#include "CommandStatFloatSlider.hpp"
-#include "CommandStatIntSlider.hpp"
-#include "CommandStatPos.hpp"
-#include "CommandStatProfileSetting.hpp"
-#include "CommandStatString.hpp"
+#include "Commands/Online/CommandKdEditor.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Commands/Stand/CommandListWarning.hpp"
+#include "Commands/Widgets/CommandSearchLiterals.hpp"
+#include "Commands/Widgets/CommandStatBoolSlider.hpp"
+#include "Commands/Widgets/CommandStatDate.hpp"
+#include "Commands/Widgets/CommandStatFloatSlider.hpp"
+#include "Commands/Widgets/CommandStatIntSlider.hpp"
+#include "Commands/Widgets/CommandStatPos.hpp"
+#include "Commands/Widgets/CommandStatProfileSetting.hpp"
+#include "Commands/Widgets/CommandStatString.hpp"
 
 namespace Stand
 {

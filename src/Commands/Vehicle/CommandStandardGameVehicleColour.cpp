@@ -1,9 +1,9 @@
-#include "CommandStandardGameVehicleColour.hpp"
+#include "Commands/Vehicle/CommandStandardGameVehicleColour.hpp"
 
-#include <soup/macros.hpp> // COUNT
+#include "lib/soup/macros.hpp" // COUNT
 
-#include "CommandSearchLiterals.hpp"
-#include "CommandStandardGameVehicleColourItem.hpp"
+#include "Commands/Widgets/CommandSearchLiterals.hpp"
+#include "Commands/Vehicle/CommandStandardGameVehicleColourItem.hpp"
 
 namespace Stand
 {

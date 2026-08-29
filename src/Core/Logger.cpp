@@ -1,16 +1,16 @@
-#include "Logger.hpp"
+#include "Core/Logger.hpp"
 
 #include <fmt/format.h>
 
-#include "format_time_since_1970_for_user_locale.hpp"
-#include "get_seconds_since_unix_epoch.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
+#include "Util/format_time_since_1970_for_user_locale.hpp"
+#include "Util/get_seconds_since_unix_epoch.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
 
 #define LOG_MILLIS false
 
 #if LOG_MILLIS
-#include "get_current_time_millis.hpp"
+#include "Util/get_current_time_millis.hpp"
 #endif
 
 namespace Stand

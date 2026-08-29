@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "pointers.hpp"
-#include "PopMultiplierAreas.hpp"
+#include "Game/pointers.hpp"
+#include "World/PopMultiplierAreas.hpp"
 
 //#include "drawDebugText.hpp"
 

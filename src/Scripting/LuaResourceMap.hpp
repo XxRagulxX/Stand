@@ -2,7 +2,7 @@
 
 #include <lauxlib.h>
 
-#include "luaS_push.hpp"
+#include "Scripting/luaS_push.hpp"
 
 namespace Stand
 {

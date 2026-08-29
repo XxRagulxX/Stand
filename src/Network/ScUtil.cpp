@@ -1,8 +1,8 @@
-#include "ScUtil.hpp"
+#include "Network/ScUtil.hpp"
 
-#include "players_interface.hpp"
-#include "pointers.hpp"
-#include "rlPc.hpp"
+#include "Network/players_interface.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlPc.hpp"
 
 namespace rgsc
 {
@@ -38,14 +38,7 @@ namespace rgsc
 		};
 		Type mType = JSNULL;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(Variant, mType) == 0x18);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	struct Script
 	{

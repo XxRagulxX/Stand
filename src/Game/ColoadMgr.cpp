@@ -1,9 +1,9 @@
-#include "ColoadMgr.hpp"
+#include "Game/ColoadMgr.hpp"
 
 #ifdef STAND_DEV
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
-#include "pointers.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

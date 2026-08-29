@@ -1,10 +1,10 @@
-#include "CommandListInteriors.hpp"
+#include "Commands/World/CommandListInteriors.hpp"
 
-#include "CommandLambdaListSelect.hpp"
-#include "CommandLambdaToggle.hpp"
+#include "Commands/Widgets/CommandLambdaListSelect.hpp"
+#include "Commands/Widgets/CommandLambdaToggle.hpp"
 
-#include "CommandInteriorBunker.hpp"
-#include "CommandInteriorVehware.hpp"
+#include "Commands/World/CommandInteriorBunker.hpp"
+#include "Commands/Vehicle/CommandInteriorVehware.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandSearch.hpp"
+#include "Commands/Widgets/CommandSearch.hpp"
 
 namespace Stand
 {

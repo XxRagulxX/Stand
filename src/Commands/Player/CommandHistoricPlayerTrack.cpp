@@ -1,8 +1,8 @@
-#include "CommandHistoricPlayerTrack.hpp"
+#include "Commands/Player/CommandHistoricPlayerTrack.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "PlayerHistory.hpp"
-#include "RemoteGamer.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Network/RemoteGamer.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggleNoCorrelation.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
-#include "Auth.hpp"
-#include "Gui.hpp"
+#include "Network/Auth.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

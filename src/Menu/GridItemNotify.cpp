@@ -1,8 +1,8 @@
-#include "GridItemNotify.hpp"
+#include "Menu/GridItemNotify.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "NotifyGrid.hpp"
-#include "Renderer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Menu/NotifyGrid.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

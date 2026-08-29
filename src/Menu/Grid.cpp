@@ -1,12 +1,12 @@
-#include "Grid.hpp"
+#include "Menu/Grid.hpp"
 
 #include <algorithm>
 
-#include "GridItem.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
-#include "Worker.hpp"
+#include "Menu/GridItem.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/Worker.hpp"
 
 #define spacer_x spacer_size
 #define spacer_y spacer_size
@@ -101,8 +101,6 @@ namespace Stand
 						case ALIGN_TOP_CENTRE:
 							y -= item->height;
 							break;
-						default:
-							break;
 						}
 					}
 					else
@@ -132,8 +130,6 @@ namespace Stand
 						case ALIGN_TOP_CENTRE:
 							y -= (item->height + spacer_y);
 							break;
-						default:
-							break;
 						}
 					}
 					item->x = x;
@@ -160,8 +156,6 @@ namespace Stand
 					item->keep_pos = true;
 					need_redo = true;
 				}
-				break;
-			default:
 				break;
 			}
 			last_item = item.get();

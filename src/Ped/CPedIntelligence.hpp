@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "atFixedArray.hpp"
-#include "fwRefAwareBase.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Game/fwRefAwareBase.hpp"
 
 enum ePedTaskTrees
 {
@@ -52,14 +52,7 @@ public:
 	/* 0x10 */ uint32_t m_eType;
 	/* 0x14 */ rage::atHashString m_name;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CRelationshipGroup, m_name) == 0x14);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CPedIntelligence
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandWithOnTickFocused.hpp"
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include <soup/PointerAndBool.hpp>
+#include "lib/soup/PointerAndBool.hpp"
 
-#include "HistoricPlayer.hpp"
+#include "Network/HistoricPlayer.hpp"
 
 namespace Stand
 {

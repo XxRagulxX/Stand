@@ -1,9 +1,9 @@
-#include "AddressGamers.hpp"
+#include "Network/AddressGamers.hpp"
 
 #include <fmt/core.h>
 
-#include "fmt_arg.hpp"
-#include "lang.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

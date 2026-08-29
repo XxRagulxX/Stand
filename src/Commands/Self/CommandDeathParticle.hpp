@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelectParticle.hpp"
+#include "Commands/Stand/CommandListSelectParticle.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

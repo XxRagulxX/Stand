@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "CommandPlayerSpectate.hpp"
+#include "Commands/Player/CommandPlayerSpectate.hpp"
 
 namespace Stand
 {

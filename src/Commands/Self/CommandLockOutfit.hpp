@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <array>
 #include <map>
 #include <unordered_map>
 
-#include "natives_decl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "outfit_data.hpp"
+#include "Ped/outfit_data.hpp"
 
 namespace Stand
 {

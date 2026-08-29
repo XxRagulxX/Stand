@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandVehcolour.hpp"
+#include "Commands/Vehicle/CommandVehcolour.hpp"
 
 namespace Stand
 {

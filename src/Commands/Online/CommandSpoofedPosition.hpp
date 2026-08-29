@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPositionSelection.hpp"
+#include "Commands/Widgets/CommandPositionSelection.hpp"
 
 namespace Stand
 {

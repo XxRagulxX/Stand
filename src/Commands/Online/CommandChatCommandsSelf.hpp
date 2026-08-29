@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "ChatCommandsCommon.hpp"
-#include "evtChatEvent.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/ChatCommandsCommon.hpp"
+#include "Network/evtChatEvent.hpp"
 
 namespace Stand
 {

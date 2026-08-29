@@ -1,7 +1,7 @@
-#include "CommandListAnimations.hpp"
+#include "Commands/Stand/CommandListAnimations.hpp"
 
-#include "Animations.hpp"
-#include "CommandAnimation.hpp"
+#include "Game/Animations.hpp"
+#include "Commands/Self/CommandAnimation.hpp"
 
 namespace Stand
 {

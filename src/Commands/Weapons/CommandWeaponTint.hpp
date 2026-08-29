@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "AbstractEntity.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

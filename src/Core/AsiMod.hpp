@@ -4,9 +4,9 @@
 
 #include <windows.h>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "AsiDirectory.hpp"
+#include "Core/AsiDirectory.hpp"
 
 namespace Stand
 {

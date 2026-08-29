@@ -1,6 +1,6 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
 #define RL_CLAN_NAME_MAX_CHARS 25
 

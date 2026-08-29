@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandListConcealer.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
 
 namespace Stand
 {

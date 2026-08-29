@@ -5,10 +5,10 @@
 #include <fmt/core.h>
 #include <fmt/xchar.h>
 
-#include <soup/macros.hpp>
-#include "typedecl.hpp"
+#include "lib/soup/macros.hpp"
+#include "Game/typedecl.hpp"
 
-#include "lang.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

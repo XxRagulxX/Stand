@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandSpoofSlider.hpp"
-#include "CommandSpoofToggle.hpp"
+#include "Commands/Online/CommandSpoofSlider.hpp"
+#include "Commands/Online/CommandSpoofToggle.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandIssuable.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
 namespace Stand
 {

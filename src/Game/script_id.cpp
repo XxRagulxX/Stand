@@ -1,6 +1,6 @@
-#include "script_id.hpp"
+#include "Game/script_id.hpp"
 
-#include "datBitBuffer.hpp"
+#include "Game/datBitBuffer.hpp"
 
 namespace rage
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <soup/UniquePtr.hpp>
+#include "lib/soup/UniquePtr.hpp"
 
-#include "CrossState.hpp"
+#include "Network/CrossState.hpp"
 
 namespace Stand
 {

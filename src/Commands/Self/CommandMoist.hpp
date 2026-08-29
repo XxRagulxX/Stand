@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "natives.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {
@@ -16,7 +16,7 @@ namespace Stand
 
 		void onClick(Click& click) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				if (value == 0)
 				{

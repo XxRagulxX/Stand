@@ -1,8 +1,8 @@
-#include "ToastConfig.hpp"
+#include "Config/ToastConfig.hpp"
 
-#include "CommandList.hpp"
-#include "CommandTogglePointer.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

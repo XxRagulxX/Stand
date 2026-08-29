@@ -27,6 +27,15 @@ function(stand_apply_common_compile_options target)
             $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
             $<$<COMPILE_LANGUAGE:CXX>:/utf-8>
             $<$<COMPILE_LANGUAGE:CXX>:/bigobj>
+
+            # Disables compiler warnings entirely (cl.exe and clang-cl
+            # both accept /w) - not just raising/lowering a /W level,
+            # since this project doesn't otherwise opt into a stricter
+            # one, warnings would still show at whatever default the
+            # active toolchain picks. CXX-only, like the flags above -
+            # the Stand target's .asm sources go through ml64, which
+            # doesn't understand /w (it has its own /W0-/W3 instead).
+            $<$<COMPILE_LANGUAGE:CXX>:/w>
     )
 endfunction()
 

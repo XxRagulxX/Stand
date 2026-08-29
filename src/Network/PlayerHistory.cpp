@@ -1,44 +1,44 @@
-#include "PlayerHistory.hpp"
+#include "Network/PlayerHistory.hpp"
 
 #include <filesystem>
 #include <memory>
 
 #include <fmt/core.h>
 
-#include <soup/aes.hpp>
-#include <soup/filesystem.hpp>
-#include <soup/ObfusString.hpp>
-#include <soup/rand.hpp>
+#include "lib/soup/aes.hpp"
+#include "lib/soup/filesystem.hpp"
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/rand.hpp"
 
-#include "Auth.hpp"
-#include "BinaryStream.hpp"
-#include "CommandDivider.hpp"
-#include "CommandHistoricPlayer.hpp"
-#include "CommandListHistoricPlayers.hpp"
-#include "CommandPlayerHistory.hpp"
-#include "Exceptional.hpp"
-#include "FlowEventReaction.hpp"
-#include "get_appdata_path.hpp"
-#include "Gui.hpp"
-#include "PlayerHistoryPacket.hpp"
-#include "reversible_scramble.hpp"
-#include "rlGamerId.hpp"
-#include "Sanity.hpp"
-#include "ScAccount.hpp"
-#include "StringUtils.hpp"
+#include "Network/Auth.hpp"
+#include "Util/BinaryStream.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Commands/Player/CommandListHistoricPlayers.hpp"
+#include "Commands/Player/CommandPlayerHistory.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FlowEventReaction.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/PlayerHistoryPacket.hpp"
+#include "AntiCheat/reversible_scramble.hpp"
+#include "Network/rlGamerId.hpp"
+#include "Core/Sanity.hpp"
+#include "Network/ScAccount.hpp"
+#include "Util/StringUtils.hpp"
 
 #define LOG_UNUNIQUE_MAC_IDS false
 
 #if LOG_UNUNIQUE_MAC_IDS
-#include "FileLogger.hpp"
-#include "Util.hpp"
+#include "Core/FileLogger.hpp"
+#include "Util/Util.hpp"
 #endif
 
 #define PROFILE_HISTORY_LOOKUP false
 #define PROFILE_HISTORY_LOAD false
 
 #if PROFILE_HISTORY_LOOKUP || PROFILE_HISTORY_LOAD
-#include "TimedCall.hpp"
+#include "Core/TimedCall.hpp"
 #endif
 
 namespace Stand

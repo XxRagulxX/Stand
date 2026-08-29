@@ -1,10 +1,10 @@
 #if false
-#include "CommandSvmBpOptim.hpp"
+#include "Commands/Extra/CommandSvmBpOptim.hpp"
 
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "FileLogger.hpp"
-#include "pointers.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Core/FileLogger.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandActionName.hpp"
+#include "Commands/Widgets/CommandActionName.hpp"
 
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "ScAccount.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Network/ScAccount.hpp"
 
 namespace Stand
 {

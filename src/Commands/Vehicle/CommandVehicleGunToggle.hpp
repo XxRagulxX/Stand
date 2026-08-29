@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandListSelectVehicleModel.hpp"
-#include "gta_vehicle.hpp"
-#include "using_model.hpp"
+#include "Commands/Vehicle/CommandListSelectVehicleModel.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/using_model.hpp"
 
 namespace Stand
 {
@@ -58,7 +58,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(this->m_on);
 
@@ -78,7 +78,7 @@ namespace Stand
 					}
 					else
 					{
-						FiberPool::queueJob([=, this]
+						FiberPool::queueJob([=]
 						{
 							using_model(hash, [this, hash]
 							{

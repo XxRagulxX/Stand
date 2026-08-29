@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CNetworkSession.hpp"
-#include "ColoadMgr.hpp"
-#include "netEvent.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Game/ColoadMgr.hpp"
+#include "Network/netEvent.hpp"
 
 namespace Stand
 {

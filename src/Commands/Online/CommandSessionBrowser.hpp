@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 #include <unordered_set>
 
-#include "MatchmakingConfig.hpp"
+#include "Network/MatchmakingConfig.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ToastConfig.hpp"
+#include "Config/ToastConfig.hpp"
 
 namespace Stand
 {

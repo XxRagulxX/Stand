@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandOnCurrentVehicle.hpp"
+#include "Commands/Vehicle/CommandOnCurrentVehicle.hpp"
 
-#include "CHandlingData.hpp"
-#include "gta_vehicle.hpp"
+#include "Game/CHandlingData.hpp"
+#include "Game/gta_vehicle.hpp"
 
 namespace Stand
 {

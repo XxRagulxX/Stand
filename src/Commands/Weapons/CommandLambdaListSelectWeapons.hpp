@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListSelectWeapons.hpp"
+#include "Commands/Weapons/CommandListSelectWeapons.hpp"
 
 namespace Stand
 {

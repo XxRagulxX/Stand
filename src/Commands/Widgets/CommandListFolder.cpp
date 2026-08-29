@@ -1,13 +1,13 @@
-#include "CommandListFolder.hpp"
+#include "Commands/Widgets/CommandListFolder.hpp"
 
-#include <soup/filesystem.hpp>
+#include "lib/soup/filesystem.hpp"
 
-#include "alphanum.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandListFolderItemData.hpp"
-#include "get_appdata_path.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Util/alphanum.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

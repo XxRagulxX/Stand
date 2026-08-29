@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "evtForceQuitting.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
+#include "Network/evtForceQuitting.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

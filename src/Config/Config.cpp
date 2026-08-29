@@ -1,10 +1,10 @@
-#include "Config.hpp"
+#include "Config/Config.hpp"
 
-#include "ColonsAndTabs.hpp"
-#include "get_appdata_path.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Util/ColonsAndTabs.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

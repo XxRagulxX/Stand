@@ -4,9 +4,9 @@
 #include <optional>
 #include <stack>
 
-#include "fwddecl.hpp"
-#include "nullsub.hpp"
-#include "PositionState.hpp"
+#include "Game/fwddecl.hpp"
+#include "Util/nullsub.hpp"
+#include "Config/PositionState.hpp"
 
 namespace Stand
 {

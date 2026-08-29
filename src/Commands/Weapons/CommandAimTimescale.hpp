@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "AbstractEntity.hpp"
-#include "timescale.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "World/timescale.hpp"
 
 namespace Stand
 {

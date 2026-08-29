@@ -1,17 +1,17 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 #include <fmt/core.h>
 
-#include "CommandEditLabel.hpp"
-#include "CommandEditLabels.hpp"
-#include "CommandLambdaAction.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "StringUtils.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandEditLabel.hpp"
+#include "Commands/Widgets/CommandEditLabels.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

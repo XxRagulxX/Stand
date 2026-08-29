@@ -3,7 +3,7 @@
 #include <fstream>
 #include <vector>
 
-#include "TimedText.hpp"
+#include "Menu/TimedText.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
-#include "TextboxInterface.hpp"
+#include "Menu/TextboxInterface.hpp"
 
-#include <soup/base.hpp>
+#include "lib/soup/base.hpp"
 
-#include "Chat.hpp"
-#include "CMultiplayerChat.hpp"
-#include "pointers.hpp"
+#include "Network/Chat.hpp"
+#include "Network/CMultiplayerChat.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {
@@ -30,7 +30,7 @@ namespace Stand
 	}
 }
 
-#include "Commandbox.hpp"
+#include "Commands/Widgets/Commandbox.hpp"
 
 namespace Stand
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandBirender.hpp"
+#include "Commands/Online/CommandBirender.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandSlider.hpp"
-#include "natives.hpp"
-#include "vector.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

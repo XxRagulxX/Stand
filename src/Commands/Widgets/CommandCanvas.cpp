@@ -1,7 +1,7 @@
-#include "CommandCanvas.hpp"
+#include "Commands/Widgets/CommandCanvas.hpp"
 
-#include "FeatureCanvasDirect.hpp"
-#include "FeatureCanvasWindow.hpp"
+#include "Menu/FeatureCanvasDirect.hpp"
+#include "Menu/FeatureCanvasWindow.hpp"
 
 namespace Stand
 {

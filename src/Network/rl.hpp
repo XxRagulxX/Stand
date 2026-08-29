@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_player.hpp"
+#include "Game/gta_player.hpp"
 
 #define RL_MAX_GAMERS_PER_SESSION MAX_PLAYERS
 

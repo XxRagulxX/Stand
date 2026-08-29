@@ -1,8 +1,8 @@
 #pragma once
 
-#include "VehicleCustomisationIo.hpp"
+#include "Vehicle/VehicleCustomisationIo.hpp"
 
-#include "PersonalVehicle.hpp"
+#include "Vehicle/PersonalVehicle.hpp"
 
 namespace Stand
 {

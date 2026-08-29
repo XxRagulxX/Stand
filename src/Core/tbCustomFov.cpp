@@ -1,9 +1,9 @@
-#include "tbCustomFov.hpp"
+#include "Core/tbCustomFov.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Camgr.hpp"
-#include "CommandSlider.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

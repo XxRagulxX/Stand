@@ -4,8 +4,8 @@
 
 #include <windows.h>
 
-#include "natives_decl.hpp"
-#include "typedecl.hpp"
+#include "Game/natives_decl.hpp"
+#include "Game/typedecl.hpp"
 
 namespace Stand
 {

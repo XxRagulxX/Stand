@@ -1,9 +1,9 @@
-#include "CommandOnlinePhoneAnims.hpp"
+#include "Commands/Self/CommandOnlinePhoneAnims.hpp"
 
-#include "AbstractEntity.hpp"
-#include "FiberPool.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

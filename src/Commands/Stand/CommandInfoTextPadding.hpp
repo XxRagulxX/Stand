@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "MenuGrid.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

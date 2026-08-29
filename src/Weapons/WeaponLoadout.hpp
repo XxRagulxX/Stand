@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "WeaponLoadoutTree.hpp"
+#include "Weapons/WeaponLoadoutTree.hpp"
 
 namespace Stand
 {

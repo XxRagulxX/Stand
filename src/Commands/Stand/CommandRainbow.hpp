@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "CommandColourCustom.hpp"
-#include "Spinlock.hpp"
-#include "nullsub.hpp"
+#include "Commands/Widgets/CommandColourCustom.hpp"
+#include "Core/Spinlock.hpp"
+#include "Util/nullsub.hpp"
 
 namespace Stand
 {

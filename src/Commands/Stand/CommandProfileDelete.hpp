@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
 #include <filesystem>
 
 #include <fmt/format.h>
 
-#include "get_appdata_path.hpp"
-#include "lang.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

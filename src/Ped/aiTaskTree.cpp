@@ -1,6 +1,6 @@
-#include "aiTaskTree.hpp"
+#include "Ped/aiTaskTree.hpp"
 
-#include "gta_task.hpp"
+#include "Game/gta_task.hpp"
 
 namespace rage
 {

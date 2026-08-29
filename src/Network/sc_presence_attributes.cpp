@@ -1,11 +1,11 @@
-#include "sc_presence_attributes.hpp"
+#include "Network/sc_presence_attributes.hpp"
 
 #ifdef STAND_DEBUG
 #include <fmt/format.h>
 #endif
 
-#include "pointers.hpp"
-#include "rlPc.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlPc.hpp"
 
 using namespace Stand;
 

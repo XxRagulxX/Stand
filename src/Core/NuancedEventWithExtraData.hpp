@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NuancedEvent.hpp"
+#include "Core/NuancedEvent.hpp"
 
 #include <string>
 

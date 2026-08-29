@@ -2,8 +2,8 @@
 
 #include <utility> // std::move
 
-#include "sysMemSimpleAllocator.hpp"
-#include "tlsContext.hpp"
+#include "Game/sysMemSimpleAllocator.hpp"
+#include "Network/tlsContext.hpp"
 
 namespace rage
 {

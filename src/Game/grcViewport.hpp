@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include <soup/Matrix.hpp>
+#include "lib/soup/Matrix.hpp"
 
 namespace rage
 {

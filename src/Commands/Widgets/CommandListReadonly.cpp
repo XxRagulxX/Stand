@@ -1,4 +1,4 @@
-#include "CommandListReadonly.hpp"
+#include "Commands/Widgets/CommandListReadonly.hpp"
 
 namespace Stand
 {

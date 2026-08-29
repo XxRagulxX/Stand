@@ -1,14 +1,14 @@
-#include "Script.hpp"
+#include "Scripting/Script.hpp"
 
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "get_current_time_millis.hpp"
-#include "Hooking.hpp"
-#include "ScriptMgr.hpp"
-#include "Util.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/Util.hpp"
 
 #if REPORT_YIELD_WITH_LOCK
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 #endif
 
 namespace Stand

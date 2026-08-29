@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "natives.hpp"
-#include "FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Core/FiberPool.hpp"
 
 namespace Stand
 {
@@ -20,7 +20,7 @@ namespace Stand
 			const int value = this->value;
 			if (value != 540)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value != this->value)
 					{
@@ -36,7 +36,7 @@ namespace Stand
 			}
 			else
 			{
-				ensureScriptThread(click, [=, this]
+				ensureScriptThread(click, [=]
 				{
 					auto veh = g_player_ped.getVehicle(true);
 					if (veh.isValid() && veh.isOwnerOfVehicleAndDriver())

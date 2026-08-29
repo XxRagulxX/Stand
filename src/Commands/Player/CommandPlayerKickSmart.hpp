@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandPlayerActionAggressiveCustom.hpp"
+#include "Commands/Player/CommandPlayerActionAggressiveCustom.hpp"
 
 namespace Stand
 {

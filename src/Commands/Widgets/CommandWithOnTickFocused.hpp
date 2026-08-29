@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Direction.hpp"
-#include "ThreadContext.hpp"
+#include "Util/Direction.hpp"
+#include "Core/ThreadContext.hpp"
 
 namespace Stand
 {

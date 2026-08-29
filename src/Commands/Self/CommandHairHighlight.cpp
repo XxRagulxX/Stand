@@ -1,6 +1,6 @@
-#include "CommandHairHighlight.hpp"
+#include "Commands/Self/CommandHairHighlight.hpp"
 
-#include "CommandLockOutfit.hpp"
+#include "Commands/Self/CommandLockOutfit.hpp"
 
 namespace Stand
 {

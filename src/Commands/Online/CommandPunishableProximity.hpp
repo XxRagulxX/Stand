@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSliderProximity.hpp"
+#include "Commands/Widgets/CommandSliderProximity.hpp"
 
-#include "AllEntitiesEveryTick.hpp"
+#include "Core/AllEntitiesEveryTick.hpp"
 
 namespace Stand
 {

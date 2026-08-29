@@ -1,19 +1,19 @@
-#include "AttackerMgr.hpp"
+#include "Network/AttackerMgr.hpp"
 
-#include "AbstractModel.hpp"
-#include "BlipUtil.hpp"
-#include "CommandPlayerAttackers.hpp"
-#include "ChainedVehicleMgr.hpp"
-#include "eScriptTaskStatus.hpp"
-#include "eTaskCombatPedFlags.hpp"
-#include "eTaskThreatResponseFlags.hpp"
-#include "get_ground_z.hpp"
-#include "Gui.hpp"
-#include "PathFind.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
-#include "VehicleType.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Rendering/BlipUtil.hpp"
+#include "Commands/Player/CommandPlayerAttackers.hpp"
+#include "Vehicle/ChainedVehicleMgr.hpp"
+#include "Game/eScriptTaskStatus.hpp"
+#include "Ped/eTaskCombatPedFlags.hpp"
+#include "Ped/eTaskThreatResponseFlags.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Rendering/Gui.hpp"
+#include "Ped/PathFind.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleType.hpp"
 
 namespace Stand
 {
@@ -404,8 +404,6 @@ namespace Stand
 
 		switch (group.type)
 		{
-		case AttackerType::NORMAL:
-			break;
 		case AttackerType::PHANTOM:
 			{
 				if (ENTITY::IS_ENTITY_VISIBLE(attacker))
@@ -440,14 +438,11 @@ namespace Stand
 	{
 		switch (type)
 		{
-		case AttackerType::NORMAL:
-			return {};
 		case AttackerType::PHANTOM:
 			return { ATSTRINGHASH("DLC_TUNER/DLC_Tuner_Phantom_Car") };
 		}
 
 		SOUP_ASSERT(false);
-		return {};
 	}
 
 	bool AttackerMgr::isEntityAttacker(AbstractEntity& entity)

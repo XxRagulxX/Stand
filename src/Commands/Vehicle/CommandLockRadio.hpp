@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <fmt/format.h>
 
-#include "get_current_time_millis.hpp"
-#include "gta_input.hpp"
-#include "natives.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_input.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {
@@ -24,13 +24,13 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				if (click.type != CLICK_BULK)
 				{
 					station = AUDIO::GET_PLAYER_RADIO_STATION_INDEX();
 				}
-				registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=, this]()
+				registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=]()
 				{
 					if (!m_on)
 					{

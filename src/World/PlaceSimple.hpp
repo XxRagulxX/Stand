@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Place.hpp"
+#include "World/Place.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

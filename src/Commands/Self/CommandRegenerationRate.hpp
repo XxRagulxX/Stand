@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandSliderRegenerationRate.hpp"
+#include "Commands/Stand/CommandSliderRegenerationRate.hpp"
 
 namespace Stand
 {

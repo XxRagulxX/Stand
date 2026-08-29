@@ -1,8 +1,8 @@
 #pragma once
 
-#include "struct_base.hpp"
-#include "fwRefAwareBase.hpp"
-#include "fwRegdRef.hpp"
+#include "Util/struct_base.hpp"
+#include "Game/fwRefAwareBase.hpp"
+#include "Game/fwRegdRef.hpp"
 
 #pragma pack(push, 1)
 namespace rage

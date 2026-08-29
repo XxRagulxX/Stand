@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandSaveCommandBoxPreset.hpp"
+#include "Commands/Stand/CommandSaveCommandBoxPreset.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandSlider.hpp"
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 namespace Stand
 {

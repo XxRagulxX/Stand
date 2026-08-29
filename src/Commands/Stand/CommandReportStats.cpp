@@ -1,16 +1,16 @@
-#include "CommandReportStats.hpp"
+#include "Commands/Stand/CommandReportStats.hpp"
 
 #include <memory>
 
 #include <fmt/xchar.h>
 
-#include "atStringHash.hpp"
-#include "CommandReadonlyValueLambda.hpp"
-#include "Gui.hpp"
-#include "IncrementableStat.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "StringUtils.hpp"
+#include "Game/atStringHash.hpp"
+#include "Commands/Widgets/CommandReadonlyValueLambda.hpp"
+#include "Rendering/Gui.hpp"
+#include "Config/IncrementableStat.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

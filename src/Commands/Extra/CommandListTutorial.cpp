@@ -1,7 +1,7 @@
-#include "CommandListTutorial.hpp"
+#include "Commands/Extra/CommandListTutorial.hpp"
 
-#include "CommandRepeatTutorial.hpp"
-#include "CommandDismissTutorials.hpp"
+#include "Commands/Extra/CommandRepeatTutorial.hpp"
+#include "Commands/Extra/CommandDismissTutorials.hpp"
 
 namespace Stand
 {

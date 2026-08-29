@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "eCarLockState.hpp"
-#include "gta_vehicle.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/eCarLockState.hpp"
+#include "Game/gta_vehicle.hpp"
 
 namespace Stand
 {
@@ -21,7 +21,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				for (const auto& p : PP_PTR->getPlayers()) // Third-eye gets complicated here. It doesn't quite align with looped features since it'll inevitably fail to fetch a second vehicle without interrupting the user.
 				{

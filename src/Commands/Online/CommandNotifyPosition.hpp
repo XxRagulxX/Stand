@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPosition2d.hpp"
+#include "Commands/Widgets/CommandPosition2d.hpp"
 
-#include "NotifyGrid.hpp"
+#include "Menu/NotifyGrid.hpp"
 
 namespace Stand
 {

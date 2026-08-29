@@ -1,15 +1,15 @@
-#include "CommandShowTransitionState.hpp"
+#include "Commands/Stand/CommandShowTransitionState.hpp"
 
 #include <fmt/xchar.h>
 
-#include "get_current_time_millis.hpp"
-#include "is_session.hpp"
-#include "pointers.hpp"
-#include "regular_event.hpp"
-#include "Renderer.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionHelper.hpp"
-#include "TransitionState.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/is_session.hpp"
+#include "Game/pointers.hpp"
+#include "Core/regular_event.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Core/TransitionHelper.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {

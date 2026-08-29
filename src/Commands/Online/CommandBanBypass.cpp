@@ -1,12 +1,12 @@
 #if false
-#include "CommandBanBypass.hpp"
+#include "Commands/Online/CommandBanBypass.hpp"
 
-#include "FiberPool.hpp"
-#include "pointers.hpp"
-#include "rlRosCredentials.hpp"
-#include "ScriptMgr.hpp"
-#include "TransitionHelper.hpp"
-#include "TransitionState.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlRosCredentials.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Core/TransitionHelper.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
-#include "PositionStateWithCam.hpp"
+#include "Config/PositionStateWithCam.hpp"
 
-#include "Camgr.hpp"
-#include "natives.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

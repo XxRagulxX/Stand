@@ -1,4 +1,4 @@
-﻿#include "Auth.hpp"
+﻿#include "Network/Auth.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -7,41 +7,41 @@
 
 #include <rapidjson/document.h>
 
-#include <soup/CustomEncoding.hpp>
-#include <soup/Hwid.hpp>
-#include <soup/JsonObject.hpp>
-#include <soup/ObfusString.hpp>
-#include <soup/sha1.hpp>
-#include <soup/sha256.hpp>
+#include "lib/soup/CustomEncoding.hpp"
+#include "lib/soup/Hwid.hpp"
+#include "lib/soup/JsonObject.hpp"
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/sha1.hpp"
+#include "lib/soup/sha256.hpp"
 
-#include "Codename.hpp"
-#include "CommandDiscord.hpp"
-#include "CommandRootName.hpp"
-#include "conf.hpp"
-#include "FiberPool.hpp"
-#include "FileLogger.hpp"
-#include "get_appdata_path.hpp"
-#include "get_current_time_millis.hpp"
-#include "get_seconds_since_unix_epoch.hpp"
-#include "Gui.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "is_session.hpp"
-#include "main.hpp"
-#include "PointerCache.hpp"
-#include "pointers.hpp"
-#include "PubSubClient.hpp"
-#include "RelayCon.hpp"
-#include "reversible_scramble.hpp"
-#include "rlGamerInfo.hpp"
-#include "RootMgr.hpp"
-#include "RootNameMgr.hpp"
-#include "ScAccount.hpp"
-#include "Script.hpp"
-#include "SessionSpoofing.hpp"
-#include "str2int.hpp"
-#include "StringUtils.hpp"
-#include "Tunables.hpp"
-#include "Util.hpp"
+#include "Util/Codename.hpp"
+#include "Commands/Extra/CommandDiscord.hpp"
+#include "Commands/Stand/CommandRootName.hpp"
+#include "Config/conf.hpp"
+#include "Core/FiberPool.hpp"
+#include "Core/FileLogger.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/get_seconds_since_unix_epoch.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Network/is_session.hpp"
+#include "Core/main.hpp"
+#include "Core/PointerCache.hpp"
+#include "Game/pointers.hpp"
+#include "Network/PubSubClient.hpp"
+#include "Network/RelayCon.hpp"
+#include "AntiCheat/reversible_scramble.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Core/RootMgr.hpp"
+#include "Core/RootNameMgr.hpp"
+#include "Network/ScAccount.hpp"
+#include "Scripting/Script.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
+#include "Config/Tunables.hpp"
+#include "Util/Util.hpp"
 
 #define AUTH_DEBUG false
 

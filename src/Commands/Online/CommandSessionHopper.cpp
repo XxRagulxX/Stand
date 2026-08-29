@@ -1,12 +1,12 @@
-#include "CommandSessionHopper.hpp"
+#include "Commands/Online/CommandSessionHopper.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "FiberPool.hpp"
-#include "is_session.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionHelper.hpp"
-#include "TransitionState.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/is_session.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Core/TransitionHelper.hpp"
+#include "Config/TransitionState.hpp"
 
 namespace Stand
 {

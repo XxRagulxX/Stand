@@ -1,4 +1,4 @@
-#include "gta_textchat.hpp"
+#include "Network/gta_textchat.hpp"
 
 #include <algorithm>
 

@@ -1,6 +1,6 @@
-#include "CommandInputText.hpp"
+#include "Commands/Widgets/CommandInputText.hpp"
 
-#include "lang.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

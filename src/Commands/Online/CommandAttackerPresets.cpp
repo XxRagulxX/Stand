@@ -1,7 +1,7 @@
-#include "CommandAttackerPresets.hpp"
+#include "Commands/Online/CommandAttackerPresets.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "CommandPlayerAttackers.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Player/CommandPlayerAttackers.hpp"
 
 namespace Stand
 {

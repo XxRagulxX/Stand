@@ -1,11 +1,11 @@
-#include "rlGamerId.hpp"
+#include "Network/rlGamerId.hpp"
 
 #if true
 
-#include <soup/joaat.hpp>
+#include "lib/soup/joaat.hpp"
 
-#include "pointers.hpp"
-#include "rlGamerInfo.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 using namespace Stand;
 

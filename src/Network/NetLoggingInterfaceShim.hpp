@@ -1,13 +1,13 @@
 #pragma once
 
-#include "netLoggingInterface.hpp"
+#include "Network/netLoggingInterface.hpp"
 
 #include <cstdarg>
 
 #include <fmt/core.h>
 
-#include "Exceptional.hpp"
-#include "FileLogger.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FileLogger.hpp"
 
 namespace Stand
 {

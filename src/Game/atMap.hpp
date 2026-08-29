@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "sysMemSimpleAllocator.hpp"
-#include "tlsContext.hpp"
+#include "Game/sysMemSimpleAllocator.hpp"
+#include "Network/tlsContext.hpp"
 
 namespace rage
 {

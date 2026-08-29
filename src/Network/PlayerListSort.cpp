@@ -1,15 +1,15 @@
-#include "PlayerListSort.hpp"
+#include "Network/PlayerListSort.hpp"
 
 #include <algorithm>
 
-#include "AbstractEntity.hpp"
-#include "CNetworkSession.hpp"
-#include "CommandPlayer.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "netPeerId.hpp"
-#include "pointers.hpp"
-#include "StringUtils.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/netPeerId.hpp"
+#include "Game/pointers.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

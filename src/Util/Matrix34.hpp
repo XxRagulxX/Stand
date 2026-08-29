@@ -1,7 +1,7 @@
 #pragma once
 
-#include <soup/Matrix.hpp>
-#include "vector.hpp"
+#include "lib/soup/Matrix.hpp"
+#include "Util/vector.hpp"
 
 namespace rage
 {

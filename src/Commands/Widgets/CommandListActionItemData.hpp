@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandPerm.hpp"
-#include "Label.hpp"
+#include "Commands/Online/CommandPerm.hpp"
+#include "Util/Label.hpp"
 
 namespace Stand
 {

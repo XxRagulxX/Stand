@@ -4,9 +4,9 @@
 #include <optional>
 #include <string>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "rlSessionInfo.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 namespace Stand
 {

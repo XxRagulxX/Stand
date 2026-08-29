@@ -1,28 +1,28 @@
-#include "CommandQuickProgress.hpp"
+#include "Commands/Stand/CommandQuickProgress.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "CommandLambdaAction.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "CommandListActionItem.hpp"
-#include "CommandListActionLambda.hpp"
-#include "CommandReadonlyLink.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Commands/Widgets/CommandListActionLambda.hpp"
+#include "Commands/Widgets/CommandReadonlyLink.hpp"
 
-#include "CommandListUnlocks.hpp"
-#include "CommandListStatEditor.hpp"
+#include "Commands/Stand/CommandListUnlocks.hpp"
+#include "Commands/Stand/CommandListStatEditor.hpp"
 
-#include "CommandSetCarClubRepLevel.hpp"
+#include "Commands/Online/CommandSetCarClubRepLevel.hpp"
 
-#include "CommandCasinoWheel.hpp"
-#include "CommandCasinoSlots.hpp"
-#include "CommandCasinoBlackjack.hpp"
-#include "CommandCasinoRoulette.hpp"
+#include "Commands/Vehicle/CommandCasinoWheel.hpp"
+#include "Commands/Online/CommandCasinoSlots.hpp"
+#include "Commands/Online/CommandCasinoBlackjack.hpp"
+#include "Commands/Online/CommandCasinoRoulette.hpp"
 
-#include "CommandFinishDoomsdayHeistSetups.hpp"
-#include "CommandFinishApartmentHeistSetups.hpp"
-#include "CommandSetRank.hpp"
-#include "CommandClubPop.hpp"
-#include "CommandClubPopLock.hpp"
+#include "Commands/Online/CommandFinishDoomsdayHeistSetups.hpp"
+#include "Commands/Online/CommandFinishApartmentHeistSetups.hpp"
+#include "Commands/Online/CommandSetRank.hpp"
+#include "Commands/World/CommandClubPop.hpp"
+#include "Commands/World/CommandClubPopLock.hpp"
 
 namespace Stand
 {

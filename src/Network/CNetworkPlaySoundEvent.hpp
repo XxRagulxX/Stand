@@ -1,8 +1,8 @@
 #pragma once
 
-#include "datBitBuffer.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "pointers.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/pointers.hpp"
 
 struct CNetworkPlaySoundEvent // Real name: CPlaySoundEvent
 {

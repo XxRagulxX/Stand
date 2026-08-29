@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSessionScript.hpp"
+#include "Commands/Online/CommandSessionScript.hpp"
 
-#include "CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
 
 namespace Stand
 {

@@ -1,15 +1,15 @@
-#include "BattlEyeServer.hpp"
+#include "Network/BattlEyeServer.hpp"
 
-#include <soup/base64.hpp>
-#include <soup/ObfusString.hpp>
+#include "lib/soup/base64.hpp"
+#include "lib/soup/ObfusString.hpp"
 
 #include <fmt/core.h>
 #include <cstdint>
 
-#include "AbstractPlayer.hpp"
-#include "FiberPool.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/FiberPool.hpp"
 #ifdef STAND_DEBUG
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace Stand

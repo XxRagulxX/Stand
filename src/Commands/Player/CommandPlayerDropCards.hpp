@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "FiberPool.hpp"
-#include "atStringHash.hpp"
-#include "natives.hpp"
-#include "PickupManager.hpp"
-#include "PlayerProvider.hpp"
-#include "Script.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/atStringHash.hpp"
+#include "Game/natives.hpp"
+#include "World/PickupManager.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "gta_extensible.hpp"
+#include "Game/gta_extensible.hpp"
 
-#include "Mat34V.hpp"
+#include "Util/Mat34V.hpp"
 
 namespace rage
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "struct_base.hpp"
-#include "vector.hpp"
+#include "Util/struct_base.hpp"
+#include "Util/vector.hpp"
 
 #pragma pack(push, 1)
 class CMiniMapBlip

@@ -39,7 +39,7 @@
 
 #include "lerrormessage.hpp"
 
-#include "soup/version_compare.hpp"
+#include "lib/soup/version_compare.hpp"
 
 
 
@@ -1525,8 +1525,7 @@ static void open_func (LexState *ls, FuncState *fs, BlockCnt *bl) {
   luaC_objbarrier(L, f, f->source);
   f->maxstacksize = 2;  /* registers 0/1 are always valid */
   fs->kcache = luaH_new(L);  /* create table for function */
-  sethvalue2s(L, L->top.p, fs->kcache);  /* anchor it */
-  luaD_inctop(L);
+  luaD_anchorobj(L, ls->h, obj2gco(fs->kcache));  /* anchor it */
   enterblock(fs, bl, BlockType::BT_DEFAULT);
 }
 
@@ -1535,6 +1534,7 @@ static void close_func (LexState *ls) {
   lua_State *L = ls->L;
   FuncState *fs = ls->fs;
   Proto *f = fs->f;
+  TValue temp;
   luaK_ret(fs, luaY_nvarstack(fs), 0);  /* final return */
   leaveblock(fs);
   lua_assert(fs->bl == NULL);
@@ -1547,8 +1547,10 @@ static void close_func (LexState *ls) {
   luaM_shrinkvector(L, f->p, f->sizep, fs->np, Proto *);
   luaM_shrinkvector(L, f->locvars, f->sizelocvars, fs->ndebugvars, LocVar);
   luaM_shrinkvector(L, f->upvalues, f->sizeupvalues, fs->nups, Upvaldesc);
+  /* remove kcache table from scanner table ("weigh" its anchor) */
+  sethvalue(L, &temp, fs->kcache);  /* key to be set to nil */
+  luaH_set(L, ls->h, &temp, &G(L)->nilvalue);
   ls->fs = fs->prev;
-  L->top.p--;  /* pop kcache table */
   luaC_checkGC(L);
 }
 
@@ -2202,15 +2204,28 @@ static void applyextends (LexState *ls, size_t name_pos, size_t parent_pos, int 
   fs->freereg = base + 1;
 }
 
-static size_t preprocessclass (LexState *ls) {
-  int allowed_ends = 0;
+
+enum PreprocessSpecialBlockType : uint8_t {
+  SBT_ROOT,
+  SBT_NONE,
+  SBT_SWITCH,
+};
+
+// noexcept because std::stack would need unwind
+static size_t preprocessclass (LexState *ls) noexcept {
+  std::stack<PreprocessSpecialBlockType> blocks; blocks.push(SBT_ROOT);
   bool expect_block_opener = false;
   const auto start = luaX_getpos(ls);
 
+  //printf("Begin processing class at line %d.\n", ls->getLineNumber());
   while (ls->t.token != TK_EOS) {
-    if (ls->t.token == TK_END && allowed_ends-- <= 0) {
-      // printf("Preprocessed class body ending at line %d.\n", ls->getLineNumber());
-      break;
+    if (ls->t.token == TK_END) {
+      //printf("End block at line %d.\n", ls->getLineNumber());
+      if (blocks.top() == SBT_ROOT) {
+        //printf("End processing class at line %d.\n", ls->getLineNumber());
+        break;
+      }
+      blocks.pop();
     }
 
     // This is only checking *inside* our current class body, the parser has already skipped the class declaration.
@@ -2219,16 +2234,18 @@ static size_t preprocessclass (LexState *ls) {
     case TK_ENUM:
     case TK_CLASS: /* class or enum class */
     case TK_FUNCTION:
+    case TK_SWITCH: case TK_PSWITCH:
       /* ensure this keyword isn't being used in a goto label, call, type hint, or table key assignment (issue #1410) */
       if (luaX_lookahead(ls) != '='
-        && luaX_lookbehind(ls).token != ':'
+        && (luaX_lookbehind(ls).token != ':' || blocks.top() == SBT_SWITCH)  /* `case "": if` starts an if block */
         && luaX_lookbehind(ls).token != '.'
         && luaX_lookbehind(ls).token != TK_GOTO
         && (luaX_lookbehind(ls).token != TK_DBCOLON || luaX_lookahead(ls) != TK_DBCOLON)  /* allow keyword immediately after goto label */
         ) {
         expect_block_opener = ls->t.token != TK_FUNCTION;
         if (ls->t.token != TK_ENUM || luaX_lookahead(ls) != TK_CLASS) {  /* 'enum class' would already be counted */
-          ++allowed_ends;
+          blocks.push((ls->t.token == TK_SWITCH || ls->t.token == TK_PSWITCH) ? SBT_SWITCH : SBT_NONE);
+          //printf("Begin block at line %d.\n", ls->getLineNumber());
         }
       }
       break;
@@ -2241,8 +2258,10 @@ static size_t preprocessclass (LexState *ls) {
     case TK_DO:
       if (expect_block_opener)
         expect_block_opener = false;
-      else
-        ++allowed_ends;  /* forstat, whilestat, switchstat, dostat, '-> do' */
+      else {
+        blocks.push(SBT_NONE);  /* forstat, whilestat, switchstat, dostat, '-> do' */
+        //printf("Begin block at line %d.\n", ls->getLineNumber());
+      }
       break;
     }
 
@@ -2251,7 +2270,8 @@ static size_t preprocessclass (LexState *ls) {
         checknext(ls, TK_NAME);
         checknext(ls, TK_FUNCTION);
         ls->classes.top().addProtectedField(getstr(ls->t.seminfo.ts));
-        ++allowed_ends; // For TK_FUNCTION
+        blocks.push(SBT_NONE);  /* for TK_FUNCTION */
+        //printf("Begin block at line %d.\n", ls->getLineNumber());
       }
       else if (luaX_lookahead(ls) == TK_NAME) {
         checknext(ls, TK_NAME);
@@ -2263,7 +2283,8 @@ static size_t preprocessclass (LexState *ls) {
         checknext(ls, TK_NAME);
         checknext(ls, TK_FUNCTION);
         ls->classes.top().addPrivateField(getstr(ls->t.seminfo.ts));
-        ++allowed_ends; // For TK_FUNCTION
+        blocks.push(SBT_NONE);  /* for TK_FUNCTION */
+        //printf("Begin block at line %d.\n", ls->getLineNumber());
       }
       else if (luaX_lookahead(ls) == TK_NAME) {
         checknext(ls, TK_NAME);
@@ -2278,6 +2299,7 @@ static size_t preprocessclass (LexState *ls) {
   luaX_setpos(ls, start);
   return finish;
 }
+
 
 static void classexpr (LexState *ls, expdesc *t) {
   FuncState *fs = ls->fs;
@@ -2990,6 +3012,7 @@ static void funcargs (LexState *ls, expdesc *f, TypeDesc *funcdesc = nullptr) {
     }
     default: {
       luaX_syntaxerror(ls, "function arguments expected");
+      return;  /* to avoid warnings */
     }
   }
   if (funcdesc) {
@@ -5009,7 +5032,6 @@ static void repeatstat (LexState *ls) {
   bl2.type = BlockType::BT_DEFAULT;
   checknext(ls, TK_UNTIL);
   condexit = cond(ls);  /* read condition (inside scope block) */
-  leaveblock(fs);  /* finish scope */
   if (bl2.upval) {  /* upvalues? */
     int exit = luaK_jump(fs);  /* normal exit must jump over fix */
     luaK_patchtohere(fs, condexit);  /* repetition must close upvalues */
@@ -5018,6 +5040,7 @@ static void repeatstat (LexState *ls) {
     luaK_patchtohere(fs, exit);  /* normal exit comes to here */
   }
   luaK_patchlist(fs, condexit, repeat_init);  /* close the loop */
+  leaveblock(fs);  /* finish scope */
   leaveblock(fs);  /* finish loop */
 }
 
@@ -6254,7 +6277,7 @@ static void statement (LexState *ls, tdn_t *nprop, TypeHint *prop) {
       expsuffix(ls, &v, line, 0, nprop, prop);
       break;
     }
-#if defined(LUA_COMPAT_GLOBAL)
+#if LUA_COMPAT_GLOBAL
     case TK_NAME: {
       /* compatibility code to parse global keyword when "global"
          is not reserved */
@@ -6776,15 +6799,13 @@ static void applyenvkeywordpreference (LexState *ls, int t, bool b) {
 }
 
 
-LClosure *luaY_parser (lua_State *L, LexState& lexstate, ZIO *z, Mbuffer *buff,
+LClosure *luaY_parser (lua_State *L, LexState& lexstate, ZIO *z, Table* anchor, Mbuffer *buff,
                        Dyndata *dyd, const char *name, int firstchar) {
   FuncState funcstate;
-  LClosure *cl = luaF_newLclosure(L, 1);  /* create main closure */
-  setclLvalue2s(L, L->top.p, cl);  /* anchor it (to avoid being collected) */
-  luaD_inctop(L);
-  lexstate.h = luaH_new(L);  /* create table for scanner */
-  sethvalue2s(L, L->top.p, lexstate.h);  /* anchor it */
-  luaD_inctop(L);
+  LClosure *cl;
+  lexstate.h = anchor;  /* table for scanner */
+  cl = luaF_newLclosure(L, 1);  /* create main closure */
+  luaD_anchorobj(L, anchor, obj2gco(cl));  /* anchor it in scanner table */
   funcstate.f = cl->p = luaF_newproto(L);
   luaC_objbarrier(L, cl, cl->p);
   funcstate.f->source = luaS_new(L, name);  /* create and anchor TString */
@@ -6813,6 +6834,5 @@ LClosure *luaY_parser (lua_State *L, LexState& lexstate, ZIO *z, Mbuffer *buff,
   lua_assert(!funcstate.prev && funcstate.nups == 1 && !lexstate.fs);
   /* all scopes should be correctly finished */
   lua_assert(dyd->actvar.n == 0 && dyd->gt.n == 0 && dyd->label.n == 0);
-  L->top.p--;  /* remove scanner's table */
-  return cl;  /* closure is on the stack, too */
+  return cl;
 }

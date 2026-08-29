@@ -1,33 +1,33 @@
-#include "TransitionHelper.hpp"
+#include "Core/TransitionHelper.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "Camgr.hpp"
-#include "CNetworkSession.hpp"
-#include "CommandBlockBlockJoin.hpp"
-#include "CommandJoinDesynced.hpp"
-#include "CommandPersonalVehicles.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "is_session.hpp"
-#include "atStringHash.hpp"
-#include "LeaveReasons.hpp"
-#include "natives.hpp"
-#include "netPeerId.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_thread.hpp"
-#include "TranscendentVehicle.hpp"
-#include "evtTransitionFinishedEvent.hpp"
-#include "TransitionState.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Commands/Online/CommandBlockBlockJoin.hpp"
+#include "Commands/Online/CommandJoinDesynced.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicles.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_session.hpp"
+#include "Game/atStringHash.hpp"
+#include "Network/LeaveReasons.hpp"
+#include "Game/natives.hpp"
+#include "Network/netPeerId.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_thread.hpp"
+#include "Vehicle/TranscendentVehicle.hpp"
+#include "Network/evtTransitionFinishedEvent.hpp"
+#include "Config/TransitionState.hpp"
 
 //#include <fmt/format.h>
 //#include "Util.hpp"
 
 #ifdef STAND_DEBUG
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace Stand
@@ -129,9 +129,6 @@ namespace Stand
 						thread->m_context.m_state = rage::scrThread::ABORTED;
 					}
 				}
-				break;
-
-			default:
 				break;
 			}
 		}
@@ -282,8 +279,6 @@ namespace Stand
 						release_cam(hijacked_cam);
 						break;
 #endif
-					default:
-						break;
 					}
 				}
 				else

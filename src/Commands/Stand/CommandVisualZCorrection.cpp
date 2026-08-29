@@ -1,12 +1,12 @@
-#include "CommandVisualZCorrection.hpp"
+#include "Commands/Stand/CommandVisualZCorrection.hpp"
 
-#include "AbstractEntity.hpp"
-#include "free_movement.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "gta_ped.hpp"
-#include "natives.hpp"
-#include "UniqueThread.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Ped/free_movement.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/natives.hpp"
+#include "Core/UniqueThread.hpp"
 
 namespace Stand
 {

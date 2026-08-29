@@ -3,18 +3,18 @@
 #include <cstdint>
 #include <string>
 
-#include "struct_base.hpp"
-#include "rtti_shim.hpp"
+#include "Util/struct_base.hpp"
+#include "AntiCheat/rtti_shim.hpp"
 
-#include <soup/Quaternion.hpp>
+#include "lib/soup/Quaternion.hpp"
 
-#include "gta_node_list.hpp"
-#include "gta_player.hpp"
-#include "NetworkObjectTypes.hpp"
-#include "NodeCommonDataOperations.hpp"
-#include "script_id.hpp"
-#include "SyncType.hpp"
-#include "vector.hpp"
+#include "Game/gta_node_list.hpp"
+#include "Game/gta_player.hpp"
+#include "Network/NetworkObjectTypes.hpp"
+#include "Config/NodeCommonDataOperations.hpp"
+#include "Game/script_id.hpp"
+#include "Util/SyncType.hpp"
+#include "Util/vector.hpp"
 
 using rage::ObjectId;
 
@@ -81,14 +81,7 @@ namespace rage
 		/* 0x00 */ netSnapshot m_SnapshotPast;
 		/* 0x30 */ netSnapshot m_SnapshotPresent;
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netLinInterpPredictionData, m_SnapshotPresent) == 0x30);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	class netBlenderLinInterp : public netBlender
 	{
@@ -603,14 +596,7 @@ struct CNetObjPlayer : public CNetObjPed, public IPlayerNodeDataAccessor
 	PAD(0x528 + 2, 0x530) rage::grcViewport* viewport;
 	PAD(0x530 + 8, 0x8C0) float m_stats[PlayerCard::NETSTAT_SYNCED_STAT_COUNT];
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CNetObjPlayer, m_stats) == 0x8C0); // 3095: 0x8A0 -> 0x8C0
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CNetObjVehicle : public CNetObjPhysical
 {
@@ -647,10 +633,7 @@ namespace rage
 		virtual ~netSyncDataNode() = 0;
 		virtual void vf_38() {};
 		virtual void vf_40() {};
-		virtual bool shouldTypeIdBeUsedForAppliedTypesFlag()
-		{
-			return false;
-		} // 0x48
+		virtual bool shouldTypeIdBeUsedForAppliedTypesFlag() {}; // 0x48
 		virtual void vf_50() {};
 		virtual void vf_58() {};
 		virtual void vf_60() {};
@@ -666,10 +649,7 @@ namespace rage
 		virtual void vf_B0() {};
 		virtual void ReadData(rage::datBitBuffer& bitBuffer, rage::netLoggingInterface* pLog) {}; // 0xB8
 		virtual void WriteData(rage::netSyncTreeTargetObject* pObj, rage::datBitBuffer& bitBuffer, rage::netLoggingInterface* pLog, bool extractFromObject = true) {}; // 0xC0
-		virtual unsigned GetDataSize(rage::netSyncTreeTargetObject& targetObject) const
-		{
-			return 0;
-		} // 0xC8
+		virtual unsigned GetDataSize(rage::netSyncTreeTargetObject& targetObject) const {} // 0xC8
 
 		/* 0x28 */ int32_t id_1;
 		/* 0x2C */ int32_t id_2;
@@ -743,15 +723,8 @@ public:
 	/* 0x128 */ hash_t m_weaponComponents[12];
 	/* 0x158 */ uint32_t m_numWeaponComponents;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPickupCreationDataNode, m_weaponComponents) == 0x128);
 static_assert(offsetof(CPickupCreationDataNode, m_numWeaponComponents) == 0x158);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CPickupPlacementCreationDataNode : public CProjectBaseSyncDataNode
 {
@@ -761,14 +734,7 @@ class CPickupPlacementCreationDataNode : public CProjectBaseSyncDataNode
 	/* 0xFC */ hash_t model;
 	// script hash is at 0x120
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPickupPlacementCreationDataNode, model) == 0xFC);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CObjectCreationDataNode : public CProjectBaseSyncDataNode
 {
@@ -855,10 +821,6 @@ public:
 	PAD(0x188D + MAX_WEAPONS, 0x1DE2) bool m_ammoInfinite[MAX_AMMOS];
 	/* 0x1E23 */ bool m_allAmmoInfinite;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 // CPedInventoryDataNode::Serialise
 static_assert(offsetof(CPedInventoryDataNode, m_itemSlots) == 0x1470); // 1st call to serialise_weapon_or_ammo_type
 static_assert(offsetof(CPedInventoryDataNode, m_ammoSlots) == 0x1618); // 2nd call to serialise_weapon_or_ammo_type
@@ -869,9 +831,6 @@ static_assert(offsetof(CPedInventoryDataNode, m_itemSlotNumComponents) == 0x188D
 static_assert(offsetof(CPedInventoryDataNode, m_ammoInfinite) == 0x1DE2); // 2nd call to a2 + 56i64
 static_assert(offsetof(CPedInventoryDataNode, m_ammoQuantity) == 0x171C); // Last call to a2 + 104i64
 static_assert(offsetof(CPedInventoryDataNode, m_allAmmoInfinite) == 0x1E23); // 1st call to a2 + 56i64
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 #pragma pack(push, 1)
 class CPedAttachDataNode : public CSyncDataNodeInfrequent
@@ -904,16 +863,9 @@ public:
 	/* 0xE8 */ bool m_maxHealthSetByScript;
 	/* 0xE9 */ bool m_maxEnduranceSetByScript;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPedHealthDataNode, m_armour) == 0xC8);
 static_assert(offsetof(CPedHealthDataNode, m_maxEnduranceSetByScript) == 0xE9);
 static_assert(sizeof(CPedHealthDataNode) == 0xE9 + 1);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CPedTaskTreeDataNode : public CSyncDataNodeFrequent
 {
@@ -1080,14 +1032,7 @@ public:
 	bool	 m_doorsForcedOpen;		     // force the doors open
 	bool     m_UseHighPrecisionBlending; // are we using high precision blending on the train
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CTrainGameStateDataNode, m_UseHighPrecisionBlending) == 0xE1);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class IVehicleNodeDataAccessor
 {
@@ -1304,15 +1249,8 @@ public:
 	soup::Quaternion m_attachmentQuat;
 	rage::Vector3 m_attachmentParentOffset;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPhysicalAttachDataNode, is_attached) == 0xC0);
 static_assert(offsetof(CPhysicalAttachDataNode, attached_to) == 0xC2);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 #pragma pack(push, 1)
 class CPhysicalAngVelocityDataNode : public CSyncDataNodeFrequent
@@ -1404,18 +1342,11 @@ public:
 	PAD(0x264, 0x270);
 };
 static_assert(sizeof(CVehicleAppearanceDataNode) == 0x270);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CVehicleAppearanceDataNode, m_bodyDirtLevel) == 0x23A);
 static_assert(offsetof(CVehicleAppearanceDataNode, m_wheelType) == 0x23E);
 static_assert(offsetof(CVehicleAppearanceDataNode, m_wheelMod) == 0x23F);
 static_assert(offsetof(CVehicleAppearanceDataNode, m_neonOn) == 0x25D);
 //static_assert(offsetof(CVehicleAppearanceDataNode, m_neonSuppressed) == 0x260); // not quite aligned correctly
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 #pragma pack(push, 1)
 class CVehicleDamageStatusDataNode : public CSyncDataNodeInfrequent
@@ -1453,16 +1384,9 @@ public:
 	/* 0xC4 */ uint32_t m_taskDataSize;
 	/* 0xC8 */ uint8_t m_taskData[255];
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CVehicleTaskDataNode, m_taskType) == 0xC0);
 static_assert(offsetof(CVehicleTaskDataNode, m_taskDataSize) == 0xC4);
 static_assert(offsetof(CVehicleTaskDataNode, m_taskData) == 0xC8);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 #define MAX_VEHICLE_SEATS 16
 #define MAX_TASK_MIGRATION_DATA_SIZE 100
@@ -1489,19 +1413,13 @@ public:
 	uint32_t m_taskMigrationDataSize;
 	uint8_t m_taskMigrationData[MAX_TASK_MIGRATION_DATA_SIZE]; 
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CVehicleProximityMigrationDataNode, m_maxOccupants) == 0xC0);
 static_assert(offsetof(CVehicleProximityMigrationDataNode, m_hasOccupant) == 0xC4);
 static_assert(offsetof(CVehicleProximityMigrationDataNode, m_occupantID) == 0xD4);
 static_assert(offsetof(CVehicleProximityMigrationDataNode, m_isMoving) == 0x104);
 static_assert(offsetof(CVehicleProximityMigrationDataNode, m_position) == 0x110);
 static_assert(offsetof(CVehicleProximityMigrationDataNode, m_packedVelocityX) == 0x120);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+
 #pragma pack(push, 1)
 struct Sector
 {
@@ -1662,14 +1580,7 @@ class CPedSyncTreeBase : public CDynamicEntitySyncTreeBase
 	}
 };
 static_assert(sizeof(CPedSyncTreeBase) == 0x1A38 + (sizeof(CPedTaskSpecificDataNode) * 8));
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPedSyncTreeBase, ped_game_state) == 0x1558);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CPhysicalSyncTreeBase : public CDynamicEntitySyncTreeBase
 {
@@ -1705,10 +1616,6 @@ public:
 
 	[[nodiscard]] const char* getNodeName(const rage::netSyncDataNode* node) const;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CVehicleSyncTree, m_controlParentNode) == 0x1620);
 static_assert(offsetof(CVehicleSyncTree, creation_data) == 0x1680);
 static_assert(offsetof(CVehicleSyncTree, m_vehicleProximityMigrationNode) == 0x1760);
@@ -1723,9 +1630,6 @@ static_assert(offsetof(CVehicleSyncTree, m_vehicleScriptGameStateNode) == 0x2230
 static_assert(offsetof(CVehicleSyncTree, m_componentReservationNode) == 0x2398); // 1.70
 static_assert(offsetof(CVehicleSyncTree, vehicle_task_data) == 0x24A0); // 1.70
 static_assert(offsetof(CVehicleSyncTree, gadget_data) == 0x2670); // 1.70
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 #pragma pack(push, 1)
 class CAutomobileSyncTreeBase : public CVehicleSyncTree
@@ -1735,14 +1639,7 @@ class CAutomobileSyncTreeBase : public CVehicleSyncTree
 	[[nodiscard]] const char* getNodeName(const rage::netSyncDataNode* node) const;
 };
 static_assert(sizeof(CAutomobileSyncTreeBase) == 0x2830 + sizeof(CAutomobileCreationDataNode));
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CAutomobileSyncTreeBase, automobile_creation_data) == 0x2830); // 2944
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CAutomobileSyncTree : public CAutomobileSyncTreeBase
 {
@@ -1795,14 +1692,7 @@ class CPickupPlacementSyncTree : public CProximityMigrateableSyncTreeBase
 public:
 	INIT_PAD(CProximityMigrateableSyncTreeBase, 0x920) CPickupPlacementCreationDataNode creation_data;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CPickupPlacementSyncTree, creation_data) == 0x920);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 class CPlaneSyncTree : public CVehicleSyncTree
 {

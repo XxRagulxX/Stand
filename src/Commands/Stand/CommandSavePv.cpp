@@ -1,8 +1,8 @@
-#include "CommandSavePv.hpp"
+#include "Commands/Stand/CommandSavePv.hpp"
 
-#include "ColonsVehicleCustomisationIo.hpp"
-#include "CommandPersonalVehicle.hpp"
-#include "PersonalVehicleCustomisationIo.hpp"
+#include "Vehicle/ColonsVehicleCustomisationIo.hpp"
+#include "Commands/Vehicle/CommandPersonalVehicle.hpp"
+#include "Vehicle/PersonalVehicleCustomisationIo.hpp"
 
 namespace Stand
 {

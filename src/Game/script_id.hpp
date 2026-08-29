@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 #pragma pack(push, 1)
 namespace rage

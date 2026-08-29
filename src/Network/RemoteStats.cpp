@@ -1,10 +1,10 @@
-#include "RemoteStats.hpp"
+#include "Network/RemoteStats.hpp"
 
-#include <soup/UniqueList.hpp>
+#include "lib/soup/UniqueList.hpp"
 
-#include "Exceptional.hpp"
-#include "Spinlock.hpp"
-#include "pointers.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/Spinlock.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

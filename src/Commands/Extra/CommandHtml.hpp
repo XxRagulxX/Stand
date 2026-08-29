@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "CMultiplayerChat.hpp"
+#include "Network/CMultiplayerChat.hpp"
 
 namespace Stand
 {

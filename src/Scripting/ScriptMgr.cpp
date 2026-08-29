@@ -1,29 +1,29 @@
-﻿#include "ScriptMgr.hpp"
+﻿#include "Scripting/ScriptMgr.hpp"
 
-#include <soup/Bytepatch.hpp>
+#include "lib/soup/Bytepatch.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "atArray.hpp"
-#include "CommandToggleRegularSp.hpp"
-#include "CustomDlcMgr.hpp"
-#include "ExecCtx.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "atStringHash.hpp"
-#include "main.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_thread.hpp"
-#include "scrNativeCallContext.hpp"
-#include "scrNativeRegistrationTable.hpp"
-#include "SharedNativeHooks.hpp"
-#include "TickMgr.hpp"
-#include "tlsContext.hpp"
-#include "Tunables.hpp"
-#include "UI3DDrawManager.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/atArray.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
+#include "Game/CustomDlcMgr.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/atStringHash.hpp"
+#include "Core/main.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_thread.hpp"
+#include "Game/scrNativeCallContext.hpp"
+#include "Game/scrNativeRegistrationTable.hpp"
+#include "AntiCheat/SharedNativeHooks.hpp"
+#include "Core/TickMgr.hpp"
+#include "Network/tlsContext.hpp"
+#include "Config/Tunables.hpp"
+#include "Rendering/UI3DDrawManager.hpp"
+#include "Util/Util.hpp"
 
 #define USE_CROSSMAP true
 
@@ -33,12 +33,12 @@
 
 	//static_assert(STAND_DEBUG);
 
-	#include "crossmap.hpp"
+	#include "Network/crossmap.hpp"
 	#if CONVERT_CROSSMAP || LOG_DUPLICATE_ENTRYPOINTS
-		#include "FileLogger.hpp"
+		#include "Core/FileLogger.hpp"
 	#endif
 #else
-	#include "indirect_crossmap.hpp"
+	#include "Network/indirect_crossmap.hpp"
 #endif
 
 namespace Stand

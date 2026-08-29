@@ -1,6 +1,6 @@
 #pragma once
 
-#include "grcViewport.hpp"
+#include "Game/grcViewport.hpp"
 
 class CViewportManager
 {

@@ -1,11 +1,11 @@
-#include "CommandListRadioStations.hpp"
+#include "Commands/Stand/CommandListRadioStations.hpp"
 
-#include "CommandListSelect.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "radio_stations.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Vehicle/radio_stations.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

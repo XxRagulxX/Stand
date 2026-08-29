@@ -1,16 +1,16 @@
-#include "CommandShowArraySynchProgress.hpp"
+#include "Commands/Stand/CommandShowArraySynchProgress.hpp"
 
 #include <fmt/xchar.h>
 
-#include "AbstractPlayer.hpp"
-#include "get_current_time_millis.hpp"
-#include "net_array.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_handler.hpp"
-#include "script_thread.hpp"
-#include "TransitionState.hpp"
-#include "regular_event.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/net_array.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_handler.hpp"
+#include "Game/script_thread.hpp"
+#include "Config/TransitionState.hpp"
+#include "Core/regular_event.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {
@@ -48,7 +48,7 @@ namespace Stand
 			{
 				if (auto netcomp = fm->getNetComponent())
 				{
-					if (num_fm_array_handlers = netcomp->m_NumHostBroadcastData; num_fm_array_handlers != 0)
+					if (num_fm_array_handlers = netcomp->m_NumHostBroadcastData)
 					{
 						if (/*AbstractPlayer::getPlayerCount() == 1 ||*/ netcomp->amHost())
 						{

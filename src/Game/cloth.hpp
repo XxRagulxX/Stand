@@ -1,6 +1,6 @@
 #pragma once
 
-#include "atArray.hpp"
+#include "Game/atArray.hpp"
 
 namespace rage
 {
@@ -33,14 +33,7 @@ namespace rage
 
 		phVerletCloth* GetCloth(int lodIndex) const { return m_Cloth[lodIndex]; }
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(clothController, m_LOD) == 0x56);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	struct environmentCloth
 	{

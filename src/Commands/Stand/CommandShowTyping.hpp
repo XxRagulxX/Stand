@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Position2d.hpp"
+#include "Util/Position2d.hpp"
 
 #undef NONE
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandSlider.hpp"
-#include "natives.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {
@@ -19,7 +19,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler(click, [=]()
 			{
 				if (!m_on)
 				{

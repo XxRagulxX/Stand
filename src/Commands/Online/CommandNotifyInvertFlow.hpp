@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "NotifyGrid.hpp"
+#include "Menu/NotifyGrid.hpp"
 
 namespace Stand
 {

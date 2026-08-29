@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "script_vm_reimpl.hpp"
+#include "Game/script_vm_reimpl.hpp"
 
 namespace Stand
 {

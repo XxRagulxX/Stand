@@ -1,27 +1,27 @@
-#include "CommandPlayerHistory.hpp"
+#include "Commands/Player/CommandPlayerHistory.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandTogglePointer.hpp"
-#include "RemoteGamer.hpp"
-#include "rlFriend.hpp"
-#include "rockstar_admins.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/rlFriend.hpp"
+#include "Network/rockstar_admins.hpp"
 
-#include "CommandSearchPlayer.hpp"
-#include "CommandStarredPlayers.hpp"
-#include "CommandTrackedPlayers.hpp"
-#include "CommandWhitelistedPlayers.hpp"
+#include "Commands/Player/CommandSearchPlayer.hpp"
+#include "Commands/Player/CommandStarredPlayers.hpp"
+#include "Commands/Player/CommandTrackedPlayers.hpp"
+#include "Commands/Player/CommandWhitelistedPlayers.hpp"
 
-#include "CommandHistoryAddName.hpp"
-#include "CommandHistoryAddRid.hpp"
+#include "Commands/Online/CommandHistoryAddName.hpp"
+#include "Commands/Online/CommandHistoryAddRid.hpp"
 
-#include "CommandMarkedPlayers.hpp"
-#include "CommandHistoryCopy.hpp"
+#include "Commands/Player/CommandMarkedPlayers.hpp"
+#include "Commands/Online/CommandHistoryCopy.hpp"
 
-#include "CommandHistoryAdminsNote.hpp"
-#include "CommandHistoryFriendsNote.hpp"
+#include "Commands/Online/CommandHistoryAdminsNote.hpp"
+#include "Commands/Online/CommandHistoryFriendsNote.hpp"
 
-#include "CommandClearHistory.hpp"
+#include "Commands/Online/CommandClearHistory.hpp"
 
 namespace Stand
 {

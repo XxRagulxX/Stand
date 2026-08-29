@@ -2,9 +2,9 @@
 
 #include "fmt/core.h"
 #include <string>
-#include "CommandListPlayer.hpp"
-#include "lang.hpp"
-#include "PlayerProvider.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Localization/lang.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

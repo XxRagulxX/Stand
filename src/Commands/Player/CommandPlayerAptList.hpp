@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "AptHelper.hpp"
-#include "CommandPlayerAptMe.hpp"
-#include "CommandPlayerAptWp.hpp"
-#include "CommandPlayerApt.hpp"
+#include "Network/AptHelper.hpp"
+#include "Commands/Player/CommandPlayerAptMe.hpp"
+#include "Commands/Player/CommandPlayerAptWp.hpp"
+#include "Commands/Player/CommandPlayerApt.hpp"
 
 namespace Stand
 {

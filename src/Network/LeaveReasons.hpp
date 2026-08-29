@@ -3,11 +3,11 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include "gta_fwddecl.hpp"
-#include "gta_player.hpp"
-#include "typedecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/gta_player.hpp"
+#include "Game/typedecl.hpp"
 
-#include "ToastConfig.hpp"
+#include "Config/ToastConfig.hpp"
 
 namespace Stand
 {

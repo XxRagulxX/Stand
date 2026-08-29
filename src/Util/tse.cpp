@@ -1,8 +1,8 @@
-#include "tse.hpp"
+#include "Util/tse.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

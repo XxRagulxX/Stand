@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "atArray.hpp"
-#include "CDrivebyWeaponGroup.hpp"
-#include "CVehicleMetadataMgr.hpp"
-#include "DrivebyCommons.hpp"
+#include "Game/atArray.hpp"
+#include "Vehicle/CDrivebyWeaponGroup.hpp"
+#include "Vehicle/CVehicleMetadataMgr.hpp"
+#include "Vehicle/DrivebyCommons.hpp"
 
 namespace Stand
 {

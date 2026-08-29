@@ -1,9 +1,9 @@
 #pragma once
 
-#include "PlaceBlip.hpp"
+#include "World/PlaceBlip.hpp"
 
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 //#include "logger.hpp"
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListWithOnTickAsActiveList.hpp"
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandListWithOnTickAsActiveList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "script_thread.hpp"
+#include "Game/script_thread.hpp"
 
 namespace Stand
 {

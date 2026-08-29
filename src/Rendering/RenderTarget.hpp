@@ -1,10 +1,10 @@
 #pragma once
 
-#include <soup/Rgb.hpp>
-#include <soup/RenderTarget.hpp>
+#include "lib/soup/Rgb.hpp"
+#include "lib/soup/RenderTarget.hpp"
 
-#include "huddecl.hpp"
-#include "Renderer.hpp"
+#include "Game/huddecl.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

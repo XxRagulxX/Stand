@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
 #include <unordered_map>
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "atoffset.hpp"
-#include "CHandlingData.hpp"
-#include "gta_vehicle.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Util/atoffset.hpp"
+#include "Game/CHandlingData.hpp"
+#include "Game/gta_vehicle.hpp"
 
 namespace Stand
 {

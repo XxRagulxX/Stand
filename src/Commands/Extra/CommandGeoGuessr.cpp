@@ -1,12 +1,12 @@
-#include "CommandGeoGuessr.hpp"
+#include "Commands/Extra/CommandGeoGuessr.hpp"
 
-#include "Camgr.hpp"
-#include "get_current_time_millis.hpp"
-#include "tbScreenshotMode.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Core/tbScreenshotMode.hpp"
 
-#include "CommandGeoGuessrMain.hpp"
-#include "CommandGeoGuessrScout.hpp"
-#include "CommandGeoGuessrSubmit.hpp"
+#include "Commands/Extra/CommandGeoGuessrMain.hpp"
+#include "Commands/Extra/CommandGeoGuessrScout.hpp"
+#include "Commands/Extra/CommandGeoGuessrSubmit.hpp"
 
 namespace Stand
 {

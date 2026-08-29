@@ -1,39 +1,39 @@
-#include "CommandListInfoOverlay.hpp"
+#include "Commands/Stand/CommandListInfoOverlay.hpp"
 
 #include <ctime>
 #include <map>
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "AbstractModel.hpp"
-#include "atArray.hpp"
-#include "atFixedArray.hpp"
-#include "CNetworkPlayerMgr.hpp"
-#include "CNetworkSession.hpp"
-#include "CommandCountryBreakdown.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLambdaToggleScriptTick.hpp"
-#include "CommandPlayer.hpp"
-#include "CommandSessionCode.hpp"
-#include "CommandWhosSpectatingWho.hpp"
-#include "ComponentGpu.hpp"
-#include "drawDebugText.hpp"
-#include "FiberPool.hpp"
-#include "fwPool.hpp"
-#include "get_ground_z.hpp"
-#include "gta_replayinterface.hpp"
-#include "gta_vehicle.hpp"
-#include "is_session.hpp"
-#include "lang.hpp"
-#include "main.hpp"
-#include "Metrics.hpp"
-#include "natives.hpp"
-#include "NetInterface.hpp"
-#include "pointers.hpp"
-#include "ScriptMgr.hpp"
-#include "script_thread.hpp"
-#include "regular_event.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Game/atArray.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Network/CNetworkPlayerMgr.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Commands/Online/CommandCountryBreakdown.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Extra/CommandLambdaToggleScriptTick.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Commands/Online/CommandSessionCode.hpp"
+#include "Commands/Online/CommandWhosSpectatingWho.hpp"
+#include "AntiCheat/ComponentGpu.hpp"
+#include "Rendering/drawDebugText.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/fwPool.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Game/gta_replayinterface.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Network/is_session.hpp"
+#include "Localization/lang.hpp"
+#include "Core/main.hpp"
+#include "Core/Metrics.hpp"
+#include "Game/natives.hpp"
+#include "Network/NetInterface.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Game/script_thread.hpp"
+#include "Core/regular_event.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -91,13 +91,8 @@ namespace Stand
 		if (show_real_world_time)
 		{
 			std::time_t t = std::time(nullptr);
-			std::tm now{};
-#ifdef _WIN32
-			localtime_s(&now, &t);
-#else
-			localtime_r(&t, &now);
-#endif
-			drawDebugText(fmt::format(L"{:0>2}:{:0>2}:{:0>2}", now.tm_hour, now.tm_min, now.tm_sec));
+			std::tm* now = std::localtime(&t);
+			drawDebugText(fmt::format(L"{:0>2}:{:0>2}:{:0>2}", now->tm_hour, now->tm_min, now->tm_sec));
 		}
 		if (show_speedometer)
 		{

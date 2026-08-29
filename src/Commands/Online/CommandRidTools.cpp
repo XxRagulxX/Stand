@@ -1,19 +1,19 @@
-#include "CommandRidTools.hpp"
+#include "Commands/Online/CommandRidTools.hpp"
 
-#include "CommandDivider.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
 
-#include "CommandNameJoin.hpp"
-#include "CommandNameSpectate.hpp"
-#include "CommandNameInvite.hpp"
-#include "CommandNameProfile.hpp"
+#include "Commands/Online/CommandNameJoin.hpp"
+#include "Commands/Online/CommandNameSpectate.hpp"
+#include "Commands/Online/CommandNameInvite.hpp"
+#include "Commands/Stand/CommandNameProfile.hpp"
 //#include "CommandNameKick.hpp"
-#include "CommandRidJoin.hpp"
-#include "CommandRidSpectate.hpp"
-#include "CommandRidInvite.hpp"
-#include "CommandRidProfile.hpp"
+#include "Commands/Online/CommandRidJoin.hpp"
+#include "Commands/Online/CommandRidSpectate.hpp"
+#include "Commands/Online/CommandRidInvite.hpp"
+#include "Commands/Online/CommandRidProfile.hpp"
 //#include "CommandRidKick.hpp"
 #ifdef STAND_DEBUG
-#include "CommandGsinfoJoin.hpp"
+#include "Commands/Online/CommandGsinfoJoin.hpp"
 #endif
 
 namespace Stand

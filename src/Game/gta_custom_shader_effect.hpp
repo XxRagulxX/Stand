@@ -1,6 +1,6 @@
 #pragma once
 
-#include "grcTexture.hpp"
+#include "Game/grcTexture.hpp"
 
 // type
 

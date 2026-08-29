@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Codename.hpp"
+#include "Util/Codename.hpp"
 
 namespace Stand
 {
@@ -54,17 +54,6 @@ namespace Stand
 			this->target = target;
 		}
 
-		template <typename T>
-		void init(T detour, void* target, uint8_t flags) noexcept
-		{
-			static_assert(std::is_pointer_v<T>, "T must be a pointer type");
-			static_assert(sizeof(T) == sizeof(void*), "Pointer size mismatch");
-
-			this->flags = flags;
-			std::memcpy(&this->detour, &detour, sizeof(detour));
-			this->target = target;
-		}
-
 		void setTarget(void* target) noexcept
 		{
 			this->target = target;
@@ -73,11 +62,7 @@ namespace Stand
 		template <typename T>
 		[[nodiscard]] T getOriginal() const noexcept
 		{
-			static_assert(std::is_pointer_v<T>, "T must be a pointer type");
-
-			static_assert(sizeof(T) == sizeof(original), "Function pointer size must match void pointer size"); T result{}; std::memcpy(&result, &original, sizeof(result));
-
-			return result;
+			return static_cast<T>(original);
 		}
 
 		[[nodiscard]] bool isValid() const noexcept;

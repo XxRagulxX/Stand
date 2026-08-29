@@ -1,11 +1,11 @@
-#include "CommandListNameshare.hpp"
+#include "Commands/Stand/CommandListNameshare.hpp"
 
 #include <fmt/core.h>
 
-#include "CommandExtraInfo.hpp"
-#include "get_next_arg.hpp"
-#include "lang.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

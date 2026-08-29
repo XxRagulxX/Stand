@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datBitBuffer.hpp"
+#include "Game/datBitBuffer.hpp"
 
 namespace rage
 {

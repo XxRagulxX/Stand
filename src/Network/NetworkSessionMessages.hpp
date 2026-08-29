@@ -1,11 +1,11 @@
 #pragma once
 
-#include "netMessage.hpp"
-#include "netMessageId.hpp"
+#include "Network/netMessage.hpp"
+#include "Network/netMessageId.hpp"
 
-#include "rl.hpp"
-#include "rlGamerHandle.hpp"
-#include "rlSessionInfo.hpp"
+#include "Network/rl.hpp"
+#include "Network/rlGamerHandle.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 struct MsgBlacklist : public rage::netMessage
 {

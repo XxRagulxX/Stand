@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggleNoCorrelation.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
-#include "ToggleCorrelation.hpp"
+#include "Core/ToggleCorrelation.hpp"
 
 namespace Stand
 {

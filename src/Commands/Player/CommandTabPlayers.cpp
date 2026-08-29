@@ -1,25 +1,25 @@
-#include "CommandTabPlayers.hpp"
+#include "Commands/Player/CommandTabPlayers.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandListSelectPointer.hpp"
-#include "CommandTogglePointer.hpp"
-#include "Gui.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandListSelectPointer.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Rendering/Gui.hpp"
 
-#include "CommandSelectBrackets.hpp"
-#include "CommandSelectTag.hpp"
+#include "Commands/Stand/CommandSelectBrackets.hpp"
+#include "Commands/Online/CommandSelectTag.hpp"
 
-#include "CommandFocusPlayerBeaconPlural.hpp"
-#include "CommandFocusPlayerBeaconSingular.hpp"
-#include "CommandFocusPlayerBeaconExcludeMe.hpp"
+#include "Commands/Player/CommandFocusPlayerBeaconPlural.hpp"
+#include "Commands/Player/CommandFocusPlayerBeaconSingular.hpp"
+#include "Commands/Player/CommandFocusPlayerBeaconExcludeMe.hpp"
 
-#include "CommandStopSpectating.hpp"
+#include "Commands/Online/CommandStopSpectating.hpp"
 
-#include "CommandPlayerListSort.hpp"
-#include "CommandPlayerListSortReverse.hpp"
-#include "CommandHoistTag.hpp"
+#include "Commands/Player/CommandPlayerListSort.hpp"
+#include "Commands/Player/CommandPlayerListSortReverse.hpp"
+#include "Commands/World/CommandHoistTag.hpp"
 
-#include "CommandAllPlayers.hpp"
-#include "CommandPlayer.hpp"
+#include "Commands/Player/CommandAllPlayers.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
 
 namespace Stand
 {

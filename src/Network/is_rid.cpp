@@ -1,6 +1,6 @@
-#include "is_rid.hpp"
+#include "Network/is_rid.hpp"
 
-#include "BgScript.hpp"
+#include "Scripting/BgScript.hpp"
 
 namespace Stand
 {

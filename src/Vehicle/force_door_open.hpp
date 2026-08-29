@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hashtype.hpp"
+#include "Game/hashtype.hpp"
 
 namespace Stand
 {

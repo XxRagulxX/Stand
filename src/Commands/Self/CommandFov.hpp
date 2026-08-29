@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "tbCustomFov.hpp"
+#include "Core/tbCustomFov.hpp"
 
 namespace Stand
 {

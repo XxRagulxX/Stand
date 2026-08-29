@@ -1,11 +1,11 @@
-#include "netPeerAddress.hpp"
+#include "Network/netPeerAddress.hpp"
 
-#include <soup/base64.hpp>
+#include "lib/soup/base64.hpp"
 
-#include "datBitBuffer.hpp"
-#include "netConnectionManager.hpp"
-#include "netEndpoint.hpp"
-#include "pointers.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Network/netConnectionManager.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Game/pointers.hpp"
 
 namespace rage
 {
@@ -57,7 +57,7 @@ namespace rage
 
 	void netPeerAddress::reset()
 	{
-		ZeroMemory(static_cast<void*>(this), sizeof(*this));
+		ZeroMemory(this, sizeof(*this));
 	}
 
 	void netPeerAddress::fromBase64(const std::string& str)

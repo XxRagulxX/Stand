@@ -1,11 +1,11 @@
-#include "ToggleCorrelation.hpp"
+#include "Core/ToggleCorrelation.hpp"
 
-#include "AbstractEntity.hpp"
-#include "fmt_arg.hpp"
-#include "Gui.hpp"
-#include "is_session.hpp"
-#include "Label.hpp"
-#include "lang.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/is_session.hpp"
+#include "Util/Label.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {
@@ -30,12 +30,6 @@ namespace Stand
 
 		case SESSION_HOST:
 			return LOC("AUTOSTATE_H_HST");
-
-		case _NUM_TOGGLE_CORRELATIONS:
-			break;
-
-		case NONE:
-			break;
 		}
 		return NOLABEL;
 	}
@@ -68,15 +62,6 @@ namespace Stand
 
 		case ToggleCorrelation::SESSION_HOST:
 			value = g_player.isHost();
-			break;
-
-		case ToggleCorrelation::NONE:
-			break;
-
-		case ToggleCorrelation::CHATTING:
-			break;
-
-		case ToggleCorrelation::_NUM_TOGGLE_CORRELATIONS:
 			break;
 		}
 		return value;

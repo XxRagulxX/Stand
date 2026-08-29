@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "script_thread.hpp"
+#include "Game/script_thread.hpp"
 
 namespace Stand
 {
@@ -87,7 +87,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(this->m_on);
 				if (!is_session_freeroam()

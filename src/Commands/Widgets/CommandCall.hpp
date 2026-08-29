@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandActionScript.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "AbstractEntity.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

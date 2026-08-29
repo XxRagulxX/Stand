@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandRedirectToList.hpp"
-#include "CommandSaveCommandBoxPreset.hpp"
-#include "CommandScripts.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandRedirectToList.hpp"
+#include "Commands/Stand/CommandSaveCommandBoxPreset.hpp"
+#include "Commands/Extra/CommandScripts.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,10 +1,10 @@
-#include "CollectablesGiver.hpp"
+#include "Ped/CollectablesGiver.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Script.hpp"
-#include "script_events.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Scripting/Script.hpp"
+#include "Network/script_events.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

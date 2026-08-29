@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListNameshare.hpp"
+#include "Commands/Stand/CommandListNameshare.hpp"
 
-#include "SessionType.hpp"
+#include "Network/SessionType.hpp"
 
 namespace Stand
 {

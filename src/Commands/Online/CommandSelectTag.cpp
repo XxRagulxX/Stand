@@ -1,9 +1,9 @@
-#include "CommandSelectTag.hpp"
+#include "Commands/Online/CommandSelectTag.hpp"
 
-#include <soup/unicode.hpp>
+#include "lib/soup/unicode.hpp"
 
-#include "CommandPlayer.hpp"
-#include "UnicodePrivateUse.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
 
 namespace Stand
 {

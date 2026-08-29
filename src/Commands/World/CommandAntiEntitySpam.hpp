@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AntiEntitySpam.hpp"
+#include "AntiCheat/AntiEntitySpam.hpp"
 
 namespace Stand
 {

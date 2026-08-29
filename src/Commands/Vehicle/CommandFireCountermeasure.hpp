@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "gta_vehicle.hpp"
-#include "Particles.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Particles.hpp"
 
 namespace Stand
 {
@@ -53,8 +53,6 @@ namespace Stand
 
 			case VERTICAL_DOWNWARDS:
 				return Vector3(1.0f, -1.0f, -5.0f);
-			default:
-				break;
 			}
 
 			return Vector3(

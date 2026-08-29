@@ -1,7 +1,7 @@
-#include "CDrivebyWeaponGroup.hpp"
+#include "Vehicle/CDrivebyWeaponGroup.hpp"
 
-#include "DrivebyCommons.hpp"
-#include "weapons.hpp"
+#include "Vehicle/DrivebyCommons.hpp"
+#include "Weapons/weapons.hpp"
 
 bool CDrivebyWeaponGroup::allowsWeapon(const Stand::Weapon& w) const
 {

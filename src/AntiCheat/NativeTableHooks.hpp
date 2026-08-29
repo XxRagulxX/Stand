@@ -1,7 +1,7 @@
 #pragma once
 
-#include "hashtype.hpp"
-#include "natives_decl.hpp"
+#include "Game/hashtype.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

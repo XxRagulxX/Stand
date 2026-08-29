@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include <soup/Module.hpp>
-#include <soup/ModuleHider.hpp>
+#include "lib/soup/Module.hpp"
+#include "lib/soup/ModuleHider.hpp"
 
 BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID);
 

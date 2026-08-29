@@ -1,10 +1,10 @@
-#include "CommandSearchMenu.hpp"
+#include "Commands/Widgets/CommandSearchMenu.hpp"
 
-#include <soup/StringMatch.hpp>
+#include "lib/soup/StringMatch.hpp"
 
-#include "CommandLink.hpp"
-#include "Gui.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Rendering/Gui.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

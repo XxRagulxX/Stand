@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "gta_net_game_event.hpp"
-#include "pointers.hpp"
-#include "Util.hpp"
+#include "Game/gta_net_game_event.hpp"
+#include "Game/pointers.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

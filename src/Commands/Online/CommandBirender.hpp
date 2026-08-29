@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandEspBase.hpp"
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandEspBase.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
 namespace Stand
 {

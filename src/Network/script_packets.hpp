@@ -1,11 +1,11 @@
 #pragma once
 
-#include "struct_base.hpp"
-#include "gta_fwddecl.hpp"
+#include "Util/struct_base.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "netMessage.hpp"
+#include "Network/netMessage.hpp"
 
-#include "netMessageId.hpp"
+#include "Network/netMessageId.hpp"
 
 #pragma pack(push, 1)
 namespace rage

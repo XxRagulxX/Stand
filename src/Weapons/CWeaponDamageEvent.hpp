@@ -1,10 +1,10 @@
 #pragma once
 
-#include "datBitBuffer.hpp"
-#include "eDamageFlags.hpp"
-#include "joaatToString.hpp"
-#include "vector.hpp"
-#include "weapons.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Game/eDamageFlags.hpp"
+#include "Game/joaatToString.hpp"
+#include "Util/vector.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {

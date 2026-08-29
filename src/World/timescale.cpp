@@ -1,9 +1,9 @@
-#include "timescale.hpp"
+#include "World/timescale.hpp"
 
-#include <soup/Pointer.hpp>
+#include "lib/soup/Pointer.hpp"
 
-#include "natives.hpp"
-#include "pointers.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

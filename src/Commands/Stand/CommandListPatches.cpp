@@ -1,7 +1,7 @@
-#include "CommandListPatches.hpp"
+#include "Commands/Stand/CommandListPatches.hpp"
 
-#include "CommandTogglePointer.hpp"
-#include "Hooking.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

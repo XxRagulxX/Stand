@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
 #include <filesystem>
 
-#include "CommandListFolderItemData.hpp"
-#include "CustomDlcMgr.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Game/CustomDlcMgr.hpp"
+#include "Util/Util.hpp"
 
-#include "CommandVehicleDlc.hpp"
+#include "Commands/Vehicle/CommandVehicleDlc.hpp"
 
 namespace Stand
 {

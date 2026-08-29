@@ -2,12 +2,12 @@
 
 #include <deque>
 
-#include "Camgr.hpp"
-#include "CommandToggle.hpp"
-#include "get_current_time_millis.hpp"
-#include "gta_input.hpp"
-#include "input.hpp"
-#include "PositionStateWithCam.hpp"
+#include "Rendering/Camgr.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_input.hpp"
+#include "Core/input.hpp"
+#include "Config/PositionStateWithCam.hpp"
 
 namespace Stand
 {

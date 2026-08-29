@@ -2,24 +2,24 @@
 
 #include <set>
 
-#include <soup/Promise.hpp>
+#include "lib/soup/Promise.hpp"
 
-#include "fwddecl.hpp"
-#include "dx_common.hpp"
+#include "Game/fwddecl.hpp"
+#include "Rendering/dx_common.hpp"
 
-#include "Alignment.hpp"
-#include "asi_decl.hpp"
-#include "BinaryBlob.hpp"
-#include "Direction.hpp"
-#include "function_types.hpp"
-#include "Hotkey.hpp"
-#include "Spinlock.hpp"
-#include "StateSaver.hpp"
-#include "StringCastable.hpp"
-#include "TextSettings.hpp"
-#include "Texture.hpp"
-#include "TextureArray.hpp"
-#include "vector.hpp"
+#include "Menu/Alignment.hpp"
+#include "AntiCheat/asi_decl.hpp"
+#include "Util/BinaryBlob.hpp"
+#include "Util/Direction.hpp"
+#include "Util/function_types.hpp"
+#include "Menu/Hotkey.hpp"
+#include "Core/Spinlock.hpp"
+#include "Config/StateSaver.hpp"
+#include "Util/StringCastable.hpp"
+#include "Rendering/TextSettings.hpp"
+#include "Rendering/Texture.hpp"
+#include "Rendering/TextureArray.hpp"
+#include "Util/vector.hpp"
 
 #define DRAW_HTML false
 

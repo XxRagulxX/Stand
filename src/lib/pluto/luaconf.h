@@ -80,14 +80,16 @@
 #if defined(LUA_USE_LINUX)
 #define LUA_USE_POSIX
 #define LUA_USE_DLOPEN		/* needs an extra library: -ldl */
+#if !defined(LUA_READLINELIB)
 #define LUA_READLINELIB		"libreadline.so"
+#endif
 #endif
 
 
 #if defined(LUA_USE_MACOSX)
 #define LUA_USE_POSIX
 #define LUA_USE_DLOPEN		/* macOS does not need -ldl */
-#define LUA_READLINELIB		"libedit.dylib"
+#define LUA_USE_READLINE	/* needs an extra library: -lreadline */
 #endif
 
 
@@ -234,18 +236,18 @@
 
 #if !defined(LUA_PATH_DEFAULT)
 #define LUA_PATH_DEFAULT  \
-		LUA_LDIR"?.lua;"  LUA_LDIR"?\\init.lua;" \
-		LUA_CDIR"?.lua;"  LUA_CDIR"?\\init.lua;" \
-		LUA_SHRDIR"?.lua;" LUA_SHRDIR"?\\init.lua;" \
+		LUA_LDIR "?.lua;"  LUA_LDIR "?\\init.lua;" \
+		LUA_CDIR "?.lua;"  LUA_CDIR "?\\init.lua;" \
+		LUA_SHRDIR "?.lua;"  LUA_SHRDIR "?\\init.lua;" \
 		".\\?.lua;" ".\\?\\init.lua;" \
 		".\\?.pluto;" ".\\?\\init.pluto"
 #endif
 
 #if !defined(LUA_CPATH_DEFAULT)
 #define LUA_CPATH_DEFAULT \
-		LUA_CDIR"?.dll;" \
-		LUA_CDIR"..\\lib\\lua\\" LUA_VDIR "\\?.dll;" \
-		LUA_CDIR"loadall.dll;" ".\\?.dll"
+		LUA_CDIR "?.dll;" \
+		LUA_CDIR "..\\lib\\lua\\"  LUA_VDIR "\\?.dll;" \
+		LUA_CDIR "loadall.dll;" ".\\?.dll"
 #endif
 
 #else			/* }{ */
@@ -256,15 +258,15 @@
 
 #if !defined(LUA_PATH_DEFAULT)
 #define LUA_PATH_DEFAULT  \
-		LUA_LDIR"?.lua;"  LUA_LDIR"?/init.lua;" \
-		LUA_CDIR"?.lua;"  LUA_CDIR"?/init.lua;" \
+		LUA_LDIR "?.lua;"  LUA_LDIR "?/init.lua;" \
+		LUA_CDIR "?.lua;"  LUA_CDIR "?/init.lua;" \
 		"./?.lua;" "./?/init.lua;" \
 		"./?.pluto;" "./?/init.pluto"
 #endif
 
 #if !defined(LUA_CPATH_DEFAULT)
 #define LUA_CPATH_DEFAULT \
-		LUA_CDIR"?.so;" LUA_CDIR"loadall.so;" "./?.so"
+		LUA_CDIR "?.so;" LUA_CDIR "loadall.so;" "./?.so"
 #endif
 
 #endif			/* } */
@@ -368,7 +370,9 @@
 /*
 @@ LUA_COMPAT_GLOBAL avoids 'global' being a reserved word
 */
-#define LUA_COMPAT_GLOBAL
+#if !defined(LUA_COMPAT_GLOBAL)
+#define LUA_COMPAT_GLOBAL	1
+#endif
 
 
 /*
@@ -678,7 +682,7 @@
 */
 #if !defined(luai_likely)
 
-#if (defined(__GNUC__) || defined(__CLANG__)) && !defined(LUA_NOBUILTIN)
+#if !defined(LUA_NOBUILTIN) && defined(__GNUC__) && (__GNUC__ >= 3)
 #define luai_likely(x)		(__builtin_expect(((x) != 0), 1))
 #define luai_unlikely(x)	(__builtin_expect(((x) != 0), 0))
 #else
@@ -750,10 +754,17 @@
 
 
 /*
-@@ LUAI_MAXALIGN defines fields that, when used in a union, ensure
-** maximum alignment for the other items in that union.
+@@ LUAI_MAXALIGN defines fields that ensure proper alignment for
+** memory areas offered by Lua (e.g., userdata memory).
+** Add fields to it if you need alignment for non-ISO objects.
 */
+#if defined(LLONG_MAX)
+/* use ISO C99 stuff */
+#define LUAI_MAXALIGN long double u; void *s; long long l
+#else
+/* use only C89 stuff */
 #define LUAI_MAXALIGN  lua_Number n; double u; void *s; lua_Integer i; long l
+#endif
 
 /* }================================================================== */
 
@@ -1062,142 +1073,142 @@
 */
 
 #ifdef PLUTO_USE_COLORED_OUTPUT // Don't need to write any 'ifdef' macro logic inside of Pluto::ErrorMessage.
-#define SOUP_ESC "\x1B"
+#define ESC "\x1B"
 
-#define BLK SOUP_ESC "[0;30m"
-#define RED SOUP_ESC "[0;31m"
-#define GRN SOUP_ESC "[0;32m"
-#define YEL SOUP_ESC "[0;33m"
-#define BLU SOUP_ESC "[0;34m"
-#define MAG SOUP_ESC "[0;35m"
-#define CYN SOUP_ESC "[0;36m"
-#define WHT SOUP_ESC "[0;37m"
+#define BLK ESC "[0;30m"
+#define RED ESC "[0;31m"
+#define GRN ESC "[0;32m"
+#define YEL ESC "[0;33m"
+#define BLU ESC "[0;34m"
+#define MAG ESC "[0;35m"
+#define CYN ESC "[0;36m"
+#define WHT ESC "[0;37m"
 
 //Regular bold text
-#define BBLK SOUP_ESC "[1;30m"
-#define BRED SOUP_ESC "[1;31m"
-#define BGRN SOUP_ESC "[1;32m"
-#define BYEL SOUP_ESC "[1;33m"
-#define BBLU SOUP_ESC "[1;34m"
-#define BMAG SOUP_ESC "[1;35m"
-#define BCYN SOUP_ESC "[1;36m"
-#define BWHT SOUP_ESC "[1;37m"
+#define BBLK ESC "[1;30m"
+#define BRED ESC "[1;31m"
+#define BGRN ESC "[1;32m"
+#define BYEL ESC "[1;33m"
+#define BBLU ESC "[1;34m"
+#define BMAG ESC "[1;35m"
+#define BCYN ESC "[1;36m"
+#define BWHT ESC "[1;37m"
 
 //Regular underline text
-#define UBLK SOUP_ESC "[4;30m"
-#define URED SOUP_ESC "[4;31m"
-#define UGRN SOUP_ESC "[4;32m"
-#define UYEL SOUP_ESC "[4;33m"
-#define UBLU SOUP_ESC "[4;34m"
-#define UMAG SOUP_ESC "[4;35m"
-#define UCYN SOUP_ESC "[4;36m"
-#define UWHT SOUP_ESC "[4;37m"
+#define UBLK ESC "[4;30m"
+#define URED ESC "[4;31m"
+#define UGRN ESC "[4;32m"
+#define UYEL ESC "[4;33m"
+#define UBLU ESC "[4;34m"
+#define UMAG ESC "[4;35m"
+#define UCYN ESC "[4;36m"
+#define UWHT ESC "[4;37m"
 
 //Regular background
-#define BLKB SOUP_ESC "[40m"
-#define REDB SOUP_ESC "[41m"
-#define GRNB SOUP_ESC "[42m"
-#define YELB SOUP_ESC "[43m"
-#define BLUB SOUP_ESC "[44m"
-#define MAGB SOUP_ESC "[45m"
-#define CYNB SOUP_ESC "[46m"
-#define WHTB SOUP_ESC "[47m"
+#define BLKB ESC "[40m"
+#define REDB ESC "[41m"
+#define GRNB ESC "[42m"
+#define YELB ESC "[43m"
+#define BLUB ESC "[44m"
+#define MAGB ESC "[45m"
+#define CYNB ESC "[46m"
+#define WHTB ESC "[47m"
 
 //High intensty background 
-#define BLKHB SOUP_ESC "[0;100m"
-#define REDHB SOUP_ESC "[0;101m"
-#define GRNHB SOUP_ESC "[0;102m"
-#define YELHB SOUP_ESC "[0;103m"
-#define BLUHB SOUP_ESC "[0;104m"
-#define MAGHB SOUP_ESC "[0;105m"
-#define CYNHB SOUP_ESC "[0;106m"
-#define WHTHB SOUP_ESC "[0;107m"
+#define BLKHB ESC "[0;100m"
+#define REDHB ESC "[0;101m"
+#define GRNHB ESC "[0;102m"
+#define YELHB ESC "[0;103m"
+#define BLUHB ESC "[0;104m"
+#define MAGHB ESC "[0;105m"
+#define CYNHB ESC "[0;106m"
+#define WHTHB ESC "[0;107m"
 
 //High intensty text
-#define HBLK SOUP_ESC "[0;90m"
-#define HRED SOUP_ESC "[0;91m"
-#define HGRN SOUP_ESC "[0;92m"
-#define HYEL SOUP_ESC "[0;93m"
-#define HBLU SOUP_ESC "[0;94m"
-#define HMAG SOUP_ESC "[0;95m"
-#define HCYN SOUP_ESC "[0;96m"
-#define HWHT SOUP_ESC "[0;97m"
+#define HBLK ESC "[0;90m"
+#define HRED ESC "[0;91m"
+#define HGRN ESC "[0;92m"
+#define HYEL ESC "[0;93m"
+#define HBLU ESC "[0;94m"
+#define HMAG ESC "[0;95m"
+#define HCYN ESC "[0;96m"
+#define HWHT ESC "[0;97m"
 
 //Bold high intensity text
-#define BHBLK SOUP_ESC "[1;90m"
-#define BHRED SOUP_ESC "[1;91m"
-#define BHGRN SOUP_ESC "[1;92m"
-#define BHYEL SOUP_ESC "[1;93m"
-#define BHBLU SOUP_ESC "[1;94m"
-#define BHMAG SOUP_ESC "[1;95m"
-#define BHCYN SOUP_ESC "[1;96m"
-#define BHWHT SOUP_ESC "[1;97m"
+#define BHBLK ESC "[1;90m"
+#define BHRED ESC "[1;91m"
+#define BHGRN ESC "[1;92m"
+#define BHYEL ESC "[1;93m"
+#define BHBLU ESC "[1;94m"
+#define BHMAG ESC "[1;95m"
+#define BHCYN ESC "[1;96m"
+#define BHWHT ESC "[1;97m"
 
 //Reset
-#define RESET SOUP_ESC "[0m"
-#define CRESET SOUP_ESC "[0m"
-#define COLOR_RESET SOUP_ESC "[0m"
+#define RESET ESC "[0m"
+#define CRESET ESC "[0m"
+#define COLOR_RESET ESC "[0m"
 #else // PLUTO_USE_COLORED_OUTPUT
-#define PLUTO_ESC ""
-#define BLK PLUTO_ESC
-#define RED PLUTO_ESC
-#define GRN PLUTO_ESC
-#define YEL PLUTO_ESC
-#define BLU PLUTO_ESC
-#define MAG PLUTO_ESC
-#define CYN PLUTO_ESC
-#define WHT PLUTO_ESC
-#define BBLK PLUTO_ESC
-#define BRED PLUTO_ESC
-#define BGRN PLUTO_ESC
-#define BYEL PLUTO_ESC
-#define BBLU PLUTO_ESC
-#define BMAG PLUTO_ESC
-#define BCYN PLUTO_ESC
-#define BWHT PLUTO_ESC
-#define UBLK PLUTO_ESC
-#define URED PLUTO_ESC
-#define UGRN PLUTO_ESC
-#define UYEL PLUTO_ESC
-#define UBLU PLUTO_ESC
-#define UMAG PLUTO_ESC
-#define UCYN PLUTO_ESC
-#define UWHT PLUTO_ESC
-#define BLKB PLUTO_ESC
-#define REDB PLUTO_ESC
-#define GRNB PLUTO_ESC
-#define YELB PLUTO_ESC
-#define BLUB PLUTO_ESC
-#define MAGB PLUTO_ESC
-#define CYNB PLUTO_ESC
-#define WHTB PLUTO_ESC
-#define BLKHB PLUTO_ESC
-#define REDHB PLUTO_ESC
-#define GRNHB PLUTO_ESC
-#define YELHB PLUTO_ESC
-#define BLUHB PLUTO_ESC
-#define MAGHB PLUTO_ESC
-#define CYNHB PLUTO_ESC
-#define WHTHB PLUTO_ESC
-#define HBLK PLUTO_ESC
-#define HRED PLUTO_ESC
-#define HGRN PLUTO_ESC
-#define HYEL PLUTO_ESC
-#define HBLU PLUTO_ESC
-#define HMAG PLUTO_ESC
-#define HCYN PLUTO_ESC
-#define HWHT PLUTO_ESC
-#define BHBLK PLUTO_ESC
-#define BHRED PLUTO_ESC
-#define BHGRN PLUTO_ESC
-#define BHYEL PLUTO_ESC
-#define BHBLU PLUTO_ESC
-#define BHMAG PLUTO_ESC
-#define BHCYN PLUTO_ESC
-#define BHWHT PLUTO_ESC
-#define RESET PLUTO_ESC
-#define CRESET PLUTO_ESC
-#define COLOR_RESET PLUTO_ESC
+#define ESC ""
+#define BLK ESC
+#define RED ESC
+#define GRN ESC
+#define YEL ESC
+#define BLU ESC
+#define MAG ESC
+#define CYN ESC
+#define WHT ESC
+#define BBLK ESC
+#define BRED ESC
+#define BGRN ESC
+#define BYEL ESC
+#define BBLU ESC
+#define BMAG ESC
+#define BCYN ESC
+#define BWHT ESC
+#define UBLK ESC
+#define URED ESC
+#define UGRN ESC
+#define UYEL ESC
+#define UBLU ESC
+#define UMAG ESC
+#define UCYN ESC
+#define UWHT ESC
+#define BLKB ESC
+#define REDB ESC
+#define GRNB ESC
+#define YELB ESC
+#define BLUB ESC
+#define MAGB ESC
+#define CYNB ESC
+#define WHTB ESC
+#define BLKHB ESC
+#define REDHB ESC
+#define GRNHB ESC
+#define YELHB ESC
+#define BLUHB ESC
+#define MAGHB ESC
+#define CYNHB ESC
+#define WHTHB ESC
+#define HBLK ESC
+#define HRED ESC
+#define HGRN ESC
+#define HYEL ESC
+#define HBLU ESC
+#define HMAG ESC
+#define HCYN ESC
+#define HWHT ESC
+#define BHBLK ESC
+#define BHRED ESC
+#define BHGRN ESC
+#define BHYEL ESC
+#define BHBLU ESC
+#define BHMAG ESC
+#define BHCYN ESC
+#define BHWHT ESC
+#define RESET ESC
+#define CRESET ESC
+#define COLOR_RESET ESC
 #endif // PLUTO_USE_COLORED_OUTPUT
 
 /* }================================================================== */

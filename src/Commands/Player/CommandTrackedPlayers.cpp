@@ -1,7 +1,7 @@
-#include "CommandTrackedPlayers.hpp"
+#include "Commands/Player/CommandTrackedPlayers.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "PlayerHistory.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
 
 namespace Stand
 {

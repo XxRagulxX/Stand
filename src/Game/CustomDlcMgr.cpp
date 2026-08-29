@@ -1,9 +1,9 @@
-#include "CustomDlcMgr.hpp"
+#include "Game/CustomDlcMgr.hpp"
 
-#include "CExtraContentManager.hpp"
-#include "CommandListAssetHashes.hpp"
-#include "Exceptional.hpp"
-#include "pointers.hpp"
+#include "Game/CExtraContentManager.hpp"
+#include "Commands/Stand/CommandListAssetHashes.hpp"
+#include "Core/Exceptional.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

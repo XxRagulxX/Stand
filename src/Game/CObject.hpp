@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_entity.hpp"
+#include "Game/gta_entity.hpp"
 
 class CObject : public CPhysical
 {

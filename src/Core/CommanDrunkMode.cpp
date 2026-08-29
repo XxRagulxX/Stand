@@ -1,10 +1,10 @@
-#include "CommandDrunkMode.hpp"
+#include "Commands/Self/CommandDrunkMode.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandTimecycleMod.hpp"
-#include "CommandWalkStyle.hpp"
-#include "get_current_time_millis.hpp"
-#include "Script.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/World/CommandTimecycleMod.hpp"
+#include "Commands/Self/CommandWalkStyle.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {
@@ -18,7 +18,7 @@ namespace Stand
 		CommandTimecycleMod::shader_overriden = true;
 		CommandWalkStyle::walk_style_overridden = true;
 
-		registerScriptTickEventHandler(click, [=, this]()
+		registerScriptTickEventHandler([this]
 		{
 			HANDLER_CHECK(m_on);
 

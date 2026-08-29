@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandToggleRegular.hpp"
+#include "Commands/Widgets/CommandToggleRegular.hpp"
 
 #include <vector>
 
-#include "gta_fwddecl.hpp"
-#include "typedecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/typedecl.hpp"
 
-#include "rlGamerId.hpp"
-#include "ToastConfig.hpp"
+#include "Network/rlGamerId.hpp"
+#include "Config/ToastConfig.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
-#include "CommandBombTrajectory.hpp"
+#include "Commands/Weapons/CommandBombTrajectory.hpp"
 
-#include "AbstractEntity.hpp"
-#include "DrawUtil3d.hpp"
-#include "get_ground_z.hpp"
-#include "natives.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Util/get_ground_z.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

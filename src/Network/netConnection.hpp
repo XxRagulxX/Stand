@@ -1,11 +1,11 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "conf_netcode.hpp"
+#include "Config/conf_netcode.hpp"
 
-#include "inlist.hpp"
-#include "netEvent.hpp"
+#include "Util/inlist.hpp"
+#include "Network/netEvent.hpp"
 
 namespace rage
 {

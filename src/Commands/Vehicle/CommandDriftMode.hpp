@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandHandlingFlag.hpp"
+#include "Commands/Vehicle/CommandHandlingFlag.hpp"
 
-#include "atoffset.hpp"
-#include "CHandlingData.hpp"
+#include "Util/atoffset.hpp"
+#include "Game/CHandlingData.hpp"
 
 namespace Stand
 {
@@ -69,7 +69,7 @@ namespace Stand
 	protected:
 		void doChangeExtra(AbstractEntity& vehicle) override
 		{
-			ensureScriptThread([=, this]() mutable
+			ensureScriptThread([=]() mutable
 			{
 				SOUP_IF_LIKELY (auto cveh = vehicle.getCVehicle())
 				{

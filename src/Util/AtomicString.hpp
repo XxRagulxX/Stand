@@ -41,4 +41,12 @@ namespace Stand
 		[[nodiscard]] bool operator ==(const std::string& str) const noexcept;
 		[[nodiscard]] bool operator ==(const AtomicString& b) const noexcept;
 	};
+
+	// fmt no longer treats an implicit conversion operator (operator
+	// std::string() above) as enough to make a type formattable on its
+	// own - it needs a format_as() overload it can find via ADL instead.
+	inline auto format_as(const AtomicString& v) -> std::string
+	{
+		return static_cast<std::string>(v);
+	}
 }

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListPlaces.hpp"
+#include "Commands/World/CommandListPlaces.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "TpUtil.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

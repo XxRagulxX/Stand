@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "atArray.hpp"
-#include "sysObfuscated.hpp"
+#include "Game/atArray.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
 struct MemoryCheck
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "natives.hpp"
-#include "pointers.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {
@@ -23,7 +23,7 @@ namespace Stand
 			const float fvalue = ((float)this->value / 100.0f) * 9.8000002f;
 			if (value != 100)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (value != this->value)
 					{
@@ -46,7 +46,7 @@ namespace Stand
 			}
 			else
 			{
-				ensureScriptThread(click, [=, this]
+				ensureScriptThread(click, [=]
 				{
 					auto veh = g_player_ped.getVehicle(true);
 					if (veh.isValid() && veh.isOwnerOfVehicleAndDriver())

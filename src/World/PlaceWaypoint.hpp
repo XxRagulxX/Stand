@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Place.hpp"
+#include "World/Place.hpp"
 
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {

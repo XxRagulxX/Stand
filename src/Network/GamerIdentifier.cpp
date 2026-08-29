@@ -1,17 +1,17 @@
-#include "GamerIdentifier.hpp"
+#include "Network/GamerIdentifier.hpp"
 
-#include <soup/CustomEncoding.hpp>
-#include <soup/StringReader.hpp>
-#include <soup/StringWriter.hpp>
+#include "lib/soup/CustomEncoding.hpp"
+#include "lib/soup/StringReader.hpp"
+#include "lib/soup/StringWriter.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "rlGamerInfo.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/rlGamerInfo.hpp"
 
 namespace Stand
 {
 	void GamerIdentifier::unpackAuthoritativeData(std::string& str)
 	{
-		if ((is_on_devdbg = (str.back() == '#')))
+		if (is_on_devdbg = (str.back() == '#'))
 		{
 			str.pop_back();
 		}

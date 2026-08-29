@@ -1,10 +1,10 @@
 #pragma once
 
-#include "dx_common.hpp"
-#include "fwddecl.hpp"
+#include "Rendering/dx_common.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "vector.hpp"
-#include "Vector2Plus.hpp"
+#include "Util/vector.hpp"
+#include "Util/Vector2Plus.hpp"
 
 namespace Stand
 {

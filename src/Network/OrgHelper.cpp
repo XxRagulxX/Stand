@@ -1,10 +1,10 @@
-#include "OrgHelper.hpp"
+#include "Network/OrgHelper.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "script_events.hpp"
-#include "ScriptGlobal.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/script_events.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

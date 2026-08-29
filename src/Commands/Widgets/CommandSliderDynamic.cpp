@@ -1,4 +1,4 @@
-#include "CommandSliderDynamic.hpp"
+#include "Commands/Widgets/CommandSliderDynamic.hpp"
 
 namespace Stand
 {

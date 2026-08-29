@@ -1,9 +1,9 @@
-#include "CommandPlayerNotifySpam.hpp"
+#include "Commands/Player/CommandPlayerNotifySpam.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "script_events.hpp"
-#include "tse.hpp"
-#include "Util.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/script_events.hpp"
+#include "Util/tse.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

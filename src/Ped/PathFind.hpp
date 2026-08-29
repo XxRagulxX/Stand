@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "get_current_time_millis.hpp"
-#include "vector.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/vector.hpp"
 
 // Seems to be a bit faster than the garbage I initially wrote specifically for Stand.
 // Also doesn't seem to introduce any issues that weren't there before, so we shall use it.

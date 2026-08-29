@@ -1,19 +1,19 @@
-#include "CommandClock.hpp"
+#include "Commands/World/CommandClock.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandTogglePointer.hpp"
-#include "get_current_time_millis.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
-#include "timescale.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
+#include "World/timescale.hpp"
 
-#include "CommandClockSync.hpp"
-#include "CommandClockTime.hpp"
-#include "CommandClockLock.hpp"
-#include "CommandClockSys.hpp"
-#include "CommandClockSpeed.hpp"
-#include "CommandClockPreset.hpp"
+#include "Commands/World/CommandClockSync.hpp"
+#include "Commands/World/CommandClockTime.hpp"
+#include "Commands/World/CommandClockLock.hpp"
+#include "Commands/World/CommandClockSys.hpp"
+#include "Commands/World/CommandClockSpeed.hpp"
+#include "Commands/World/CommandClockPreset.hpp"
 
 namespace Stand
 {

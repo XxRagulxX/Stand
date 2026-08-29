@@ -1,10 +1,10 @@
-#include "PlateDj.hpp"
+#include "Vehicle/PlateDj.hpp"
 
-#include "AbstractEntity.hpp"
-#include "get_current_time_millis.hpp"
-#include "Metrics.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Core/Metrics.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

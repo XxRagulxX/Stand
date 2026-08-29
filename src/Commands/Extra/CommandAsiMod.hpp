@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AsiMod.hpp"
-#include "Tunables.hpp"
+#include "Core/AsiMod.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

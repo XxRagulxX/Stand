@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwInteriorLocation.hpp"
-#include "vector.hpp"
+#include "Game/fwInteriorLocation.hpp"
+#include "Util/vector.hpp"
 
 class CLightSource
 {
@@ -68,12 +68,5 @@ public:
 	float GetTCSpriteBrightness() { return m_timeCycleSpriteBrightness; }
 	float GetTCVehicleIntensityScale() { return m_timecycleVehicleIntensityScale; }
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CoronaAndLightList, m_coronaCount) == 0x10);
 static_assert(offsetof(CoronaAndLightList, m_maxCoronas) == 0x18);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

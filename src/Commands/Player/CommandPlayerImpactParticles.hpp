@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandListSelectParticle.hpp"
-#include "CommandOnPlayer.hpp"
+#include "Commands/Stand/CommandListSelectParticle.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
 
 namespace Stand
 {

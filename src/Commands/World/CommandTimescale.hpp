@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "timescale.hpp"
+#include "World/timescale.hpp"
 
 namespace Stand
 {
@@ -18,7 +18,7 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				setTimescale((float)value / 100.0f);
 				if (value != 100 && aimtimescale->value == 100)

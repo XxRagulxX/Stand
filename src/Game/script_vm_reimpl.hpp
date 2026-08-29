@@ -4,8 +4,8 @@
 
 #if SVM_REIMPL
 
-#include "script_program.hpp"
-#include "scrNativeCallContext.hpp"
+#include "Game/script_program.hpp"
+#include "Game/scrNativeCallContext.hpp"
 
 namespace rage
 {

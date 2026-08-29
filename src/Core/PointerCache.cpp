@@ -1,10 +1,10 @@
-#include "PointerCache.hpp"
+#include "Core/PointerCache.hpp"
 
-#include <soup/FileReader.hpp>
-#include <soup/FileWriter.hpp>
+#include "lib/soup/FileReader.hpp"
+#include "lib/soup/FileWriter.hpp"
 
-#include "get_appdata_path.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

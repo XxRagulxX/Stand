@@ -1,7 +1,7 @@
-#include "CommandTrafficColour.hpp"
+#include "Commands/World/CommandTrafficColour.hpp"
 
-#include "CommandTrafficColourMain.hpp"
-#include "create_colour_with_rainbow.hpp"
+#include "Commands/World/CommandTrafficColourMain.hpp"
+#include "Rendering/create_colour_with_rainbow.hpp"
 
 namespace Stand
 {

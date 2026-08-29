@@ -1,12 +1,12 @@
-#include "CommandPlayerBefriend.hpp"
+#include "Commands/Player/CommandPlayerBefriend.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "Gui.hpp"
-#include "PlayerProvider.hpp"
-#include "players_interface.hpp"
-#include "pointers.hpp"
-#include "rlPc.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Network/players_interface.hpp"
+#include "Game/pointers.hpp"
+#include "Network/rlPc.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "is_session.hpp"
-#include "ScriptGlobal.hpp"
+#include "Network/is_session.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
-#include "WeaponLoadoutTree.hpp"
+#include "Weapons/WeaponLoadoutTree.hpp"
 
-#include "joaatToString.hpp"
-#include "Util.hpp"
+#include "Game/joaatToString.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

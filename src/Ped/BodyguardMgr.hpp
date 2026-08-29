@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListSelectPedModels.hpp"
+#include "Commands/Ped/CommandListSelectPedModels.hpp"
 
-#include "fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

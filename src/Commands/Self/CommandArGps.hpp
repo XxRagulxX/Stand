@@ -1,20 +1,20 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #define USE_GAME_GPS true
 
-#include "AbstractEntity.hpp"
-#include "DrawUtil3d.hpp"
-#include "Renderer.hpp"
-#include "tbArSpinner.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Core/tbArSpinner.hpp"
 
 #if USE_GAME_GPS
-#include "CGpsSlot.hpp"
+#include "World/CGpsSlot.hpp"
 #else
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "PathFind.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Ped/PathFind.hpp"
 #endif
 
 namespace Stand

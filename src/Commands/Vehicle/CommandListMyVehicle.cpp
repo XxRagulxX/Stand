@@ -1,9 +1,9 @@
-#include "CommandListMyVehicle.hpp"
+#include "Commands/Vehicle/CommandListMyVehicle.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
-#include "CommandCall.hpp"
-#include "CommandEnter.hpp"
+#include "Commands/Widgets/CommandCall.hpp"
+#include "Commands/Widgets/CommandEnter.hpp"
 
 namespace Stand
 {

@@ -1,7 +1,7 @@
-#include "CommandToggleRegularSp.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
 
-#include "Auth.hpp"
-#include "is_session.hpp"
+#include "Network/Auth.hpp"
+#include "Network/is_session.hpp"
 
 namespace Stand
 {

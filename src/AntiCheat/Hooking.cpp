@@ -1,4 +1,4 @@
-﻿#include "Hooking.hpp"
+﻿#include "AntiCheat/Hooking.hpp"
 
 #include <sstream>
 #include <type_traits>
@@ -7,152 +7,151 @@
 #include <MinHook.h>
 #include <rapidjson/document.h>
 
-#include <soup/base64.hpp>
-#include <soup/json.hpp>
-#include <soup/ObfusString.hpp>
-#include <soup/Pattern.hpp>
-#include <soup/rand.hpp>
-#include <soup/string.hpp>
-#include <soup/unicode.hpp>
+#include "lib/soup/base64.hpp"
+#include "lib/soup/json.hpp"
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/Pattern.hpp"
+#include "lib/soup/rand.hpp"
+#include "lib/soup/string.hpp"
+#include "lib/soup/unicode.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "atArray.hpp"
-#include "atFixedArray.hpp"
-#include "BgScript.hpp"
-#include "Blacklist.hpp"
-#include "CExplosionEvent.hpp"
-#include "Chat.hpp"
-#include "evtChatEvent.hpp"
-#include "CClearAreaEvent.hpp"
-#include "CGiveWeaponEvent.hpp"
-#include "CloudEvent.hpp"
-#include "ColoadMgr.hpp"
-#include "ComponentCrashPatch.hpp" // sync_src
-#include "ComponentNetcode.hpp" // packet_src
-#include "Components.hpp"
-#include "CMultiplayerChat.hpp"
-#include "CMsgTextMessage.hpp"
-#include "CNetGamePlayer.hpp"
-#include "CNetGamePlayerDataMsg.hpp"
-#include "CNetworkPlaySoundEvent.hpp"
-#include "CNetworkPtFXEvent.hpp"
-#include "CNetworkPtFXWorldStateData.hpp"
-#include "CommandBlockBlockJoin.hpp"
-#include "CommandDlcpacks.hpp"
-#include "CommandDriveOnWater.hpp"
-#include "CommandList.hpp"
-#include "CommandLuaScript.hpp"
-#include "CommandPlayer.hpp"
-#include "CommandPlayerMagnet.hpp"
-#include "CObject.hpp"
-#include "CPedModelInfo.hpp"
-#include "CPlayerInfo.hpp"
-#include "CProjectile.hpp"
-#include "CRemoveWeaponEvent.hpp"
-#include "CStartProjectileEvent.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Game/atArray.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Scripting/BgScript.hpp"
+#include "Network/Blacklist.hpp"
+#include "Weapons/CExplosionEvent.hpp"
+#include "Network/Chat.hpp"
+#include "Network/evtChatEvent.hpp"
+#include "World/CClearAreaEvent.hpp"
+#include "Weapons/CGiveWeaponEvent.hpp"
+#include "Network/CloudEvent.hpp"
+#include "Game/ColoadMgr.hpp"
+#include "AntiCheat/ComponentCrashPatch.hpp" // sync_src
+#include "AntiCheat/ComponentNetcode.hpp" // packet_src
+#include "AntiCheat/Components.hpp"
+#include "Network/CMultiplayerChat.hpp"
+#include "Game/CMsgTextMessage.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Network/CNetGamePlayerDataMsg.hpp"
+#include "Network/CNetworkPlaySoundEvent.hpp"
+#include "Network/CNetworkPtFXEvent.hpp"
+#include "Network/CNetworkPtFXWorldStateData.hpp"
+#include "Commands/Online/CommandBlockBlockJoin.hpp"
+#include "Commands/Extra/CommandDlcpacks.hpp"
+#include "Commands/World/CommandDriveOnWater.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Commands/Player/CommandPlayerMagnet.hpp"
+#include "Game/CObject.hpp"
+#include "Ped/CPedModelInfo.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "Weapons/CProjectile.hpp"
+#include "Weapons/CRemoveWeaponEvent.hpp"
+#include "Weapons/CStartProjectileEvent.hpp"
 #if CLEAR_BONUS_ON_DL
-#include "CTunables.hpp"
+#include "Config/CTunables.hpp"
 #endif
-#include "CustomDlcMgr.hpp"
-#include "CVehicleModelInfo.hpp"
-#include "CWeaponDamageEvent.hpp"
-#include "datBitBuffer.hpp"
-#include "DirectPacket.hpp"
-#include "eBailReason.hpp"
-#include "eEntityType.hpp"
-#include "eExplosionTag.hpp"
-#include "ExecCtx.hpp"
-#include "eEventType.hpp"
-#include "eTaskType.hpp"
-#include "EventLabel.hpp"
-#include "EventTally.hpp"
-#include "evtEvent.hpp"
-#include "evtPadShakeEvent.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "fmt_arg.hpp"
-#include "format_time_since_1970_for_user_locale.hpp"
-#include "FriendsReaderTask.hpp"
-#include "fwInteriorLocation.hpp"
-#include "gameSkeleton.hpp"
-#include "get_current_time_millis.hpp"
-#include "get_seconds_since_unix_epoch.hpp"
-#include "gsType.hpp"
-#include "gta_cam.hpp"
-#include "gta_event.hpp"
-#include "gta_http.hpp"
-#include "gta_input.hpp"
-#include "gta_matchmaking.hpp"
-#include "gta_metrics.hpp"
-#include "gta_net_game_event.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "gta_ped.hpp"
-#include "gta_session_tasks.hpp"
-#include "gta_sync_data.hpp"
-#include "gta_task.hpp"
-#include "gta_vehicle.hpp"
-#include "gta_vehicle_layout.hpp"
-#include "Gui.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "IncrementableStat.hpp"
-#include "is_rid.hpp"
-#include "is_session.hpp"
-#include "joaat_hash_db.hpp"
-#include "joaatToString.hpp"
-#include "lang.hpp"
-#include "LeaveReasons.hpp"
-#include "FileLogger.hpp"
-#include "main.hpp"
-#include "Matchmaking.hpp"
-#include "mystackwalker.hpp"
-#include "natives.hpp"
-#include "net_array.hpp"
-#include "netConnection.hpp"
-#include "netEndpoint.hpp"
-#include "netMessageId.hpp"
-#include "NetScriptWorldStateTypes.hpp"
-#include "netTaskStatus.hpp"
-#include "NuancedEventWithExtraData.hpp"
-#include "OrgHelper.hpp"
-#include "PlayerHistory.hpp"
-#include "pointers.hpp"
-#include "FunctionPointer.hpp"
-#include "RageConnector.hpp"
-#include "regular_event.hpp"
-#include "RemoteGamer.hpp"
-#include "Renderer.hpp"
-#include "rgsc_profiles.hpp"
-#include "rlGamerHandle.hpp"
-#include "rlGetGamerStateTask.hpp"
-#include "rlpresence.hpp"
-#include "rlSessionDetail.hpp"
-#include "ScAccount.hpp"
-#include "ScriptErrorRecoveryMode.hpp"
-#include "script_events.hpp"
-#include "script_program.hpp"
-#include "ScriptVmErrorHandling.hpp"
-#include "script_vm_reimpl.hpp"
-#include "ScriptEventTaxonomy.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_handler.hpp"
-#include "ScriptMgr.hpp"
-#include "script_thread.hpp"
-#include "script_vm_common.hpp"
-#include "snEvent.hpp"
-#include "StatCache.hpp"
-#include "str2int.hpp"
-#include "StringUtils.hpp"
-#include "synctree_player.hpp"
-#include "sysDependency.hpp"
-#include "TpUtil.hpp"
-#include "TransitionState.hpp"
-#include "Tunables.hpp"
-#include "Util.hpp"
-#include "VehicleGadgets.hpp"
-#include "VehicleType.hpp"
-#include "weapons.hpp"
-#include "weapon_components.hpp"
+#include "Game/CustomDlcMgr.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Weapons/CWeaponDamageEvent.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Network/DirectPacket.hpp"
+#include "Game/eBailReason.hpp"
+#include "Game/eEntityType.hpp"
+#include "Game/eExplosionTag.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Game/eEventType.hpp"
+#include "Ped/eTaskType.hpp"
+#include "Core/EventLabel.hpp"
+#include "Core/EventTally.hpp"
+#include "Core/evtEvent.hpp"
+#include "Network/evtPadShakeEvent.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Util/format_time_since_1970_for_user_locale.hpp"
+#include "Network/FriendsReaderTask.hpp"
+#include "Game/fwInteriorLocation.hpp"
+#include "Game/gameSkeleton.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/get_seconds_since_unix_epoch.hpp"
+#include "Game/gsType.hpp"
+#include "Game/gta_cam.hpp"
+#include "Game/gta_event.hpp"
+#include "Game/gta_http.hpp"
+#include "Game/gta_input.hpp"
+#include "Network/gta_matchmaking.hpp"
+#include "Network/gta_metrics.hpp"
+#include "Game/gta_net_game_event.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/gta_ped.hpp"
+#include "Network/gta_session_tasks.hpp"
+#include "Network/gta_sync_data.hpp"
+#include "Game/gta_task.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Game/gta_vehicle_layout.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Config/IncrementableStat.hpp"
+#include "Network/is_rid.hpp"
+#include "Network/is_session.hpp"
+#include "Game/joaat_hash_db.hpp"
+#include "Game/joaatToString.hpp"
+#include "Localization/lang.hpp"
+#include "Network/LeaveReasons.hpp"
+#include "Core/FileLogger.hpp"
+#include "Core/main.hpp"
+#include "Network/Matchmaking.hpp"
+#include "Core/mystackwalker.hpp"
+#include "Game/natives.hpp"
+#include "Network/net_array.hpp"
+#include "Network/netConnection.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Network/netMessageId.hpp"
+#include "Network/NetScriptWorldStateTypes.hpp"
+#include "Network/netTaskStatus.hpp"
+#include "Core/NuancedEventWithExtraData.hpp"
+#include "Network/OrgHelper.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Game/pointers.hpp"
+#include "Network/RageConnector.hpp"
+#include "Core/regular_event.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Network/rgsc_profiles.hpp"
+#include "Network/rlGamerHandle.hpp"
+#include "Ped/rlGetGamerStateTask.hpp"
+#include "Network/rlpresence.hpp"
+#include "Network/rlSessionDetail.hpp"
+#include "Network/ScAccount.hpp"
+#include "Scripting/ScriptErrorRecoveryMode.hpp"
+#include "Network/script_events.hpp"
+#include "Game/script_program.hpp"
+#include "Scripting/ScriptVmErrorHandling.hpp"
+#include "Game/script_vm_reimpl.hpp"
+#include "Scripting/ScriptEventTaxonomy.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_handler.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Game/script_thread.hpp"
+#include "Game/script_vm_common.hpp"
+#include "Network/snEvent.hpp"
+#include "Config/StatCache.hpp"
+#include "Util/str2int.hpp"
+#include "Util/StringUtils.hpp"
+#include "Network/synctree_player.hpp"
+#include "Game/sysDependency.hpp"
+#include "Core/TpUtil.hpp"
+#include "Config/TransitionState.hpp"
+#include "Config/Tunables.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleGadgets.hpp"
+#include "Vehicle/VehicleType.hpp"
+#include "Weapons/weapons.hpp"
+#include "Weapons/weapon_components.hpp"
 
 #define PROFILE_SCRIPTS			false
 #define PROFILE_HISTORY_LOOKUP	false
@@ -167,22 +166,22 @@
 #endif
 
 #if PROFILE_SCRIPTS
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 #endif
 
 #if PROFILE_HISTORY_LOOKUP
 static_assert(STAND_DEBUG);
-#include "TimedCall.hpp"
+#include "Core/TimedCall.hpp"
 #endif
 
 #if PRINT_MMREQUESTS
 static_assert(STAND_DEBUG);
-#include "rl_matching.hpp"
+#include "Network/rl_matching.hpp"
 #endif
 
 #if DEBUG_NET_OBJ_PLAYER_BUFFER_OVERRUNS
 static_assert(STAND_DEV); // for rage_netSyncDataNode_Read_hook
-#include "CNetworkPlayerMgr.hpp"
+#include "Network/CNetworkPlayerMgr.hpp"
 #endif
 
 namespace Stand
@@ -546,52 +545,58 @@ f("OA", CNetObjVehicle_GetVehicleCreateData, 0) \
 			{}, // MISC_LOVELETTER
 			{ REACTION_TOAST | REACTION_LOG_CONSOLE }, // MISC_BOUNTY
 			{ REACTION_TOAST | REACTION_LOG_CONSOLE | REACTION_BLOCK }, // MISC_PTFX
-		},
+	},
 
-#define ITERATOR_CTOR(code, name, flags) name ## _hook(code, function_pointer_to_void(&hooks::name), flags),
-		FOR_EACH_TRIVIAL_HOOK(ITERATOR_CTOR)
-		FOR_EACH_HOOK_FROM_POINTERS(ITERATOR_CTOR)
+#define ITERATOR_CTOR(code, name, flags) name ## _hook(code, &hooks::name, flags),
+	FOR_EACH_TRIVIAL_HOOK(ITERATOR_CTOR)
+	FOR_EACH_HOOK_FROM_POINTERS(ITERATOR_CTOR)
 
 #if HTTP_HOOK
-		rage_netHttpRequest_Update_hook("N1", function_pointer_to_void(&hooks::rage_netHttpRequest_Update), DH_MANDATORY),
+		rage_netHttpRequest_Update_hook("N1", &hooks::rage_netHttpRequest_Update, DH_MANDATORY),
 #endif
 
 #if CLEAR_BONUS_ON_DL
-		CTunables_OnCloudEvent_hook("N5", function_pointer_to_void(&hooks::CTunables_OnCloudEvent), 0),
+		CTunables_OnCloudEvent_hook("N5", &hooks::CTunables_OnCloudEvent, 0),
 #endif
 
 #ifdef STAND_DEBUG
-		rage_netMessage_WriteHeader_hook("Z0", function_pointer_to_void(&hooks::rage_netMessage_WriteHeader), 0),
+		rage_netMessage_WriteHeader_hook("Z0", &hooks::rage_netMessage_WriteHeader, 0),
 #endif
 #ifdef STAND_DEV
-		rage_netSyncDataNode_Read_hook("Z1", function_pointer_to_void(&hooks::rage_netSyncDataNode_Read), 0),
+		rage_netSyncDataNode_Read_hook("Z1", &hooks::rage_netSyncDataNode_Read, 0),
 #endif
 
-		rage_fwConfigManager_GetSizeOfPool_hook("A1", function_pointer_to_void(&hooks::rage_fwConfigManager_GetSizeOfPool), 0),
-		swapchain_resize_buffers_hook("D1", function_pointer_to_void(&swapchain_hook_resize_buffers), 0),
-		swapchain_present_hook("D0", function_pointer_to_void(&swapchain_hook_present), DH_NOFOLLOWJUMPS | DH_MANDATORY),
-		set_value_from_keyboard_hook("I0", function_pointer_to_void(&set_value_from_keyboard_detour), DH_NOFOLLOWJUMPS),
-		set_value_from_mkb_axis_hook("I1", function_pointer_to_void(&set_value_from_mkb_axis_detour), DH_NOFOLLOWJUMPS),
-		script_vm_switch_hook("PC", function_pointer_to_void(&script_vm_switch_detour), DH_NOFOLLOWJUMPS),
-		script_thread_error_kill_1_hook("PD", function_pointer_to_void(&script_vm_error_detour), DH_NOFOLLOWJUMPS),
-		script_thread_error_kill_2_hook("PE", function_pointer_to_void(&script_vm_error_detour), DH_NOFOLLOWJUMPS),
-		rage_rlTelemetry_Export_hook("N0", function_pointer_to_void(&hooks::rage_rlTelemetry_Export), 0),
-		rage_gameSkeleton_updateGroup_Update_hook("N8", function_pointer_to_void(&hooks::rage_gameSkeleton_updateGroup_Update), DH_NOFOLLOWJUMPS),
-		network_bail_hook("N9", function_pointer_to_void(&hooks::network_bail), 0),
-		rage_sysDependencyScheduler_InsertInternal_hook("NE", function_pointer_to_void(&hooks::rage_sysDependencyScheduler_InsertInternal), DH_NOFOLLOWJUMPS),
-		aes_initfile_hook("O1", function_pointer_to_void(&aes_initfile_detour), DH_NOFOLLOWJUMPS),
-		aes_decrypt_callsite_hook("O3", function_pointer_to_void(&aes_decrypt_callsite_detour), DH_NOFOLLOWJUMPS),
-		send_net_info_to_lobby_wrap_hook("S0", function_pointer_to_void(&hooks::send_net_info_to_lobby_wrap), DH_MANDATORY),
-		CNetGamePlayer_GetGamerInfo_hook("S3", function_pointer_to_void(&hooks::CNetGamePlayer_GetGamerInfo), DH_NOFOLLOWJUMPS),
-		get_active_clan_data_hook("S4", function_pointer_to_void(&hooks::get_active_clan_data), DH_MANDATORY),
-		data_node_write_hook("S9", function_pointer_to_void(&data_node_write_detour), DH_NOFOLLOWJUMPS	)
+		rage_fwConfigManager_GetSizeOfPool_hook("A1", &hooks::rage_fwConfigManager_GetSizeOfPool, 0),
+
+		swapchain_resize_buffers_hook("D1", &swapchain_hook_resize_buffers, 0),
+		swapchain_present_hook("D0", &swapchain_hook_present, DH_NOFOLLOWJUMPS | DH_MANDATORY),
+
+		set_value_from_keyboard_hook("I0", &set_value_from_keyboard_detour, DH_NOFOLLOWJUMPS),
+		set_value_from_mkb_axis_hook("I1", &set_value_from_mkb_axis_detour, DH_NOFOLLOWJUMPS),
+
+		script_vm_switch_hook("PC", &script_vm_switch_detour, DH_NOFOLLOWJUMPS),
+		script_thread_error_kill_1_hook("PD", &script_vm_error_detour, DH_NOFOLLOWJUMPS),
+		script_thread_error_kill_2_hook("PE", &script_vm_error_detour, DH_NOFOLLOWJUMPS),
+
+		rage_rlTelemetry_Export_hook("N0", &hooks::rage_rlTelemetry_Export, 0),
+		rage_gameSkeleton_updateGroup_Update_hook("N8", &hooks::rage_gameSkeleton_updateGroup_Update, DH_NOFOLLOWJUMPS),
+		network_bail_hook("N9", &hooks::network_bail, 0),
+		rage_sysDependencyScheduler_InsertInternal_hook("NE", &hooks::rage_sysDependencyScheduler_InsertInternal, DH_NOFOLLOWJUMPS),
+
+		aes_initfile_hook("O1", &aes_initfile_detour, DH_NOFOLLOWJUMPS),
+		aes_decrypt_callsite_hook("O3", &aes_decrypt_callsite_detour, DH_NOFOLLOWJUMPS),
+
+		send_net_info_to_lobby_wrap_hook("S0", &hooks::send_net_info_to_lobby_wrap, DH_MANDATORY),
+		CNetGamePlayer_GetGamerInfo_hook("S3", &hooks::CNetGamePlayer_GetGamerInfo, DH_NOFOLLOWJUMPS),
+		get_active_clan_data_hook("S4", &hooks::get_active_clan_data, DH_MANDATORY),
+		data_node_write_hook("S9", &data_node_write_detour, DH_NOFOLLOWJUMPS)
 	{
 		initSpoofedClan();
 		spoofed_clan_membership.clan.id = 133742069;
 		spoofed_clan_membership.clan.alt_badge = true;
-		strcpy_s(spoofed_clan_membership.clan.name, sizeof(spoofed_clan_membership.clan.name), soup::ObfusString("Stand.sh").c_str());
-		strcpy_s(spoofed_clan_membership.clan.tag, sizeof(spoofed_clan_membership.clan.tag), "STD");
-		strcpy_s(spoofed_clan_membership.position, sizeof(spoofed_clan_membership.position), "Member");
+		strcpy(spoofed_clan_membership.clan.name, soup::ObfusString("Stand.sh").c_str());
+		strcpy(spoofed_clan_membership.clan.tag, "STD");
+		strcpy(spoofed_clan_membership.position, "Member");
 	}
 
 	void Hooking::initSpoofedClan()
@@ -601,7 +606,7 @@ f("OA", CNetObjVehicle_GetVehicleCreateData, 0) \
 		spoofed_clan_membership.is_active = true;
 	}
 
-// When adding a new hook here, make sure "found that Stand is already injected" is preserved.
+	// When adding a new hook here, make sure "found that Stand is already injected" is preserved.
 #define FOR_EACH_LONGJUMP_HOOK(f) \
 f(rage_scrThread_UpdateAll_hook) \
 f(received_chat_message_hook) \
@@ -646,14 +651,14 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 #define ITERATOR_INIT(code, name, flags) name##_hook.setTarget(pointers::name);
 		FOR_EACH_HOOK_FROM_POINTERS(ITERATOR_INIT)
 
-		swapchain_resize_buffers_hook.setTarget(pointers::swapchain_resize_buffers);
+			swapchain_resize_buffers_hook.setTarget(pointers::swapchain_resize_buffers);
 		swapchain_present_hook.setTarget(pointers::swapchain_present);
 
 		script_vm_switch_hook.setTarget(pointers::script_vm_switch);
 		script_thread_error_kill_1_hook.setTarget(pointers::script_thread_error_kill_1);
 		script_thread_error_kill_2_hook.setTarget(pointers::script_thread_error_kill_2);
 
-		get_active_clan_data_hook.setTarget(function_pointer_to_void(pointers::rage_rlClan_GetPrimaryMembership));
+		get_active_clan_data_hook.setTarget(pointers::rage_rlClan_GetPrimaryMembership);
 	}
 
 	void Hooking::performChecks()
@@ -688,7 +693,7 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 	{
 		return {
 #if HTTP_HOOK
-			&rage_netHttpRequest_Update_hook,
+			& rage_netHttpRequest_Update_hook,
 #endif
 		};
 	}
@@ -714,14 +719,14 @@ f(rage_netArrayHandlerBase_WriteUpdate_hook) \
 			FOR_EACH_HOOK_FROM_POINTERS(ITERATOR_GET)
 
 #if CLEAR_BONUS_ON_DL
-			&CTunables_OnCloudEvent_hook,
+			& CTunables_OnCloudEvent_hook,
 #endif
 
 #ifdef STAND_DEBUG
-			&rage_netMessage_WriteHeader_hook,
+			& rage_netMessage_WriteHeader_hook,
 #endif
 #ifdef STAND_DEV
-			&rage_netSyncDataNode_Read_hook,
+			& rage_netSyncDataNode_Read_hook,
 #endif
 		};
 		Components::collectHooks(main_hooks);
@@ -1110,18 +1115,18 @@ namespace Stand::hooks
 	static void spoofAsAndTickScriptMgr(GtaThread* run_as)
 	{
 		run_as->spoofAs([]
-		{
-			g_script_mgr.tick();
-		});
+			{
+				g_script_mgr.tick();
+			});
 	}
 
 	// No __try here, so this is free to construct the std::function temporary needed by spoofAs().
 	static void spoofAsAndRunGuiPostTick(GtaThread* run_as)
 	{
 		run_as->spoofAs([]
-		{
-			g_gui.onPostTick();
-		});
+			{
+				g_gui.onPostTick();
+			});
 	}
 
 	bool __fastcall rage_scrThread_UpdateAll(uint32_t insnCount)
@@ -1157,7 +1162,7 @@ namespace Stand::hooks
 				__EXCEPTIONAL()
 				{
 				}
-				SOUP_IF_UNLIKELY (g_hooking.pools_closed_kick.isActive())
+				SOUP_IF_UNLIKELY(g_hooking.pools_closed_kick.isActive())
 				{
 					ScriptGlobal(GSBD).set<int>(4);
 				}
@@ -1181,7 +1186,7 @@ namespace Stand::hooks
 				++rolling_fact;
 				drawDebugText(rolling_total / rolling_fact);
 #endif
-				SOUP_IF_UNLIKELY (g_hooking.pools_closed_kick.isActive())
+				SOUP_IF_UNLIKELY(g_hooking.pools_closed_kick.isActive())
 				{
 					ScriptGlobal(GSBD).set<int>(5);
 				}
@@ -1227,9 +1232,9 @@ namespace Stand::hooks
 		__try
 		{
 			BOOL fullscreenState;
-			SOUP_IF_LIKELY (SUCCEEDED((*pointers::swapchain)->GetFullscreenState(&fullscreenState, nullptr)))
+			SOUP_IF_LIKELY(SUCCEEDED((*pointers::swapchain)->GetFullscreenState(&fullscreenState, nullptr)))
 			{
-				SOUP_IF_UNLIKELY (fullscreenState != g_renderer.m_fullscreenState)
+				SOUP_IF_UNLIKELY(fullscreenState != g_renderer.m_fullscreenState)
 				{
 					/*if (g_renderer.m_fullscreenState != -1)
 					{
@@ -1239,7 +1244,7 @@ namespace Stand::hooks
 					g_renderer.m_fullscreenState = fullscreenState;
 				}
 			}
-			SOUP_IF_UNLIKELY (!g_renderer.inited)
+			SOUP_IF_UNLIKELY(!g_renderer.inited)
 			{
 				g_renderer.initialiseDevices();
 			}
@@ -1320,11 +1325,11 @@ namespace Stand::hooks
 			HistoricPlayer* hp;
 #if PROFILE_HISTORY_LOOKUP
 			TimedCall::once("PlayerHistory Lookup 1", [&hp, player]
-			{
+				{
 #endif
-				hp = PlayerHistory::findRID(player->getHandle().rockstar_id);
+					hp = PlayerHistory::findRID(player->getHandle().rockstar_id);
 #if PROFILE_HISTORY_LOOKUP
-			});
+				});
 #endif
 			const bool is_whitelisted_plr = (hp != nullptr) ? (hp->flags & HP_WHITELIST) : false;
 
@@ -1371,7 +1376,9 @@ namespace Stand::hooks
 			if (classification != PlayerClassifier::NONE)
 			{
 				if ((AbstractPlayer::getReactionsRaw(FlowEvent::CLSFN_ANY, player_type) & REACTION_KICK)
-					|| (AbstractPlayer::getReactionsRaw(static_cast<FlowEvent::_>(static_cast<int>(FlowEvent::CLSFN_ANY) + static_cast<int>(classification)), player_type) & REACTION_KICK)	&& !is_whitelisted_plr)
+					|| (AbstractPlayer::getReactionsRaw(FlowEvent::CLSFN_ANY + classification, player_type) & REACTION_KICK)
+					&& !is_whitelisted_plr
+					)
 				{
 					notify_blocked_join(player, as_host, PlayerClassifier::getLocalisedClassificationName(classification));
 					return true;
@@ -1391,11 +1398,11 @@ namespace Stand::hooks
 			{
 #if PROFILE_HISTORY_LOOKUP
 				TimedCall::once("PlayerHistory Lookup 2", [&]
-				{
+					{
 #endif
-					hp = PlayerHistory::findRID(player->getHandle().rockstar_id);
+						hp = PlayerHistory::findRID(player->getHandle().rockstar_id);
 #if PROFILE_HISTORY_LOOKUP
-				});
+					});
 #endif
 				if (hp != nullptr)
 				{
@@ -1409,11 +1416,11 @@ namespace Stand::hooks
 				{
 #if PROFILE_HISTORY_LOOKUP
 					TimedCall::once("PlayerHistory Lookup 3", [&]
-					{
+						{
 #endif
-						hp = PlayerHistory::findName(player->name);
+							hp = PlayerHistory::findName(player->name);
 #if PROFILE_HISTORY_LOOKUP
-					});
+						});
 #endif
 					if (hp != nullptr)
 					{
@@ -1504,9 +1511,8 @@ namespace Stand::hooks
 		rage::rlGamerInfo* gamer_info = player->GetGamerInfoImpl();
 		if (auto e = g_hooking.name_overrides.find(gamer_info->peer.id); e != g_hooking.name_overrides.end())
 		{
-			memcpy(static_cast<void*>(&rlGamerInfo_spoofing_buf), static_cast<const void*>(gamer_info), sizeof(rage::rlGamerInfo));
-			strcpy_s(rlGamerInfo_spoofing_buf.name, sizeof(rlGamerInfo_spoofing_buf.name), e->second.c_str()
-			);
+			memcpy(&rlGamerInfo_spoofing_buf, gamer_info, sizeof(rage::rlGamerInfo));
+			strcpy(rlGamerInfo_spoofing_buf.name, e->second.c_str());
 			return &rlGamerInfo_spoofing_buf;
 		}
 		return gamer_info;
@@ -1548,9 +1554,6 @@ namespace Stand::hooks
 			{
 				return g_hooking.spoofed_kd;
 			}
-			break;
-
-		default:
 			break;
 		}
 		return OG(get_player_card_stat)(a1, a2, statIndex, a4);
@@ -1633,8 +1636,6 @@ namespace Stand::hooks
 		case /* wheelTypeTrack */ 12: return 209;
 
 		case /* wheelTypeBike */ 6: return 209; // model=oppressor2, wheel_type=6, wheel_mod=121, rear_wheel_mod=144
-		default:
-			break;
 		}
 		return -1;
 	}
@@ -1655,62 +1656,62 @@ namespace Stand::hooks
 			switch (net_obj->object_type)
 			{
 			case NET_OBJ_TYPE_PLAYER:
+			{
+				const auto player_tree = static_cast<CPlayerSyncTree*>(node->parent_tree);
+
+				if (&player_tree->player_game_state == node)
 				{
-					const auto player_tree = static_cast<CPlayerSyncTree*>(node->parent_tree);
+					write_player_game_state_data_node(static_cast<CPlayerGameStateDataNode*>(node));
+				}
+				else if (g_hooking.block_outgoing_modded_health
+					&& &player_tree->health_data == node
+					&& g_player_ped.isNetObjId(net_obj->object_id)
+					)
+				{
+					const auto real_cur_h = g_player_ped.getHealth();
+					const auto real_max_h = g_player_ped.getMaxHealth();
 
-					if (&player_tree->player_game_state == node)
+					if (!Util::isMaxHealthLegitimate((int)real_max_h)) // A third party can also do stupid shit here, by leaving our max health legitimate and setting our health higher. At the time of writing, our position is "fuck 'em".
 					{
-						write_player_game_state_data_node(static_cast<CPlayerGameStateDataNode*>(node));
-					}
-					else if (g_hooking.block_outgoing_modded_health
-						&& &player_tree->health_data == node
-						&& g_player_ped.isNetObjId(net_obj->object_id)
-						)
-					{
-						const auto real_cur_h = g_player_ped.getHealth();
-						const auto real_max_h = g_player_ped.getMaxHealth();
+						auto h = static_cast<CPedHealthDataNode*>(node);
+						const auto max_health = Util::getMaxHealthForRank(StatCache::rank);
 
-						if (!Util::isMaxHealthLegitimate((int)real_max_h)) // A third party can also do stupid shit here, by leaving our max health legitimate and setting our health higher. At the time of writing, our position is "fuck 'em".
+						if (h->m_health < 0)
 						{
-							auto h = static_cast<CPedHealthDataNode*>(node);
-							const auto max_health = Util::getMaxHealthForRank(StatCache::rank);
-
-							if (h->m_health < 0)
+							h->m_health = 0;
+						}
+						else if (real_cur_h == real_max_h)
+						{
+							h->m_health = max_health;
+						}
+						else
+						{
+							if (real_cur_h <= 0.0f || real_max_h <= 0.0f)
 							{
 								h->m_health = 0;
 							}
-							else if (real_cur_h == real_max_h)
-							{
-								h->m_health = max_health;
-							}
 							else
 							{
-								if (real_cur_h <= 0.0f || real_max_h <= 0.0f)
-								{
-									h->m_health = 0;
-								}
-								else
-								{
-									h->m_health = int32_t(max_health * (real_cur_h / real_max_h)); // This is also vulnerable to third-party tampering. But, if that happens, chances are this logic isn't even running.
-								}
+								h->m_health = int32_t(max_health * (real_cur_h / real_max_h)); // This is also vulnerable to third-party tampering. But, if that happens, chances are this logic isn't even running.
 							}
-
-							h->m_hasMaxHealth = h->m_health == max_health;
-							h->m_scriptMaxHealth = max_health; // Coverage for our scripters who use natives for their max health features.
-							h->m_maxHealthSetByScript = false; // Possible incongruence, i.e, freemode health values should not be set by scripts. Freemode health modifiers like The Beast do not set this, so it's probably safe to spoof.
-
-							// Util::toast(fmt::format("Outgoing CPedHealthDataNode values:\nm_health: {}\nmax_health: {}\nm_hasMaxHealth: {}\nm_scriptMaxHealth: {}\nreal_max_h: {}", h->m_health, max_health, h->m_hasMaxHealth, h->m_scriptMaxHealth, g_player_ped.getMaxHealth()));
 						}
-					}
-					else if (&static_cast<CPlayerSyncTree*>(node->parent_tree)->appearance_data == node)
-					{
-						if (g_hooking.phone_mode_spoof != -1)
-						{
-							static_cast<CPlayerAppearanceDataNode*>(node)->m_phoneMode = g_hooking.phone_mode_spoof;
-						}
+
+						h->m_hasMaxHealth = h->m_health == max_health;
+						h->m_scriptMaxHealth = max_health; // Coverage for our scripters who use natives for their max health features.
+						h->m_maxHealthSetByScript = false; // Possible incongruence, i.e, freemode health values should not be set by scripts. Freemode health modifiers like The Beast do not set this, so it's probably safe to spoof.
+
+						// Util::toast(fmt::format("Outgoing CPedHealthDataNode values:\nm_health: {}\nmax_health: {}\nm_hasMaxHealth: {}\nm_scriptMaxHealth: {}\nreal_max_h: {}", h->m_health, max_health, h->m_hasMaxHealth, h->m_scriptMaxHealth, g_player_ped.getMaxHealth()));
 					}
 				}
-				break;
+				else if (&static_cast<CPlayerSyncTree*>(node->parent_tree)->appearance_data == node)
+				{
+					if (g_hooking.phone_mode_spoof != -1)
+					{
+						static_cast<CPlayerAppearanceDataNode*>(node)->m_phoneMode = g_hooking.phone_mode_spoof;
+					}
+				}
+			}
+			break;
 
 			case NET_OBJ_TYPE_BIKE:
 			case NET_OBJ_TYPE_BOAT:
@@ -1720,64 +1721,62 @@ namespace Stand::hooks
 			case NET_OBJ_TYPE_TRAILER:
 			case NET_OBJ_TYPE_SUBMARINE:
 			case NET_OBJ_TYPE_AUTOMOBILE:
-				{
-					const auto vehicle_tree = static_cast<CVehicleSyncTree*>(node->parent_tree);
+			{
+				const auto vehicle_tree = static_cast<CVehicleSyncTree*>(node->parent_tree);
 
-					if (g_hooking.block_outgoing_veh_godmode_flag
-						&& g_player_veh.isNetObjId(net_obj->object_id)
+				if (g_hooking.block_outgoing_veh_godmode_flag
+					&& g_player_veh.isNetObjId(net_obj->object_id)
+					)
+				{
+					if (&vehicle_tree->physical_script_game_state == node)
+					{
+						auto& flags = static_cast<CPhysicalScriptGameStateDataNode*>(node)->m_PhysicalFlags;
+
+						flags.notDamagedByAnything = false;
+						flags.notDamagedByBullets = false;
+						flags.notDamagedByCollisions = false;
+						flags.notDamagedByFlames = false;
+						flags.notDamagedByMelee = false;
+						flags.notDamagedByRelGroup = false;
+						flags.notDamagedBySmoke = false;
+						flags.notDamagedBySteam = false;
+						flags.ignoresExplosions = false;
+					}
+					else if (&vehicle_tree->m_vehicleScriptGameStateNode == node)
+					{
+						auto& flags = static_cast<CVehicleScriptGameStateDataNode*>(node)->m_VehicleFlags;
+
+						flags.canEngineDegrade = true;
+						flags.canPlayerAircraftEngineDegrade = true;
+					}
+					else if (&vehicle_tree->m_vehicleGameStateNode == node)
+					{
+						static_cast<CVehicleGameStateDataNode*>(node)->m_doorsNotAllowedToBeBrokenOff = 0;
+					}
+				}
+
+				if (&vehicle_tree->appearance_data == node)
+				{
+					auto& data = *static_cast<CVehicleAppearanceDataNode*>(node);
+
+					//Util::toast(fmt::format("Serialise wheels: {} -> {}", data.m_wheelType, data.m_wheelMod));
+
+					// Avoid syncing invalid data with custom DLCs (https://github.com/calamity-inc/Stand-Feedback/issues/343)
+					if (data.m_wheelType != 255
+						&& data.m_wheelMod != 0
 						)
 					{
-						if (&vehicle_tree->physical_script_game_state == node)
+						SOUP_IF_UNLIKELY((data.m_wheelMod - 1) > getMaxWheelModForType(data.m_wheelType))
 						{
-							auto& flags = static_cast<CPhysicalScriptGameStateDataNode*>(node)->m_PhysicalFlags;
-
-							flags.notDamagedByAnything = false;
-							flags.notDamagedByBullets = false;
-							flags.notDamagedByCollisions = false;
-							flags.notDamagedByFlames = false;
-							flags.notDamagedByMelee = false;
-							flags.notDamagedByRelGroup = false;
-							flags.notDamagedBySmoke = false;
-							flags.notDamagedBySteam = false;
-							flags.ignoresExplosions = false;
-						}
-						else if (&vehicle_tree->m_vehicleScriptGameStateNode == node)
-						{
-							auto& flags = static_cast<CVehicleScriptGameStateDataNode*>(node)->m_VehicleFlags;
-
-							flags.canEngineDegrade = true;
-							flags.canPlayerAircraftEngineDegrade = true;
-						}
-						else if (&vehicle_tree->m_vehicleGameStateNode == node)
-						{
-							static_cast<CVehicleGameStateDataNode*>(node)->m_doorsNotAllowedToBeBrokenOff = 0;
-						}
-					}
-
-					if (&vehicle_tree->appearance_data == node)
-					{
-						auto& data = *static_cast<CVehicleAppearanceDataNode*>(node);
-
-						//Util::toast(fmt::format("Serialise wheels: {} -> {}", data.m_wheelType, data.m_wheelMod));
-
-						// Avoid syncing invalid data with custom DLCs (https://github.com/calamity-inc/Stand-Feedback/issues/343)
-						if (data.m_wheelType != 255
-							&& data.m_wheelMod != 0
-							)
-						{
-							SOUP_IF_UNLIKELY ((data.m_wheelMod - 1) > getMaxWheelModForType(data.m_wheelType))
-							{
-								data.m_wheelMod = 0;
+							data.m_wheelMod = 0;
 #ifdef STAND_DEV
-								Util::toast(soup::ObfusString("Invalid wheels, not syncing."));
+							Util::toast(soup::ObfusString("Invalid wheels, not syncing."));
 #endif
-							}
 						}
 					}
 				}
-				break;
-			default:
-				break;
+			}
+			break;
 			}
 
 			// Write node data to buffer (note false so we don't extract data from object again)
@@ -1791,7 +1790,7 @@ namespace Stand::hooks
 
 	void __fastcall write_player_game_state_data_node(CPlayerGameStateDataNode* node)
 	{
-		SOUP_IF_UNLIKELY (!g_gui.doesRootStateAllowProtections())
+		SOUP_IF_UNLIKELY(!g_gui.doesRootStateAllowProtections())
 		{
 			return;
 		}
@@ -1848,7 +1847,7 @@ namespace Stand::hooks
 	{
 		OG(CNetObjVehicle_GetVehicleMigrationData)(_this, data);
 
-		SOUP_IF_UNLIKELY (g_hooking.tp_obj_id != NETWORK_INVALID_OBJECT_ID)
+		SOUP_IF_UNLIKELY(g_hooking.tp_obj_id != NETWORK_INVALID_OBJECT_ID)
 		{
 			auto obj = reinterpret_cast<CNetObjVehicle*>(_this - 0x200);
 			if (g_hooking.tp_obj_id == obj->object_id)
@@ -1910,8 +1909,6 @@ namespace Stand::hooks
 						timestamp_label_buf.append(StringUtils::utf16_to_utf8(format_time_since_1970_for_user_locale(get_seconds_since_unix_epoch(), true)));
 						return timestamp_label_buf.c_str();
 					}
-					break;
-				default:
 					break;
 				}
 			}
@@ -2011,7 +2008,7 @@ namespace Stand::hooks
 				applyMessageReactions(block_message, message, FlowEvent::CHAT_AD, LOC("CHT_AD"));
 			}
 		}
-		SOUP_IF_LIKELY (auto cmd = packet_src.getCommand())
+		SOUP_IF_LIKELY(auto cmd = packet_src.getCommand())
 		{
 			// Chatting Without Typing
 			if (GET_MILLIS_SINCE(cmd->discovery) > 60000
@@ -2028,14 +2025,14 @@ namespace Stand::hooks
 				{
 					// Spin up a fiber and wait a bit in case the typing notification is delayed due to poor network conditions
 					FiberPool::queueJob([cmd{ cmd }]
-					{
-						constexpr auto delay = 1000;
-						Script::current()->yield(delay);
-						if (cmd && GET_MILLIS_SINCE(cmd->last_typing_at) > delay)
 						{
-							cmd->getPlayer().triggerDetection(FlowEvent::MOD_SILENTCHAT);
-						}
-					});
+							constexpr auto delay = 1000;
+							Script::current()->yield(delay);
+							if (cmd && GET_MILLIS_SINCE(cmd->last_typing_at) > delay)
+							{
+								cmd->getPlayer().triggerDetection(FlowEvent::MOD_SILENTCHAT);
+							}
+						});
 				}
 			}
 
@@ -2094,9 +2091,9 @@ namespace Stand::hooks
 				if (mock)
 				{
 					FiberPool::queueJob([=]
-					{
-						Chat::sendMessage(StringUtils::mock(message_str), is_team_chat, true, true);
-					});
+						{
+							Chat::sendMessage(StringUtils::mock(message_str), is_team_chat, true, true);
+						});
 				}
 			}
 			{
@@ -2108,9 +2105,9 @@ namespace Stand::hooks
 				if (owoify)
 				{
 					FiberPool::queueJob([=]
-					{
-						Chat::sendMessage(StringUtils::utf16_to_utf8(StringUtils::owoify(StringUtils::utf8_to_utf16(message_str))), is_team_chat, true, true);
-					});
+						{
+							Chat::sendMessage(StringUtils::utf16_to_utf8(StringUtils::owoify(StringUtils::utf8_to_utf16(message_str))), is_team_chat, true, true);
+						});
 				}
 			}
 		}
@@ -2146,7 +2143,7 @@ namespace Stand::hooks
 	// Has destructible locals (evtChatEvent, std::string buf), so this must not itself contain a __try.
 	static bool submitChatTextBody(const char* text, bool bTeamChat)
 	{
-		SOUP_IF_LIKELY (g_player.isValid()) // can happen during transitions
+		SOUP_IF_LIKELY(g_player.isValid()) // can happen during transitions
 		{
 			evtChatEvent::trigger(evtChatEvent(g_player, text, bTeamChat, true, false));
 		}
@@ -2602,40 +2599,40 @@ namespace Stand::hooks
 		}
 
 		case REMOVE_WEAPON_EVENT:
+		{
+			const auto data = CRemoveWeaponEvent(buffer);
+			buffer->seekStart();
+
+			if (is_session_freeroam()
+				&& g_player_ped.isNetObjId(data.m_pedID)
+				)
 			{
-				const auto data = CRemoveWeaponEvent(buffer);
-				buffer->seekStart();
-
-				if (is_session_freeroam()
-					&& g_player_ped.isNetObjId(data.m_pedID)
-					)
-				{
-					tally.add(FlowEvent::NE_DISARM);
-				}
-
-				if (!Weapon::isValidHash(data.m_weaponHash)
-					// Gadgets
-					&& data.m_weaponHash != ATSTRINGHASH("GADGET_PARACHUTE")
-					&& data.m_weaponHash != ATSTRINGHASH("GADGET_NIGHTVISION")
-					)
-				{
-					tally.add(FlowEvent::SE_INVALID, "N1");
-				}
+				tally.add(FlowEvent::NE_DISARM);
 			}
-			break;
+
+			if (!Weapon::isValidHash(data.m_weaponHash)
+				// Gadgets
+				&& data.m_weaponHash != ATSTRINGHASH("GADGET_PARACHUTE")
+				&& data.m_weaponHash != ATSTRINGHASH("GADGET_NIGHTVISION")
+				)
+			{
+				tally.add(FlowEvent::SE_INVALID, "N1");
+			}
+		}
+		break;
 
 		case REMOVE_ALL_WEAPONS_EVENT:
-			{
-				const auto m_pedID = buffer->readU16(13);
+		{
+			const auto m_pedID = buffer->readU16(13);
 
-				if (is_session_freeroam()
-					&& g_player_ped.isNetObjId(m_pedID)
-					)
-				{
-					tally.add(FlowEvent::NE_DISARM);
-				}
+			if (is_session_freeroam()
+				&& g_player_ped.isNetObjId(m_pedID)
+				)
+			{
+				tally.add(FlowEvent::NE_DISARM);
 			}
-			break;
+		}
+		break;
 
 		case GIVE_CONTROL_EVENT:
 			sync_src = sender_ap;
@@ -2660,7 +2657,7 @@ namespace Stand::hooks
 						}
 						else
 						{
-							SOUP_IF_LIKELY (auto cmd = target_ap.getCommand())
+							SOUP_IF_LIKELY(auto cmd = target_ap.getCommand())
 							{
 								cmd->vote_kick_history.emplace(sender_ap.getRockstarId());
 							}
@@ -2682,299 +2679,299 @@ namespace Stand::hooks
 			break;
 
 		case REQUEST_CONTROL_EVENT:
+		{
+			auto object_id = buffer->readU16(13);
+			buffer->seekStart();
+			if (g_player_veh.isNetObjId(object_id) && g_player_veh.isOwnerOfVehicleAndDriver())
 			{
-				auto object_id = buffer->readU16(13);
-				buffer->seekStart();
-				if (g_player_veh.isNetObjId(object_id) && g_player_veh.isOwnerOfVehicleAndDriver())
-				{
-					tally.add(FlowEvent::NE_VEHTAKEOVER);
-				}
+				tally.add(FlowEvent::NE_VEHTAKEOVER);
 			}
-			break;
+		}
+		break;
 
 		case MARK_AS_NO_LONGER_NEEDED_EVENT:
-			{
-				uint32_t m_numScriptObjects = buffer->readU32(4);
-				bool m_objectsForDeletion = buffer->readBool();
-				for (uint32_t i = 0; i != m_numScriptObjects; ++i)
-				{
-					auto object_id = buffer->readU16(13);
-
-					if (g_player_veh.isNetObjId(object_id) && g_player_veh.isUserPersonalVehicle())
-					{
-						tally.add(FlowEvent::SE_PVKICK);
-					}
-
-					if (m_objectsForDeletion)
-					{
-						SOUP_UNUSED(buffer->readBool());
-					}
-				}
-				buffer->seekStart();
-			}
-			break;
-
-		case SCRIPT_WORLD_STATE_EVENT:
-			{
-				auto type = buffer->readU8(4);
-				auto change_state = buffer->readBool();
-
-				CGameScriptId id;
-				id.read(*buffer);
-
-				if (type == NET_WORLD_STATE_ROPE)
-				{
-					buffer->SkipBits(9); // rope id
-					buffer->SkipBits(19); // pos x (float!)
-					buffer->SkipBits(19); // pos y (float!)
-					buffer->SkipBits(19); // pos z (float!)
-					buffer->SkipBits(19); // rot x (float!)
-					buffer->SkipBits(19); // rot y (float!)
-					buffer->SkipBits(19); // rot z (float!)
-					float max_length = buffer->readSignedFloat(16, 100.0f);
-					auto type = buffer->readI32(4);
-					float init_length = buffer->readSignedFloat(16, 100.0f);
-					float min_length = buffer->readSignedFloat(16, 100.0f);
-
-					// Legit Events:
-					// {Type: 1, Init Length: 0, Min Length: 0.997955, Max Length: 0.997955}
-
-					// Crash Events:
-					// {Type: 1, Init Length: 98.999, Min Length: 0.997955, Max Length: -100}
-					// {Type: 4, Init Length: 98.999, Min Length: -100, Max Length: -100}
-
-					if (type < 0
-						|| max_length < 0
-						|| max_length < min_length
-						)
-					{
-						tally.add(FlowEvent::SE_CRASH, "N6");
-					}
-				}
-				else if (type == NET_WORLD_STATE_POP_GROUP_OVERRIDE)
-				{
-					auto unk = buffer->readI32(8);
-					auto unk2 = buffer->readU32(32);
-					auto unk3 = buffer->readU32(7);
-					if (unk2 == 0 && (unk3 == 0 || unk3 == 103))
-					{
-						tally.add(FlowEvent::SE_CRASH, "N7");
-					}
-				}
-				else if (type == NET_WORLD_STATE_PTFX)
-				{
-					// If the user wants to block all PTFX, then this should also be blocked.
-					if (auto reactions = sender_ap.getReactions(NETWORK_PTFX_EVENT); reactions & REACTION_BLOCK)
-					{
-						return NetEventEarlyExit::BLOCK;
-					}
-
-					auto data = CNetworkPtFXWorldStateData(buffer);
-
-					if (is_session_freeroam()
-						&& (g_player_ped.isNetObjId(data.m_EntityID)
-							|| g_player_veh.isNetObjId(data.m_EntityID)
-							|| data.m_FxPos.distance(g_player_ped.getPos()) < 3.0f
-							)
-						)
-					{
-#ifdef STAND_DEV
-						Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Receiving a world state PTFX that's likely attached to us.").str())));
-						Util::toast(fmt::format(fmt::runtime(soup::ObfusString("SCRIPT_WORLD_STATE_EVENT: {}").str()), data.toString()), TOAST_FILE);
-#endif
-						if (auto reactions = sender_ap.getReactions(FlowEvent::MISC_PTFX); reactions & REACTION_BLOCK) // Yes, sender is unreliable. This is better than giving the user no control.
-						{
-							return NetEventEarlyExit::BLOCK; // The event does not serialise anything about the original sender.
-						}
-					}
-				}
-
-				buffer->seekStart();
-			}
-			break;
-
-		case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
+		{
+			uint32_t m_numScriptObjects = buffer->readU32(4);
+			bool m_objectsForDeletion = buffer->readBool();
+			for (uint32_t i = 0; i != m_numScriptObjects; ++i)
 			{
 				auto object_id = buffer->readU16(13);
-				auto subevent_id = buffer->readU8(4);
-				if (subevent_id > 9)
+
+				if (g_player_veh.isNetObjId(object_id) && g_player_veh.isUserPersonalVehicle())
 				{
-					tally.add(FlowEvent::SE_CRASH, "N3");
+					tally.add(FlowEvent::SE_PVKICK);
 				}
-				//g_logger.log(fmt::format("SCRIPT_ENTITY_STATE_CHANGE_EVENT: subevent {}", subevent_id));
-				if (subevent_id == 6) // SET_TASK_VEHICLE_TEMP_ACTION (CSettingOfTaskVehicleTempAction)
+
+				if (m_objectsForDeletion)
 				{
-					// This can be used to freeze/take control away from us.
-					if (g_player_ped.isNetObjId(object_id))
+					SOUP_UNUSED(buffer->readBool());
+				}
+			}
+			buffer->seekStart();
+		}
+		break;
+
+		case SCRIPT_WORLD_STATE_EVENT:
+		{
+			auto type = buffer->readU8(4);
+			auto change_state = buffer->readBool();
+
+			CGameScriptId id;
+			id.read(*buffer);
+
+			if (type == NET_WORLD_STATE_ROPE)
+			{
+				buffer->SkipBits(9); // rope id
+				buffer->SkipBits(19); // pos x (float!)
+				buffer->SkipBits(19); // pos y (float!)
+				buffer->SkipBits(19); // pos z (float!)
+				buffer->SkipBits(19); // rot x (float!)
+				buffer->SkipBits(19); // rot y (float!)
+				buffer->SkipBits(19); // rot z (float!)
+				float max_length = buffer->readSignedFloat(16, 100.0f);
+				auto type = buffer->readI32(4);
+				float init_length = buffer->readSignedFloat(16, 100.0f);
+				float min_length = buffer->readSignedFloat(16, 100.0f);
+
+				// Legit Events:
+				// {Type: 1, Init Length: 0, Min Length: 0.997955, Max Length: 0.997955}
+
+				// Crash Events:
+				// {Type: 1, Init Length: 98.999, Min Length: 0.997955, Max Length: -100}
+				// {Type: 4, Init Length: 98.999, Min Length: -100, Max Length: -100}
+
+				if (type < 0
+					|| max_length < 0
+					|| max_length < min_length
+					)
+				{
+					tally.add(FlowEvent::SE_CRASH, "N6");
+				}
+			}
+			else if (type == NET_WORLD_STATE_POP_GROUP_OVERRIDE)
+			{
+				auto unk = buffer->readI32(8);
+				auto unk2 = buffer->readU32(32);
+				auto unk3 = buffer->readU32(7);
+				if (unk2 == 0 && (unk3 == 0 || unk3 == 103))
+				{
+					tally.add(FlowEvent::SE_CRASH, "N7");
+				}
+			}
+			else if (type == NET_WORLD_STATE_PTFX)
+			{
+				// If the user wants to block all PTFX, then this should also be blocked.
+				if (auto reactions = sender_ap.getReactions(NETWORK_PTFX_EVENT); reactions & REACTION_BLOCK)
+				{
+					return NetEventEarlyExit::BLOCK;
+				}
+
+				auto data = CNetworkPtFXWorldStateData(buffer);
+
+				if (is_session_freeroam()
+					&& (g_player_ped.isNetObjId(data.m_EntityID)
+						|| g_player_veh.isNetObjId(data.m_EntityID)
+						|| data.m_FxPos.distance(g_player_ped.getPos()) < 3.0f
+						)
+					)
+				{
+#ifdef STAND_DEV
+					Util::toast(fmt::format(fmt::runtime(soup::ObfusString("Receiving a world state PTFX that's likely attached to us.").str())));
+					Util::toast(fmt::format(fmt::runtime(soup::ObfusString("SCRIPT_WORLD_STATE_EVENT: {}").str()), data.toString()), TOAST_FILE);
+#endif
+					if (auto reactions = sender_ap.getReactions(FlowEvent::MISC_PTFX); reactions & REACTION_BLOCK) // Yes, sender is unreliable. This is better than giving the user no control.
 					{
-						tally.add(FlowEvent::SE_FREEZE, "N0");
+						return NetEventEarlyExit::BLOCK; // The event does not serialise anything about the original sender.
 					}
+				}
+			}
 
-					auto time = buffer->readU32();
-					auto object_id_2 = buffer->readU16(13);
-					auto taskId = buffer->readU8();
-					/*uint32_t unk = 0;
-					if (buffer->readBool())
+			buffer->seekStart();
+		}
+		break;
+
+		case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
+		{
+			auto object_id = buffer->readU16(13);
+			auto subevent_id = buffer->readU8(4);
+			if (subevent_id > 9)
+			{
+				tally.add(FlowEvent::SE_CRASH, "N3");
+			}
+			//g_logger.log(fmt::format("SCRIPT_ENTITY_STATE_CHANGE_EVENT: subevent {}", subevent_id));
+			if (subevent_id == 6) // SET_TASK_VEHICLE_TEMP_ACTION (CSettingOfTaskVehicleTempAction)
+			{
+				// This can be used to freeze/take control away from us.
+				if (g_player_ped.isNetObjId(object_id))
+				{
+					tally.add(FlowEvent::SE_FREEZE, "N0");
+				}
+
+				auto time = buffer->readU32();
+				auto object_id_2 = buffer->readU16(13);
+				auto taskId = buffer->readU8();
+				/*uint32_t unk = 0;
+				if (buffer->readBool())
+				{
+					unk = buffer->readU16();
+				}*/
+
+				// In this case, `object_id` refers to the ped and `object_id_2` refers to the vehicle.
+
+				if (auto obj = (*pointers::network_object_mgr)->find_object_by_id(object_id_2, true))
+				{
+					if (auto ent = obj->GetEntity())
 					{
-						unk = buffer->readU16();
-					}*/
-
-					// In this case, `object_id` refers to the ped and `object_id_2` refers to the vehicle.
-
-					if (auto obj = (*pointers::network_object_mgr)->find_object_by_id(object_id_2, true))
-					{
-						if (auto ent = obj->GetEntity())
+						if (g_player_veh.isValid() && g_player_veh.getPointer() == ent)
 						{
-							if (g_player_veh.isValid() && g_player_veh.getPointer() == ent)
-							{
-								tally.add(FlowEvent::NE_VEHTAKEOVER);
-							}
+							tally.add(FlowEvent::NE_VEHTAKEOVER);
 						}
 					}
+				}
 
-					switch (taskId)
-					{
-					case 15:
-					case 16:
-					case 17:
-					case 18:
-						tally.add(FlowEvent::SE_CRASH, "N4");
-						break;
-					}
-				}
-				else if (subevent_id == 9) // SET_EXCLUSIVE_DRIVER
+				switch (taskId)
 				{
-					if (g_player_veh.isNetObjId(object_id))
-					{
-						tally.add(FlowEvent::SE_PVKICK);
-					}
+				case 15:
+				case 16:
+				case 17:
+				case 18:
+					tally.add(FlowEvent::SE_CRASH, "N4");
+					break;
 				}
-				buffer->seekStart();
 			}
-			break;
+			else if (subevent_id == 9) // SET_EXCLUSIVE_DRIVER
+			{
+				if (g_player_veh.isNetObjId(object_id))
+				{
+					tally.add(FlowEvent::SE_PVKICK);
+				}
+			}
+			buffer->seekStart();
+		}
+		break;
 
 #if false
 		case REPORT_MYSELF_EVENT:
+		{
+			auto type = buffer->readU32();
+			//auto extra = buffer->readU32();
+			buffer->seekStart();
+			if (type < 5 || type > 10)
 			{
-				auto type = buffer->readU32();
-				//auto extra = buffer->readU32();
-				buffer->seekStart();
-				if (type < 5 || type > 10)
-				{
-					sender_ap.markAsModderRac(Codename("U1").toString());
-				}
+				sender_ap.markAsModderRac(Codename("U1").toString());
 			}
-			break;
+		}
+		break;
 #endif
 
 		case NETWORK_PLAY_SOUND_EVENT:
-			{
-				CNetworkPlaySoundEvent data = CNetworkPlaySoundEvent(buffer);
-				buffer->seekStart();
+		{
+			CNetworkPlaySoundEvent data = CNetworkPlaySoundEvent(buffer);
+			buffer->seekStart();
 
-				if (data.m_soundNameHash == ATSTRINGHASH("Remote_Ring"))
+			if (data.m_soundNameHash == ATSTRINGHASH("Remote_Ring"))
+			{
+				tally.add(FlowEvent::NE_INFRING);
+			}
+
+			if (auto sender_cmd = sender_ap.getCommand())
+			{
+				if (sender_cmd->sound_timeout != 0 && GET_MILLIS_SINCE(sender_cmd->sound_timeout) < 60000)
 				{
-					tally.add(FlowEvent::NE_INFRING);
+					return NetEventEarlyExit::BLOCK;
 				}
 
-				if (auto sender_cmd = sender_ap.getCommand())
+				if (sender_cmd->sound_ratelimit.canRequest())
 				{
-					if (sender_cmd->sound_timeout != 0 && GET_MILLIS_SINCE(sender_cmd->sound_timeout) < 60000)
+					sender_cmd->sound_ratelimit.addRequest();
+				}
+				else
+				{
+					switch (data.m_soundNameHash)
 					{
-						return NetEventEarlyExit::BLOCK;
-					}
+					case ATSTRINGHASH("ROUND_ENDING_STINGER_CUSTOM"): // CELEBRATION_SOUNDSET
+					case ATSTRINGHASH("5s"): // MP_MISSION_COUNTDOWN_SOUNDSET
+					case ATSTRINGHASH("10s"): // MP_MISSION_COUNTDOWN_SOUNDSET
+					case ATSTRINGHASH("Oneshot_Final"): // MP_MISSION_COUNTDOWN_SOUNDSET
+					case ATSTRINGHASH("Object_Dropped_Remote"): // GTAO_FM_Events_Soundset
+					case ATSTRINGHASH("Checkpoint_Cash_Hit"): // GTAO_FM_Events_Soundset
+					case ATSTRINGHASH("Event_Start_Text"): // GTAO_FM_Events_Soundset
+					case ATSTRINGHASH("Return_To_Vehicle_Timer"): // GTAO_FM_Events_Soundset
+					case ATSTRINGHASH("event_message_purple"):
+						tally.add(FlowEvent::SE_CRASH, "N5");
+						break;
 
-					if (sender_cmd->sound_ratelimit.canRequest())
+					default:
 					{
-						sender_cmd->sound_ratelimit.addRequest();
-					}
-					else
-					{
-						switch (data.m_soundNameHash)
-						{
-						case ATSTRINGHASH("ROUND_ENDING_STINGER_CUSTOM"): // CELEBRATION_SOUNDSET
-						case ATSTRINGHASH("5s"): // MP_MISSION_COUNTDOWN_SOUNDSET
-						case ATSTRINGHASH("10s"): // MP_MISSION_COUNTDOWN_SOUNDSET
-						case ATSTRINGHASH("Oneshot_Final"): // MP_MISSION_COUNTDOWN_SOUNDSET
-						case ATSTRINGHASH("Object_Dropped_Remote"): // GTAO_FM_Events_Soundset
-						case ATSTRINGHASH("Checkpoint_Cash_Hit"): // GTAO_FM_Events_Soundset
-						case ATSTRINGHASH("Event_Start_Text"): // GTAO_FM_Events_Soundset
-						case ATSTRINGHASH("Return_To_Vehicle_Timer"): // GTAO_FM_Events_Soundset
-						case ATSTRINGHASH("event_message_purple"):
-							tally.add(FlowEvent::SE_CRASH, "N5");
-							break;
-
-						default:
-							{
-								if (!data.isSpammySound())
-								{
-									tally.add(FlowEvent::SE_INVALID, "N5");
-								}
-							}
-						}
-					}
-
-					if (data.m_setNameHash == ATSTRINGHASH("dlc_sum20_business_battle_ac_sounds")
-						&& data.m_soundNameHash == ATSTRINGHASH("air_defences_activated")
-						)
-					{
-						if (sender_cmd->uncommon_sound_ratelimit.canRequest())
-						{
-							sender_cmd->uncommon_sound_ratelimit.addRequest();
-						}
-						else
+						if (!data.isSpammySound())
 						{
 							tally.add(FlowEvent::SE_INVALID, "N5");
 						}
 					}
+					}
+				}
 
-					if (is_session_freeroam())
+				if (data.m_setNameHash == ATSTRINGHASH("dlc_sum20_business_battle_ac_sounds")
+					&& data.m_soundNameHash == ATSTRINGHASH("air_defences_activated")
+					)
+				{
+					if (sender_cmd->uncommon_sound_ratelimit.canRequest())
 					{
-						if (!data.isSpammySound()
-							&& !data.isCloseFreeroamSound()
-							&& !(data.m_setNameHash == ATSTRINGHASH("gtao_biker_modes_soundset") && sender_ap.inOurOrg())
-							)
-						{
-							if (auto sound_entity = AbstractEntity::getNetwork(data.m_EntityID); sound_entity.isValid())
-							{
-								if (sound_entity == g_player_ped) // Attached to us? 
-								{
-									tally.add(FlowEvent::SE_INVALID, "N5");
-								}
-								else if (sound_entity == g_player_veh && !sender_ap.getVehicle().isNetObjId(data.m_EntityID)) // Attached to our vehicle by a non-passenger?
-								{
-									tally.add(FlowEvent::SE_INVALID, "N5");
-								}
-								else if (!sender_ap.inSameInterior(g_player) && sound_entity.getPos().distanceTopdown(g_player_ped.getPos()) <= 1.5f) // Sound spawned on entity too close to us from a player not inside the same interior (or any interior)?
-								{
-									auto sender_ped = sender_ap.getPed();
-									auto sender_veh = sender_ped.getVehicle();
+						sender_cmd->uncommon_sound_ratelimit.addRequest();
+					}
+					else
+					{
+						tally.add(FlowEvent::SE_INVALID, "N5");
+					}
+				}
 
-									if (sound_entity != sender_ped && sound_entity != sender_veh)
-									{
-										// This makes us vulnerable to an attacker entering the same interior and attacking us by spawning an object near us and playing a sound on it.
-										// In exchange for this edge-case, we are probably eliminating tons of false-positives that users never bother to report.
-										tally.add(FlowEvent::SE_INVALID, "N5");
-									}
-								}
-							}
-							else
+				if (is_session_freeroam())
+				{
+					if (!data.isSpammySound()
+						&& !data.isCloseFreeroamSound()
+						&& !(data.m_setNameHash == ATSTRINGHASH("gtao_biker_modes_soundset") && sender_ap.inOurOrg())
+						)
+					{
+						if (auto sound_entity = AbstractEntity::getNetwork(data.m_EntityID); sound_entity.isValid())
+						{
+							if (sound_entity == g_player_ped) // Attached to us? 
 							{
-								if (data.m_Position.distanceTopdown(g_player_ped.getPos()) <= 1.5f)
+								tally.add(FlowEvent::SE_INVALID, "N5");
+							}
+							else if (sound_entity == g_player_veh && !sender_ap.getVehicle().isNetObjId(data.m_EntityID)) // Attached to our vehicle by a non-passenger?
+							{
+								tally.add(FlowEvent::SE_INVALID, "N5");
+							}
+							else if (!sender_ap.inSameInterior(g_player) && sound_entity.getPos().distanceTopdown(g_player_ped.getPos()) <= 1.5f) // Sound spawned on entity too close to us from a player not inside the same interior (or any interior)?
+							{
+								auto sender_ped = sender_ap.getPed();
+								auto sender_veh = sender_ped.getVehicle();
+
+								if (sound_entity != sender_ped && sound_entity != sender_veh)
 								{
+									// This makes us vulnerable to an attacker entering the same interior and attacking us by spawning an object near us and playing a sound on it.
+									// In exchange for this edge-case, we are probably eliminating tons of false-positives that users never bother to report.
 									tally.add(FlowEvent::SE_INVALID, "N5");
 								}
 							}
 						}
-
-						const bool current_is_blocked = tally.getReactions(FlowEvent::SE_INVALID) & REACTION_BLOCK;
-
-						if (!current_is_blocked)
+						else
 						{
-							g_hooking.processed_sounds.emplace_back(NetworkedSound(data.m_soundNameHash, data.m_setNameHash, data.m_SoundID));
+							if (data.m_Position.distanceTopdown(g_player_ped.getPos()) <= 1.5f)
+							{
+								tally.add(FlowEvent::SE_INVALID, "N5");
+							}
 						}
+					}
 
-						FiberPool::queueJob([current_data{ std::move(data) }, current_is_blocked]
+					const bool current_is_blocked = tally.getReactions(FlowEvent::SE_INVALID) & REACTION_BLOCK;
+
+					if (!current_is_blocked)
+					{
+						g_hooking.processed_sounds.emplace_back(NetworkedSound(data.m_soundNameHash, data.m_setNameHash, data.m_SoundID));
+					}
+
+					FiberPool::queueJob([current_data{ std::move(data) }, current_is_blocked]
 						{
 							for (auto i = g_hooking.processed_sounds.begin(); i != g_hooking.processed_sounds.end(); )
 							{
@@ -3001,18 +2998,18 @@ namespace Stand::hooks
 								++i;
 							}
 						});
-					}
+				}
 
-					if (tally.getReactions(sender_ap) & REACTION_BLOCK)
-					{
-						sender_cmd->sound_timeout = get_current_time_millis();
+				if (tally.getReactions(sender_ap) & REACTION_BLOCK)
+				{
+					sender_cmd->sound_timeout = get_current_time_millis();
 #ifdef STAND_DEBUG
-						Util::toast(fmt::format("N5: Applied sound timeout to {}.", sender_ap.getName()), TOAST_ALL);
+					Util::toast(fmt::format("N5: Applied sound timeout to {}.", sender_ap.getName()), TOAST_ALL);
 #endif
-					}
 				}
 			}
-			break;
+		}
+		break;
 
 		case NETWORK_PTFX_EVENT:
 			if (is_session_freeroam()) // Last Dose 4
@@ -3021,7 +3018,7 @@ namespace Stand::hooks
 
 				buffer->seekStart();
 
-				SOUP_IF_LIKELY (auto cmd = sender_ap.getCommand())
+				SOUP_IF_LIKELY(auto cmd = sender_ap.getCommand())
 				{
 					const auto distance = g_player_ped.getPos().distance(data.m_FxPos);
 					bool modded = false;
@@ -3080,208 +3077,227 @@ namespace Stand::hooks
 			break;
 
 		case RAGDOLL_REQUEST_EVENT:
+		{
+			auto target = buffer->readU16(13);
+
+			if (g_player_ped.isNetObjId(target))
 			{
-				auto target = buffer->readU16(13);
+				const auto reactions = sender_ap.getReactions(FlowEvent::NE_RAGDOLL);
 
-				if (g_player_ped.isNetObjId(target))
+				SOUP_IF_LIKELY(auto cmd = sender_ap.getCommand())
 				{
-					const auto reactions = sender_ap.getReactions(FlowEvent::NE_RAGDOLL);
-
-					SOUP_IF_LIKELY (auto cmd = sender_ap.getCommand())
+					if (cmd->ragdoll_request_ratelimit.canRequest())
 					{
-						if (cmd->ragdoll_request_ratelimit.canRequest())
-						{
-							cmd->ragdoll_request_ratelimit.addRequest();
-						}
-						else
-						{
-							sender_ap.applyReactions(reactions, NuancedEventWithExtraData(FlowEvent::NE_RAGDOLL, {}, 25));
-						}
+						cmd->ragdoll_request_ratelimit.addRequest();
 					}
-					
-					if (reactions & REACTION_BLOCK)
+					else
+					{
+						sender_ap.applyReactions(reactions, NuancedEventWithExtraData(FlowEvent::NE_RAGDOLL, {}, 25));
+					}
+				}
+
+				if (reactions & REACTION_BLOCK)
+				{
+					return NetEventEarlyExit::BLOCK;
+				}
+			}
+
+			buffer->seekStart();
+		}
+		break;
+
+		case WEAPON_DAMAGE_EVENT:
+		{
+			const auto data = CWeaponDamageEvent(buffer);
+			const bool is_beast = sender_ap.isBeast();
+
+			if (data.m_weaponType == ATSTRINGHASH("weapon_tranquilizer") // This is what 0xcheat's "make him cry" sends, apparently it's supposed to kill you repeatly, even if you quit to SP: 11001100101010100010001000101111011001000010000100000000010000000000000000000000010000000000000000000000000000000000000000000000000000000000101011010100101001000100010001010100000010 (m_damageType: 3, m_weaponType: weapon_tranquilizer, m_bOverride: true, m_hitEntityWeapon: false, m_hitWeaponAmmoAttachment: false, m_silenced: true, m_damageFlags: 540688, bMeleeDamage: false, m_actionResultId: 0, m_meleeId: 0, m_meleeResultId: 0, m_weaponDamage: 0, m_bIsAggregated: false, m_weaponDamageAggregationCount: 0, m_bVictimPlayer: true, m_hitPosition_x: 0, m_hitPosition_y: 0, m_hitPosition_z: 0, m_damageTime: 2839185, m_willKillPlayer: false, m_hitObjectId: 0, m_playerDistance: 554, m_parentID: 0, m_tyreIndex: 0, m_suspensionIndex: 0, m_component: 0, m_firstBullet: true, hasVehicleData: false, useLargeDistance: false)
+				|| data.m_weaponType == ATSTRINGHASH("weapon_fire") // This can be used to ragdoll us, don't think it's used legit.
+				|| data.m_weaponType == ATSTRINGHASH("weapon_molotov") // Can be used to ragdoll us.
+				|| data.m_weaponType == ATSTRINGHASH("WEAPON_STRICKLER") // This weapon is only half implemented because it's a next gen exclusive... classic L*
+				)
+			{
+				tally.add(FlowEvent::SE_INVALID, "NB");
+			}
+			else if (data.m_weaponType == ATSTRINGHASH("WEAPON_STUNROD")) // Can be used to stunlock us
+			{
+				if (auto cmd = sender_ap.getCommand())
+				{
+					if (cmd->stun_ratelimit.canRequest())
+					{
+						cmd->stun_ratelimit.addRequest();
+					}
+					else
+					{
+						cmd->stun_timeout = get_current_time_millis();
+						tally.add(FlowEvent::SE_INVALID, "NC");
+					}
+
+					if (GET_MILLIS_SINCE(cmd->stun_timeout) < 60'000)
 					{
 						return NetEventEarlyExit::BLOCK;
 					}
 				}
 
-				buffer->seekStart();
+				if (g_gui.grace)
+				{
+					return NetEventEarlyExit::BLOCK;
+				}
 			}
-			break;
-
-		case WEAPON_DAMAGE_EVENT:
+			else
 			{
-				const auto data = CWeaponDamageEvent(buffer);
-				const bool is_beast = sender_ap.isBeast();
+				if (data.isRemoteKill(is_beast))
+				{
+					tally.add(FlowEvent::NE_SUDDENDEATH);
+				}
+				else if (data.isMagicBullet())
+				{
+					tally.addRaw(FlowEvent::NE_SUDDENDEATH, LANG_GET("MAGICB"));
+				}
+				else if (data.bMeleeDamage)
+				{
+					if (auto entity = AbstractEntity::getNetwork(data.m_hitObjectId); entity.isValid())
+					{
+						if (g_player_veh.isNetObjId(data.m_hitObjectId) || g_player_ped.isNetObjId(data.m_hitObjectId))
+						{
+							const auto distance = entity.getPos().distance(sender_ap.getPos());
 
-				if (data.m_weaponType == ATSTRINGHASH("weapon_tranquilizer") // This is what 0xcheat's "make him cry" sends, apparently it's supposed to kill you repeatly, even if you quit to SP: 11001100101010100010001000101111011001000010000100000000010000000000000000000000010000000000000000000000000000000000000000000000000000000000101011010100101001000100010001010100000010 (m_damageType: 3, m_weaponType: weapon_tranquilizer, m_bOverride: true, m_hitEntityWeapon: false, m_hitWeaponAmmoAttachment: false, m_silenced: true, m_damageFlags: 540688, bMeleeDamage: false, m_actionResultId: 0, m_meleeId: 0, m_meleeResultId: 0, m_weaponDamage: 0, m_bIsAggregated: false, m_weaponDamageAggregationCount: 0, m_bVictimPlayer: true, m_hitPosition_x: 0, m_hitPosition_y: 0, m_hitPosition_z: 0, m_damageTime: 2839185, m_willKillPlayer: false, m_hitObjectId: 0, m_playerDistance: 554, m_parentID: 0, m_tyreIndex: 0, m_suspensionIndex: 0, m_component: 0, m_firstBullet: true, hasVehicleData: false, useLargeDistance: false)
-					|| data.m_weaponType == ATSTRINGHASH("weapon_fire") // This can be used to ragdoll us, don't think it's used legit.
-					|| data.m_weaponType == ATSTRINGHASH("weapon_molotov") // Can be used to ragdoll us.
-					|| data.m_weaponType == ATSTRINGHASH("WEAPON_STRICKLER") // This weapon is only half implemented because it's a next gen exclusive... classic L*
+							if (distance >= 30.0f) // If we suddenly change position after they initiate an attack, we get the event.
+							{
+								tally.add(FlowEvent::NE_SUDDENDEATH);
+							}
+						}
+					}
+				}
+
+				if (!is_beast && data.isDamageExcessive())
+				{
+					sender_ap.triggerDetection(FlowEvent::MOD_DMGMUL, "*");
+				}
+			}
+
+			buffer->seekStart();
+			break;
+		}
+
+		case EXPLOSION_EVENT:
+		{
+			const auto data = CExplosionEvent(buffer);
+			const auto player_pos = g_player_ped.getPos();
+			const auto player_dist = data.m_explosionArgs.m_explosionPosition.distance(player_pos);
+
+			buffer->seekStart();
+
+			// Camera Shaking Event & Ragoll Event
+			if (data.m_explosionArgs.m_bNoFx)
+			{
+				if (data.m_explosionArgs.m_fCamShake > 0.0f
+					&& player_dist <= 30.0f
 					)
 				{
-					tally.add(FlowEvent::SE_INVALID, "NB");
+					tally.add(FlowEvent::NE_CAMSHAKE);
 				}
-				else if (data.m_weaponType == ATSTRINGHASH("WEAPON_STUNROD")) // Can be used to stunlock us
-				{
-					if (auto cmd = sender_ap.getCommand())
-					{
-						if (cmd->stun_ratelimit.canRequest())
-						{
-							cmd->stun_ratelimit.addRequest();
-						}
-						else
-						{
-							cmd->stun_timeout = get_current_time_millis();
-							tally.add(FlowEvent::SE_INVALID, "NC");
-						}
 
-						if (GET_MILLIS_SINCE(cmd->stun_timeout) < 60'000)
+				if (data.m_explosionArgs.m_sizeScale > 0.0f
+					&& player_dist <= 10.0f
+					)
+				{
+					tally.add(FlowEvent::NE_RAGDOLL);
+				}
+			}
+
+			// Explosion Spam
+			SOUP_IF_LIKELY(auto cmd = packet_src.getCommand())
+			{
+				if (player_dist <= 5.0f && !data.m_bHasProjectile && !data.m_shouldAttach)
+				{
+					if (cmd->explosion_nearby_ratelimit.canRequest())
+					{
+						cmd->explosion_nearby_ratelimit.addRequest();
+					}
+					else
+					{
+						auto reactions = sender_ap.getReactions(FlowEvent::NE_EXPSPAM);
+						sender_ap.applyReactionsIn(LOC("EXPSPAM"), { FlowEvent::NE_EXPSPAM }, reactions, 50);
+						if (reactions & REACTION_BLOCK)
 						{
 							return NetEventEarlyExit::BLOCK;
 						}
 					}
-
-					if (g_gui.grace)
-					{
-						return NetEventEarlyExit::BLOCK;
-					}
 				}
-				else
-				{
-					if (data.isRemoteKill(is_beast))
-					{
-						tally.add(FlowEvent::NE_SUDDENDEATH);
-					}
-					else if (data.isMagicBullet())
-					{
-						tally.addRaw(FlowEvent::NE_SUDDENDEATH, LANG_GET("MAGICB"));
-					}
-					else if (data.bMeleeDamage)
-					{
-						if (auto entity = AbstractEntity::getNetwork(data.m_hitObjectId); entity.isValid())
-						{
-							if (g_player_veh.isNetObjId(data.m_hitObjectId) || g_player_ped.isNetObjId(data.m_hitObjectId))
-							{
-								const auto distance = entity.getPos().distance(sender_ap.getPos());
-
-								if (distance >= 30.0f) // If we suddenly change position after they initiate an attack, we get the event.
-								{
-									tally.add(FlowEvent::NE_SUDDENDEATH);
-								}
-							}
-						}
-					}
-
-					if (!is_beast && data.isDamageExcessive())
-					{
-						sender_ap.triggerDetection(FlowEvent::MOD_DMGMUL, "*");
-					}
-				}
-				
-				buffer->seekStart();
-				break;
 			}
 
-		case EXPLOSION_EVENT:
+			// Modded Explosion
+			if (is_session_freeroam())
 			{
-				const auto data = CExplosionEvent(buffer);
-				const auto player_pos = g_player_ped.getPos();
-				const auto player_dist = data.m_explosionArgs.m_explosionPosition.distance(player_pos);
+				bool modded = false;
+				std::string extra_data{};
 
-				buffer->seekStart();
-
-				// Camera Shaking Event & Ragoll Event
-				if (data.m_explosionArgs.m_bNoFx)
+				// Remote Explosion
+				if (!data.m_bHasProjectile
+					&& !data.isProbablyDrone()
+					&& data.isSenderResponsible()
+					&& data.shouldHaveProjectile()
+					&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
+					)
 				{
-					if (data.m_explosionArgs.m_fCamShake > 0.0f
-						&& player_dist <= 30.0f
-						)
-					{
-						tally.add(FlowEvent::NE_CAMSHAKE);
-					}
+					modded = true;
 
-					if (data.m_explosionArgs.m_sizeScale > 0.0f
-						&& player_dist <= 10.0f
-						)
+					if (player_dist < 3.0f)
 					{
-						tally.add(FlowEvent::NE_RAGDOLL);
-					}
-				}
-				
-				// Explosion Spam
-				SOUP_IF_LIKELY (auto cmd = packet_src.getCommand())
-				{
-					if (player_dist <= 5.0f && !data.m_bHasProjectile && !data.m_shouldAttach)
-					{
-						if (cmd->explosion_nearby_ratelimit.canRequest())
+						if (auto cmd = sender_ap.getCommand())
 						{
-							cmd->explosion_nearby_ratelimit.addRequest();
-						}
-						else
-						{
-							auto reactions = sender_ap.getReactions(FlowEvent::NE_EXPSPAM);
-							sender_ap.applyReactionsIn(LOC("EXPSPAM"), { FlowEvent::NE_EXPSPAM }, reactions, 50);
-							if (reactions & REACTION_BLOCK)
-							{
-								return NetEventEarlyExit::BLOCK;
-							}
+							cmd->aggressive_action_warranted = true;
 						}
 					}
 				}
 
-				// Modded Explosion
-				if (is_session_freeroam())
+				// Camera Shake Mismatch (Stand, 2Take1)
+				if (data.m_explosionArgs.m_fCamShake == 0.0f
+					&& data.isSenderResponsible()
+					&& !data.canHaveZeroCamShake()
+					)
 				{
-					bool modded = false;
-					std::string extra_data{};
+					modded = true;
+					// extra_data = LANG_GET("EXPAMMO"); True for explosive ammo, but also their remote explosion.
+				}
 
-					// Remote Explosion
+				// Explosive Ammo, Dummy Mismatch (All)
+				if (data.shouldHaveDummy()
+					&& !data.m_shouldAttach
+					&& !data.m_hasRelatedDummy
+					)
+				{
+					modded = true;
+					extra_data = LANG_GET("EXPAMMO");
+				}
+
+				// Explosive Ammo, Absent Projectile (Kiddions)
+				if (const auto weapon = Weapon::find(data.m_explosionArgs.m_weaponHash))
+				{
 					if (!data.m_bHasProjectile
-						&& !data.isProbablyDrone()
-						&& data.isSenderResponsible()
-						&& data.shouldHaveProjectile()
-						&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
+						&& weapon->category != Weapon::MELEE
+						&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUN")
+						&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUNXM3")
 						)
 					{
 						modded = true;
-
-						if (player_dist < 3.0f)
-						{
-							if (auto cmd = sender_ap.getCommand())
-							{
-								cmd->aggressive_action_warranted = true;
-							}
-						}
-					}
-
-					// Camera Shake Mismatch (Stand, 2Take1)
-					if (data.m_explosionArgs.m_fCamShake == 0.0f
-						&& data.isSenderResponsible()
-						&& !data.canHaveZeroCamShake()
-						)
-					{
-						modded = true;
-						// extra_data = LANG_GET("EXPAMMO"); True for explosive ammo, but also their remote explosion.
-					}
-
-					// Explosive Ammo, Dummy Mismatch (All)
-					if (data.shouldHaveDummy()
-						&& !data.m_shouldAttach
-						&& !data.m_hasRelatedDummy
-						)
-					{
-						modded = true;
+#ifndef STAND_DEV
 						extra_data = LANG_GET("EXPAMMO");
+#else
+						extra_data = fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), LANG_GET("EXPAMMO"), joaatToString(weapon->hash));
+#endif
 					}
+				}
 
-					// Explosive Ammo, Absent Projectile (Kiddions)
-					if (const auto weapon = Weapon::find(data.m_explosionArgs.m_weaponHash))
+				// Explosive Ammo, Bullet Effect Mismatch (YimMenu "Special Ammo")
+				if (auto ped = sender_ap.getPed(); ped.isValid())
+				{
+					if (const auto weapon = Weapon::find(ped.getSelectedWeapon())) // Hand-held weapon?
 					{
-						if (!data.m_bHasProjectile
-							&& weapon->category != Weapon::MELEE
-							&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUN")
-							&& weapon->hash != ATSTRINGHASH("WEAPON_RAILGUNXM3")
+						if (data.m_explosionArgs.m_explosionTag == EXP_TAG_EXPLOSIVEAMMO
+							&& weapon->hash != ATSTRINGHASH("WEAPON_HEAVYSNIPER_MK2")
+							&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
 							)
 						{
 							modded = true;
@@ -3292,321 +3308,300 @@ namespace Stand::hooks
 #endif
 						}
 					}
-
-					// Explosive Ammo, Bullet Effect Mismatch (YimMenu "Special Ammo")
-					if (auto ped = sender_ap.getPed(); ped.isValid())
-					{
-						if (const auto weapon = Weapon::find(ped.getSelectedWeapon())) // Hand-held weapon?
-						{
-							if (data.m_explosionArgs.m_explosionTag == EXP_TAG_EXPLOSIVEAMMO
-								&& weapon->hash != ATSTRINGHASH("WEAPON_HEAVYSNIPER_MK2")
-								&& data.m_explosionArgs.m_weaponHash == ATSTRINGHASH("WEAPON_EXPLOSION")
-								)
-							{
-								modded = true;
-#ifndef STAND_DEV
-								extra_data = LANG_GET("EXPAMMO");
-#else
-								extra_data = fmt::format(fmt::runtime(soup::ObfusString("{} / {}").str()), LANG_GET("EXPAMMO"), joaatToString(weapon->hash));
-#endif
-							}
-						}
-					}
-
-					// Explosive Ammo, All
-					if (!data.m_shouldAttach
-						&& !data.m_bHasProjectile
-						&& !data.m_explosionArgs.m_bDetonatingOtherPlayersExplosive
-						)
-					{
-						switch (data.m_explosionArgs.m_explosionTag)
-						{
-						case EXP_TAG_CAR:
-						case EXP_TAG_BIKE:
-						case EXP_TAG_BOAT:
-						case EXP_TAG_PLANE:
-						case EXP_TAG_TRUCK:
-						case EXP_TAG_TRAIN:
-						case EXP_TAG_BLIMP:
-						case EXP_TAG_BLIMP2:
-							modded = true;
-							extra_data = LANG_GET("EXPAMMO");
-							break;
-						default:
-							break;
-						}
-					}
-
-					if (modded)
-					{
-						reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, std::move(extra_data), 75);
-					}
 				}
 
-				// Explosion Blaming (patched client-side as of 3095, now detects menus which haven't removed the feature)
-				if (!data.m_bHasProjectile
-					&& data.isSenderResponsible()
-					&& data.m_explodingEntityID == 0
+				// Explosive Ammo, All
+				if (!data.m_shouldAttach
+					&& !data.m_bHasProjectile
+					&& !data.m_explosionArgs.m_bDetonatingOtherPlayersExplosive
 					)
 				{
-					if (auto n = (*pointers::network_object_mgr)->find_object_by_id(data.m_entExplosionOwnerID, true))
+					switch (data.m_explosionArgs.m_explosionTag)
 					{
-						if (auto ent = n->GetEntity())
-						{
-							if (ent->type == ENTITY_TYPE_PED)
-							{
-								auto ped = AbstractEntity::get((CPhysical*)ent);
-								const auto sender_netobj = sender_ap.getPed().getNetObject();
-
-								if (sender_netobj
-									&& ped.isAPlayer()
-									&& data.m_entExplosionOwnerID != sender_netobj->object_id // Indicates a mismatch in explosionOwner from ADD_OWNED_EXPLOSION & sender cped netobj id.
-									)
-								{
-#if HAS_EXPBLAME
-									reactions |= sender_ap.triggerDetection(FlowEvent::MOD_EXPBLAME, LANG_FMT("VICTIM", ped.getPlayer().getName()), 75);
-#else
-									reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, "*", 75);
-#endif
-								}
-							}
-						}
+					case EXP_TAG_CAR:
+					case EXP_TAG_BIKE:
+					case EXP_TAG_BOAT:
+					case EXP_TAG_PLANE:
+					case EXP_TAG_TRUCK:
+					case EXP_TAG_TRAIN:
+					case EXP_TAG_BLIMP:
+					case EXP_TAG_BLIMP2:
+						modded = true;
+						extra_data = LANG_GET("EXPAMMO");
+						break;
 					}
 				}
 
-				if (reactions & REACTION_BLOCK)
+				if (modded)
 				{
-					return NetEventEarlyExit::BLOCK;
+					reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, std::move(extra_data), 75);
 				}
-
-				// Same as the other Crash Event (TC), just a different trigger.
-				if (data.m_explosionArgs.m_interiorLocation.as_interiorLocation.m_interiorIndex < -1)
-				{
-					tally.add(FlowEvent::SE_CRASH, "TC");
-				}
-
-				break;
 			}
 
-			case BLOW_UP_VEHICLE_EVENT:
-			case REQUEST_PHONE_EXPLOSION_EVENT:
+			// Explosion Blaming (patched client-side as of 3095, now detects menus which haven't removed the feature)
+			if (!data.m_bHasProjectile
+				&& data.isSenderResponsible()
+				&& data.m_explodingEntityID == 0
+				)
+			{
+				if (auto n = (*pointers::network_object_mgr)->find_object_by_id(data.m_entExplosionOwnerID, true))
 				{
-					const auto m_nVehicleID = buffer->readU16(13);
-
-					if (is_session_freeroam() // Just assuming these events have legitimacy in mission vehicles or something.
-						&& !sender_ap.inOurOrg() // See above. I feel like I remember some cargo missions detonatating our user vehicle too. It must be one of these events since it's not a spammed explosion, obv.
-						&& g_player_veh.isNetObjId(m_nVehicleID)
-						&& g_player_veh.isOwnerOfVehicleAndDriver()
-						)
+					if (auto ent = n->GetEntity())
 					{
-						tally.add(FlowEvent::NE_VEHTAKEOVER);
-					}
-
-					buffer->seekStart();
-				}
-				break;
-
-			case ACTIVATE_VEHICLE_SPECIAL_ABILITY_EVENT:
-				{
-					const auto m_vehicleID = buffer->readU16(13);
-
-					if (g_player_veh.isNetObjId(m_vehicleID)
-						&& g_player_veh.isOwnerOfVehicleAndDriver()
-						)
-					{
-						tally.add(FlowEvent::NE_VEHTAKEOVER);
-					}
-
-					buffer->seekStart();
-				}
-				break;
-
-			case CHANGE_RADIO_STATION_EVENT:
-				{
-					const auto m_vehicleID = buffer->readU16(13);
-
-					if (g_player_veh.isNetObjId(m_vehicleID)
-						&& sender_ap.getVehicle().getNetObjId() != m_vehicleID
-						)
-					{
-						tally.add(FlowEvent::NE_VEHTAKEOVER);
-					}
-
-					buffer->seekStart();
-				}
-				break;
-
-			case NETWORK_SOUND_CAR_HORN_EVENT:
-				{
-					const auto m_bIsHornOn = buffer->readBool();
-					const auto m_vehicleID = buffer->readU16(13);
-
-					if (sender_ap.getVehicle().getNetObjId() != m_vehicleID)
-					{
-						if (g_player_veh.isNetObjId(m_vehicleID))
+						if (ent->type == ENTITY_TYPE_PED)
 						{
-							tally.add(FlowEvent::NE_VEHTAKEOVER);
-						}
-						/*else
-						{
-							tally.add(FlowEvent::SE_INVALID, "NA");
-						}*/
-					}
+							auto ped = AbstractEntity::get((CPhysical*)ent);
+							const auto sender_netobj = sender_ap.getPed().getNetObject();
 
-					buffer->seekStart();
-				}
-				break;
-
-			case GIVE_PICKUP_REWARDS_EVENT:
-				if (is_session_freeroam())
-				{
-					const auto m_NumRewards = buffer->readU8(3);
-
-					for (uint8_t i = 0; i < m_NumRewards; ++i)
-					{
-						const auto hash = buffer->readU32();
-
-						if ((g_player_veh.isOwnerOfVehicleAndDriver() && hash == ATSTRINGHASH("REWARD_VEHICLE_FIX")) // Fixing our vehicle?
-							|| (!sender_ap.inOurOrg() && (hash == ATSTRINGHASH("REWARD_HEALTH") || hash == ATSTRINGHASH("REWARD_ARMOUR"))) // Healing us?
-							)
-						{
-							tally.add(FlowEvent::SE_INVALID, "N8");
-							break;
-						}
-					}
-
-					buffer->seekStart();
-				}
-				break;
-
-			case DOOR_BREAK_EVENT:
-				// This event is never sent, so this must be a modder.
-				tally.add(FlowEvent::SE_INVALID, "N9");
-				break;
-
-			case NETWORK_SPECIAL_FIRE_EQUIPPED_WEAPON:
-				{
-					const auto m_entityID = buffer->readU16(13);
-
-					if (auto n = (*pointers::network_object_mgr)->find_object_by_id(m_entityID, false))
-					{
-						if (auto ent = n->GetEntity())
-						{
-							if (ent->type == ENTITY_TYPE_PED)
+							if (sender_netobj
+								&& ped.isAPlayer()
+								&& data.m_entExplosionOwnerID != sender_netobj->object_id // Indicates a mismatch in explosionOwner from ADD_OWNED_EXPLOSION & sender cped netobj id.
+								)
 							{
-								if (auto weap = static_cast<CPed*>(ent)->weapon_manager->GetEquippedWeapon())
-								{
-									if (!weap->m_pDrawableEntity
-										|| !weap->m_pDrawableEntity->archetype
-										|| weap->m_pDrawableEntity->archetype->GetModelType() != MI_TYPE_WEAPON
-										)
-									{
-										// Game would deref nullptr here. Not exactly bad because we can catch exceptions, but some co-loads can't.
-										tally.add(FlowEvent::SE_CRASH, "NC");
-									}
-								}
+#if HAS_EXPBLAME
+								reactions |= sender_ap.triggerDetection(FlowEvent::MOD_EXPBLAME, LANG_FMT("VICTIM", ped.getPlayer().getName()), 75);
+#else
+								reactions |= sender_ap.triggerDetection(FlowEvent::MOD_BADEXPLOSION, "*", 75);
+#endif
 							}
 						}
 					}
+				}
+			}
 
-					buffer->seekStart();
-				}
-				break;
+			if (reactions & REACTION_BLOCK)
+			{
+				return NetEventEarlyExit::BLOCK;
+			}
 
-			case NETWORK_START_SYNCED_SCENE_EVENT: {
-				const unsigned SIZEOF_POSITION = 26;
-				const unsigned SIZEOF_QUAT = 30;
-				const unsigned SIZEOF_ATTACH_BONE = 8;
-				const unsigned SIZEOF_ANIM_HASH = 32;
-				const unsigned SIZEOF_BLEND_IN = 30;
-				const unsigned SIZEOF_BLEND_OUT = 30;
-				const unsigned SIZEOF_ANIM_FLAGS = 32;
-				const unsigned SIZEOF_RAGDOLL_BLOCKING_FLAGS = 32;
-				const unsigned SIZEOF_IK_FLAGS = /*eIkControlFlags_NUM_ENUMS + 1*/ 15;
-				const unsigned SIZEOF_PHASE = 9;
-				const unsigned SIZEOF_RATE = 8;
-				//const unsigned SIZEOF_NAME_HASH = 32;
-				//const float MAX_BLEND_IN_RATE = 1001.0f;
-				//const float MAX_BLEND_OUT_RATE = 1001.0f;
-				const unsigned MAX_PEDS_IN_SCENE = 10;
-				static const unsigned MAX_NON_PED_ENTITIES_IN_SCENE = 5;
-				static const unsigned MAX_MAP_ENTITIES_IN_SCENE = 1;
+			// Same as the other Crash Event (TC), just a different trigger.
+			if (data.m_explosionArgs.m_interiorLocation.as_interiorLocation.m_interiorIndex < -1)
+			{
+				tally.add(FlowEvent::SE_CRASH, "TC");
+			}
 
-				buffer->SkipBits(13); // m_SceneID
-				buffer->SkipBits(32); // m_NetworkTimeStarted
-				buffer->SkipBits(1); // sceneActive
-				buffer->SkipBits(SIZEOF_POSITION * 3); // m_ScenePosition
-				buffer->SkipBits(SIZEOF_QUAT * 4); // m_SceneRotation
-				if (buffer->readBool()) // hasAttachEntity
+			break;
+		}
+
+		case BLOW_UP_VEHICLE_EVENT:
+		case REQUEST_PHONE_EXPLOSION_EVENT:
+		{
+			const auto m_nVehicleID = buffer->readU16(13);
+
+			if (is_session_freeroam() // Just assuming these events have legitimacy in mission vehicles or something.
+				&& !sender_ap.inOurOrg() // See above. I feel like I remember some cargo missions detonatating our user vehicle too. It must be one of these events since it's not a spammed explosion, obv.
+				&& g_player_veh.isNetObjId(m_nVehicleID)
+				&& g_player_veh.isOwnerOfVehicleAndDriver()
+				)
+			{
+				tally.add(FlowEvent::NE_VEHTAKEOVER);
+			}
+
+			buffer->seekStart();
+		}
+		break;
+
+		case ACTIVATE_VEHICLE_SPECIAL_ABILITY_EVENT:
+		{
+			const auto m_vehicleID = buffer->readU16(13);
+
+			if (g_player_veh.isNetObjId(m_vehicleID)
+				&& g_player_veh.isOwnerOfVehicleAndDriver()
+				)
+			{
+				tally.add(FlowEvent::NE_VEHTAKEOVER);
+			}
+
+			buffer->seekStart();
+		}
+		break;
+
+		case CHANGE_RADIO_STATION_EVENT:
+		{
+			const auto m_vehicleID = buffer->readU16(13);
+
+			if (g_player_veh.isNetObjId(m_vehicleID)
+				&& sender_ap.getVehicle().getNetObjId() != m_vehicleID
+				)
+			{
+				tally.add(FlowEvent::NE_VEHTAKEOVER);
+			}
+
+			buffer->seekStart();
+		}
+		break;
+
+		case NETWORK_SOUND_CAR_HORN_EVENT:
+		{
+			const auto m_bIsHornOn = buffer->readBool();
+			const auto m_vehicleID = buffer->readU16(13);
+
+			if (sender_ap.getVehicle().getNetObjId() != m_vehicleID)
+			{
+				if (g_player_veh.isNetObjId(m_vehicleID))
 				{
-					buffer->SkipBits(13); // m_AttachToEntityID
-					buffer->SkipBits(SIZEOF_ATTACH_BONE); // m_AttachToBone
+					tally.add(FlowEvent::NE_VEHTAKEOVER);
 				}
-				if (!buffer->readBool()) // hasDefaultStopPhase
+				/*else
 				{
-					buffer->SkipBits(SIZEOF_PHASE); // m_PhaseToStopScene
-				}
-				if (!buffer->readBool()) // hasDefaultRate
+					tally.add(FlowEvent::SE_INVALID, "NA");
+				}*/
+			}
+
+			buffer->seekStart();
+		}
+		break;
+
+		case GIVE_PICKUP_REWARDS_EVENT:
+			if (is_session_freeroam())
+			{
+				const auto m_NumRewards = buffer->readU8(3);
+
+				for (uint8_t i = 0; i < m_NumRewards; ++i)
 				{
-					buffer->SkipBits(SIZEOF_RATE); // m_Rate
-				}
-				buffer->SkipBits(1); // m_HoldLastFrame
-				buffer->SkipBits(1); // m_Looped
-				buffer->SkipBits(SIZEOF_PHASE); // m_Phase
-				if (buffer->readBool()) // m_UseCamera
-				{
-					buffer->SkipBits(SIZEOF_ANIM_HASH); // m_CameraAnim
-				}
-				buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimDict
-				for (unsigned i = 0; i != MAX_PEDS_IN_SCENE; ++i)
-				{
-					if (buffer->readBool())
+					const auto hash = buffer->readU32();
+
+					if ((g_player_veh.isOwnerOfVehicleAndDriver() && hash == ATSTRINGHASH("REWARD_VEHICLE_FIX")) // Fixing our vehicle?
+						|| (!sender_ap.inOurOrg() && (hash == ATSTRINGHASH("REWARD_HEALTH") || hash == ATSTRINGHASH("REWARD_ARMOUR"))) // Healing us?
+						)
 					{
-						buffer->SkipBits(13); // m_PedID
-						buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimPartialHash
-						buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
-						buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
-						buffer->SkipBits(SIZEOF_BLEND_IN); // m_MoverBlendIn
-						buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
-						buffer->SkipBits(SIZEOF_RAGDOLL_BLOCKING_FLAGS); // m_RagdollBlockingFlags
-						buffer->SkipBits(SIZEOF_IK_FLAGS); // m_IkFlags
-					}
-				}
-				// Finally, the bit we're interested in...
-				for (unsigned i = 0; i != MAX_NON_PED_ENTITIES_IN_SCENE; ++i)
-				{
-					if (buffer->readBool())
-					{
-						auto objId = buffer->readU16(13);
-						buffer->SkipBits(SIZEOF_ANIM_HASH); // m_Anim
-						buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
-						buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
-						buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
-
-						if (g_player_veh.isNetObjId(objId))
-						{
-							tally.add(FlowEvent::NE_VEHTAKEOVER);
-							break;
-						}
+						tally.add(FlowEvent::SE_INVALID, "N8");
+						break;
 					}
 				}
 
 				buffer->seekStart();
-				break;
 			}
+			break;
+
+		case DOOR_BREAK_EVENT:
+			// This event is never sent, so this must be a modder.
+			tally.add(FlowEvent::SE_INVALID, "N9");
+			break;
+
+		case NETWORK_SPECIAL_FIRE_EQUIPPED_WEAPON:
+		{
+			const auto m_entityID = buffer->readU16(13);
+
+			if (auto n = (*pointers::network_object_mgr)->find_object_by_id(m_entityID, false))
+			{
+				if (auto ent = n->GetEntity())
+				{
+					if (ent->type == ENTITY_TYPE_PED)
+					{
+						if (auto weap = static_cast<CPed*>(ent)->weapon_manager->GetEquippedWeapon())
+						{
+							if (!weap->m_pDrawableEntity
+								|| !weap->m_pDrawableEntity->archetype
+								|| weap->m_pDrawableEntity->archetype->GetModelType() != MI_TYPE_WEAPON
+								)
+							{
+								// Game would deref nullptr here. Not exactly bad because we can catch exceptions, but some co-loads can't.
+								tally.add(FlowEvent::SE_CRASH, "NC");
+							}
+						}
+					}
+				}
+			}
+
+			buffer->seekStart();
+		}
+		break;
+
+		case NETWORK_START_SYNCED_SCENE_EVENT: {
+			const unsigned SIZEOF_POSITION = 26;
+			const unsigned SIZEOF_QUAT = 30;
+			const unsigned SIZEOF_ATTACH_BONE = 8;
+			const unsigned SIZEOF_ANIM_HASH = 32;
+			const unsigned SIZEOF_BLEND_IN = 30;
+			const unsigned SIZEOF_BLEND_OUT = 30;
+			const unsigned SIZEOF_ANIM_FLAGS = 32;
+			const unsigned SIZEOF_RAGDOLL_BLOCKING_FLAGS = 32;
+			const unsigned SIZEOF_IK_FLAGS = /*eIkControlFlags_NUM_ENUMS + 1*/ 15;
+			const unsigned SIZEOF_PHASE = 9;
+			const unsigned SIZEOF_RATE = 8;
+			//const unsigned SIZEOF_NAME_HASH = 32;
+			//const float MAX_BLEND_IN_RATE = 1001.0f;
+			//const float MAX_BLEND_OUT_RATE = 1001.0f;
+			const unsigned MAX_PEDS_IN_SCENE = 10;
+			static const unsigned MAX_NON_PED_ENTITIES_IN_SCENE = 5;
+			static const unsigned MAX_MAP_ENTITIES_IN_SCENE = 1;
+
+			buffer->SkipBits(13); // m_SceneID
+			buffer->SkipBits(32); // m_NetworkTimeStarted
+			buffer->SkipBits(1); // sceneActive
+			buffer->SkipBits(SIZEOF_POSITION * 3); // m_ScenePosition
+			buffer->SkipBits(SIZEOF_QUAT * 4); // m_SceneRotation
+			if (buffer->readBool()) // hasAttachEntity
+			{
+				buffer->SkipBits(13); // m_AttachToEntityID
+				buffer->SkipBits(SIZEOF_ATTACH_BONE); // m_AttachToBone
+			}
+			if (!buffer->readBool()) // hasDefaultStopPhase
+			{
+				buffer->SkipBits(SIZEOF_PHASE); // m_PhaseToStopScene
+			}
+			if (!buffer->readBool()) // hasDefaultRate
+			{
+				buffer->SkipBits(SIZEOF_RATE); // m_Rate
+			}
+			buffer->SkipBits(1); // m_HoldLastFrame
+			buffer->SkipBits(1); // m_Looped
+			buffer->SkipBits(SIZEOF_PHASE); // m_Phase
+			if (buffer->readBool()) // m_UseCamera
+			{
+				buffer->SkipBits(SIZEOF_ANIM_HASH); // m_CameraAnim
+			}
+			buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimDict
+			for (unsigned i = 0; i != MAX_PEDS_IN_SCENE; ++i)
+			{
+				if (buffer->readBool())
+				{
+					buffer->SkipBits(13); // m_PedID
+					buffer->SkipBits(SIZEOF_ANIM_HASH); // m_AnimPartialHash
+					buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
+					buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
+					buffer->SkipBits(SIZEOF_BLEND_IN); // m_MoverBlendIn
+					buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
+					buffer->SkipBits(SIZEOF_RAGDOLL_BLOCKING_FLAGS); // m_RagdollBlockingFlags
+					buffer->SkipBits(SIZEOF_IK_FLAGS); // m_IkFlags
+				}
+			}
+			// Finally, the bit we're interested in...
+			for (unsigned i = 0; i != MAX_NON_PED_ENTITIES_IN_SCENE; ++i)
+			{
+				if (buffer->readBool())
+				{
+					auto objId = buffer->readU16(13);
+					buffer->SkipBits(SIZEOF_ANIM_HASH); // m_Anim
+					buffer->SkipBits(SIZEOF_BLEND_IN); // m_BlendIn
+					buffer->SkipBits(SIZEOF_BLEND_OUT); // m_BlendOut
+					buffer->SkipBits(SIZEOF_ANIM_FLAGS); // m_Flags
+
+					if (g_player_veh.isNetObjId(objId))
+					{
+						tally.add(FlowEvent::NE_VEHTAKEOVER);
+						break;
+					}
+				}
+			}
+
+			buffer->seekStart();
+			break;
+		}
 
 #if false
-			case NETWORK_TRAIN_REPORT_EVENT:
-			case NETWORK_TRAIN_REQUEST_EVENT:
-				// gTrainTracks happens to overflow into CPropellerCollisionProcessor.
-				// These events are not the same, but both use the first 4 bits for track index.
-				auto traintrack = buffer->readU8(4);
-				if (traintrack >= 12)
-				{
-					tally.add(FlowEvent::SE_CRASH, "NA");
-				}
-				buffer->seekStart();
-				break;
+		case NETWORK_TRAIN_REPORT_EVENT:
+		case NETWORK_TRAIN_REQUEST_EVENT:
+			// gTrainTracks happens to overflow into CPropellerCollisionProcessor.
+			// These events are not the same, but both use the first 4 bits for track index.
+			auto traintrack = buffer->readU8(4);
+			if (traintrack >= 12)
+			{
+				tally.add(FlowEvent::SE_CRASH, "NA");
+			}
+			buffer->seekStart();
+			break;
 #endif
 		}
 		// React
@@ -3625,25 +3620,25 @@ namespace Stand::hooks
 			switch (event_id)
 			{
 			case GIVE_WEAPON_EVENT:
-				{
-					buffer->seekStart();
-					stream << CGiveWeaponEvent(buffer).toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				stream << CGiveWeaponEvent(buffer).toString();
+			}
+			break;
 
 			case REMOVE_WEAPON_EVENT:
-				{
-					buffer->seekStart();
-					stream << CRemoveWeaponEvent(buffer).toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				stream << CRemoveWeaponEvent(buffer).toString();
+			}
+			break;
 
 			case REMOVE_ALL_WEAPONS_EVENT:
-				{
-					buffer->seekStart();
-					stream << fmt::format(" ({})", g_player_ped.isNetObjId(buffer->readU16(13)));
-				}
-				break;
+			{
+				buffer->seekStart();
+				stream << fmt::format(" ({})", g_player_ped.isNetObjId(buffer->readU16(13)));
+			}
+			break;
 
 			case GIVE_PICKUP_REWARDS_EVENT:
 			{
@@ -3656,28 +3651,28 @@ namespace Stand::hooks
 			break;
 
 			case NETWORK_PLAY_SOUND_EVENT:
-				{
-					buffer->seekStart();
-					const auto data = CNetworkPlaySoundEvent(buffer);
-					stream << data.toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				const auto data = CNetworkPlaySoundEvent(buffer);
+				stream << data.toString();
+			}
+			break;
 
 			case NETWORK_PTFX_EVENT:
-				{
-					buffer->seekStart();
-					const auto data = CNetworkPtFXEvent(buffer);
-					stream << data.toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				const auto data = CNetworkPtFXEvent(buffer);
+				stream << data.toString();
+			}
+			break;
 
 			case WEAPON_DAMAGE_EVENT:
-				{
-					buffer->seekStart();
-					const auto data = CWeaponDamageEvent(buffer);
-					stream << data.toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				const auto data = CWeaponDamageEvent(buffer);
+				stream << data.toString();
+			}
+			break;
 
 			case EXPLOSION_EVENT:
 			{
@@ -3688,91 +3683,91 @@ namespace Stand::hooks
 			break;
 
 			case REQUEST_CONTROL_EVENT:
-				{
-					buffer->seekStart();
-					auto object_id = buffer->readU16(13);
-					stream << " {Object ID: ";
-					stream << fmt::to_string(object_id);
-					stream << "}";
-				}
-				break;
+			{
+				buffer->seekStart();
+				auto object_id = buffer->readU16(13);
+				stream << " {Object ID: ";
+				stream << fmt::to_string(object_id);
+				stream << "}";
+			}
+			break;
 
 			case SCRIPT_ENTITY_STATE_CHANGE_EVENT:
-				{
-					buffer->seekStart();
-					auto object_id = buffer->readU16(13);
-					auto subevent_id = buffer->readU8(4);
-					stream << " {Object ID: ";
-					stream << fmt::to_string(object_id);
-					stream << ", Subevent: ";
-					stream << fmt::to_string(subevent_id);
-					stream << "}";
-				}
-				break;
+			{
+				buffer->seekStart();
+				auto object_id = buffer->readU16(13);
+				auto subevent_id = buffer->readU8(4);
+				stream << " {Object ID: ";
+				stream << fmt::to_string(object_id);
+				stream << ", Subevent: ";
+				stream << fmt::to_string(subevent_id);
+				stream << "}";
+			}
+			break;
 
 			case REPORT_MYSELF_EVENT:
-				{
-					buffer->seekStart();
-					auto type = buffer->readU32();
-					auto extra = buffer->readU32();
-					stream << " {Type: ";
-					stream << fmt::to_string(type);
-					stream << ", Extra: ";
-					stream << fmt::to_string(extra);
-					stream << "}";
-				}
-				break;
+			{
+				buffer->seekStart();
+				auto type = buffer->readU32();
+				auto extra = buffer->readU32();
+				stream << " {Type: ";
+				stream << fmt::to_string(type);
+				stream << ", Extra: ";
+				stream << fmt::to_string(extra);
+				stream << "}";
+			}
+			break;
 
 			case CLEAR_AREA_EVENT:
-				{
-					buffer->seekStart();
-					stream << CClearAreaEvent(buffer).toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				stream << CClearAreaEvent(buffer).toString();
+			}
+			break;
 
 			case START_PROJECTILE_EVENT:
-				{
-					buffer->seekStart();
-					stream << CStartProjectileEvent(buffer).toString();
-				}
-				break;
+			{
+				buffer->seekStart();
+				stream << CStartProjectileEvent(buffer).toString();
+			}
+			break;
 
 			case SCRIPT_WORLD_STATE_EVENT:
+			{
+				buffer->seekStart();
+
+				auto type = buffer->readU8(4);
+				auto change_state = buffer->readBool();
+
+				CGameScriptId id;
+				id.read(*buffer);
+
+				if (type == NET_WORLD_STATE_ROPE)
 				{
-					buffer->seekStart();
+					buffer->SkipBits(9); // rope id
+					buffer->SkipBits(19); // pos x (float!)
+					buffer->SkipBits(19); // pos y (float!)
+					buffer->SkipBits(19); // pos z (float!)
+					buffer->SkipBits(19); // rot x (float!)
+					buffer->SkipBits(19); // rot y (float!)
+					buffer->SkipBits(19); // rot z (float!)
+					float max_length = buffer->readSignedFloat(16, 100.0f);
+					auto type = buffer->readI32(4);
+					float init_length = buffer->readSignedFloat(16, 100.0f);
+					float min_length = buffer->readSignedFloat(16, 100.0f);
 
-					auto type = buffer->readU8(4);
-					auto change_state = buffer->readBool();
-
-					CGameScriptId id;
-					id.read(*buffer);
-
-					if (type == NET_WORLD_STATE_ROPE)
-					{
-						buffer->SkipBits(9); // rope id
-						buffer->SkipBits(19); // pos x (float!)
-						buffer->SkipBits(19); // pos y (float!)
-						buffer->SkipBits(19); // pos z (float!)
-						buffer->SkipBits(19); // rot x (float!)
-						buffer->SkipBits(19); // rot y (float!)
-						buffer->SkipBits(19); // rot z (float!)
-						float max_length = buffer->readSignedFloat(16, 100.0f);
-						auto type = buffer->readI32(4);
-						float init_length = buffer->readSignedFloat(16, 100.0f);
-						float min_length = buffer->readSignedFloat(16, 100.0f);
-
-						stream << ", Subtype: Rope, {Type: ";
-						stream << type;
-						stream << ", Init Length: ";
-						stream << init_length;
-						stream << ", Min Length: ";
-						stream << min_length;
-						stream << ", Max Length: ";
-						stream << max_length;
-						stream << "}";
-					}
+					stream << ", Subtype: Rope, {Type: ";
+					stream << type;
+					stream << ", Init Length: ";
+					stream << init_length;
+					stream << ", Min Length: ";
+					stream << min_length;
+					stream << ", Max Length: ";
+					stream << max_length;
+					stream << "}";
 				}
-				break;
+			}
+			break;
 			}
 			Util::toast(stream.str(), tf);
 			buffer->seekStart();
@@ -3857,15 +3852,15 @@ namespace Stand::hooks
 			break;
 
 		case EVENT_NETWORK_CONNECTION_TIMEOUT:
+		{
+			int args[1 * 2]{};
+			event->RetrieveData(args, sizeof(args));
+			if (auto gamer_info = AbstractPlayer(args[0]).getGamerInfoNoFallback())
 			{
-				int args[1 * 2]{};
-				event->RetrieveData(args, sizeof(args));
-				if (auto gamer_info = AbstractPlayer(args[0]).getGamerInfoNoFallback())
-				{
-					LeaveReasons::onTimedOut(*gamer_info);
-				}
+				LeaveReasons::onTimedOut(*gamer_info);
 			}
-			break;
+		}
+		break;
 
 		case EVENT_NETWORK_PLAYER_COLLECTED_AMBIENT_PICKUP:
 		{
@@ -4075,24 +4070,24 @@ namespace Stand::hooks
 			break;
 
 		case EVENT_TEXT_MESSAGE_RECEIVED:
+		{
+			constexpr auto args_size = (29 * 2);
+			auto args = std::make_shared<int[]>(args_size);
+			event->RetrieveData(args.get(), args_size * sizeof(int));
+
+			AbstractPlayer sender = packet_src;
+			Player blamed_sender = NETWORK::NETWORK_GET_PLAYER_FROM_GAMER_HANDLE((Any*)&args[16 * 2]);
+			if (!packet_src.isValid())
 			{
-				constexpr auto args_size = (29 * 2);
-				auto args = std::make_shared<int[]>(args_size);
-				event->RetrieveData(args.get(), args_size * sizeof(int));
-
-				AbstractPlayer sender = packet_src;
-				Player blamed_sender = NETWORK::NETWORK_GET_PLAYER_FROM_GAMER_HANDLE((Any*)&args[16 * 2]);
-				if (!packet_src.isValid())
-				{
-					sender = blamed_sender;
-				}
-
-				if (processSms(sender, (const char*)&args[0]))
-				{
-					return true;
-				}
+				sender = blamed_sender;
 			}
-			break;
+
+			if (processSms(sender, (const char*)&args[0]))
+			{
+				return true;
+			}
+		}
+		break;
 		}
 		return false;
 	}
@@ -4163,16 +4158,16 @@ namespace Stand::hooks
 
 	CBaseModelInfo* __fastcall rage_fwArchetypeManager_GetArchetypeFromHashKey(Hash modelHash, unsigned int* index)
 	{
-		SOUP_IF_LIKELY (g_gta_module.range.contains(_ReturnAddress()))
+		SOUP_IF_LIKELY(g_gta_module.range.contains(_ReturnAddress()))
 		{
 			EXCEPTIONAL_LOCK(g_hooking.first_model_info_request_times_mtx)
-			if (g_hooking.first_model_info_request_times.find(modelHash) == g_hooking.first_model_info_request_times.end())
-			{
-				g_hooking.first_model_info_request_times.emplace(modelHash, get_current_time_millis());
-			}
+				if (g_hooking.first_model_info_request_times.find(modelHash) == g_hooking.first_model_info_request_times.end())
+				{
+					g_hooking.first_model_info_request_times.emplace(modelHash, get_current_time_millis());
+				}
 			EXCEPTIONAL_UNLOCK(g_hooking.first_model_info_request_times_mtx)
 		}
-		SOUP_IF_UNLIKELY (AbstractModel(modelHash).isNull())
+		SOUP_IF_UNLIKELY(AbstractModel(modelHash).isNull())
 		{
 			// Some 2take1 luas use the fact that "slod_human" fails to load as a "coloading with Stand" detection
 			if (!ColoadMgr::coloading_with_2take1menu)
@@ -4485,15 +4480,15 @@ namespace Stand::hooks
 				}
 				else
 				{
-					SOUP_IF_LIKELY (gstype.has_value())
+					SOUP_IF_LIKELY(gstype.has_value())
 					{
 						g->processGamerState(true, std::move(gsinfo), gstype.value());
 					}
-					else
-					{
-						// If no value, default to public. Rare, but can happen.
-						g->processGamerState(true, std::move(gsinfo), GS_PUBLIC);
-					}
+				else
+				{
+					// If no value, default to public. Rare, but can happen.
+					g->processGamerState(true, std::move(gsinfo), GS_PUBLIC);
+				}
 				}
 			}
 		}
@@ -4608,7 +4603,7 @@ namespace Stand::hooks
 				bool in_progress = ((discriminator >> 16) & 0b1);
 				bool free_aim = ((discriminator >> 17) & 0b1);
 				uint16_t user = (discriminator >> 18);
-				
+
 				SessionAttributes attrs;
 				attrs.user = user;
 				attrs.visible = visible;
@@ -4660,24 +4655,24 @@ namespace Stand::hooks
 				{
 					task->results = og_results;
 					std::sort(Matchmaking::results, Matchmaking::results + task->num_results, [](const rage::rlSessionInfo& a, const rage::rlSessionInfo& b)
-					{
-						if (a.id == 0)
 						{
-							return false;
-						}
-						if (b.id == 0)
-						{
-							return true;
-						}
+							if (a.id == 0)
+							{
+								return false;
+							}
+							if (b.id == 0)
+							{
+								return true;
+							}
 
-						const SessionAttributes& a_attrs = Matchmaking::getSessionAttributes(a.getIdHash());
-						const SessionAttributes& b_attrs = Matchmaking::getSessionAttributes(b.getIdHash());
+							const SessionAttributes& a_attrs = Matchmaking::getSessionAttributes(a.getIdHash());
+							const SessionAttributes& b_attrs = Matchmaking::getSessionAttributes(b.getIdHash());
 
-						auto a_dist = abs(a_attrs.players - g_hooking.magnet_matchmaking);
-						auto b_dist = abs(b_attrs.players - g_hooking.magnet_matchmaking);
+							auto a_dist = abs(a_attrs.players - g_hooking.magnet_matchmaking);
+							auto b_dist = abs(b_attrs.players - g_hooking.magnet_matchmaking);
 
-						return a_dist < b_dist;
-					});
+							return a_dist < b_dist;
+						});
 					Matchmaking::clear();
 					if (task->num_results < og_maxResults)
 					{
@@ -4718,38 +4713,38 @@ namespace Stand::hooks
 			status->m_Status = rage::netStatus::PENDING;
 
 			FiberPool::queueJob([=]
-			{
-				// Publishing a legitimate advertisement allows us to use rage_rlScMatchmaking_Unadvertise to attach multiplexed advertisement cleanup to legitimate advertisement cleanup.
-				rage::netStatus legitimate;
-				if (!OG(rage_rlScMatchmaking_Advertise)(localGamerIndex, numSlots, availableSlots, attrs, sessionId, sessionInfo, matchId, &legitimate))
 				{
-					status->m_Status = rage::netStatus::FAILED;
-					return;
-				}
-
-				legitimate.waitUntilDone();
-				if (legitimate.m_StatusCode != rage::netStatus::SUCCEEDED)
-				{
-					status->m_Status = rage::netStatus::FAILED;
-					return;
-				}
-
-				for (uint8_t i = 0; i != 10; ++i)
-				{
-					rage::netStatus multiplex_status{};
-					rage::rlScMatchmakingMatchId id{};
-					if (OG(rage_rlScMatchmaking_Advertise)(localGamerIndex, numSlots, availableSlots, attrs, sessionId, sessionInfo, &id, &multiplex_status))
+					// Publishing a legitimate advertisement allows us to use rage_rlScMatchmaking_Unadvertise to attach multiplexed advertisement cleanup to legitimate advertisement cleanup.
+					rage::netStatus legitimate;
+					if (!OG(rage_rlScMatchmaking_Advertise)(localGamerIndex, numSlots, availableSlots, attrs, sessionId, sessionInfo, matchId, &legitimate))
 					{
-						multiplex_status.waitUntilDone();
-						if (multiplex_status.m_StatusCode == rage::netStatus::SUCCEEDED)
+						status->m_Status = rage::netStatus::FAILED;
+						return;
+					}
+
+					legitimate.waitUntilDone();
+					if (legitimate.m_StatusCode != rage::netStatus::SUCCEEDED)
+					{
+						status->m_Status = rage::netStatus::FAILED;
+						return;
+					}
+
+					for (uint8_t i = 0; i != 10; ++i)
+					{
+						rage::netStatus multiplex_status{};
+						rage::rlScMatchmakingMatchId id{};
+						if (OG(rage_rlScMatchmaking_Advertise)(localGamerIndex, numSlots, availableSlots, attrs, sessionId, sessionInfo, &id, &multiplex_status))
 						{
-							g_hooking.session_advertisements.emplace_back(std::move(id));
+							multiplex_status.waitUntilDone();
+							if (multiplex_status.m_StatusCode == rage::netStatus::SUCCEEDED)
+							{
+								g_hooking.session_advertisements.emplace_back(std::move(id));
+							}
 						}
 					}
-				}
 
-				status->m_StatusCode = rage::netStatus::SUCCEEDED;
-			});
+					status->m_StatusCode = rage::netStatus::SUCCEEDED;
+				});
 
 			return true;
 		}
@@ -4778,15 +4773,15 @@ namespace Stand::hooks
 			{
 				status->m_StatusCode = rage::netStatus::PENDING;
 				FiberPool::queueJob([=]
-				{
-					rage::netStatus legitimate_status{};
-					OG(rage_rlScMatchmaking_Unadvertise)(localGamerIndex, matchId, &legitimate_status);
+					{
+						rage::netStatus legitimate_status{};
+						OG(rage_rlScMatchmaking_Unadvertise)(localGamerIndex, matchId, &legitimate_status);
 
-					legitimate_status.waitUntilDone();
-					CommandPlayerMagnet::cleanup();
+						legitimate_status.waitUntilDone();
+						CommandPlayerMagnet::cleanup();
 
-					status->m_StatusCode = rage::netStatus::SUCCEEDED;
-				});
+						status->m_StatusCode = rage::netStatus::SUCCEEDED;
+					});
 
 				return true;
 			}
@@ -4807,7 +4802,7 @@ namespace Stand::hooks
 		{
 			msg->m_NumFilledPublicSlots = std::max(25u, msg->m_NumFilledPublicSlots);
 		}
-		
+
 		return OG(rage_netTransactor_SendResponse_rage_rlSessionDetailResponse)(_this, txInfo, msg);
 	}
 
@@ -5023,7 +5018,7 @@ namespace Stand::hooks
 	public:
 		void save()
 		{
-			SOUP_IF_UNLIKELY (correct_vft_pointer == nullptr)
+			SOUP_IF_UNLIKELY(correct_vft_pointer == nullptr)
 			{
 				for (int i = 0; i != MAX_PLAYERS; ++i)
 				{
@@ -5042,7 +5037,7 @@ namespace Stand::hooks
 		[[nodiscard]] bool checkAndRestore() const
 		{
 			bool ret = false;
-			SOUP_IF_LIKELY (correct_vft_pointer != nullptr)
+			SOUP_IF_LIKELY(correct_vft_pointer != nullptr)
 			{
 				for (int i = 0; i != MAX_PLAYERS; ++i)
 				{
@@ -5191,7 +5186,7 @@ namespace Stand::hooks
 			{
 				OG(received_clone_create)(mgr, sender, recipient, object_type, object_id, sync_flags, buffer, timestamp);
 			}
-			__EXCEPTIONAL_LOG_IF (aborting_sync == 0 && (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_c3_when_coloading))
+			__EXCEPTIONAL_LOG_IF(aborting_sync == 0 && (!ColoadMgr::coloading_with_any_menu || !g_hooking.ignore_crash_c3_when_coloading))
 			{
 				buffer->seekEnd();
 				if (aborting_sync != 0)
@@ -5263,7 +5258,7 @@ namespace Stand::hooks
 			{
 				ret = g_hooking.received_clone_sync_hook.getOriginal<decltype(&received_clone_sync)>()(mgr, sender, recipient, object_type, object_id, buffer, unk, timestamp);
 			}
-			__EXCEPTIONAL_LOG_IF (aborting_sync == 0)
+			__EXCEPTIONAL_LOG_IF(aborting_sync == 0)
 			{
 				buffer->seekEnd();
 				if (aborting_sync != 0)
@@ -5405,9 +5400,9 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCOUT_CLONE_CREATE);
 
 		bool can_send;
-		SOUP_IF_UNLIKELY (g_hooking.outgoing_train_create_exclusive.isActive()
+		SOUP_IF_UNLIKELY(g_hooking.outgoing_train_create_exclusive.isActive()
 			&& obj->object_type == NET_OBJ_TYPE_TRAIN
-			)
+		)
 		{
 			// Exclusive mode
 			can_send = g_hooking.outgoing_train_create_exclusive.contains(player);
@@ -5416,12 +5411,12 @@ namespace Stand::hooks
 		{
 			// Non-exclusive mode
 			can_send = !(t.reactions & REACTION_BLOCK);
-		}
-		SOUP_IF_LIKELY (can_send)
-		{
-			trySendCloneCreate(mgr, obj, player, buffer, t);
-		}
-		tryApplyCloneCreateReactionsOut(t);
+			}
+			SOUP_IF_LIKELY(can_send)
+			{
+				trySendCloneCreate(mgr, obj, player, buffer, t);
+			}
+			tryApplyCloneCreateReactionsOut(t);
 	}
 #endif
 
@@ -5471,9 +5466,9 @@ namespace Stand::hooks
 		EventTally t(sync_src, FlowEvent::SYNCOUT_CLONE_UPDATE);
 
 		bool can_send;
-		SOUP_IF_UNLIKELY (g_hooking.outgoing_player_sync_exclusive.isActive()
+		SOUP_IF_UNLIKELY(g_hooking.outgoing_player_sync_exclusive.isActive()
 			&& obj->object_type == NET_OBJ_TYPE_PLAYER
-			)
+		)
 		{
 			// Exclusive mode
 			can_send = g_hooking.outgoing_player_sync_exclusive.contains(player);
@@ -5482,12 +5477,12 @@ namespace Stand::hooks
 		{
 			// Non-exclusive mode
 			can_send = !(t.reactions & REACTION_BLOCK);
-		}
-		SOUP_IF_LIKELY (can_send)
-		{
-			trySendCloneSync(mgr, player, obj, a4, a5, a6, t);
-		}
-		tryApplyCloneSyncReactionsOut(t);
+			}
+			SOUP_IF_LIKELY(can_send)
+			{
+				trySendCloneSync(mgr, player, obj, a4, a5, a6, t);
+			}
+			tryApplyCloneSyncReactionsOut(t);
 	}
 #endif
 
@@ -5543,7 +5538,7 @@ namespace Stand::hooks
 			OG(rage_netSyncTree_Read)(tree, sync_type, sync_flags, buffer, logger);
 			sync_was_read = true;
 		}
-		__EXCEPTIONAL_LOG_IF (!ColoadMgr::coloading_with_cherax)
+		__EXCEPTIONAL_LOG_IF(!ColoadMgr::coloading_with_cherax)
 		{
 			buffer->seekEnd();
 		}
@@ -6537,9 +6532,9 @@ namespace Stand::hooks
 				if (player_tree->player_camera.applies)
 				{
 					// Counteract this garbage YimMenu does: https://github.com/YimMenu/YimMenu/blob/4046640c1e2e9f7fdd6d51895020889d98ca30b6/src/hooks/spoofing/write_node_data.cpp#L112
-					SOUP_IF_UNLIKELY (player_tree->player_camera.rotUpDown < 0.0f || player_tree->player_camera.rotUpDown > M_PI
+					SOUP_IF_UNLIKELY(player_tree->player_camera.rotUpDown < 0.0f || player_tree->player_camera.rotUpDown > M_PI
 						|| player_tree->player_camera.rotLeftRight < 0.0f || player_tree->player_camera.rotLeftRight > M_TAU
-						)
+					)
 					{
 						if (is_session_started_and_transition_finished())
 						{
@@ -6995,14 +6990,14 @@ namespace Stand::hooks
 
 	bool is_valid_model_object(int32_t model)
 	{
-		SOUP_IF_UNLIKELY (!AbstractModel(model).isObject())
+		SOUP_IF_UNLIKELY(!AbstractModel(model).isObject())
 		{
 			return false;
 		}
 
 		// These objects don't crash the game instantly, but they were not made to be spawned in as objects (despite not being world object), so they end up having their rage::fragType unloaded despite still existing in the world. You can imagine how having an object with a stale archtype pointer in the world ends... (CObjectFragmentDrawHandler::AddToDrawList hook attempts to patch this, but there are plenty of failure points...)
 		// Some of these seem to crash in CLightEntity code; these depend on having a parent entity which likely gets deleted when switching session.
-		SOUP_IF_UNLIKELY (g_objects_crash.contains(model))
+		SOUP_IF_UNLIKELY(g_objects_crash.contains(model))
 		{
 			return false;
 		}
@@ -7013,11 +7008,11 @@ namespace Stand::hooks
 	// Could probably use the same logic as is_valid_model_object, but this should reduce attack surface.
 	bool is_valid_model_pickup(int32_t model)
 	{
-		SOUP_IF_UNLIKELY (!AbstractModel(model).isObjectStrict())
+		SOUP_IF_UNLIKELY(!AbstractModel(model).isObjectStrict())
 		{
 			return false;
 		}
-		SOUP_IF_UNLIKELY (g_objects_crash.contains(model))
+		SOUP_IF_UNLIKELY(g_objects_crash.contains(model))
 		{
 			return false;
 		}
@@ -7031,19 +7026,17 @@ namespace Stand::hooks
 		case VEHICLE_TYPE_HELI:
 		case VEHICLE_TYPE_BLIMP:
 			return true;
-		default:
-			break;
 		}
 		return false;
 	}
 
 	void __fastcall CNetObjVehicle_SetVehicleControlData(uintptr_t _this, CVehicleControlDataNode* data)
 	{
-		SOUP_IF_UNLIKELY (data->m_isSubCar)
+		SOUP_IF_UNLIKELY(data->m_isSubCar)
 		{
 			auto obj = reinterpret_cast<CNetObjVehicle*>(_this - 0x200);
 			auto veh = static_cast<CVehicle*>(obj->game_obj);
-			SOUP_IF_UNLIKELY (!veh->GetSubHandling())
+			SOUP_IF_UNLIKELY(!veh->GetSubHandling())
 			{
 #if false // Might not always be initialised from give_control_event
 				sync_tally.add(FlowEvent::SE_CRASH, "PV");
@@ -7065,9 +7058,9 @@ namespace Stand::hooks
 			{
 				Util::toast("vehicle does have sub handling but was not declared to be a sub car?!");
 			}
-		}
+			}
 #endif
-		OG(CNetObjVehicle_SetVehicleControlData)(_this, data);
+			OG(CNetObjVehicle_SetVehicleControlData)(_this, data);
 	}
 
 	enum JoinSpecificSessionFlags : unsigned int
@@ -7191,7 +7184,7 @@ to_recover.emplace_back(addr, *addr); \
 		bool force_recalculate = false;
 		std::vector<std::pair<int*, int>> to_recover{};
 
-		SOUP_IF_UNLIKELY (g_hooking.pools_closed_kick.isActive())
+		SOUP_IF_UNLIKELY(g_hooking.pools_closed_kick.isActive())
 		{
 			beginBadSgTamperCodeThatWillLandUsInHell();
 			ScriptGlobal(GSBD).set<int>(g_hooking.pools_closed_kick.contains(player) ? 5 : 4);
@@ -7213,7 +7206,7 @@ to_recover.emplace_back(addr, *addr); \
 			}
 		}
 
-		SOUP_IF_LIKELY (!force_recalculate)
+		SOUP_IF_LIKELY(!force_recalculate)
 		{
 			OG(rage_netArrayHandlerBase_WriteUpdate)(_this, player, bitBuffer, updateSeq, currentElement, logSizes);
 			return;
@@ -7278,9 +7271,9 @@ to_recover.emplace_back(addr, *addr); \
 		case ATSTRINGHASH("GARAGE_TAMPER"):
 		case ATSTRINGHASH("FAIL_SERV"):
 		case ATSTRINGHASH("CODE_CRC"):
-		//case ATSTRINGHASH("COLLECTIBLE"): // Whenever we collect a collectible
+			//case ATSTRINGHASH("COLLECTIBLE"): // Whenever we collect a collectible
 		case ATSTRINGHASH("DUPE_DETECT"):
-		//case ATSTRINGHASH("MISMATCH"): // added in 3095, seems to be related to remote peers doing shit
+			//case ATSTRINGHASH("MISMATCH"): // added in 3095, seems to be related to remote peers doing shit
 		case ATSTRINGHASH("MISMATCH_TRIGGERED_EVENT"): // added in 3095
 		case ATSTRINGHASH("BLAST"):
 #ifdef STAND_DEBUG
@@ -7300,27 +7293,27 @@ to_recover.emplace_back(addr, *addr); \
 			break;
 
 		case ATSTRINGHASH("MM"): // loaded modules delta
+		{
+			std::string data = metric->getLogData();
+			if (data.find(soup::ObfusString("=534C5F").str()) != std::string::npos
+				|| data.find(soup::ObfusString("|534C5F").str()) != std::string::npos
+				)
 			{
-				std::string data = metric->getLogData();
-				if (data.find(soup::ObfusString("=534C5F").str()) != std::string::npos
-					|| data.find(soup::ObfusString("|534C5F").str()) != std::string::npos
-					)
-				{
-					allow = false; // a module starts with "SL_", that shouldn't happen
-				}
-				else
-				{
-#if false
-					// MM metric was submitted, now we can kill this AC thing, because this thing can leak memory and eventually crash the game.
-					// Unfortunately, killing this thing will cause a ban within 1-2 days when the user earns ton of money.
-					if (auto update_element = pointers::game_skeleton->findUpdateElement(0xA0F39FB6))
-					{
-						update_element->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
-					}
-#endif
-				}
+				allow = false; // a module starts with "SL_", that shouldn't happen
 			}
-			break;
+			else
+			{
+#if false
+				// MM metric was submitted, now we can kill this AC thing, because this thing can leak memory and eventually crash the game.
+				// Unfortunately, killing this thing will cause a ban within 1-2 days when the user earns ton of money.
+				if (auto update_element = pointers::game_skeleton->findUpdateElement(0xA0F39FB6))
+				{
+					update_element->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
+				}
+#endif
+			}
+		}
+		break;
 		}
 
 		// This _should_ be fully handled in CommandPlayer, but just in case...
@@ -7437,7 +7430,7 @@ to_recover.emplace_back(addr, *addr); \
 		__EXCEPTIONAL()
 		{
 		}
-		SOUP_IF_LIKELY (allow)
+		SOUP_IF_LIKELY(allow)
 		{
 			__try
 			{
@@ -7487,52 +7480,52 @@ to_recover.emplace_back(addr, *addr); \
 		else
 #endif
 			if (path.find(soup::ObfusString("GameTransactions.asmx").str()) != std::string::npos)
-		{
-			const bool is_bonus = (path.find(soup::ObfusString("GameTransactions.asmx/Bonus").str()) != std::string::npos);
-			if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
 			{
-				auto inst = soup::json::decode((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
-				if (auto items = inst->asObj().find(soup::ObfusString("items").str()))
+				const bool is_bonus = (path.find(soup::ObfusString("GameTransactions.asmx/Bonus").str()) != std::string::npos);
+				if (a1->m_QueuedChunks.m_tail && a1->m_QueuedChunks.m_tail->m_Data.m_Buf)
 				{
-					for (const auto& item : items->asArr())
+					auto inst = soup::json::decode((const char*)a1->m_QueuedChunks.m_tail->m_Data.m_Buf);
+					if (auto items = inst->asObj().find(soup::ObfusString("items").str()))
 					{
-						const auto itemId = item.asObj().at(soup::ObfusString("itemId").str()).asInt().value;
-						switch (itemId)
+						for (const auto& item : items->asArr())
 						{
-						default:
-							if (!is_bonus)
+							const auto itemId = item.asObj().at(soup::ObfusString("itemId").str()).asInt().value;
+							switch (itemId)
 							{
+							default:
+								if (!is_bonus)
+								{
+									break;
+								}
+								[[fallthrough]];
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_SE"): // -1862553257
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_FALL"): // 1604862494
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NOT_SEEN"): // -1454779202
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_DEATH"): // -2114390367
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_1"): // -1807935122
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_2"): // 2026037878
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_3"): // 1794983659
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_4"): // 612415999
+							case ATSTRINGHASH("SERVICE_EARN_JBONUS_MODEL"): // -782113305
+#ifdef STAND_DEBUG
+								onAcTriggered(fmt::to_string(itemId));
+#endif
+								[[fallthrough]];
+							case 1354049168:
+								block = true;
 								break;
 							}
-							[[fallthrough]];
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_SE"): // -1862553257
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_FALL"): // 1604862494
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NOT_SEEN"): // -1454779202
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_NO_DEATH"): // -2114390367
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_1"): // -1807935122
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_2"): // 2026037878
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_3"): // 1794983659
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_EV_4"): // 612415999
-						case ATSTRINGHASH("SERVICE_EARN_JBONUS_MODEL"): // -782113305
-#ifdef STAND_DEBUG
-							onAcTriggered(fmt::to_string(itemId));
-#endif
-							[[fallthrough]];
-						case 1354049168:
-							block = true;
-							break;
 						}
 					}
 				}
-			}
-			else if (is_bonus)
-			{
-				block = true;
+				else if (is_bonus)
+				{
+					block = true;
 #ifdef STAND_DEBUG
-				onAcTriggered("Bonus");
+					onAcTriggered("Bonus");
 #endif
+				}
 			}
-		}
 		return block;
 	}
 
@@ -7649,19 +7642,19 @@ to_recover.emplace_back(addr, *addr); \
 
 		switch (evt->type)
 		{
-			case NETWORK_PLAY_SOUND_EVENT:
-				if (g_hooking.play_sound_whitelist.contains(evt))
-				{
-					bitset = g_hooking.play_sound_whitelist.consumeForBitset(evt);
-				}
-				break;
+		case NETWORK_PLAY_SOUND_EVENT:
+			if (g_hooking.play_sound_whitelist.contains(evt))
+			{
+				bitset = g_hooking.play_sound_whitelist.consumeForBitset(evt);
+			}
+			break;
 
-			case NETWORK_STOP_SOUND_EVENT:
-				if (g_hooking.stop_sound_whitelist.contains(evt))
-				{
-					bitset = g_hooking.stop_sound_whitelist.consumeForBitset(evt);
-				}
-				break;
+		case NETWORK_STOP_SOUND_EVENT:
+			if (g_hooking.stop_sound_whitelist.contains(evt))
+			{
+				bitset = g_hooking.stop_sound_whitelist.consumeForBitset(evt);
+			}
+			break;
 		}
 
 #if defined(STAND_DEBUG) && false
@@ -7771,7 +7764,7 @@ to_recover.emplace_back(addr, *addr); \
 		auto* const _this = reinterpret_cast<rage::gameSkeleton::updateGroup*>(__this);
 		for (rage::gameSkeleton::updateBase* element = _this->m_Head; element != nullptr; element = element->m_Next)
 		{
-			SOUP_IF_UNLIKELY (element->m_Name == 0xA0F39FB6)
+			SOUP_IF_UNLIKELY(element->m_Name == 0xA0F39FB6)
 			{
 				static_cast<rage::gameSkeleton::updateElement*>(element)->m_UpdateFunction = reinterpret_cast<rage::gameSkeleton::fnUpdateFunction>(pointers::nullsub);
 			}
@@ -7814,7 +7807,7 @@ to_recover.emplace_back(addr, *addr); \
 
 	[[nodiscard]] static bool is_unwanted_dependency(rage::sysDependency* dep) noexcept
 	{
-		void* f1 = function_pointer_to_void(dep->m_Callback);
+		void* f1 = dep->m_Callback;
 		void* f2 = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x100);
 		void* f3 = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x1A0);
 
@@ -7851,7 +7844,7 @@ to_recover.emplace_back(addr, *addr); \
 	{
 		__try
 		{
-			SOUP_IF_UNLIKELY (is_unwanted_dependency(dep))
+			SOUP_IF_UNLIKELY(is_unwanted_dependency(dep))
 			{
 #ifdef STAND_DEBUG
 				//Util::toast("Blocking AC verifier", TOAST_ALL);
@@ -7859,8 +7852,8 @@ to_recover.emplace_back(addr, *addr); \
 				auto verifier = reinterpret_cast<AcVerifier*>(reinterpret_cast<uintptr_t>(dep) - 0x30);
 				verifier->m_delay.Set(INT_MAX);
 				dep->m_Callback = &nulldep;
-				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x100) = function_pointer_to_void(&nulldep);
-				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x1A0) = function_pointer_to_void(&nulldep);
+				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x100) = &nulldep;
+				*reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(dep) + 0x1A0) = &nulldep;
 				return;
 			}
 		}
@@ -7907,25 +7900,25 @@ to_recover.emplace_back(addr, *addr); \
 		switch (rage::atStringHash(event_type))
 		{
 		case static_cast<uint32_t>(ATSTRINGHASH("ginv")):
+		{
+			if (g_hooking.block_job_invites)
 			{
-				if (g_hooking.block_job_invites)
-				{
-					return false;
-				}
-
-				auto event_data = gm_evt[soup::ObfusString("d").c_str()].GetObj();
-				auto flags = event_data[soup::ObfusString("f").c_str()].GetUint64();
-				if (flags >= 0x5000000000000000)
-				{
-//#ifdef STAND_DEBUG
-//						Util::toast("blocked invite with bad flags", TOAST_ALL);
-//#endif
-					return false;
-				}
+				return false;
 			}
-			break;
 
-			// Letter Scraps: {"gm.evt":{"e":"StatUpdate","d":{"stat":-2044299740,"from":"MKII_Griefer","ival":50}}}
+			auto event_data = gm_evt[soup::ObfusString("d").c_str()].GetObj();
+			auto flags = event_data[soup::ObfusString("f").c_str()].GetUint64();
+			if (flags >= 0x5000000000000000)
+			{
+				//#ifdef STAND_DEBUG
+				//						Util::toast("blocked invite with bad flags", TOAST_ALL);
+				//#endif
+				return false;
+			}
+		}
+		break;
+
+		// Letter Scraps: {"gm.evt":{"e":"StatUpdate","d":{"stat":-2044299740,"from":"MKII_Griefer","ival":50}}}
 		case ATSTRINGHASH("StatUpdate"):
 			if (g_hooking.block_friend_stat_notifications)
 			{
@@ -7979,46 +7972,46 @@ to_recover.emplace_back(addr, *addr); \
 					std::string contents = msg.m_Contents;
 
 					auto b = HttpRequestBuilder{ HttpRequestBuilder::POST, "scui.rockstargames.com", "/api/messaging/getmessages" }
-					.addHeader("Authorization", ScAccount::getAuthorizationHeaderValue())
-					.addHeader("X-Requested-With", "XMLHttpRequest") // needed to avoid "CSRF" error
-					.addHeader("Content-Type", "application/json");
+						.addHeader("Authorization", ScAccount::getAuthorizationHeaderValue())
+						.addHeader("X-Requested-With", "XMLHttpRequest") // needed to avoid "CSRF" error
+						.addHeader("Content-Type", "application/json");
 					b.setPayload(std::move(std::string(R"({"env":"prod","title":"gta5","version":11,"senderRockstarId":")").append(fmt::to_string(sender_rid)).append(R"(","pageIndex":0})")));
 					b.setResponseCallback([sender_rid, sender_name{ std::move(sender_name) }, contents{ std::move(contents) }](soup::HttpResponse&& resp)
-					{
-						bool should_block = false;
-						std::string msg_contents{};
-						if (auto jr = soup::json::decode(resp.body); jr && jr->isObj())
 						{
-							if (auto MessageList = jr->asObj().find("MessageList"); MessageList && MessageList->isObj())
+							bool should_block = false;
+							std::string msg_contents{};
+							if (auto jr = soup::json::decode(resp.body); jr && jr->isObj())
 							{
-								if (auto Messages = MessageList->asObj().find("Messages"); Messages && Messages->isArr() && !Messages->asArr().children.empty())
+								if (auto MessageList = jr->asObj().find("MessageList"); MessageList && MessageList->isObj())
 								{
-									if (BgScript::hasFunction("dm"))
+									if (auto Messages = MessageList->asObj().find("Messages"); Messages && Messages->isArr() && !Messages->asArr().children.empty())
 									{
-										msg_contents = Messages->asArr().children.at(0)->asObj().at("Text").asStr().value;
-										should_block = BgScript::query("dm", sender_rid, msg_contents, /* since 114.2 */ sender_name);
+										if (BgScript::hasFunction("dm"))
+										{
+											msg_contents = Messages->asArr().children.at(0)->asObj().at("Text").asStr().value;
+											should_block = BgScript::query("dm", sender_rid, msg_contents, /* since 114.2 */ sender_name);
+										}
 									}
 								}
 							}
-						}
-						if (!should_block)
-						{
-							// This is not an ad; trigger notifications now.
-							if (g_hooking.scdm_scnotify || msg_contents.empty())
+							if (!should_block)
 							{
-								rage::rlScPresenceMessage presmsg{ 0, contents.c_str() };
-								OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(nullptr, presmsg, nullptr);
-							}
-							if (!msg_contents.empty())
-							{
-								if (auto tf = g_hooking.scdm_toasts.getToastFlags())
+								// This is not an ad; trigger notifications now.
+								if (g_hooking.scdm_scnotify || msg_contents.empty())
 								{
-									Util::toast(LANG_FMT("SCDMT_T", FMT_ARG("sender", sender_name), FMT_ARG("text", msg_contents)), tf);
+									rage::rlScPresenceMessage presmsg{ 0, contents.c_str() };
+									OG(rgsc_RgscPresenceManager_OnSocialClubEvent)(nullptr, presmsg, nullptr);
+								}
+								if (!msg_contents.empty())
+								{
+									if (auto tf = g_hooking.scdm_toasts.getToastFlags())
+									{
+										Util::toast(LANG_FMT("SCDMT_T", FMT_ARG("sender", sender_name), FMT_ARG("text", msg_contents)), tf);
+									}
 								}
 							}
-						}
-					})
-					.dispatch();
+						})
+						.dispatch();
 					return false; // Swallow this event. If this is not an ad, we will show the SC notification later.
 				}
 			}
@@ -8044,24 +8037,24 @@ to_recover.emplace_back(addr, *addr); \
 	static void informVehicleGadgetsRopeInstanceRemoved(rage::ropeInstance* pInst)
 	{
 		AbstractEntity::getAllVehicles([pInst](AbstractEntity&& ent)
-		{
-			auto veh = ent.getCVehicle();
-			for (const auto& gadget : veh->m_pVehicleGadgets)
 			{
-				switch (gadget->GetType())
+				auto veh = ent.getCVehicle();
+				for (const auto& gadget : veh->m_pVehicleGadgets)
 				{
-				case VGT_PICK_UP_ROPE:
-				case VGT_PICK_UP_ROPE_MAGNET:
-					static_cast<CVehicleGadgetPickUpRope*>(gadget)->processRopeInstanceBeingRemoved(pInst);
-					break;
+					switch (gadget->GetType())
+					{
+					case VGT_PICK_UP_ROPE:
+					case VGT_PICK_UP_ROPE_MAGNET:
+						static_cast<CVehicleGadgetPickUpRope*>(gadget)->processRopeInstanceBeingRemoved(pInst);
+						break;
 
-				case VGT_TOW_TRUCK_ARM:
-					static_cast<CVehicleGadgetTowArm*>(gadget)->processRopeInstanceBeingRemoved(pInst);
-					break;
+					case VGT_TOW_TRUCK_ARM:
+						static_cast<CVehicleGadgetTowArm*>(gadget)->processRopeInstanceBeingRemoved(pInst);
+						break;
+					}
 				}
-			}
-			CONSUMER_CONTINUE;
-		});
+				CONSUMER_CONTINUE;
+			});
 	}
 
 	void __fastcall rage_ropeManager_Remove(rage::ropeManager* _this, rage::ropeInstance* pInst)
@@ -8110,12 +8103,12 @@ to_recover.emplace_back(addr, *addr); \
 						{
 							auto rid = reinterpret_cast<rage::snEventAddedGamer*>(event)->gamer.getHandle().rockstar_id;
 							FiberPool::queueJob([rid]
-							{
-								if (auto host = AbstractPlayer::getHost(); host != g_player)
 								{
-									host.remoteDesync(rage::rlGamerHandle(rid));
-								}
-							});
+									if (auto host = AbstractPlayer::getHost(); host != g_player)
+									{
+										host.remoteDesync(rage::rlGamerHandle(rid));
+									}
+								});
 							return 0;
 						}
 #endif
@@ -8142,8 +8135,6 @@ to_recover.emplace_back(addr, *addr); \
 						}
 					}
 				}
-				break;
-			default:
 				break;
 			}
 			return OG(CNetworkSession_OnSessionEvent)(thisptr, a2, event);
@@ -8444,17 +8435,17 @@ to_recover.emplace_back(addr, *addr); \
 			}
 
 			std::sort(&task->friends[0], &task->friends[*task->num_friends], [](const rage::rlFriend& a, const rage::rlFriend& b)
-			{
-				if (a.IsInSession() != b.IsInSession())
 				{
-					return a.IsInSession();
-				}
-				if (a.sc_friend.IsOnline() != b.sc_friend.IsOnline())
-				{
-					return a.sc_friend.IsOnline();
-				}
-				return false;
-			});
+					if (a.IsInSession() != b.IsInSession())
+					{
+						return a.IsInSession();
+					}
+					if (a.sc_friend.IsOnline() != b.sc_friend.IsOnline())
+					{
+						return a.sc_friend.IsOnline();
+					}
+					return false;
+				});
 		}
 	}
 
@@ -8473,7 +8464,7 @@ to_recover.emplace_back(addr, *addr); \
 		pointers::CVehicleModelInfo_ctor(info);
 		info->Init();
 		info->hash = rage::atStringHash(name);
-		strcpy_s(info->hash_name, sizeof(info->hash_name), name);
+		strcpy(info->hash_name, name);
 		pointers::rage_fwArchetypeManager_RegisterStreamedArchetype(info, mapTypeDefIndex);
 		CustomDlcMgr::registerModel(info);
 		return info;

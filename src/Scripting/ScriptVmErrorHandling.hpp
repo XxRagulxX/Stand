@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <string>
 
-#include "natives_decl.hpp"
-#include "script_vm_reimpl.hpp"
+#include "Game/natives_decl.hpp"
+#include "Game/script_vm_reimpl.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ropemanager.hpp"
+#include "World/ropemanager.hpp"
 
 enum eVehicleGadgetType
 {
@@ -122,11 +122,4 @@ public:
 	/* 0x1EC */ int32_t m_iCurrentWeaponCounter;
 	/* 0x1F0 */ uint32_t m_uNextLaunchTime;
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CVehicleWeaponBattery, m_uNextLaunchTime) == 0x1F0);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

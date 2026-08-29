@@ -1,6 +1,6 @@
-#include "CommandReadonlyValueLambda.hpp"
+#include "Commands/Widgets/CommandReadonlyValueLambda.hpp"
 
-#include "CommandListReadonly.hpp"
+#include "Commands/Widgets/CommandListReadonly.hpp"
 
 namespace Stand
 {

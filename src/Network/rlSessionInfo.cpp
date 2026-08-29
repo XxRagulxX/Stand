@@ -1,12 +1,12 @@
-#include "rlSessionInfo.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 #include <windows.h>
 
-#include <soup/base64.hpp>
-#include <soup/joaat.hpp>
+#include "lib/soup/base64.hpp"
+#include "lib/soup/joaat.hpp"
 
-#include "datBitBuffer.hpp"
-#include "pointers.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Game/pointers.hpp"
 
 namespace rage
 {
@@ -35,7 +35,7 @@ namespace rage
 
 	void rlSessionInfo::reset()
 	{
-		ZeroMemory(static_cast<void*>(this), sizeof(*this));
+		ZeroMemory(this, sizeof(*this));
 	}
 
 	Stand::SessionId rlSessionInfo::getId() const

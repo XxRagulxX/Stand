@@ -1,16 +1,16 @@
 #pragma once
 
-#include "CommandInputTextLimitChars.hpp"
+#include "Commands/Widgets/CommandInputTextLimitChars.hpp"
 
-#include <soup/string.hpp>
+#include "lib/soup/string.hpp"
 
-#include "AbstractEntity.hpp"
-#include "CommandExtraInfo.hpp"
-#include "get_next_arg.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Stand/CommandExtraInfo.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

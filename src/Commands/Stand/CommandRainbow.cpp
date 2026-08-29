@@ -1,9 +1,9 @@
-#include "CommandRainbow.hpp"
+#include "Commands/Stand/CommandRainbow.hpp"
 
 #include <fmt/format.h>
 
-#include "get_current_time_millis.hpp"
-#include "regular_event.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

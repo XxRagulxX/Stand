@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_draw_handler.hpp"
+#include "Game/gta_draw_handler.hpp"
 
 class CVehicleDrawHandler : public CDynamicEntityDrawHandler
 {
@@ -69,11 +69,4 @@ public:
 	uint8_t m_neon_front; //0x0404
 	uint8_t m_neon_rear; //0x0405
 };
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 static_assert(offsetof(CVehicleDrawHandler, m_neon_rear) == 0x405);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandWithOnTickFocused.hpp"
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandWithOnTickFocused.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "DrawUtil3d.hpp"
-#include "natives.hpp"
-#include "Renderer.hpp"
+#include "Rendering/DrawUtil3d.hpp"
+#include "Game/natives.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

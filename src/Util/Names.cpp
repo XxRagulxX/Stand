@@ -1,6 +1,6 @@
-#include "Names.hpp"
+#include "Util/Names.hpp"
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
 namespace Stand
 {

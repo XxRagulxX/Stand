@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandIssuable.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
-#include "get_next_arg.hpp"
-#include "Script.hpp"
-#include "str2int.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/str2int.hpp"
 
 namespace Stand
 {

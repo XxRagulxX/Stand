@@ -1,8 +1,8 @@
 #pragma once
 
-#include <soup/TransientToken.hpp>
+#include "lib/soup/TransientToken.hpp"
 
-#include "TextureDynamic.hpp"
+#include "Rendering/TextureDynamic.hpp"
 
 namespace Stand
 {

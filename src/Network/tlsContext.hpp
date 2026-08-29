@@ -1,6 +1,6 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
 #include <windows.h>
 
@@ -28,6 +28,7 @@ namespace rage
 #endif
 	//static_assert(sizeof(tlsContext) == 0x2A58 + sizeof(bool));
 	static_assert(offsetof(tlsContext, m_script_thread) == 0x2A48); // 3889: 0x2A50 -> 0x2A48 (-0x8)
+
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif

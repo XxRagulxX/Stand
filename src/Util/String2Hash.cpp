@@ -1,6 +1,6 @@
-#include "String2Hash.hpp"
+#include "Util/String2Hash.hpp"
 
-#include "atStringHash.hpp"
+#include "Game/atStringHash.hpp"
 
 namespace Stand
 {

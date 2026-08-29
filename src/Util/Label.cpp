@@ -1,10 +1,10 @@
-#include "Label.hpp"
+#include "Util/Label.hpp"
 
-#include <soup/base.hpp>
+#include "lib/soup/base.hpp"
 
-#include "lang.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

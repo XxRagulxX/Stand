@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandWithEntityPreview.hpp"
-#include "CommandActionScript.hpp"
+#include "Commands/Widgets/CommandWithEntityPreview.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include "CommandListFolderItemData.hpp"
-#include "natives_decl.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Game/natives_decl.hpp"
 
 namespace Stand
 {

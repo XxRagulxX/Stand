@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "ExecCtx.hpp"
+#include "Core/ExecCtx.hpp"
 
 namespace Stand
 {
@@ -31,9 +31,9 @@ namespace Stand
 							// It is possible that onTickAsActiveList invokes inputBack, focuses another list, and that list now wants to register a script tick event handler.
 							// For that case, we signal that the lock can not be obtained right now.
 							ExecCtx::get().script_tick_event_mtx_is_locked = true;
-							ptr->template as<CommandListWithOnTickAsActiveList<T>>()->onTickAsActiveList();
+							ptr->as<CommandListWithOnTickAsActiveList<T>>()->onTickAsActiveList();
 							ExecCtx::get().script_tick_event_mtx_is_locked = false;
-							return ptr->template as<CommandListWithOnTickAsActiveList<T>>()->is_active;
+							return ptr->as<CommandListWithOnTickAsActiveList<T>>()->is_active;
 						}
 						return false;
 					});

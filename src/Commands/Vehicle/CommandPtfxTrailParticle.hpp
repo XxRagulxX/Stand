@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandListSelectParticle.hpp"
+#include "Commands/Stand/CommandListSelectParticle.hpp"
 
-#include "CommandPtfxTrail.hpp"
-#include "CommandSliderFloat.hpp"
+#include "Commands/Vehicle/CommandPtfxTrail.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
 namespace Stand
 {

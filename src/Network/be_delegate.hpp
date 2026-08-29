@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "be_client.hpp"
-#include "be_packet.hpp"
+#include "Network/be_client.hpp"
+#include "Network/be_packet.hpp"
 
 namespace battleye::delegate
 {

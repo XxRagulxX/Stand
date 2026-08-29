@@ -1,10 +1,10 @@
-#include "CommandInteriorVehware.hpp"
+#include "Commands/Vehicle/CommandInteriorVehware.hpp"
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
-#include "CommandInterior.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
+#include "Commands/World/CommandInterior.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {

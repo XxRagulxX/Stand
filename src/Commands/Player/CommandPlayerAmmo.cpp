@@ -1,18 +1,18 @@
-#include "CommandPlayerAmmo.hpp"
+#include "Commands/Player/CommandPlayerAmmo.hpp"
 
 #include <fmt/core.h>
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "CommandListPlayer.hpp"
-#include "CommandToggle.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "lang.hpp"
-#include "natives.hpp"
-#include "PlayerProvider.hpp"
-#include "pointers.hpp"
-#include "weapons.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Localization/lang.hpp"
+#include "Game/natives.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Game/pointers.hpp"
+#include "Weapons/weapons.hpp"
 
 namespace Stand
 {

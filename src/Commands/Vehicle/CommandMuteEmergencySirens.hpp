@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -17,7 +17,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				if (g_player_veh.isValid() && g_player_veh.isOwnerOfVehicleAndDriver())
 				{

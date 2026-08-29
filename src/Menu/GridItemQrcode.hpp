@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GridItem.hpp"
+#include "Menu/GridItem.hpp"
 
-#include <soup/Canvas.hpp>
+#include "lib/soup/Canvas.hpp"
 
 namespace Stand
 {

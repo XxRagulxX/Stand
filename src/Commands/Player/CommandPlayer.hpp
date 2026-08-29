@@ -1,15 +1,15 @@
 ﻿#pragma once
 
-#include "CommandListPlayer.hpp"
-#include "CommandPlayerPong.hpp"
-#include "dx_common.hpp"
-#include "natives_decl.hpp"
-#include "PlayerClassifier.hpp"
-#include "PlayerProviderSingle.hpp"
-#include "player_tags.hpp"
-#include "RateLimit.hpp"
-#include "RecursiveSpinlock.hpp"
-#include "vector.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Commands/Player/CommandPlayerPong.hpp"
+#include "Rendering/dx_common.hpp"
+#include "Game/natives_decl.hpp"
+#include "Network/PlayerClassifier.hpp"
+#include "Network/PlayerProviderSingle.hpp"
+#include "Network/player_tags.hpp"
+#include "Network/RateLimit.hpp"
+#include "Core/RecursiveSpinlock.hpp"
+#include "Util/vector.hpp"
 
 #define ASSUME_NO_RID_SPOOFING true
 

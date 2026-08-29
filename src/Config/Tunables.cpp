@@ -1,27 +1,27 @@
-#include "Tunables.hpp"
+#include "Config/Tunables.hpp"
 
-#include <soup/base64.hpp>
-#include <soup/json.hpp>
-#include <soup/Pattern.hpp>
-#include <soup/StringReader.hpp>
-#include <soup/tunables.hpp>
+#include "lib/soup/base64.hpp"
+#include "lib/soup/json.hpp"
+#include "lib/soup/Pattern.hpp"
+#include "lib/soup/StringReader.hpp"
+#include "lib/soup/tunables.hpp"
 
-#include "BgScript.hpp"
-#include "Blacklist.hpp"
-#include "blobfish_builtin.hpp"
-#include "Exceptional.hpp"
-#include "FileLogger.hpp"
-#include "Gui.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "main.hpp"
-#include "PackageMgr.hpp"
-#include "PointerCache.hpp"
-#include "SessionSpoofing.hpp"
+#include "Scripting/BgScript.hpp"
+#include "Network/Blacklist.hpp"
+#include "Scripting/blobfish_builtin.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FileLogger.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Core/main.hpp"
+#include "Game/PackageMgr.hpp"
+#include "Core/PointerCache.hpp"
+#include "Network/SessionSpoofing.hpp"
 
 #define TUNABLES_DEBUG false
 
 #if TUNABLES_DEBUG
-#include "Util.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

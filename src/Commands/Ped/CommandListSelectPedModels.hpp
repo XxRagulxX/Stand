@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "natives.hpp"
-#include "PedModel.hpp"
-#include "PedType.hpp"
-#include "Script.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Game/natives.hpp"
+#include "Ped/PedModel.hpp"
+#include "Ped/PedType.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

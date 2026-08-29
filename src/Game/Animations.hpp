@@ -3,11 +3,11 @@
 #include <vector>
 #include <string> 
 
-#include "AbstractEntity.hpp"
-#include "PedBoneId.hpp"
-#include "Label.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Ped/PedBoneId.hpp"
+#include "Util/Label.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

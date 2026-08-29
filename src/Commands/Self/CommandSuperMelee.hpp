@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "AbstractEntity.hpp"
-#include "eCommandApplyForceTypes.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/eCommandApplyForceTypes.hpp"
 
 namespace Stand
 {
@@ -51,7 +51,7 @@ namespace Stand
 				return;
 			}
 
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(value != 0);
 
@@ -80,7 +80,7 @@ namespace Stand
 						{
 							if (isPlayerVehicle(ent))
 							{
-								ent.requestControl(ATSTRINGHASH("CommandSuperMelee"), [=, this](AbstractEntity& ent)
+								ent.requestControl(ATSTRINGHASH("CommandSuperMelee"), [=](AbstractEntity& ent)
 								{
 									apply(ent);
 								});

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AbstractPlayer.hpp"
-#include "Codename.hpp"
-#include "EventLabel.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Util/Codename.hpp"
+#include "Core/EventLabel.hpp"
 
 namespace Stand
 {

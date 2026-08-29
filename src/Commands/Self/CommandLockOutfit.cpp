@@ -1,20 +1,20 @@
-#include "CommandLockOutfit.hpp"
+#include "Commands/Self/CommandLockOutfit.hpp"
 
 #include <fmt/core.h>
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "Auth.hpp"
-#include "CommandOutfitComponent.hpp"
-#include "CommandOutfitComponentVariation.hpp"
-#include "CommandList.hpp"
-#include "CommandOutfitProp.hpp"
-#include "CommandOutfitPropVariation.hpp"
-#include "Gui.hpp"
-#include "natives.hpp"
-#include "ScriptGlobal.hpp"
-#include "TransitionState.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Network/Auth.hpp"
+#include "Commands/Self/CommandOutfitComponent.hpp"
+#include "Commands/Self/CommandOutfitComponentVariation.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Self/CommandOutfitProp.hpp"
+#include "Commands/Self/CommandOutfitPropVariation.hpp"
+#include "Rendering/Gui.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Config/TransitionState.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

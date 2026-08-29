@@ -1,20 +1,20 @@
-﻿#include "Chat.hpp"
+﻿#include "Network/Chat.hpp"
 
-#include <soup/Uuid.hpp>
+#include "lib/soup/Uuid.hpp"
 #include <cstring>
 
-#include "CMultiplayerChat.hpp"
-#include "evtChatEvent.hpp"
-#include "CMsgTextMessage.hpp"
-#include "CNetGamePlayer.hpp"
-#include "gta_input.hpp"
-#include "Hooking.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
-#include "SpinlockHolder.hpp"
-#include "StringUtils.hpp"
+#include "Network/CMultiplayerChat.hpp"
+#include "Network/evtChatEvent.hpp"
+#include "Game/CMsgTextMessage.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Game/gta_input.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/SpinlockHolder.hpp"
+#include "Util/StringUtils.hpp"
 
 #define ENSURE_ONLINE(...) MULTI_MACRO(ENSURE_ONLINE, __VA_ARGS__)
 #define ENSURE_ONLINE_0() ENSURE_ONLINE_1(;)

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stackwalker/StackWalker.h>
+#include "lib/stackwalker/StackWalker.h"
 
 #include <optional>
 #include <vector>
 
-#include "ErrorCommons.hpp"
+#include "Core/ErrorCommons.hpp"
 
 #define GENERATE_STACK_TRACE ::Stand::MyStackWalker::getInstance()->generateStackTrace(::Stand::ErrorInfo::fromStack());
 

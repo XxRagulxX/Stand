@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 4.3.4)
 
 # Required for clang-cl cross-compilation
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
@@ -86,35 +86,15 @@ file(GLOB_RECURSE STAND_ASM CONFIGURE_DEPENDS
 # ------------------------------------------------------------
 # Stand include directories
 # ------------------------------------------------------------
-
-file(GLOB_RECURSE STAND_HEADERS CONFIGURE_DEPENDS
-    "${STAND_DIR}/*.hpp"
-)
-
-list(FILTER STAND_HEADERS EXCLUDE REGEX
-    "/pluto/"
-)
-
-list(FILTER STAND_HEADERS EXCLUDE REGEX
-    "/discord-rpc/"
-)
-
-list(FILTER STAND_HEADERS EXCLUDE REGEX
-    "/soup/"
-)
-
-list(FILTER STAND_HEADERS EXCLUDE REGEX
-    "/souplua/"
-)
-
-set(STAND_INCLUDE_DIRS "")
-
-foreach(stand_header ${STAND_HEADERS})
-    get_filename_component(stand_header_dir "${stand_header}" DIRECTORY)
-    list(APPEND STAND_INCLUDE_DIRS "${stand_header_dir}")
-endforeach()
-
-list(REMOVE_DUPLICATES STAND_INCLUDE_DIRS)
+#
+# Every #include of Stand's own code (or of a vendored library under
+# src/lib/) is written out fully qualified, relative to src/ - e.g.
+# #include "Game/CObject.hpp" or #include "lib/soup/rand.hpp" - so a
+# single include root (STAND_DIR, added below on the Stand/Pluto targets)
+# is all that's needed to resolve any of them. There is no longer a
+# per-directory list to keep in sync as files move between folders, and
+# no ambiguity when two folders happen to contain a same-named header
+# (see src/README.md).
 
 # ------------------------------------------------------------
 # Pluto / Lua sources
@@ -131,6 +111,12 @@ file(GLOB_RECURSE PLUTO_CPP CONFIGURE_DEPENDS
 # ------------------------------------------------------------
 # DirectXTK library
 # ------------------------------------------------------------
+# Vendored from https://github.com/microsoft/DirectXTK, currently at the
+# "may2026" release tag (May 7, 2026).
+
+# Defines STAND_COMPILE_DIRECTXTK_SHADERS and, only if it's ON,
+# stand_compile_directxtk_shaders() - see cmake/directxtk-shaders.cmake.
+include(cmake/directxtk-shaders.cmake)
 
 set(DIRECTXTK_SOURCE_DIR "${LIB_DIR}/directxtk")
 
@@ -185,6 +171,11 @@ add_library(DirectXTK STATIC
     ${DIRECTXTK_SOURCES}
 )
 
+target_compile_options(DirectXTK
+    PRIVATE
+        /w
+)
+
 target_include_directories(DirectXTK
     PUBLIC
         "${DIRECTXTK_SOURCE_DIR}/Inc"
@@ -192,9 +183,12 @@ target_include_directories(DirectXTK
     PRIVATE
         "${DIRECTXTK_SOURCE_DIR}/Src"
 
-        # Provides the precompiled "*.inc" shader blobs the sources above
-        # #include by bare filename.
-        "${DIRECTXTK_SOURCE_DIR}/shaders"
+        # Provides the compiled "*.inc" shader blobs the sources above
+        # #include by bare filename. lib/directxtk/shaders/ holds the
+        # *.hlsl these were compiled from (empty unless
+        # STAND_COMPILE_DIRECTXTK_SHADERS is being used - see
+        # cmake/directxtk-shaders.cmake).
+        "${DIRECTXTK_SOURCE_DIR}/shaderscompiled"
 )
 
 target_link_libraries(DirectXTK
@@ -205,9 +199,15 @@ target_link_libraries(DirectXTK
         windowscodecs
 )
 
+if(STAND_COMPILE_DIRECTXTK_SHADERS)
+    stand_compile_directxtk_shaders(DirectXTK "${DIRECTXTK_SOURCE_DIR}/shaderscompiled")
+endif()
+
 # ------------------------------------------------------------
 # fmt library
 # ------------------------------------------------------------
+# Vendored from https://github.com/fmtlib/fmt, currently at the
+# "12.2.0" release tag.
 
 set(FMT_SOURCE_DIR "${LIB_DIR}/fmt")
 
@@ -274,6 +274,11 @@ add_library(MinHook STATIC
     ${MINHOOK_SOURCES}
 )
 
+target_compile_options(MinHook
+    PRIVATE
+        /w
+)
+
 target_include_directories(MinHook
     PUBLIC
         "${MINHOOK_SOURCE_DIR}/include"
@@ -298,6 +303,11 @@ add_library(StackWalker STATIC
     "${STACKWALKER_SOURCE_DIR}/StackWalker.cpp"
 )
 
+target_compile_options(StackWalker
+    PRIVATE
+        /w
+)
+
 target_include_directories(StackWalker
     PUBLIC
         "${LIB_DIR}"
@@ -316,6 +326,11 @@ add_library(DiscordRPC STATIC
     "${DISCORD_RPC_DIR}/src/serialization.cpp"
 )
 
+target_compile_options(DiscordRPC
+    PRIVATE
+        /w
+)
+
 target_link_libraries(DiscordRPC
     PRIVATE
         # serialization.h (private header, not part of DiscordRPC's public
@@ -329,9 +344,6 @@ target_include_directories(DiscordRPC
 
     PRIVATE
         "${DISCORD_RPC_DIR}/src"
-        "${STAND_DIR}"
-        "${LIB_DIR}"
-        ${STAND_INCLUDE_DIRS}
 )
 
 # ------------------------------------------------------------
@@ -344,15 +356,20 @@ add_library(Pluto STATIC
     ${PLUTO_CPP}
 )
 
+target_compile_options(Pluto
+    PRIVATE
+        /w
+)
+
 target_include_directories(Pluto
     PUBLIC
         "${PLUTO_DIR}"
 
     PRIVATE
-        # Pluto used to vendor its own copy of Soup under
+        # Pluto reaches into the vendored Soup library with fully
+        # qualified includes, e.g. #include "lib/soup/rand.hpp" - so it
+        # only needs src/ itself on the path, same as the Stand target.
         "${STAND_DIR}"
-        "${LIB_DIR}"
-        ${STAND_INCLUDE_DIRS}
 )
 
 # ------------------------------------------------------------
@@ -383,11 +400,17 @@ set_target_properties(Stand PROPERTIES
 target_include_directories(Stand
     PRIVATE
 
+        # Every Stand-own header and every vendored library under
+        # src/lib/ is reached with a fully qualified #include relative
+        # to src/ - e.g. "Game/CObject.hpp" or "lib/soup/rand.hpp" - so
+        # src/ itself is the only include root Stand's own code needs.
         "${STAND_DIR}"
-        ${STAND_INCLUDE_DIRS}
 
-        "${LIB_DIR}"
-
+        # These vendored libraries are instead reached the way any
+        # third-party library normally is - unqualified, by their own
+        # public header name (<fmt/core.h>, <rapidjson/document.h>,
+        # <MinHook.h>, <lua.h>, DirectXTK's own headers) - so each gets
+        # its own public include root here.
         "${FMT_SOURCE_DIR}/include"
         "${RAPIDJSON_SOURCE_DIR}/include"
         "${MINHOOK_SOURCE_DIR}/include"

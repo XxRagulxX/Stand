@@ -1,8 +1,8 @@
-#include "tbDisableDeathbarriers.hpp"
+#include "Core/tbDisableDeathbarriers.hpp"
 
-#include "FiberPool.hpp"
-#include "regular_event.hpp"
-#include "ScriptGlobal.hpp"
+#include "Core/FiberPool.hpp"
+#include "Core/regular_event.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

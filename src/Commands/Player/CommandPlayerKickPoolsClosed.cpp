@@ -1,11 +1,11 @@
-#include "CommandPlayerKickPoolsClosed.hpp"
+#include "Commands/Player/CommandPlayerKickPoolsClosed.hpp"
 
-#include "Hooking.hpp"
-#include "Script.hpp"
-#include "ScriptHostUtil.hpp"
-#include "ScriptGlobal.hpp"
-#include "script_handler.hpp"
-#include "script_thread.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/ScriptHostUtil.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Game/script_handler.hpp"
+#include "Game/script_thread.hpp"
 
 namespace Stand
 {

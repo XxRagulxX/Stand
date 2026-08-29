@@ -1,10 +1,10 @@
-#include "FeatureCanvasDirect.hpp"
+#include "Menu/FeatureCanvasDirect.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "CommandPhysical.hpp" // HANDLER_CHECK, HANDLER_END
-#include "regular_event.hpp"
-#include "RenderTarget.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp" // HANDLER_CHECK, HANDLER_END
+#include "Core/regular_event.hpp"
+#include "Rendering/RenderTarget.hpp"
 
 namespace Stand
 {

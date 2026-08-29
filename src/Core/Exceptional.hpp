@@ -4,10 +4,10 @@
 #include <functional>
 #include <string>
 
-#include "DebugString.hpp"
-#include "ErrorCommons.hpp"
+#include "Core/DebugString.hpp"
+#include "Core/ErrorCommons.hpp"
 #ifdef STAND_DEBUG
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 #endif
 
 namespace Stand

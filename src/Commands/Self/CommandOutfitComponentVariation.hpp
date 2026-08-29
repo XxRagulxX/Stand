@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "outfit_data.hpp"
+#include "Ped/outfit_data.hpp"
 
 namespace Stand
 {

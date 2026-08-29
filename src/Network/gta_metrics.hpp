@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "RsonWriter.hpp"
+#include "Config/RsonWriter.hpp"
 
 namespace rage
 {

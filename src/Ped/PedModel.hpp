@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Label.hpp"
-#include "String2Hash.hpp"
+#include "Util/Label.hpp"
+#include "Util/String2Hash.hpp"
 
 namespace Stand
 {

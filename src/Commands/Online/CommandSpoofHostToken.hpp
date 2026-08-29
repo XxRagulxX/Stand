@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 namespace Stand
 {

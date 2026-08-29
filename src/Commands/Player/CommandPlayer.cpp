@@ -1,78 +1,78 @@
-#include "CommandPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
 
 #include <fmt/core.h>
 
-#include <soup/bitutil.hpp>
-#include <soup/country_names.hpp>
-#include <soup/JsonObject.hpp>
-#include <soup/netIntel.hpp>
-#include <soup/unicode.hpp>
+#include "lib/soup/bitutil.hpp"
+#include "lib/soup/country_names.hpp"
+#include "lib/soup/JsonObject.hpp"
+#include "lib/soup/netIntel.hpp"
+#include "lib/soup/unicode.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "AbstractPlayer.hpp"
-#include "AddressGamers.hpp"
-#include "Auth.hpp"
-#include "BattlEyeServer.hpp"
-#include "cidr.hpp"
-#include "ColoadMgr.hpp"
-#include "CNetGamePlayer.hpp"
-#include "CNetworkSession.hpp"
-#include "CommandHistoricPlayer.hpp"
-#include "CommandPlayerClassifier.hpp"
-#include "CommandPlayerClassifierDetection.hpp"
-#include "CommandPlayerIntel.hpp"
-#include "CommandToggle.hpp"
-#include "CPedIntelligence.hpp"
-#include "CPlayerInfo.hpp"
-#include "CTaskJump.hpp"
-#include "DirectPacket.hpp"
-#include "eTaskType.hpp"
-#include "evtFlowEventDoneEvent.hpp"
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "FiberPool.hpp"
-#include "fmt_arg.hpp"
-#include "get_current_time_millis.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "gta_ped.hpp"
-#include "get_seconds_since_unix_epoch.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "is_rid.hpp"
-#include "is_session.hpp"
-#include "joaatToString.hpp"
-#include "LeaveReasons.hpp"
-#include "FileLogger.hpp"
-#include "ManagedTunables.hpp"
-#include "name_validation.hpp"
-#include "natives.hpp"
-#include "netIpAddress.hpp"
-#include "netSocketAddress.hpp"
-#include "NuancedEventWithExtraData.hpp"
-#include "PlayerHistory.hpp"
-#include "PlayerListSort.hpp"
-#include "PlayerProviderSingle.hpp"
-#include "players_interface.hpp"
-#include "Pong.hpp"
-#include "pointers.hpp"
-#include "RemoteGamer.hpp"
-#include "Renderer.hpp"
-#include "reversible_scramble.hpp"
-#include "rlPc.hpp"
-#include "rlRosCredentials.hpp"
-#include "rockstar_admins.hpp"
-#include "Sanity.hpp"
-#include "Script.hpp"
-#include "script_events.hpp"
-#include "ScriptGlobal.hpp"
-#include "ScriptLocal.hpp"
-#include "script_thread.hpp"
-#include "SessionSpoofing.hpp"
-#include "StringUtils.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/AddressGamers.hpp"
+#include "Network/Auth.hpp"
+#include "Network/BattlEyeServer.hpp"
+#include "Util/cidr.hpp"
+#include "Game/ColoadMgr.hpp"
+#include "Network/CNetGamePlayer.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Commands/Player/CommandPlayerClassifier.hpp"
+#include "Commands/Player/CommandPlayerClassifierDetection.hpp"
+#include "Commands/Player/CommandPlayerIntel.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Ped/CPedIntelligence.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "Ped/CTaskJump.hpp"
+#include "Network/DirectPacket.hpp"
+#include "Ped/eTaskType.hpp"
+#include "Core/evtFlowEventDoneEvent.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/gta_ped.hpp"
+#include "Util/get_seconds_since_unix_epoch.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_rid.hpp"
+#include "Network/is_session.hpp"
+#include "Game/joaatToString.hpp"
+#include "Network/LeaveReasons.hpp"
+#include "Core/FileLogger.hpp"
+#include "Config/ManagedTunables.hpp"
+#include "Util/name_validation.hpp"
+#include "Game/natives.hpp"
+#include "Network/netIpAddress.hpp"
+#include "Network/netSocketAddress.hpp"
+#include "Core/NuancedEventWithExtraData.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Network/PlayerListSort.hpp"
+#include "Network/PlayerProviderSingle.hpp"
+#include "Network/players_interface.hpp"
+#include "Game/Pong.hpp"
+#include "Game/pointers.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Rendering/Renderer.hpp"
+#include "AntiCheat/reversible_scramble.hpp"
+#include "Network/rlPc.hpp"
+#include "Network/rlRosCredentials.hpp"
+#include "Network/rockstar_admins.hpp"
+#include "Core/Sanity.hpp"
+#include "Scripting/Script.hpp"
+#include "Network/script_events.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_thread.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Util/StringUtils.hpp"
 //#include "Tunables.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
 
 // When joining a new session,
 // 1. we send the session id to auth,
@@ -1465,7 +1465,7 @@ namespace Stand
 			const auto p = getPlayer();
 
 			auto classification_reactions = p.getReactions(FlowEvent::CLSFN_ANY);
-			classification_reactions |= p.getReactions(static_cast<flowevent_t>(static_cast<int>(FlowEvent::CLSFN_ANY)+ static_cast<int>(classification)));
+			classification_reactions |= p.getReactions(FlowEvent::CLSFN_ANY + classification);
 			return classification_reactions;
 		}
 
@@ -2186,8 +2186,8 @@ if (flags & (1 << id)) \
 #endif
 
 		case DP_HOSTSHARE_KICK_DESYNC:
-		{
-			ExecCtx::get().ensureScript([this, target{ (AbstractPlayer)(player_t)a1 }]
+			{
+				ExecCtx::get().ensureScript([this, target{ (AbstractPlayer)(player_t)a1 }]
 				{
 					if (g_player.isHost()
 						&& target != g_player
@@ -2195,31 +2195,19 @@ if (flags & (1 << id)) \
 						)
 					{
 #ifdef STAND_DEBUG
-						Util::toast(fmt::format(
-							"{} requested kick of {} via HostShare - Accepted.",
-							getPlayerName(),
-							target.getName()
-						));
+						Util::toast(fmt::format("{} requested kick of {} via HostShare - Accepted.", getPlayerName(), target.getName()));
 #endif
 						target.kickHostNoprekick(AbstractPlayer::DESYNC);
 						getPlayer().directPacketSend(DP_HOSTSHARE_ACK);
 					}
-				});
-		}
-		break;
-
-		case DP_DEV_CLEAR_DETECT:
-		case DP_DEV_FORCE_DETECT:
-			// Already handled before this switch.
-			break;
-
-#ifndef STAND_DEBUG
-		case DP_ADDR_RESPONSE:
-			// Debug-only packet handling.
-			break;
+					else
+					{
+#ifdef STAND_DEBUG
+						Util::toast(fmt::format("{} requested kick of {} via HostShare - Denied.", getPlayerName(), target.getName()));
 #endif
-
-		default:
+					}
+				});
+			}
 			break;
 		}
 	}

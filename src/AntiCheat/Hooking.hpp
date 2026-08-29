@@ -5,28 +5,28 @@
 
 #include <windows.h>
 
-#include <soup/ShortString.hpp>
+#include "lib/soup/ShortString.hpp"
 
-#include "fwddecl.hpp"
-#include "gta_fwddecl.hpp"
-#include "natives_decl.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
+#include "Game/natives_decl.hpp"
 
-#include "conf_antianticheat.hpp"
+#include "Config/conf_antianticheat.hpp"
 
-#include "Blamer.hpp"
-#include "rlclancommon.hpp"
-#include "DetourHook.hpp"
-#include "FlowEvent.hpp"
-#include "FlowEventReaction.hpp"
-#include "GamerIdentifier.hpp"
-#include "gta_entity.hpp"
-#include "AssociatedWhitelist.hpp"
-#include "rlSessionInfo.hpp"
-#include "rl_matching.hpp"
-#include "NetworkedSound.hpp"
-#include "Spinlock.hpp"
-#include "ToastConfig.hpp"
-#include "Whitelist.hpp"
+#include "Network/Blamer.hpp"
+#include "Network/rlclancommon.hpp"
+#include "AntiCheat/DetourHook.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Core/FlowEventReaction.hpp"
+#include "Network/GamerIdentifier.hpp"
+#include "Game/gta_entity.hpp"
+#include "Network/AssociatedWhitelist.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "Network/rl_matching.hpp"
+#include "Network/NetworkedSound.hpp"
+#include "Core/Spinlock.hpp"
+#include "Config/ToastConfig.hpp"
+#include "Network/Whitelist.hpp"
 
 #define HAVE_SUPERJUMP_ANTI_DETECTION false
 #define HAVE_SEND_CLONE_CREATE_HOOK false

@@ -1,8 +1,8 @@
-#include "CommandListSave.hpp"
+#include "Commands/Widgets/CommandListSave.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandListSaveAction.hpp"
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandListSaveAction.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 namespace Stand
 {

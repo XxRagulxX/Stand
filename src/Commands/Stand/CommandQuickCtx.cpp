@@ -1,11 +1,11 @@
-#include "CommandQuickCtx.hpp"
+#include "Commands/Stand/CommandQuickCtx.hpp"
 
-#include "CommandQuickCtxSave.hpp"
-#include "CommandQuickCtxLoad.hpp"
-#include "CommandQuickCtxDefault.hpp"
-#include "CommandQuickCtxRDefault.hpp"
-#include "CommandQuickCtxMin.hpp"
-#include "CommandQuickCtxMax.hpp"
+#include "Commands/Stand/CommandQuickCtxSave.hpp"
+#include "Commands/Stand/CommandQuickCtxLoad.hpp"
+#include "Commands/Stand/CommandQuickCtxDefault.hpp"
+#include "Commands/Stand/CommandQuickCtxRDefault.hpp"
+#include "Commands/Stand/CommandQuickCtxMin.hpp"
+#include "Commands/Stand/CommandQuickCtxMax.hpp"
 
 namespace Stand
 {

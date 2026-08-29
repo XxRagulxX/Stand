@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "datBase.hpp"
-#include "rlGamerHandle.hpp"
+#include "Game/datBase.hpp"
+#include "Network/rlGamerHandle.hpp"
 
 #pragma pack(push, 1)
 namespace rage

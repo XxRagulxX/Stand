@@ -1,18 +1,18 @@
-#include "SharedNativeHooks.hpp"
+#include "AntiCheat/SharedNativeHooks.hpp"
 
-#include "AbstractEntity.hpp"
-#include "Exceptional.hpp"
-#include "gta_entity.hpp"
-#include "Hooking.hpp"
-#include "is_session.hpp"
-#include "NativeTableHooks.hpp"
-#include "script_events.hpp"
-#include "ScriptEventTaxonomy.hpp"
-#include "script_thread.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/Exceptional.hpp"
+#include "Game/gta_entity.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/is_session.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
+#include "Network/script_events.hpp"
+#include "Scripting/ScriptEventTaxonomy.hpp"
+#include "Game/script_thread.hpp"
 
 #ifdef STAND_DEBUG
-#include "script_program.hpp"
-#include "Util.hpp"
+#include "Game/script_program.hpp"
+#include "Util/Util.hpp"
 #endif
 
 namespace Stand

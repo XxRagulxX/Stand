@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "AbstractEntity.hpp"
-#include "PlaceObjective.hpp"
-#include "TpUtil.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "World/PlaceObjective.hpp"
+#include "Core/TpUtil.hpp"
 
 namespace Stand
 {

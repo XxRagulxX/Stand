@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fwddecl.hpp"
-#include "GridItem.hpp"
+#include "Game/fwddecl.hpp"
+#include "Menu/GridItem.hpp"
 
 namespace Stand
 {

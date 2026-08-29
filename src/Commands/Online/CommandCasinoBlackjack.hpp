@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AntiAntiCheat.hpp"
-#include "ScriptLocal.hpp"
-#include "script_thread.hpp"
-#include "Tunables.hpp"
+#include "AntiCheat/AntiAntiCheat.hpp"
+#include "Scripting/ScriptLocal.hpp"
+#include "Game/script_thread.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

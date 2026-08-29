@@ -1,10 +1,10 @@
-#include "GridItemTabsVertical.hpp"
+#include "Menu/GridItemTabsVertical.hpp"
 
-#include "CommandTab.hpp"
-#include "Exceptional.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "Renderer.hpp"
+#include "Commands/Widgets/CommandTab.hpp"
+#include "Core/Exceptional.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {
@@ -52,9 +52,6 @@ namespace Stand
 
 			case ALIGN_TOP_RIGHT:
 				text_x += float(width - 5);
-				break;
-
-			default:
 				break;
 			}
 			std::wstring text = tab->as<CommandTab>()->render_name;

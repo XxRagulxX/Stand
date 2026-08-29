@@ -36,6 +36,23 @@ NAMESPACE_SOUP
 			return data;
 		}
 	};
+
+	// fmt (since well before the 12.2.0 this project vendors) no longer
+	// considers an implicit conversion operator - like the ones above -
+	// enough to make a type formattable; it needs either its own
+	// fmt::formatter<T> specialization or, as here, a format_as()
+	// overload it can find via ADL. Without this, fmt::format()-ing a
+	// native_u16_t/network_u16_t/etc. (there are several IntStruct-derived
+	// types, and Stand's own code formats a number of them, e.g. logging
+	// a port) fails to compile. This doesn't pull in any fmt header - just
+	// a plain function fmt's own templates look up by name when they
+	// need it, in whatever translation unit already includes fmt.
+	template <typename IntT>
+	constexpr auto format_as(const IntStruct<IntT>& v) noexcept -> IntT
+	{
+		return v.data;
+	}
+
 	static_assert(sizeof(IntStruct<uint8_t>) == sizeof(uint8_t));
 	static_assert(sizeof(IntStruct<uint16_t>) == sizeof(uint16_t));
 	static_assert(sizeof(IntStruct<uint32_t>) == sizeof(uint32_t));

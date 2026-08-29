@@ -1,7 +1,7 @@
-#include "CommandLockOnToAllVehicles.hpp"
+#include "Commands/Vehicle/CommandLockOnToAllVehicles.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_vehicle.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_vehicle.hpp"
 
 namespace Stand
 {
@@ -12,7 +12,7 @@ namespace Stand
 
 	void CommandLockOnToAllVehicles::onEnable(Click& click)
 	{
-		registerScriptTickEventHandler(click, [=, this]()
+		registerScriptTickEventHandler([this]
 		{
 			HANDLER_CHECK(m_on);
 			

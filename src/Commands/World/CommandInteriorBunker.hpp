@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandInteriorCustomisable.hpp"
+#include "Commands/World/CommandInteriorCustomisable.hpp"
 
-#include "CommandListSelect.hpp"
-#include "CommandToggleNoCorrelation.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
 namespace Stand
 {

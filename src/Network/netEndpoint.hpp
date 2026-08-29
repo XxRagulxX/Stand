@@ -1,13 +1,13 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "inmap.hpp"
-#include "net.hpp"
-#include "netAddress.hpp"
-#include "netConnection.hpp"
-#include "netPeerAddress.hpp"
-#include "netStatus.hpp"
+#include "Util/inmap.hpp"
+#include "Network/net.hpp"
+#include "Network/netAddress.hpp"
+#include "Network/netConnection.hpp"
+#include "Network/netPeerAddress.hpp"
+#include "Network/netStatus.hpp"
 
 namespace rage
 {
@@ -76,10 +76,6 @@ namespace rage
 		void removeGamer(uint32_t channelId, uint64_t sessionId, const rlGamerHandle& target, int remove_reason = -1) const;
 	};
 	//static_assert(sizeof(netEndpoint) == 0x2E0 + sizeof(EndpointId));
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netEndpoint, m_TunnelRqst) == 0x0B0);
 	static_assert(offsetof(netEndpoint, m_myStatus) == 0x0BC);
 	static_assert(offsetof(netEndpoint, m_Status) == 0x0C8);
@@ -93,7 +89,4 @@ namespace rage
 	static_assert(offsetof(netEndpoint, m_CreatedTime) == 0x26C);
 	static_assert(offsetof(netEndpoint, m_LastAddressAssignmentTime) == 0x270);
 	static_assert(offsetof(netEndpoint, id) == 0x2E0);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 }

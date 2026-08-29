@@ -1,8 +1,8 @@
-#include "CNetworkSession.hpp"
+#include "Network/CNetworkSession.hpp"
 
-#include "netEndpoint.hpp"
-#include "pointers.hpp"
-#include "SessionType.hpp"
+#include "Network/netEndpoint.hpp"
+#include "Game/pointers.hpp"
+#include "Network/SessionType.hpp"
 
 using namespace Stand;
 

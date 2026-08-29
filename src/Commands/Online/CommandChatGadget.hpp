@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandCanvas.hpp"
+#include "Commands/Widgets/CommandCanvas.hpp"
 
 namespace Stand
 {

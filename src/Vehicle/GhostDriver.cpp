@@ -1,10 +1,10 @@
-#include "GhostDriver.hpp"
+#include "Vehicle/GhostDriver.hpp"
 
-#include "AbstractModel.hpp"
-#include "CommandToggleRegularSp.hpp"
-#include "natives.hpp"
-#include "PedType.hpp"
-#include "Util.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
+#include "Game/natives.hpp"
+#include "Ped/PedType.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

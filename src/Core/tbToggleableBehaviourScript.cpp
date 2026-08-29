@@ -1,7 +1,7 @@
-#include "tbToggleableBehaviourScript.hpp"
+#include "Core/tbToggleableBehaviourScript.hpp"
 
-#include "FiberPool.hpp"
-#include "regular_event.hpp"
+#include "Core/FiberPool.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

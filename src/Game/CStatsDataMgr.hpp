@@ -1,6 +1,6 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
 // using CStatsDataMgr_StatIterFind_t = bool(__fastcall*)(void* CStatsDataMgr, const hash_t& StatId, StatsIterator& iter);
 

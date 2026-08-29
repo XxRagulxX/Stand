@@ -1,15 +1,15 @@
-#include "CommandSessionType.hpp"
+#include "Commands/Online/CommandSessionType.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "CNetworkSession.hpp"
-#include "CommandListActionItem.hpp"
-#include "gsType.hpp"
-#include "NetworkSessionUtils.hpp"
-#include "pointers.hpp"
-#include "sc_presence_attributes.hpp"
-#include "SessionSpoofing.hpp"
-#include "SessionType.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Game/gsType.hpp"
+#include "Network/NetworkSessionUtils.hpp"
+#include "Game/pointers.hpp"
+#include "Network/sc_presence_attributes.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Network/SessionType.hpp"
 
 namespace Stand
 {

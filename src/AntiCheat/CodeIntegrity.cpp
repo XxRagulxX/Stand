@@ -1,7 +1,7 @@
-#include "CodeIntegrity.hpp"
+#include "AntiCheat/CodeIntegrity.hpp"
 
-#include <soup/joaat.hpp>
-#include <soup/x64.hpp>
+#include "lib/soup/joaat.hpp"
+#include "lib/soup/x64.hpp"
 
 namespace Stand
 {

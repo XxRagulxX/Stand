@@ -1,11 +1,11 @@
-#include "TickQueues.hpp"
+#include "Core/TickQueues.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "fwPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Game/fwPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandListPlaces.hpp"
+#include "Commands/World/CommandListPlaces.hpp"
 
-#include "Util.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

@@ -1,6 +1,6 @@
-#include "CommandLuaAction.hpp"
+#include "Commands/Extra/CommandLuaAction.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

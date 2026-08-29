@@ -1,11 +1,11 @@
-#include "CommandAutoKickHost.hpp"
+#include "Commands/Online/CommandAutoKickHost.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "CommandSessionHopper.hpp"
-#include "evtTransitionFinishedEvent.hpp"
-#include "FiberPool.hpp"
-#include "Script.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Commands/Online/CommandSessionHopper.hpp"
+#include "Network/evtTransitionFinishedEvent.hpp"
+#include "Core/FiberPool.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

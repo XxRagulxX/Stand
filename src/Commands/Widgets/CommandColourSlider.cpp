@@ -1,4 +1,4 @@
-#include "CommandColourSlider.hpp"
+#include "Commands/Widgets/CommandColourSlider.hpp"
 
 namespace Stand
 {
@@ -33,9 +33,6 @@ namespace Stand
 
 			case HSV:
 				parent->updateRGB();
-				break;
-
-			case OPACITY:
 				break;
 			}
 			parent->processChange(click);

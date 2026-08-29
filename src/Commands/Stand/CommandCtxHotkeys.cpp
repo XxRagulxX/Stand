@@ -1,10 +1,10 @@
-#include "CommandCtxHotkeys.hpp"
+#include "Commands/Stand/CommandCtxHotkeys.hpp"
 
-#include "CommandCtxHotkey.hpp"
-#include "CommandDivider.hpp"
-#include "CommandLambdaAction.hpp"
-#include "ContextMenu.hpp"
-#include "Gui.hpp"
+#include "Commands/Stand/CommandCtxHotkey.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

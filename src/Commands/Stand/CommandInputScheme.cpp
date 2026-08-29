@@ -1,12 +1,12 @@
-#include "CommandInputScheme.hpp"
+#include "Commands/Stand/CommandInputScheme.hpp"
 
-#include "CommandListAction.hpp"
-#include "CommandListActionItem.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "input.hpp"
-#include "lang.hpp"
-#include "Util.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/input.hpp"
+#include "Localization/lang.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

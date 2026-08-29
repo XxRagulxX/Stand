@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "CommandDriveOnWater.hpp"
-#include "gta_entity.hpp"
+#include "Commands/World/CommandDriveOnWater.hpp"
+#include "Game/gta_entity.hpp"
 
 namespace Stand
 {

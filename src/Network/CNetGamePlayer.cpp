@@ -1,8 +1,8 @@
-#include "CNetGamePlayer.hpp"
+#include "Network/CNetGamePlayer.hpp"
 
-#include "CPlayerInfo.hpp"
-#include "netConnectionManager.hpp"
-#include "pointers.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "Network/netConnectionManager.hpp"
+#include "Game/pointers.hpp"
 
 namespace rage
 {

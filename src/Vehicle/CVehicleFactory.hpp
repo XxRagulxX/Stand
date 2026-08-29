@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
 class CVehicleFactory
 {

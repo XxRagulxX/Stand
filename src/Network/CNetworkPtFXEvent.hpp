@@ -1,7 +1,7 @@
 #pragma once
 
-#include "datBitBuffer.hpp"
-#include "vector.hpp"
+#include "Game/datBitBuffer.hpp"
+#include "Util/vector.hpp"
 
 struct CNetworkPtFXEvent
 {

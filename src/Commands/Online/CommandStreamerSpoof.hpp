@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <vector>
 
-#include "AbstractPlayer.hpp"
-#include "Gui.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

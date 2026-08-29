@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include <soup/Exception.hpp>
+#include "lib/soup/Exception.hpp"
 
 namespace Stand
 {

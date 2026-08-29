@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandOnPlayer.hpp"
-#include "CommandActionScript.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
+#include "Commands/Extra/CommandActionScript.hpp"
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
 namespace Stand
 {

@@ -2,9 +2,9 @@
 
 #include <windows.h>
 
-#include "NativeCallContext.hpp"
-#include "natives_decl.hpp"
-#include "vector.hpp"
+#include "Game/NativeCallContext.hpp"
+#include "Game/natives_decl.hpp"
+#include "Util/vector.hpp"
 
 template <typename Ret, typename... Args>
 Ret invoke(rage::scrNativeHandler func, Args&&...args)

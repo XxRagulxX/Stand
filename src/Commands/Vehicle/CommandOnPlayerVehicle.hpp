@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandOnPlayer.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
 
-#include "AbstractEntity.hpp"
-#include "AbstractPlayer.hpp"
-#include "PlayerProvider.hpp"
-#include "CommandListPlayer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
 
 #define PV_CONTROL		0b1
 #define PV_ALLOWSELF	0b10

@@ -1,7 +1,7 @@
-#include "CommandStatDate.hpp"
+#include "Commands/Widgets/CommandStatDate.hpp"
 
-#include "CommandStatDateField.hpp"
-#include "Date.hpp"
+#include "Commands/Widgets/CommandStatDateField.hpp"
+#include "Util/Date.hpp"
 
 namespace Stand
 {

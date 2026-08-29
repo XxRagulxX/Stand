@@ -1,9 +1,9 @@
-#include "CommandHistoryCopy.hpp"
+#include "Commands/Online/CommandHistoryCopy.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "PlayerHistory.hpp"
-#include "RemoteGamer.hpp"
-#include "SessionSpoofing.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/SessionSpoofing.hpp"
 
 namespace Stand
 {

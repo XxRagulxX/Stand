@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandListAction.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "natives.hpp"
-#include "WorldState.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Game/natives.hpp"
+#include "Config/WorldState.hpp"
 
 namespace Stand
 {

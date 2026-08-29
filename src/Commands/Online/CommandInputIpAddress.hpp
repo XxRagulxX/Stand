@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandInput.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
 
-#include "netIpAddress.hpp"
+#include "Network/netIpAddress.hpp"
 
 namespace Stand
 {

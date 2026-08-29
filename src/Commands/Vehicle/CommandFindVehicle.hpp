@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandSearch.hpp"
+#include "Commands/Widgets/CommandSearch.hpp"
 
-#include "CommandLink.hpp"
-#include "CommandVehicle.hpp"
-#include "get_vehicle_display_name.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Commands/Vehicle/CommandVehicle.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

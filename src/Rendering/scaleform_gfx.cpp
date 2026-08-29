@@ -1,7 +1,7 @@
-#include "scaleform_gfx.hpp"
+#include "Rendering/scaleform_gfx.hpp"
 
-#include "actionscript.hpp"
-#include "pointers.hpp"
+#include "Rendering/actionscript.hpp"
+#include "Game/pointers.hpp"
 
 bool GFxValue::ObjectInterface::GetMember(void* pdata, const char* name, GFxValue* pval) const
 {

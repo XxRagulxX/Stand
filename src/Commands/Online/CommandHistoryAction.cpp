@@ -1,9 +1,9 @@
-#include "CommandHistoryAction.hpp"
+#include "Commands/Online/CommandHistoryAction.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "FiberPool.hpp"
-#include "RemoteGamerConnector.hpp"
-#include "Util.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/RemoteGamerConnector.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

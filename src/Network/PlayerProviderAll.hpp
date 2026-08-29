@@ -1,8 +1,8 @@
 #pragma once
 
-#include "PlayerProvider.hpp"
+#include "Network/PlayerProvider.hpp"
 
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {

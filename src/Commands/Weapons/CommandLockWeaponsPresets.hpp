@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include "CommandLockWeaponsSavePreset.hpp"
-#include "CommandRedirectToList.hpp"
-#include "CommandScripts.hpp"
-#include "get_current_time_millis.hpp"
+#include "Commands/Weapons/CommandLockWeaponsSavePreset.hpp"
+#include "Commands/Widgets/CommandRedirectToList.hpp"
+#include "Commands/Extra/CommandScripts.hpp"
+#include "Util/get_current_time_millis.hpp"
 
-#include "Util.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

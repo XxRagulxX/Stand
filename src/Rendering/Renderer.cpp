@@ -1,54 +1,54 @@
-﻿#include "Renderer.hpp"
+﻿#include "Rendering/Renderer.hpp"
 
 #include <memory>
 
 #include <fmt/core.h>
 
-#include <soup/unicode.hpp>
+#include "lib/soup/unicode.hpp"
 
-#include "AntiAntiCheat.hpp"
-#include "bin.hpp"
-#include "Chat.hpp"
-#include "get_appdata_path.hpp"
-#include "CMultiplayerChat.hpp"
-#include "ColourUtil.hpp"
-#include "Commandbox.hpp"
-#include "CommandboxGrid.hpp"
-#include "conf.hpp"
-#include "ContextMenu.hpp"
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "FiberPool.hpp"
-#include "font_bevietnamprolight.hpp"
-#include "font_nanumgothic.hpp"
-#include "font_yahei.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "homoglyphs.hpp"
-#include "huddecl.hpp"
-#include "input.hpp"
-#include "is_session.hpp"
-#include "FileLogger.hpp"
-#include "MenuGrid.hpp"
-#include "Metrics.hpp"
-#include "natives.hpp"
-#include "NotifyGrid.hpp"
-#include "pointers.hpp"
-#include "Pong.hpp"
-#include "regular_event.hpp"
-#include "ScriptMgr.hpp"
-#include "StringUtils.hpp"
-#include "TabCompletionProvider.hpp"
-#include "tbScreenshotMode.hpp"
-#include "Tutorial.hpp"
-#include "TutorialGrid.hpp"
-#include "UnicodePrivateUse.hpp"
-#include "Util.hpp"
+#include "AntiCheat/AntiAntiCheat.hpp"
+#include "Util/bin.hpp"
+#include "Network/Chat.hpp"
+#include "Util/get_appdata_path.hpp"
+#include "Network/CMultiplayerChat.hpp"
+#include "Rendering/ColourUtil.hpp"
+#include "Commands/Widgets/Commandbox.hpp"
+#include "Commands/Widgets/CommandboxGrid.hpp"
+#include "Config/conf.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/font_bevietnamprolight.hpp"
+#include "Rendering/font_nanumgothic.hpp"
+#include "Rendering/font_yahei.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/homoglyphs.hpp"
+#include "Game/huddecl.hpp"
+#include "Core/input.hpp"
+#include "Network/is_session.hpp"
+#include "Core/FileLogger.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Core/Metrics.hpp"
+#include "Game/natives.hpp"
+#include "Menu/NotifyGrid.hpp"
+#include "Game/pointers.hpp"
+#include "Game/Pong.hpp"
+#include "Core/regular_event.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/StringUtils.hpp"
+#include "Menu/TabCompletionProvider.hpp"
+#include "Core/tbScreenshotMode.hpp"
+#include "Menu/Tutorial.hpp"
+#include "Menu/TutorialGrid.hpp"
+#include "Menu/UnicodePrivateUse.hpp"
+#include "Util/Util.hpp"
 
 #if DRAW_HTML
-#include <soup/lyoDocument.hpp>
-#include <soup/lyoFlatDocument.hpp>
-#include "RenderTarget.hpp"
+#include "lib/soup/lyoDocument.hpp"
+#include "lib/soup/lyoFlatDocument.hpp"
+#include "Rendering/RenderTarget.hpp"
 #endif
 
 #define VK_NUMPAD_RETURN 0x0E
@@ -2969,12 +2969,6 @@ namespace Stand
 							}
 							root_name_truncation_type = RootNameTruncationType::STAND;
 							truncated_root_name = L"" STAND_NAME;
-							break;
-
-						case RootNameTruncationType::STAND:
-							break;
-
-						case RootNameTruncationType::TRUNCATE:
 							break;
 						}
 						path_segments = og_path_segments;

@@ -1,11 +1,11 @@
-#include "CommandSliderFloat.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
 #include <fmt/xchar.h>
 
-#include <soup/math.hpp>
+#include "lib/soup/math.hpp"
 
-#include "get_next_arg.hpp"
-#include "StringUtils.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

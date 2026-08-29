@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <functional>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "tlsContext.hpp"
+#include "Network/tlsContext.hpp"
 
 namespace rage
 {

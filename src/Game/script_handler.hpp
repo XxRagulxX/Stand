@@ -2,12 +2,12 @@
 
 #include <cstdint>
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "gta_fwddecl.hpp"
+#include "Game/gta_fwddecl.hpp"
 
-#include "gta_node_list.hpp"
-#include "script_id.hpp"
+#include "Game/gta_node_list.hpp"
+#include "Game/script_id.hpp"
 
 #define CAN_GIVE_SH false
 
@@ -94,14 +94,7 @@ namespace rage
 
 		[[nodiscard]] rage::netHostBroadcastDataHandlerBase* GetHostBroadcastDataHandler(unsigned int handlerNum);
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(scriptHandlerNetComponent, num_participants) == 0x194); // b3411
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	class scriptHandler
 	{

@@ -1,10 +1,10 @@
-#include "CommandTrafficModelFlag.hpp"
+#include "Commands/World/CommandTrafficModelFlag.hpp"
 
-#include <soup/macros.hpp>
+#include "lib/soup/macros.hpp"
 
-#include "AbstractEntity.hpp"
-#include "gta_vehicle.hpp"
-#include "VehicleModelFlags.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Vehicle/VehicleModelFlags.hpp"
 
 namespace Stand
 {

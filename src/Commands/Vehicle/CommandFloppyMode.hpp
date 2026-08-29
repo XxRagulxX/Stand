@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ButtonInstructions.hpp"
-#include "fmt_arg.hpp"
-#include "free_movement.hpp"
-#include "input.hpp"
-#include "is_session.hpp"
+#include "Menu/ButtonInstructions.hpp"
+#include "Util/fmt_arg.hpp"
+#include "Ped/free_movement.hpp"
+#include "Core/input.hpp"
+#include "Network/is_session.hpp"
 
 namespace Stand
 {
@@ -47,7 +47,7 @@ namespace Stand
 				Util::toast(LANG_FMT("NO_GRACE", FMT_ARG("feature_name", this->menu_name.getLocalisedUtf8())));
 			}
 
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler([this]
 			{
 				HANDLER_CHECK(m_on);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandInputRid.hpp"
+#include "Commands/Online/CommandInputRid.hpp"
 
 namespace Stand
 {

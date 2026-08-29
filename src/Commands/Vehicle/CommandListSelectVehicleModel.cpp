@@ -1,7 +1,7 @@
-#include "CommandListSelectVehicleModel.hpp"
+#include "Commands/Vehicle/CommandListSelectVehicleModel.hpp"
 
-#include "AbstractModel.hpp"
-#include "get_vehicle_display_name.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Vehicle/get_vehicle_display_name.hpp"
 
 namespace Stand
 {

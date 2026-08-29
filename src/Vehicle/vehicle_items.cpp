@@ -1,6 +1,6 @@
-#include "vehicle_items.hpp"
+#include "Vehicle/vehicle_items.hpp"
 
-#include "atStringHash.hpp"
+#include "Game/atStringHash.hpp"
 
 namespace Stand
 {

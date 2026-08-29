@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include "rgsc_common.hpp"
+#include "Network/rgsc_common.hpp"
 
 namespace rgsc
 {

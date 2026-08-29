@@ -3,17 +3,17 @@
 #include <atomic>
 #include <queue>
 
-#include <soup/macros.hpp> // MULTI_MACRO
-#include <soup/Pattern.hpp>
-#include <soup/pattern_macros.hpp>
-#include <soup/Range.hpp>
+#include "lib/soup/macros.hpp" // MULTI_MACRO
+#include "lib/soup/Pattern.hpp"
+#include "lib/soup/pattern_macros.hpp"
+#include "lib/soup/Range.hpp"
 
-#include "Codename.hpp"
-#include "ColoadMgr.hpp"
-#include "Exceptional.hpp"
-#include "nullsub.hpp"
-#include "Spinlock.hpp"
-#include "StringUtils.hpp"
+#include "Util/Codename.hpp"
+#include "Game/ColoadMgr.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/nullsub.hpp"
+#include "Core/Spinlock.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

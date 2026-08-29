@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "DisableDripfeed.hpp"
+#include "Game/DisableDripfeed.hpp"
 
 namespace Stand
 {

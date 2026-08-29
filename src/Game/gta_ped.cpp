@@ -1,6 +1,6 @@
-#include "gta_ped.hpp"
+#include "Game/gta_ped.hpp"
 
-#include "CObject.hpp"
+#include "Game/CObject.hpp"
 
 const CWeapon* CPedWeaponManager::GetEquippedWeapon() const
 {

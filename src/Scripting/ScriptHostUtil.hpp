@@ -2,9 +2,9 @@
 
 #include <array>
 
-#include "fwddecl.hpp"
-#include "typedecl.hpp"
-#include "gta_player.hpp"
+#include "Game/fwddecl.hpp"
+#include "Game/typedecl.hpp"
+#include "Game/gta_player.hpp"
 
 namespace Stand
 {

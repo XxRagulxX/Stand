@@ -1,4 +1,4 @@
-#include "CommandListConcealer.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
 
 #include <algorithm>
 

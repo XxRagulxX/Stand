@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandSliderDynamic.hpp"
+#include "Commands/Widgets/CommandSliderDynamic.hpp"
 
-#include "AbstractEntity.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
-#include "VehicleMods.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleMods.hpp"
 
 namespace Stand
 {

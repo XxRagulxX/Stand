@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandLua.hpp"
-#include "CommandTextsliderStateful.hpp"
+#include "Commands/Extra/CommandLua.hpp"
+#include "Commands/Widgets/CommandTextsliderStateful.hpp"
 
 namespace Stand
 {

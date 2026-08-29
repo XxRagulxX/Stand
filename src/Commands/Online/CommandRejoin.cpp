@@ -1,11 +1,11 @@
-#include "CommandRejoin.hpp"
+#include "Commands/Online/CommandRejoin.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "JoinUtil.hpp"
-#include "RemoteGamer.hpp"
-#include "SessionSpoofing.hpp"
-#include "TransitionHelper.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Network/JoinUtil.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/SessionSpoofing.hpp"
+#include "Core/TransitionHelper.hpp"
 
 namespace Stand
 {

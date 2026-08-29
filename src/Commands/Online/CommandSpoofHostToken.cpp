@@ -1,15 +1,15 @@
-#include "CommandSpoofHostToken.hpp"
+#include "Commands/Online/CommandSpoofHostToken.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CNetworkPlayerMgr.hpp"
-#include "CNetworkVoice.hpp"
-#include "CPlayerInfo.hpp"
-#include "CrossState.hpp"
-#include "gta_ped.hpp"
-#include "FiberPool.hpp"
-#include "rlGamerInfo.hpp"
-#include "pointers.hpp"
-#include "Script.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/CNetworkPlayerMgr.hpp"
+#include "Network/CNetworkVoice.hpp"
+#include "Game/CPlayerInfo.hpp"
+#include "Network/CrossState.hpp"
+#include "Game/gta_ped.hpp"
+#include "Core/FiberPool.hpp"
+#include "Network/rlGamerInfo.hpp"
+#include "Game/pointers.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand
 {

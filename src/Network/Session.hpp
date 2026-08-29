@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rlSessionInfo.hpp"
-#include "SessionAttributes.hpp"
+#include "Network/rlSessionInfo.hpp"
+#include "Network/SessionAttributes.hpp"
 
 namespace Stand
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "AbstractPlayer.hpp"
+#include "Core/AbstractPlayer.hpp"
 
 namespace Stand
 {
@@ -36,7 +36,7 @@ namespace Stand
 	private:
 		void setWantedLevel(Click& click)
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				click.getEffectiveIssuer().setWantedLevel(value);
 			});

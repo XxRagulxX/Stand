@@ -1,10 +1,10 @@
-#include "CommandDlcpacks.hpp"
+#include "Commands/Extra/CommandDlcpacks.hpp"
 
-#include "CommandDlcpack.hpp"
-#include "CommandLink.hpp"
-#include "CommandListAssetHashes.hpp"
-#include "CommandTogglePointer.hpp"
-#include "Hooking.hpp"
+#include "Commands/Extra/CommandDlcpack.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
+#include "Commands/Stand/CommandListAssetHashes.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

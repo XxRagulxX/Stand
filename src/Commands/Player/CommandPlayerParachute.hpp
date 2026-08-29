@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandPlayerAction.hpp"
+#include "Commands/Player/CommandPlayerAction.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "AbstractEntity.hpp"
-#include "CommandListPlayer.hpp"
-#include "PlayerProvider.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Network/PlayerProvider.hpp"
 
 namespace Stand
 {

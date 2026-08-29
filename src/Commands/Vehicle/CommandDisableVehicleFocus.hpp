@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommandToggle.hpp"
-#include "ScriptGlobal.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand {
 	class CommandDisableVehicleFocus : public CommandToggle
@@ -14,7 +14,7 @@ namespace Stand {
 		{
 			if(m_on)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if(m_on)
 					{

@@ -1,7 +1,7 @@
-#include "tbReticle.hpp"
+#include "Core/tbReticle.hpp"
 
-#include "regular_event.hpp"
-#include "Renderer.hpp"
+#include "Core/regular_event.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

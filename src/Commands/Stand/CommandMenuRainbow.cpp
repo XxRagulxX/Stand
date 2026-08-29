@@ -1,7 +1,7 @@
-#include "CommandMenuRainbow.hpp"
+#include "Commands/Stand/CommandMenuRainbow.hpp"
 
-#include "ColourUtil.hpp"
-#include "MenuGrid.hpp"
+#include "Rendering/ColourUtil.hpp"
+#include "Menu/MenuGrid.hpp"
 
 namespace Stand
 {

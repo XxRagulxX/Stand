@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandBirender.hpp"
+#include "Commands/Online/CommandBirender.hpp"
 
-#include "AbstractEntity.hpp"
+#include "Core/AbstractEntity.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
-#include "CommandPlayerListPlayersShortcut.hpp"
-#include "StringUtils.hpp"
+#include "Commands/Player/CommandPlayerListPlayersShortcut.hpp"
+#include "Util/StringUtils.hpp"
 
 #include <fmt/core.h>
 
-#include "Gui.hpp"
+#include "Rendering/Gui.hpp"
 
 namespace Stand
 {

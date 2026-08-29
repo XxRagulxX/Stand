@@ -1,8 +1,8 @@
-#include "CommandPlayerClassifierDetection.hpp"
+#include "Commands/Player/CommandPlayerClassifierDetection.hpp"
 
-#include "CommandPlayer.hpp"
-#include "FlowEvent.hpp"
-#include "Tunables.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Core/FlowEvent.hpp"
+#include "Config/Tunables.hpp"
 
 namespace Stand
 {

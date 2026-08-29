@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include <stack>
 
-#include "natives_decl.hpp"
-#include "vector.hpp"
+#include "Game/natives_decl.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

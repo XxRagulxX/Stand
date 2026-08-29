@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gta_player.hpp"
+#include "Game/gta_player.hpp"
 
 namespace Stand
 {

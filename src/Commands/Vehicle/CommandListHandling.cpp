@@ -1,13 +1,13 @@
-#include "CommandListHandling.hpp"
+#include "Commands/Vehicle/CommandListHandling.hpp"
 
-#include "CommandDivider.hpp"
-#include "CommandHandlingEditorSave.hpp"
-#include "CommandListCommandBoxPresets.hpp"
-#include "CommandListViewport.hpp"
-#include "CommandRedirectToList.hpp"
-#include "CommandScripts.hpp"
-#include "CommandToggle.hpp"
-#include "CommandVehicleHandling.hpp"
+#include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Vehicle/CommandHandlingEditorSave.hpp"
+#include "Commands/Stand/CommandListCommandBoxPresets.hpp"
+#include "Commands/Stand/CommandListViewport.hpp"
+#include "Commands/Widgets/CommandRedirectToList.hpp"
+#include "Commands/Extra/CommandScripts.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Vehicle/CommandVehicleHandling.hpp"
 
 namespace Stand
 {
@@ -23,10 +23,6 @@ namespace Stand
 
 		void populateFlying()
 		{
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 			createChild<CommandVehicleHandlingFloat>(offsetof(CFlyingHandlingData, m_Thrust), LIT("Thrust"));
 			createChild<CommandVehicleHandlingFloat>(offsetof(CFlyingHandlingData, m_ThrustFallOff), LIT("ThrustFallOff"));
 			createChild<CommandVehicleHandlingFloat>(offsetof(CFlyingHandlingData, m_ThrustVectoring), LIT("ThrustVectoring"));
@@ -67,9 +63,6 @@ namespace Stand
 			createChild<CommandVehicleHandlingFloat>(offsetof(CFlyingHandlingData, m_AfterburnerEffectForceMulti), LIT("AfterburnerEffectForceMulti"));
 			createChild<CommandVehicleHandlingFloat>(offsetof(CFlyingHandlingData, m_SubmergeLevelToPullHeliUnderwater), LIT("SubmergeLevelToPullHeliUnderwater"));
 			createChild<CommandVehicleHandlingFloat>(offsetof(CFlyingHandlingData, m_ExtraLiftWithRoll), LIT("ExtraLiftWithRoll"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 	};
 
@@ -80,10 +73,7 @@ namespace Stand
 
 		{
 			auto base = this->createChild<CommandListSubhandling>(LOC("HNE_BASE"), HANDLING_TYPE_INVALID);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			base->createChild<CommandVehicleHandlingFloat>(offsetof(CHandlingData, m_fMass), LIT("Mass"));
 			base->createChild<CommandVehicleHandlingFloat>(offsetof(CHandlingData, m_acceleration), LIT("Acceleration"));
 			base->createChild<CommandVehicleHandlingFloat>(offsetof(CHandlingData, m_suspension_force), LIT("SuspensionForce"));
@@ -135,18 +125,12 @@ namespace Stand
 			base->createChild<CommandVehicleHandlingFloat>(offsetof(CHandlingData, m_engine_damage_mult), LIT("EngineDamageMult"));
 			base->createChild<CommandVehicleHandlingFloat>(offsetof(CHandlingData, m_petrol_tank_volume), LIT("PetrolTankVolume"));
 			base->createChild<CommandVehicleHandlingFloat>(offsetof(CHandlingData, m_oil_volume), LIT("OilVolume"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		// CBikeHandlingData
 		{
 			auto bike = this->createChild<CommandListSubhandling>(LOC("HNE_BIKES"), HANDLING_TYPE_BIKE);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			bike->createChild<CommandVehicleHandlingFloat>(offsetof(CBikeHandlingData, m_LeanFwdCOMMult), LIT("LeanFwdCOMMult"));
 			bike->createChild<CommandVehicleHandlingFloat>(offsetof(CBikeHandlingData, m_LeanFwdForceMult), LIT("LeanFwdForceMult"));
 			bike->createChild<CommandVehicleHandlingFloat>(offsetof(CBikeHandlingData, m_LeanBakCOMMult), LIT("LeanBakCOMMult"));
@@ -168,18 +152,12 @@ namespace Stand
 			bike->createChild<CommandVehicleHandlingFloat>(offsetof(CBikeHandlingData, m_BikeOnStandLeanAngle), LIT("BikeOnStandLeanAngle"));
 			bike->createChild<CommandVehicleHandlingFloat>(offsetof(CBikeHandlingData, m_BikeOnStandSteerAngle), LIT("BikeOnStandSteerAngle"));
 			bike->createChild<CommandVehicleHandlingFloat>(offsetof(CBikeHandlingData, m_JumpForce), LIT("JumpForce"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		// CBoatHandlingData
 		{
 			auto boat = this->createChild<CommandListSubhandling>(LOC("boat"), HANDLING_TYPE_BOAT);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			boat->createChild<CommandVehicleHandlingFloat>(offsetof(CBoatHandlingData, m_BoxFrontMult), LIT("BoxFrontMult"));
 			boat->createChild<CommandVehicleHandlingFloat>(offsetof(CBoatHandlingData, m_BoxRearMult), LIT("BoxRearMult"));
 			boat->createChild<CommandVehicleHandlingFloat>(offsetof(CBoatHandlingData, m_BoxSideMult), LIT("BoxSideMult"));
@@ -208,18 +186,12 @@ namespace Stand
 			boat->createChild<CommandVehicleHandlingFloat>(offsetof(CBoatHandlingData, m_DeepWaterSampleBuoyancyMult), LIT("DeepWaterSampleBuoyancyMult"));
 			boat->createChild<CommandVehicleHandlingFloat>(offsetof(CBoatHandlingData, m_TransmissionMultiplier), LIT("TransmissionMultiplier"));
 			boat->createChild<CommandVehicleHandlingFloat>(offsetof(CBoatHandlingData, m_TractionMultiplier), LIT("TractionMultiplier"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		// CCarHandlingData
 		{
 			auto car = this->createChild<CommandListSubhandling>(LOC("HNE_CAR"), HANDLING_TYPE_CAR);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			car->createChild<CommandVehicleHandlingFloat>(offsetof(CCarHandlingData, m_BackEndPopUpCarImpulseMult), LIT("BackEndPopUpCarImpulseMult"));
 			car->createChild<CommandVehicleHandlingFloat>(offsetof(CCarHandlingData, m_BackEndPopUpBuildingImpulseMult), LIT("BackEndPopUpBuildingImpulseMult"));
 			car->createChild<CommandVehicleHandlingFloat>(offsetof(CCarHandlingData, m_BackEndPopUpMaxDeltaSpeed), LIT("BackEndPopUpMaxDeltaSpeed"));
@@ -232,18 +204,12 @@ namespace Stand
 			car->createChild<CommandVehicleHandlingFloat>(offsetof(CCarHandlingData, m_MaxDriveBiasTransfer), LIT("MaxDriveBiasTransfer"));
 			car->createChild<CommandVehicleHandlingFloat>(offsetof(CCarHandlingData, m_JumpForceScale), LIT("JumpForceScale"));
 			car->createChild<CommandVehicleHandlingFloat>(offsetof(CCarHandlingData, m_IncreasedRammingForceScale), LIT("IncreasedRammingForceScale"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		// CTrailerHandlingData
 		{
 			auto trl = this->createChild<CommandListSubhandling>(LOC("HNE_TRAILER"), HANDLING_TYPE_TRAILER);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			trl->createChild<CommandVehicleHandlingFloat>(offsetof(CTrailerHandlingData, m_AttachLimitPitch), LIT("AttachLimitPitch"));
 			trl->createChild<CommandVehicleHandlingFloat>(offsetof(CTrailerHandlingData, m_AttachLimitRoll), LIT("AttachLimitRoll"));
 			trl->createChild<CommandVehicleHandlingFloat>(offsetof(CTrailerHandlingData, m_AttachLimitYaw), LIT("AttachLimitYaw"));
@@ -253,9 +219,6 @@ namespace Stand
 			trl->createChild<CommandVehicleHandlingFloat>(offsetof(CTrailerHandlingData, m_AttachedMaxPenetration), LIT("AttachedMaxPenetration"));
 			trl->createChild<CommandVehicleHandlingFloat>(offsetof(CTrailerHandlingData, m_AttachRaiseZ), LIT("AttachRaiseZ"));
 			trl->createChild<CommandVehicleHandlingFloat>(offsetof(CTrailerHandlingData, m_PosConstraintMassRatio), LIT("PosConstraintMassRatio"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		this->createChild<CommandListSubhandling>(LOC("HNE_FLYING"), HANDLING_TYPE_FLYING)->populateFlying();
@@ -264,10 +227,7 @@ namespace Stand
 		// CSpecialFlightHandlingData
 		{
 			auto specfly = this->createChild<CommandListSubhandling>(LOC("HNE_SPECFLY"), HANDLING_TYPE_SPECIAL_FLIGHT);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			specfly->createChild<CommandVehicleHandlingFloat>(offsetof(CSpecialFlightHandlingData, m_LiftCoefficient), LIT("LiftCoefficient"));
 			specfly->createChild<CommandVehicleHandlingFloat>(offsetof(CSpecialFlightHandlingData, m_CriticalLiftAngle), LIT("CriticalLiftAngle"));
 			specfly->createChild<CommandVehicleHandlingFloat>(offsetof(CSpecialFlightHandlingData, m_InitialLiftAngle), LIT("InitialLiftAngle"));
@@ -293,18 +253,12 @@ namespace Stand
 			specfly->createChild<CommandVehicleHandlingFloat>(offsetof(CSpecialFlightHandlingData, m_MinSpeedForThrustFalloff), LIT("MinSpeedForThrustFalloff"));
 			specfly->createChild<CommandVehicleHandlingFloat>(offsetof(CSpecialFlightHandlingData, m_BrakingThrustScale), LIT("BrakingThrustScale"));
 			specfly->createChild<CommandVehicleHandlingInt>(offsetof(CSpecialFlightHandlingData, m_Mode), LIT("Mode"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		// CSeaPlaneHandlingData
 		{
 			auto sea = this->createChild<CommandListSubhandling>(LOC("HNE_SEAPLANE"), HANDLING_TYPE_SEAPLANE);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			sea->createChild<CommandVehicleHandlingInt>(offsetof(CSeaPlaneHandlingData, m_LeftPontoonComponentId), LIT("LeftPontoonComponentId"));
 			sea->createChild<CommandVehicleHandlingInt>(offsetof(CSeaPlaneHandlingData, m_RightPontoonComponentId), LIT("RightPontoonComponentId"));
 			sea->createChild<CommandVehicleHandlingFloat>(offsetof(CSeaPlaneHandlingData, m_PontoonBuoyConst), LIT("PontoonBuoyConst"));
@@ -316,18 +270,12 @@ namespace Stand
 			sea->createChild<CommandVehicleHandlingFloat>(offsetof(CSeaPlaneHandlingData, m_PontoonVerticalDampingCoefficientUp), LIT("PontoonVerticalDampingCoefficientUp"));
 			sea->createChild<CommandVehicleHandlingFloat>(offsetof(CSeaPlaneHandlingData, m_PontoonVerticalDampingCoefficientDown), LIT("PontoonVerticalDampingCoefficientDown"));
 			sea->createChild<CommandVehicleHandlingFloat>(offsetof(CSeaPlaneHandlingData, m_KeelSphereSize), LIT("KeelSphereSize"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		// CSubmarineHandlingData
 		{
 			auto sub = this->createChild<CommandListSubhandling>(LOC("HNE_SUBMARINE"), HANDLING_TYPE_SUBMARINE);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
+
 			sub->createChild<CommandVehicleHandlingFloat>(offsetof(CSubmarineHandlingData, m_MoveResXY), LIT("MoveResXY"));
 			sub->createChild<CommandVehicleHandlingFloat>(offsetof(CSubmarineHandlingData, m_MoveResZ), LIT("MoveResZ"));
 			sub->createChild<CommandVehicleHandlingFloat>(offsetof(CSubmarineHandlingData, m_PitchMult), LIT("PitchMult"));
@@ -336,9 +284,6 @@ namespace Stand
 			sub->createChild<CommandVehicleHandlingFloat>(offsetof(CSubmarineHandlingData, m_DiveSpeed), LIT("DiveSpeed"));
 			sub->createChild<CommandVehicleHandlingFloat>(offsetof(CSubmarineHandlingData, m_RollMult), LIT("RollMult"));
 			sub->createChild<CommandVehicleHandlingFloat>(offsetof(CSubmarineHandlingData, m_RollStab), LIT("RollStab"));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 		}
 
 		show_na = this->createChild<CommandToggle>(LOC("SHWNA"));

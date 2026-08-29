@@ -1,8 +1,8 @@
-#include "CommandSpoofToggle.hpp"
+#include "Commands/Online/CommandSpoofToggle.hpp"
 
-#include "CommandSpoof.hpp"
-#include "CommandSlider.hpp"
-#include "is_session.hpp"
+#include "Commands/Online/CommandSpoof.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Network/is_session.hpp"
 
 namespace Stand
 {

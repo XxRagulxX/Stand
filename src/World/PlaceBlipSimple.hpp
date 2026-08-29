@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PlaceBlip.hpp"
+#include "World/PlaceBlip.hpp"
 
 #include <natives.hpp>
 

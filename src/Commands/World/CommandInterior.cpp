@@ -1,7 +1,7 @@
-#include "CommandInterior.hpp"
+#include "Commands/World/CommandInterior.hpp"
 
-#include "Vector2Plus.hpp"
-#include "WorldState.hpp"
+#include "Util/Vector2Plus.hpp"
+#include "Config/WorldState.hpp"
 
 namespace Stand
 {

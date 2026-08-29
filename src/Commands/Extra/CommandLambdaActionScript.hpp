@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
 #include <functional>
 
@@ -20,7 +20,7 @@ namespace Stand
 
 		void onClick(Click& click) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [this, &click]
 			{
 					on_click_impl(click);
 			});

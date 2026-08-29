@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "is_session.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/is_session.hpp"
 
-#include "drawDebugText.hpp"
+#include "Rendering/drawDebugText.hpp"
 
 namespace Stand
 {

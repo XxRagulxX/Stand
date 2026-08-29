@@ -1,7 +1,7 @@
-#include "CommandGtaRcFreecam.hpp"
+#include "Commands/Vehicle/CommandGtaRcFreecam.hpp"
 
-#include "ControlMgr.hpp"
-#include "NativeTableHooks.hpp"
+#include "Game/ControlMgr.hpp"
+#include "AntiCheat/NativeTableHooks.hpp"
 
 namespace Stand
 {

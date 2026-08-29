@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "CNetworkSession.hpp"
-#include "pointers.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Game/pointers.hpp"
 
 namespace Stand
 {

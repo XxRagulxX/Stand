@@ -1,8 +1,8 @@
 #pragma once
 
-#include "netStatus.hpp"
-#include "rlGamerHandle.hpp"
-#include "sc_presence_attributes.hpp"
+#include "Network/netStatus.hpp"
+#include "Network/rlGamerHandle.hpp"
+#include "Network/sc_presence_attributes.hpp"
 
 namespace rage
 {
@@ -33,14 +33,7 @@ namespace rage
 		{
 		}
 	};
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
-#endif
 	static_assert(offsetof(netTunnelDesc, m_TunnelReason) == 1);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 	struct netTunnelRequest
 	{

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #ifdef STAND_DEBUG
-#include "Blacklist.hpp"
-#include "Exceptional.hpp"
+#include "Network/Blacklist.hpp"
+#include "Core/Exceptional.hpp"
 #endif
 
 namespace Stand

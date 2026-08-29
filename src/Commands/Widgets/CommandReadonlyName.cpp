@@ -1,8 +1,8 @@
-#include "CommandReadonlyName.hpp"
+#include "Commands/Widgets/CommandReadonlyName.hpp"
 
-#include "lang.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Localization/lang.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

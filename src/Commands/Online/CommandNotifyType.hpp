@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
-#include "CommandPosition2d.hpp"
-#include "GameToaster.hpp"
-#include "GridToaster.hpp"
-#include "NotifyGrid.hpp"
+#include "Commands/Widgets/CommandPosition2d.hpp"
+#include "Menu/GameToaster.hpp"
+#include "Menu/GridToaster.hpp"
+#include "Menu/NotifyGrid.hpp"
 
 namespace Stand
 {

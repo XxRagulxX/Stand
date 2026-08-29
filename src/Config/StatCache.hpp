@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ScriptGlobal.hpp"
+#include "Scripting/ScriptGlobal.hpp"
 
 namespace Stand
 {

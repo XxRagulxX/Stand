@@ -1,8 +1,8 @@
-#include "CommandGarage.hpp"
+#include "Commands/Vehicle/CommandGarage.hpp"
 
-#include "CommandSaveVehicle.hpp"
-#include "CommandSavedVehicle.hpp"
-#include "CommandSearchLiterals.hpp"
+#include "Commands/Vehicle/CommandSaveVehicle.hpp"
+#include "Commands/Vehicle/CommandSavedVehicle.hpp"
+#include "Commands/Widgets/CommandSearchLiterals.hpp"
 
 namespace Stand
 {

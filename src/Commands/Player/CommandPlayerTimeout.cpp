@@ -1,9 +1,9 @@
-#include "CommandPlayerTimeout.hpp"
+#include "Commands/Player/CommandPlayerTimeout.hpp"
 
-#include "CommandPlayer.hpp"
-#include "get_current_time_millis.hpp"
-#include "Hooking.hpp"
-#include "PlayerProviderSingle.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Network/PlayerProviderSingle.hpp"
 
 namespace Stand
 {

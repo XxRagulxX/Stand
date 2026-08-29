@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "get_current_time_millis.hpp"
-#include "vector.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Util/vector.hpp"
 
 namespace Stand
 {

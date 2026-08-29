@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandOnPlayer.hpp"
-#include "CommandListAction.hpp"
-#include "AttackerMgr.hpp"
+#include "Commands/Player/CommandOnPlayer.hpp"
+#include "Commands/Widgets/CommandListAction.hpp"
+#include "Network/AttackerMgr.hpp"
 
 namespace Stand
 {

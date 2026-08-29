@@ -1,8 +1,8 @@
 #pragma once
 
-#include "HistoricPlayer.hpp"
-#include "CommandAction.hpp"
-#include "Hooking.hpp"
+#include "Network/HistoricPlayer.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "AntiCheat/Hooking.hpp"
 
 namespace Stand
 {

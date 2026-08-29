@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandStatSlider.hpp"
+#include "Commands/Widgets/CommandStatSlider.hpp"
 
-#include "as_fraction.hpp"
-#include "Stat.hpp"
+#include "Util/as_fraction.hpp"
+#include "Config/Stat.hpp"
 
 namespace Stand
 {

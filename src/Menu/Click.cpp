@@ -1,17 +1,17 @@
-#include "Click.hpp"
+#include "Menu/Click.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "Auth.hpp"
-#include "ChatCommandsCommon.hpp"
-#include "CommandListSelect.hpp"
-#include "ExecCtx.hpp"
-#include "FiberPool.hpp"
-#include "get_current_time_millis.hpp"
-#include "Gui.hpp"
-#include "is_session.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
-#include "Worker.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/Auth.hpp"
+#include "Network/ChatCommandsCommon.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Core/FiberPool.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/is_session.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
+#include "Core/Worker.hpp"
 
 //#include "Exceptional.hpp"
 
@@ -214,18 +214,7 @@ namespace Stand
 		case CLICK_BULK:
 		case CLICK_AUTO:
 			return true;
-
-		case CLICK_MENU:
-		case CLICK_COMMAND:
-		case CLICK_HOTKEY:
-		case CLICK_SCRIPTED:
-		case CLICK_CHAT_ALL:
-		case CLICK_CHAT_TEAM:
-		case CLICK_WEB:
-		case CLICK_WEB_COMMAND:
-			return false;
 		}
-
 		return false;
 	}
 
@@ -518,28 +507,16 @@ namespace Stand
 
 	bool Click::isSoundAllowed() const noexcept
 	{
-		if (!g_gui.isSoundEnabled())
+		if (g_gui.isSoundEnabled())
 		{
-			return false;
+			switch (type)
+			{
+			case CLICK_MENU:
+			case CLICK_COMMAND:
+			case CLICK_HOTKEY:
+				return true;
+			}
 		}
-
-		switch (type)
-		{
-		case CLICK_MENU:
-		case CLICK_COMMAND:
-		case CLICK_HOTKEY:
-			return true;
-
-		case CLICK_FLAG_AUTO:
-		case CLICK_AUTO:
-		case CLICK_SCRIPTED:
-		case CLICK_CHAT_ALL:
-		case CLICK_CHAT_TEAM:
-		case CLICK_WEB:
-		case CLICK_WEB_COMMAND:
-			return false;
-		}
-
 		return false;
 	}
 

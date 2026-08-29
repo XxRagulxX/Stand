@@ -1,12 +1,12 @@
 #pragma once
 
-#include "AbstractEntity.hpp"
-#include "AbstractModel.hpp"
-#include "CommandSpawnedObject.hpp"
-#include "using_model.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Core/AbstractModel.hpp"
+#include "Commands/World/CommandSpawnedObject.hpp"
+#include "Game/using_model.hpp"
+#include "Game/natives.hpp"
+#include "Game/pointers.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

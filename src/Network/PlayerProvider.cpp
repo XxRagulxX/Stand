@@ -1,16 +1,16 @@
-#include "PlayerProvider.hpp"
+#include "Network/PlayerProvider.hpp"
 
 #include <unordered_set>
 
-#include "AbstractPlayer.hpp"
-#include "CommandPlayer.hpp"
-#include "CommandToggleNoCorrelation.hpp"
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "Gui.hpp"
-#include "PlayerProviderSingle.hpp"
-#include "Script.hpp"
-#include "regular_event.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/PlayerProviderSingle.hpp"
+#include "Scripting/Script.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {

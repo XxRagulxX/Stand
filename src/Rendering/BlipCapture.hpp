@@ -1,9 +1,9 @@
 #pragma once
 
-#include <soup/Canvas.hpp>
-#include <soup/FileReader.hpp>
-#include <soup/FileWriter.hpp>
-#include <soup/RgbaCanvas.hpp>
+#include "lib/soup/Canvas.hpp"
+#include "lib/soup/FileReader.hpp"
+#include "lib/soup/FileWriter.hpp"
+#include "lib/soup/RgbaCanvas.hpp"
 
 namespace Stand
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "struct_base.hpp"
+#include "Util/struct_base.hpp"
 
-#include "datBase.hpp"
-#include "pgBase.hpp"
+#include "Game/datBase.hpp"
+#include "Game/pgBase.hpp"
 
 #include <windows.h>
 

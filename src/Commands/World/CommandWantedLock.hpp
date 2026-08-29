@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CommandSlider.hpp"
-#include "natives.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Game/natives.hpp"
 
 namespace Stand
 {
@@ -23,7 +23,7 @@ namespace Stand
 		{
 			if (m_on)
 			{
-				registerScriptTickEventHandler(click, [=, this]()
+				registerScriptTickEventHandler(click, [=]()
 				{
 					if (m_on)
 					{

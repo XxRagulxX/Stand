@@ -1,4 +1,4 @@
-#include "netAddress.hpp"
+#include "Network/netAddress.hpp"
 
 namespace rage
 {

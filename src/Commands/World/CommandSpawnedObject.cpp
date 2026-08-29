@@ -1,12 +1,12 @@
-#include "CommandSpawnedObject.hpp"
+#include "Commands/World/CommandSpawnedObject.hpp"
 
 #include <fmt/format.h>
 
-#include "AbstractEntity.hpp"
-#include "Box.hpp"
-#include "CommandEntityPosition.hpp"
-#include "CommandLambdaActionScript.hpp"
-#include "Renderer.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/Box.hpp"
+#include "Commands/Stand/CommandEntityPosition.hpp"
+#include "Commands/Extra/CommandLambdaActionScript.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Stand
 {

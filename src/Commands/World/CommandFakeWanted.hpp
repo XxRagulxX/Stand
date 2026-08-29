@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandSlider.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 
-#include "natives.hpp"
-#include "FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Core/FiberPool.hpp"
 
 namespace Stand
 {
@@ -17,13 +17,13 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
-			ensureScriptThread(click, [=, this]
+			ensureScriptThread(click, [=]
 			{
 				const int value = this->value;
 				MISC::SET_FAKE_WANTED_LEVEL(value);
 				if (value > 0)
 				{
-					registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=, this]()
+					registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [=]()
 					{
 						if (value != this->value)
 						{

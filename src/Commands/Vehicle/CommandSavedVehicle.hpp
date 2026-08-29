@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandWithEntityPreview.hpp"
-#include "CommandListFolderItemData.hpp"
-#include "CommandAction.hpp"
+#include "Commands/Widgets/CommandWithEntityPreview.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
 
-#include "ColonsVehicleCustomisationIo.hpp"
+#include "Vehicle/ColonsVehicleCustomisationIo.hpp"
 
 namespace Stand
 {

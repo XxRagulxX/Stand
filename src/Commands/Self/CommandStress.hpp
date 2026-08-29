@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CommandList.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 
-#include <soup/rand.hpp>
+#include "lib/soup/rand.hpp"
 
-#include "CommandAction.hpp"
-#include "Exceptional.hpp"
+#include "Commands/Widgets/CommandAction.hpp"
+#include "Core/Exceptional.hpp"
 
 namespace Stand
 {

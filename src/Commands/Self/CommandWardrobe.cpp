@@ -1,20 +1,20 @@
-#include "CommandWardrobe.hpp"
+#include "Commands/Self/CommandWardrobe.hpp"
 
 #include <filesystem>
 
-#include "AbstractEntity.hpp"
-#include "alphanum.hpp"
-#include "CommandLambdaAction.hpp"
-#include "CommandLockOutfit.hpp"
-#include "CommandSearchLiterals.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "Script.hpp"
-#include "StringUtils.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Util/alphanum.hpp"
+#include "Commands/Widgets/CommandLambdaAction.hpp"
+#include "Commands/Self/CommandLockOutfit.hpp"
+#include "Commands/Widgets/CommandSearchLiterals.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Scripting/Script.hpp"
+#include "Util/StringUtils.hpp"
 
-#include "CommandOutfitPreset.hpp"
-#include "CommandSaveOutfit.hpp"
-#include "CommandOutfit.hpp"
+#include "Commands/Self/CommandOutfitPreset.hpp"
+#include "Commands/Self/CommandSaveOutfit.hpp"
+#include "Commands/Self/CommandOutfit.hpp"
 
 namespace Stand
 {

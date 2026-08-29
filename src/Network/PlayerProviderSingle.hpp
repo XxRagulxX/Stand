@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PlayerProvider.hpp"
-#include "StringUtils.hpp"
+#include "Network/PlayerProvider.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {

@@ -1,12 +1,12 @@
-#include "mystackwalker.hpp"
+#include "Core/mystackwalker.hpp"
 
 #include <fmt/core.h>
 
-#include "Exceptional.hpp"
-#include "FileLogger.hpp"
-#include "main.hpp"
-#include "PeHeader.hpp"
-#include "PointerNames.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FileLogger.hpp"
+#include "Core/main.hpp"
+#include "AntiCheat/PeHeader.hpp"
+#include "Core/PointerNames.hpp"
 
 namespace Stand
 {

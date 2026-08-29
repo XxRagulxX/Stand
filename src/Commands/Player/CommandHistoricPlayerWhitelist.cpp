@@ -1,9 +1,9 @@
-#include "CommandHistoricPlayerWhitelist.hpp"
+#include "Commands/Player/CommandHistoricPlayerWhitelist.hpp"
 
-#include "CommandHistoricPlayer.hpp"
-#include "PlayerHistory.hpp"
-#include "Hooking.hpp"
-#include "lang.hpp"
+#include "Commands/Player/CommandHistoricPlayer.hpp"
+#include "Network/PlayerHistory.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {

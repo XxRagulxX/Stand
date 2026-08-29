@@ -1,18 +1,18 @@
-#include "SessionSpoofing.hpp"
+#include "Network/SessionSpoofing.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "AbstractPlayer.hpp"
-#include "CNetworkSession.hpp"
-#include "CommandHideSession.hpp"
-#include "CommandSpoofedHost.hpp"
-#include "CommandSpoofHost.hpp"
-#include "CommandSpoofSessionType.hpp"
-#include "Gui.hpp"
-#include "NetworkSessionUtils.hpp"
-#include "RemoteGamer.hpp"
-#include "rlPc.hpp"
-#include "sc_presence_attributes.hpp"
+#include "Core/AbstractPlayer.hpp"
+#include "Network/CNetworkSession.hpp"
+#include "Commands/Online/CommandHideSession.hpp"
+#include "Commands/Online/CommandSpoofedHost.hpp"
+#include "Commands/Online/CommandSpoofHost.hpp"
+#include "Commands/Online/CommandSpoofSessionType.hpp"
+#include "Rendering/Gui.hpp"
+#include "Network/NetworkSessionUtils.hpp"
+#include "Network/RemoteGamer.hpp"
+#include "Network/rlPc.hpp"
+#include "Network/sc_presence_attributes.hpp"
 
 namespace Stand
 {

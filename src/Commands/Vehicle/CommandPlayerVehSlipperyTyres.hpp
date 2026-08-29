@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandPlayerToggle.hpp"
+#include "Commands/Player/CommandPlayerToggle.hpp"
 
-#include "explosion.hpp"
+#include "Weapons/explosion.hpp"
 
 namespace Stand
 {

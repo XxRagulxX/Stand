@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include <soup/WeakRef.hpp>
+#include "lib/soup/WeakRef.hpp"
 
-#include "CommandListPlayer.hpp"
-#include "CommandLuaScript.hpp"
-#include "Util.hpp"
+#include "Commands/Player/CommandListPlayer.hpp"
+#include "Commands/Extra/CommandLuaScript.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
@@ -74,7 +74,7 @@ namespace Stand
 
 		[[nodiscard]] Label getActivationName() const final
 		{
-			if (auto pc = Base::resolveParent(COMMAND_LIST_PLAYER)->template as<CommandListPlayer>())
+			if (auto pc = Base::resolveParent(COMMAND_LIST_PLAYER)->as<CommandListPlayer>())
 			{
 				return LIT(LANG_FMT("PLY_A_LUA", fmt::arg("script", Base::lua_data.script->menu_name.getLocalisedUtf8()), fmt::arg("command", Base::menu_name.getLocalisedUtf8()), fmt::arg("player", pc->getPlayerName())));
 			}

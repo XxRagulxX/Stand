@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-#include <soup/Bitset.hpp>
-#include <soup/joaat.hpp>
-#include <soup/Optional.hpp>
-#include <soup/Promise.hpp>
+#include "lib/soup/Bitset.hpp"
+#include "lib/soup/joaat.hpp"
+#include "lib/soup/Optional.hpp"
+#include "lib/soup/Promise.hpp"
 
-#include "Spinlock.hpp"
+#include "Core/Spinlock.hpp"
 
 #define TUNAHASH(x) soup::joaat::compileTimeHash(x)
 

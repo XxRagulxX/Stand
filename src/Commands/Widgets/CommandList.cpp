@@ -1,28 +1,28 @@
-﻿#include "CommandList.hpp"
+﻿#include "Commands/Widgets/CommandList.hpp"
 
 #include <algorithm>
 
 #include <fmt/xchar.h>
 
-#include "alphanum.hpp"
-#include "CommandInput.hpp"
-#include "CommandListConcealer.hpp"
-#include "CommandListSelect.hpp"
-#include "CommandReadonlyValueCopy.hpp"
-#include "CommandSlider.hpp"
-#include "CommandTextsliderStateful.hpp"
-#include "CommandToggle.hpp"
-#include "ContextMenu.hpp"
-#include "Exceptional.hpp"
-#include "ExecCtx.hpp"
-#include "GridItemList.hpp"
-#include "Gui.hpp"
-#include "MenuGrid.hpp"
-#include "pointers.hpp"
-#include "RelayCon.hpp"
-#include "Renderer.hpp"
-#include "StringUtils.hpp"
-#include "Util.hpp"
+#include "Util/alphanum.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandReadonlyValueCopy.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandTextsliderStateful.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/ExecCtx.hpp"
+#include "Menu/GridItemList.hpp"
+#include "Rendering/Gui.hpp"
+#include "Menu/MenuGrid.hpp"
+#include "Game/pointers.hpp"
+#include "Network/RelayCon.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Util/StringUtils.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {

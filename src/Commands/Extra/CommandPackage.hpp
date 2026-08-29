@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CommandToggleCustom.hpp"
+#include "Commands/Widgets/CommandToggleCustom.hpp"
 
-#include "Exceptional.hpp"
-#include "FiberPool.hpp"
-#include "lang.hpp"
+#include "Core/Exceptional.hpp"
+#include "Core/FiberPool.hpp"
+#include "Localization/lang.hpp"
 
 namespace Stand
 {
@@ -98,7 +98,7 @@ namespace Stand
 		{
 			setIndicators(
 				pkg->isInstalled(),
-				pkg->status != Package::Status::NONE
+				pkg->status != NONE
 			);
 		}
 

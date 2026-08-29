@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sysObfuscated.hpp"
+#include "AntiCheat/sysObfuscated.hpp"
 
 namespace rage
 {

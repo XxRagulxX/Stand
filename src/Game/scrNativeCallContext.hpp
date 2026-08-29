@@ -3,13 +3,13 @@
 #include <cstdint>
 #include <utility>
 
-#include <soup/type_traits.hpp>
+#include "lib/soup/type_traits.hpp"
 
-#include "natives_decl.hpp"
-#include "struct_base.hpp"
+#include "Game/natives_decl.hpp"
+#include "Util/struct_base.hpp"
 
-#include "scrValue.hpp"
-#include "vector.hpp"
+#include "Game/scrValue.hpp"
+#include "Util/vector.hpp"
 
 #define EXPECT_INVOKE_WONT_FAIL true
 

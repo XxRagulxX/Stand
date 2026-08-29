@@ -1,6 +1,6 @@
-#include "CommandPlayerScopePointer.hpp"
+#include "Commands/Player/CommandPlayerScopePointer.hpp"
 
-#include "CommandPlayer.hpp"
+#include "Commands/Player/CommandPlayer.hpp"
 
 namespace Stand
 {

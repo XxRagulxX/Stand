@@ -1,48 +1,29 @@
-#include "AsiMod.hpp"
+#include "Core/AsiMod.hpp"
 
 #include <winternl.h>
 #include <tlhelp32.h>
 
-#include <cstdlib>
-#include <cwchar>
-
 #include <filesystem>
 
-#include <soup/ObfusString.hpp>
-#include <soup/rand.hpp>
+#include "lib/soup/ObfusString.hpp"
+#include "lib/soup/rand.hpp"
 
-#include "asi_api.hpp"
-#include "bin.hpp"
-#include "CommandAsiMods.hpp"
-#include "Exceptional.hpp"
-#include "get_current_time_millis.hpp"
-#include "Hooking.hpp"
-#include "main.hpp"
-#include "evtPlayerJoinEvent.hpp"
-#include "evtPlayerLeaveEvent.hpp"
-#include "ScriptMgr.hpp"
-#include "StringUtils.hpp"
-#include "Tunables.hpp"
-#include "Util.hpp"
+#include "Core/asi_api.hpp"
+#include "Util/bin.hpp"
+#include "Commands/Extra/CommandAsiMods.hpp"
+#include "Core/Exceptional.hpp"
+#include "Util/get_current_time_millis.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Core/main.hpp"
+#include "Network/evtPlayerJoinEvent.hpp"
+#include "Network/evtPlayerLeaveEvent.hpp"
+#include "Scripting/ScriptMgr.hpp"
+#include "Util/StringUtils.hpp"
+#include "Config/Tunables.hpp"
+#include "Util/Util.hpp"
 
 namespace Stand
 {
-	[[nodiscard]] static std::wstring getEnvironmentVariable(const wchar_t* name)
-	{
-		wchar_t* value = nullptr;
-		size_t length = 0;
-
-		if (_wdupenv_s(&value, &length, name) != 0 || value == nullptr)
-		{
-			return {};
-		}
-
-		std::wstring result(value);
-		std::free(value);
-
-		return result;
-	}
-
 	AsiMod::AsiMod(CommandPhysical* cmd, AsiDirectory dir)
 		: cmd(cmd), dir(dir)
 	{
@@ -69,7 +50,7 @@ namespace Stand
 			}
 			else
 			{
-				path = getEnvironmentVariable(L"APPDATA");
+				path = _wgetenv(L"appdata");
 			}
 			path.append(LR"(\Stand\ASI Mods\)");
 			break;
@@ -95,8 +76,7 @@ namespace Stand
 			return;
 		}
 
-		auto scripthookv_path = getEnvironmentVariable(L"APPDATA");
-		scripthookv_path.append(LR"(\Stand\Bin\)");
+		auto scripthookv_path = std::wstring(_wgetenv(L"appdata")).append(LR"(\Stand\Bin\)");
 		if (!std::filesystem::exists(scripthookv_path))
 		{
 			std::filesystem::create_directory(scripthookv_path);

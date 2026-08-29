@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "CVehicleModelInfo.hpp"
-#include "hashtype.hpp"
+#include "Vehicle/CVehicleModelInfo.hpp"
+#include "Game/hashtype.hpp"
 
 namespace Stand
 {

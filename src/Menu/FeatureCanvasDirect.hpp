@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FeatureCanvas.hpp"
+#include "Menu/FeatureCanvas.hpp"
 
 namespace Stand
 {

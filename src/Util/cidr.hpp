@@ -1,7 +1,7 @@
 #pragma once
 
-#include <soup/CidrSubnet4.hpp>
-#include <soup/CidrSupernet.hpp>
+#include "lib/soup/CidrSubnet4.hpp"
+#include "lib/soup/CidrSupernet.hpp"
 
 namespace Stand
 {

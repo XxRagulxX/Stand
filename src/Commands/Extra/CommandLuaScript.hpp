@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandListConcealer.hpp"
+#include "Commands/Stand/CommandListConcealer.hpp"
 
 #include <fmt/format.h>
 
@@ -8,14 +8,14 @@
 #undef G
 #undef isLua
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
-#include "CommandListFolderItemData.hpp"
-#include "Exceptional.hpp"
-#include "LuaResourceMap.hpp"
-#include "LuaScriptData.hpp"
-#include "luaS_push.hpp"
-#include "RateLimit.hpp"
+#include "Commands/Widgets/CommandListFolderItemData.hpp"
+#include "Core/Exceptional.hpp"
+#include "Scripting/LuaResourceMap.hpp"
+#include "Scripting/LuaScriptData.hpp"
+#include "Scripting/luaS_push.hpp"
+#include "Network/RateLimit.hpp"
 
 #define LUA_MEMORY_DEBUG false
 #define LUA_MEMORY_DEBUG_SIZE 0x1000

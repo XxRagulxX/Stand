@@ -1,10 +1,10 @@
-#include "CommandPlayerCopyVehicle.hpp"
+#include "Commands/Vehicle/CommandPlayerCopyVehicle.hpp"
 
-#include "CustomisationData.hpp"
-#include "FiberPool.hpp"
-#include "natives.hpp"
-#include "Util.hpp"
-#include "VehicleEntityCustomisationIo.hpp"
+#include "Ped/CustomisationData.hpp"
+#include "Core/FiberPool.hpp"
+#include "Game/natives.hpp"
+#include "Util/Util.hpp"
+#include "Vehicle/VehicleEntityCustomisationIo.hpp"
 
 namespace Stand
 {
@@ -15,7 +15,7 @@ namespace Stand
 
 	void CommandPlayerCopyVehicle::onClick(Click& click)
 	{
-		ensureYieldableScriptThread(click, [=, this]
+		ensureYieldableScriptThread(click, [=]
 		{
 			PP_PTR->getPlayer().openThirdEye([click](const AbstractPlayer& p, AbstractEntity& ped, bool needs_cleanup)
 			{

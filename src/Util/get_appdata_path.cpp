@@ -1,14 +1,15 @@
-#include "get_appdata_path.hpp"
+#include "Util/get_appdata_path.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "StringUtils.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
 	std::wstring get_roaming_path()
 	{
-		std::wstring path = get_appdata_path();
+		std::wstring path = StringUtils::utf8_to_utf16(soup::ObfusString("appdata").str());
+		path = _wgetenv(path.c_str());
 		path.push_back(L'\\');
 		return path;
 	}

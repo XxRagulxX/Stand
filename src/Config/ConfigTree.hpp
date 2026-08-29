@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Config.hpp"
+#include "Config/Config.hpp"
 
 #include <fstream>
 #include <functional>
 
-#include "fwddecl.hpp"
+#include "Game/fwddecl.hpp"
 
 namespace Stand
 {

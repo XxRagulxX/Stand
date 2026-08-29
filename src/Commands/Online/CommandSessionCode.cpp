@@ -1,18 +1,18 @@
-#include "CommandSessionCode.hpp"
+#include "Commands/Online/CommandSessionCode.hpp"
 
-#include <soup/ObfusString.hpp>
+#include "lib/soup/ObfusString.hpp"
 
-#include "gsType.hpp"
-#include "HttpRequestBuilder.hpp"
-#include "is_session.hpp"
-#include "natives.hpp"
-#include "session_code_cache.hpp"
-#include "SessionSpoofing.hpp"
+#include "Game/gsType.hpp"
+#include "Network/HttpRequestBuilder.hpp"
+#include "Network/is_session.hpp"
+#include "Game/natives.hpp"
+#include "Network/session_code_cache.hpp"
+#include "Network/SessionSpoofing.hpp"
 
-#include "CommandSessionCodeView.hpp"
-#include "CommandSessionCodeJoin.hpp"
-#include "CommandSessionCodeSpectate.hpp"
-#include "CommandSessionCodeLink.hpp"
+#include "Commands/Online/CommandSessionCodeView.hpp"
+#include "Commands/Online/CommandSessionCodeJoin.hpp"
+#include "Commands/Online/CommandSessionCodeSpectate.hpp"
+#include "Commands/Online/CommandSessionCodeLink.hpp"
 
 namespace Stand
 {

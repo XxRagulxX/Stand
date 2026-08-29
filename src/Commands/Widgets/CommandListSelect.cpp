@@ -1,14 +1,14 @@
-#include "CommandListSelect.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 
 #include <optional>
 
-#include <soup/os.hpp>
+#include "lib/soup/os.hpp"
 
-#include "CommandListActionItem.hpp"
-#include "get_next_arg.hpp"
-#include "Gui.hpp"
-#include "regular_event.hpp"
-#include "RelayCon.hpp"
+#include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Util/get_next_arg.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/regular_event.hpp"
+#include "Network/RelayCon.hpp"
 
 namespace Stand
 {

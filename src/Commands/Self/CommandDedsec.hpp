@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggleRegularSp.hpp"
+#include "Commands/Widgets/CommandToggleRegularSp.hpp"
 
-#include "AllEntitiesEveryTick.hpp"
+#include "Core/AllEntitiesEveryTick.hpp"
 
 namespace Stand
 {

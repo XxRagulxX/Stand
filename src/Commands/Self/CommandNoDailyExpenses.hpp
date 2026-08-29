@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ScriptFuncPatch.hpp"
+#include "AntiCheat/ScriptFuncPatch.hpp"
 
 namespace Stand
 {

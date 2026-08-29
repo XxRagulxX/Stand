@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Grid.hpp"
+#include "Menu/Grid.hpp"
 
 namespace Stand
 {

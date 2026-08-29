@@ -1,16 +1,16 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include <soup/base64.hpp>
-#include <soup/Packet.hpp>
+#include "lib/soup/base64.hpp"
+#include "lib/soup/Packet.hpp"
 
-#include "CExtraContentManager.hpp"
-#include "CNetworkAssetVerifier.hpp"
-#include "pointers.hpp"
+#include "Game/CExtraContentManager.hpp"
+#include "Network/CNetworkAssetVerifier.hpp"
+#include "Game/pointers.hpp"
 
 #ifdef STAND_DEBUG
-#include "FileLogger.hpp"
+#include "Core/FileLogger.hpp"
 #endif
 
 namespace Stand

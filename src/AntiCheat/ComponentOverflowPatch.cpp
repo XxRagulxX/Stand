@@ -1,24 +1,24 @@
-#include "ComponentOverflowPatch.hpp"
+#include "AntiCheat/ComponentOverflowPatch.hpp"
 
-#include "AbstractEntity.hpp"
-#include "atFixedArray.hpp"
-#include "CPedDrawHandler.hpp"
-#include "CPedModelInfo.hpp"
-#include "DoVehicleLightsAsync.hpp"
-#include "fwAltSkeletonExtension.hpp"
-#include "fwPool.hpp"
-#include "fwStepAllocator.hpp"
-#include "gta_net_object_mgr.hpp"
-#include "gta_ped.hpp"
-#include "gta_vehicle.hpp"
-#include "Gui.hpp"
-#include "Hooking.hpp"
-#include "Matrix34.hpp"
-#include "pointers.hpp"
-#include "sysDependency.hpp"
-#include "Util.hpp"
+#include "Core/AbstractEntity.hpp"
+#include "Game/atFixedArray.hpp"
+#include "Ped/CPedDrawHandler.hpp"
+#include "Ped/CPedModelInfo.hpp"
+#include "Vehicle/DoVehicleLightsAsync.hpp"
+#include "Game/fwAltSkeletonExtension.hpp"
+#include "Game/fwPool.hpp"
+#include "Game/fwStepAllocator.hpp"
+#include "Game/gta_net_object_mgr.hpp"
+#include "Game/gta_ped.hpp"
+#include "Game/gta_vehicle.hpp"
+#include "Rendering/Gui.hpp"
+#include "AntiCheat/Hooking.hpp"
+#include "Util/Matrix34.hpp"
+#include "Game/pointers.hpp"
+#include "Game/sysDependency.hpp"
+#include "Util/Util.hpp"
 
-#include "ComponentImpl.hpp"
+#include "AntiCheat/ComponentImpl.hpp"
 
 namespace Stand
 {
@@ -245,8 +245,7 @@ namespace Stand
 
 			p = p.add(15);
 			alt_skeleton_extension_id = p.add(2).rip().as<decltype(alt_skeleton_extension_id)>();
-			auto* count = p.add(29).rip().as<decltype(AltSkeletonExtensionArray::m_Count)*>();
-			alt_skeleton_extensions_array = reinterpret_cast<AltSkeletonExtensionArray*>(reinterpret_cast<std::uintptr_t>(count)- reinterpret_cast<std::uintptr_t>(&(reinterpret_cast<AltSkeletonExtensionArray*>(0)->m_Count)));
+			alt_skeleton_extensions_array = p.add(29).rip().sub(offsetof(AltSkeletonExtensionArray, m_Count)).as<AltSkeletonExtensionArray*>();
 		});
 		BATCH_ADD_OPTIONAL(CODENAME(DoVehicleLightsAsync_RunFromDependency), "4C 8B 01 BA 80 B1 00 00", [](soup::Pointer p)
 		{

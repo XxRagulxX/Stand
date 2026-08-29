@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
-#include "ScriptGlobal.hpp"
-#include "regular_event.hpp"
+#include "Scripting/ScriptGlobal.hpp"
+#include "Core/regular_event.hpp"
 
 namespace Stand
 {
@@ -17,7 +17,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
-			registerScriptTickEventHandler(click, [=, this]()
+			registerScriptTickEventHandler(click, [=]()
 			{
 				const bool is_solo = NETWORK::NETWORK_SESSION_IS_SOLO();
 				if (m_on)
