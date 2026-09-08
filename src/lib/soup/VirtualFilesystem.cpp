@@ -3,7 +3,7 @@
 #if (SOUP_WINDOWS && !SOUP_CROSS_COMPILE) || SOUP_LINUX
 
 #if SOUP_WINDOWS
-#include <Objbase.h> // CoCreateGuid
+#include <objbase.h> // CoCreateGuid
 #pragma comment(lib, "ole32.lib") // CoCreateGuid
 
 #include "Exception.hpp"

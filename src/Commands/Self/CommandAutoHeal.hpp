@@ -1,6 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandTickDispatch.hpp"
-#include "Commands/Widgets/CommandToggleLegacy.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include "World/Self.hpp"
 
@@ -39,11 +39,11 @@
 // below max while this is on), just via this project's own tick shape.
 namespace Stand
 {
-	class CommandAutoHeal : public CommandToggleLegacy
+	class CommandAutoHeal : public CommandToggle
 	{
 	public:
 		explicit CommandAutoHeal(CommandList* parent) :
-		    CommandToggleLegacy(parent, LIT("Demi-God Mode"), CMDNAMES("demigodmode", "semigodmode"), LIT("Keeps your health and armour topped up."))
+		    CommandToggle(parent, LIT("Demi-God Mode"), CMDNAMES("demigodmode", "semigodmode"), LIT("Keeps your health and armour topped up."))
 		{
 		}
 

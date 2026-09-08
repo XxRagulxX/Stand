@@ -66,7 +66,7 @@ extern "C"
 	    ::exceptional_on_caught_exception( \
 	        new ::Stand::ExceptionData{  \
 	            GetExceptionInformation(), \
-	            ::Stand::ExceptionContext::##ctx}))
+	            ::Stand::ExceptionContext::ctx}))
 
 #define __EXCEPTIONAL() \
 	__EXCEPTIONAL_CTX(OTHER)
@@ -79,7 +79,7 @@ extern "C"
 	    ::exceptional_on_exception(                  \
 	        new ::Stand::ExceptionData{            \
 	            GetExceptionInformation(),           \
-	            ::Stand::ExceptionContext::##ctx}, \
+	            ::Stand::ExceptionContext::ctx}, \
 	        handler))
 
 #define __EXCEPTIONAL_CUSTOM(handler) \

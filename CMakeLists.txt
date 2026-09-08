@@ -111,6 +111,7 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         "${SRC_DIR}"
+        "${SRC_DIR}/lib"
         "${minhook_SOURCE_DIR}/include"
         "${minhook_SOURCE_DIR}/src/hde"
         "${luajit_SOURCE_DIR}/src"

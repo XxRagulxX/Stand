@@ -1,0 +1,128 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // ── Linux: cross-compile to Windows DLL via clang-cl + msvc-wine ──
+        {
+            "label": "Configure: Linux Cross-Compile",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset", "x64-CrossCompile-Linux"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build: Linux Cross-Compile (Windows DLL)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "x64-CrossCompile-Linux",
+                "--parallel"
+            ],
+            "options": {
+                "env": {
+                    "PATH": "${env:HOME}/my_msvc/opt/msvc/bin/x64:${env:PATH}"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "owner": "clang-cl",
+                "fileLocation": ["absolute"],
+                "pattern": {
+                    "regexp": "^(.+)\\((\\d+),(\\d+)\\):\\s+(warning|error)\\s+(.+):\\s+(.+)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "code": 5,
+                    "message": 6
+                }
+            },
+            "dependsOn": ["Configure: Linux Cross-Compile"]
+        },
+
+        // ── Windows: MSVC (run in VS Developer Command Prompt) ────────────
+        {
+            "label": "Configure: Windows MSVC",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset", "x64-Release-MSVC"
+            ],
+            "group": "build",
+            "windows": {
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build: Windows MSVC",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "x64-Release-MSVC",
+                "--parallel"
+            ],
+            "group": "build",
+            "windows": {
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                }
+            },
+            "problemMatcher": "$msCompile",
+            "dependsOn": ["Configure: Windows MSVC"]
+        },
+
+        // ── Windows: Clang-CL ─────────────────────────────────────────────
+        {
+            "label": "Configure: Windows Clang-CL",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset", "x64-Release-Clang"
+            ],
+            "group": "build",
+            "windows": {
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build: Windows Clang-CL",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "x64-Release-Clang",
+                "--parallel"
+            ],
+            "group": "build",
+            "windows": {
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                }
+            },
+            "problemMatcher": "$msCompile",
+            "dependsOn": ["Configure: Windows Clang-CL"]
+        }
+    ]
+}

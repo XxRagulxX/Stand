@@ -8,7 +8,7 @@
 #include <mmeapi.h>
 #include <objbase.h>
 #include <mmdeviceapi.h>
-#include <Functiondiscoverykeys_devpkey.h>
+#include <functiondiscoverykeys_devpkey.h>
 
 #pragma comment(lib, "ole32.lib") // CoInitialize, CoCreateInstance, PropVariantClear
 

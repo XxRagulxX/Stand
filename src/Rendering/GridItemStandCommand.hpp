@@ -1,5 +1,5 @@
 #pragma once
-#include "Commands/Widgets/CommandLegacy.hpp"
+#include "Commands/Widgets/Command.hpp"
 #include "Rendering/GridItem.hpp"
 
 #include <cstdint>
@@ -41,7 +41,7 @@ namespace Stand::Rendering
 	class GridItemStandCommand : public GridItem
 	{
 	public:
-		GridItemStandCommand(int16_t width, int16_t height, Stand::CommandLegacy* command);
+		GridItemStandCommand(int16_t width, int16_t height, Stand::Command* command);
 
 		void draw() override;
 		void drawText() override;
@@ -73,6 +73,6 @@ namespace Stand::Rendering
 		};
 		SliderLayout ComputeSliderLayout() const;
 
-		Stand::CommandLegacy* m_Command;
+		Stand::Command* m_Command;
 	};
 }

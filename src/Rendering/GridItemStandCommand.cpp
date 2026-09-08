@@ -3,7 +3,7 @@
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
-#include "Commands/Widgets/CommandSliderLegacy.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/GridStandCommandList.hpp"
@@ -25,7 +25,7 @@ namespace Stand::Rendering
 		constexpr float kValueWidth = 40.f;
 		constexpr float kGap = 6.f;
 
-		std::string Label(Stand::CommandLegacy* command)
+		std::string Label(Stand::Command* command)
 		{
 			if (auto* physical = command->getPhysical())
 			{
@@ -46,7 +46,7 @@ namespace Stand::Rendering
 		}
 	}
 
-	GridItemStandCommand::GridItemStandCommand(int16_t width, int16_t height, Stand::CommandLegacy* command) :
+	GridItemStandCommand::GridItemStandCommand(int16_t width, int16_t height, Stand::Command* command) :
 	    GridItem(GRIDITEM_INDIFFERENT, width, height),
 	    m_Command(command)
 	{
@@ -125,7 +125,7 @@ namespace Stand::Rendering
 
 		if (m_Command->isSlider())
 		{
-			auto* slider = m_Command->as<Stand::CommandSliderLegacy>();
+			auto* slider = m_Command->as<Stand::CommandSlider>();
 			const auto layout = ComputeSliderLayout();
 
 			const auto valueStr = std::to_string(slider->value);
@@ -218,7 +218,7 @@ namespace Stand::Rendering
 
 	void GridItemStandCommand::SliderStep(int direction)
 	{
-		auto* slider = m_Command->as<Stand::CommandSliderLegacy>();
+		auto* slider = m_Command->as<Stand::CommandSlider>();
 
 		FiberPool::queueJob([slider, direction] {
 			Stand::Click click(Stand::CLICK_MENU, Stand::TC_SCRIPT_YIELDABLE);

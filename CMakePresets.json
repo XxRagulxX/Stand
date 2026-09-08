@@ -26,6 +26,21 @@
             }
         },
         {
+            "name": "linux-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
             "name": "x64-Release-MSVC",
             "displayName": "x64 Release (MSVC)",
             "description": "Ninja + cl.exe, matching CMakeSettings.json's own \"msvc_x64_x64\" Visual Studio environment - same out/build/x64-Release-MSVC directory that config already used.",
@@ -44,6 +59,12 @@
                 "value": "ClangCL,host=x64",
                 "strategy": "external"
             }
+        },
+        {
+            "name": "x64-CrossCompile-Linux",
+            "displayName": "x64 Cross-Compile (Linux → Windows DLL)",
+            "description": "Cross-compiles a Windows DLL from Linux using clang-cl + msvc-wine. Requires: clang-cl in PATH and msvc-wine at ~/my_msvc/opt/msvc (see cmake/cross-compile-linux.cmake).",
+            "inherits": "linux-base"
         }
     ],
     "buildPresets": [
@@ -56,6 +77,11 @@
             "name": "x64-Release-Clang",
             "displayName": "x64 Release (Clang)",
             "configurePreset": "x64-Release-Clang"
+        },
+        {
+            "name": "x64-CrossCompile-Linux",
+            "displayName": "x64 Cross-Compile (Linux → Windows DLL)",
+            "configurePreset": "x64-CrossCompile-Linux"
         }
     ]
 }

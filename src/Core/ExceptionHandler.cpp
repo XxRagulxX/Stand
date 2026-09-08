@@ -61,6 +61,12 @@ namespace Stand
 {
 	namespace
 	{
+		static int __cdecl rtcErrorHandler(int, const wchar_t*, int, const wchar_t*, const wchar_t*, ...) noexcept
+		{
+			Exceptional::report("CRT Run-Time Error", {});
+			return 0;
+		}
+
 		long callHandlerSafely(handle_exception_t handler, void* data) noexcept
 		{
 			if (!handler)
@@ -233,18 +239,7 @@ namespace Stand
 
 			    _set_abort_behavior(0, 0);
 
-			    _RTC_SetErrorFuncW(
-			        [](int,
-			            const wchar_t*,
-			            int,
-			            const wchar_t*,
-			            const wchar_t*,
-			            ...) {
-				        Exceptional::report(
-				            "CRT Run-Time Error",
-				            {});
-				        return 0;
-			        });
+			    _RTC_SetErrorFuncW(rtcErrorHandler);
 
 			    _set_purecall_handler(
 			        [] {

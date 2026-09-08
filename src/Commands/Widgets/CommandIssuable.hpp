@@ -1,7 +1,7 @@
 #pragma once
 #include "Commands/Online/CommandName.hpp"
 #include "Commands/Online/CommandPerm.hpp"
-#include "Commands/Widgets/CommandLegacy.hpp"
+#include "Commands/Widgets/Command.hpp"
 #include "Commands/Widgets/CommandRegistry.hpp"
 #include "Menu/Click.hpp"
 
@@ -82,14 +82,14 @@ namespace Stand
 #define CMDNAMES_OBF_PICK(_1, _2, _3, _4, NAME, ...) NAME
 #define CMDNAMES_OBF(...) CMDNAMES_OBF_PICK(__VA_ARGS__, CMDNAMES_OBF_4, CMDNAMES_OBF_3, CMDNAMES_OBF_2, CMDNAMES_OBF_1)(__VA_ARGS__)
 
-	class CommandIssuable : public CommandLegacy
+	class CommandIssuable : public Command
 	{
 	public:
 		std::vector<CommandName> command_names;
 		CommandPerm perm;
 
 		explicit CommandIssuable(CommandList* parent, std::vector<CommandName>&& command_names, CommandPerm perm = COMMANDPERM_USERONLY, commandflags_t flags = 0, CommandType type = COMMAND_ISSUABLE) :
-		    CommandLegacy(type, parent, flags),
+		    Command(type, parent, flags),
 		    command_names(std::move(command_names)),
 		    perm(perm)
 		{

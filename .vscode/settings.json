@@ -1,6 +1,9 @@
 {
     "cmake.useCMakePresets": "always",
-    "cmake.useVsDeveloperEnvironment": "always",
+    // "always" tries to activate a VS Developer shell, which fails on Linux.
+    // "auto" activates it only when an MSVC kit is selected (Windows), and
+    // is a no-op on Linux where the cross-compile preset needs no VS env.
+    "cmake.useVsDeveloperEnvironment": "auto",
     // Copied here (not read straight from out/build/<preset>/) so clangd
     // has one stable, preset-independent location to find it - see
     // .clangd's own comment. Re-copied after every successful configure.

@@ -1,5 +1,5 @@
 #pragma once
-#include <cstdint>
+#include "Game/typedecl.hpp"
 
 // Real Stand's CommandFlags.hpp also carries flags for systems this
 // project doesn't have (feature-list edition gating, saved/starred
@@ -12,10 +12,7 @@
 // the same names so a command ported from Stand (e.g. CMDFLAGS_TOGGLE)
 // compiles unchanged, even though most now just resolve to 0 or a single
 // flag rather than Stand's own wider combination.
-namespace Stand
-{
-	using commandflags_t = uint16_t;
-}
+// commandflags_t is defined in Game/typedecl.hpp (size depends on CMDFLAG_BITS).
 
 #define CMDFLAG_TEMPORARY (Stand::commandflags_t)0b1
 #define CMDFLAG_SUPPORTS_STATE_OPERATIONS (Stand::commandflags_t)0b10

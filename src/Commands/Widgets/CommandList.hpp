@@ -19,7 +19,7 @@ namespace Stand
 	class CommandList : public CommandPhysical
 	{
 	public:
-		std::vector<std::unique_ptr<CommandLegacy>> children;
+		std::vector<std::unique_ptr<Command>> children;
 
 		explicit CommandList(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names = {}, Label&& help_text = NOLABEL, commandflags_t flags = CMDFLAGS_LIST, CommandType type = COMMAND_LIST) :
 		    CommandPhysical(type, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags)

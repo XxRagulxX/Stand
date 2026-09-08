@@ -1,6 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandTickDispatch.hpp"
-#include "Commands/Widgets/CommandToggleLegacy.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 
 #include "World/Self.hpp"
 
@@ -38,11 +38,11 @@
 // exactly the safety behaviour legacy Godmode.cpp's own OnTick() had.
 namespace Stand
 {
-	class CommandGod : public CommandToggleLegacy
+	class CommandGod : public CommandToggle
 	{
 	public:
 		explicit CommandGod(CommandList* parent) :
-		    CommandToggleLegacy(parent, LIT("Immortality"), CMDNAMES("godmode", "immortality"), LIT("Makes your character unable to die."))
+		    CommandToggle(parent, LIT("Immortality"), CMDNAMES("godmode", "immortality"), LIT("Makes your character unable to die."))
 		{
 		}
 

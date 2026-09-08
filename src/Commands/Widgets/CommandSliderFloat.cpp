@@ -1,4 +1,4 @@
-#include "Commands/Widgets/CommandSliderFloatLegacy.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 
 namespace Stand
 {
@@ -18,6 +18,6 @@ namespace Stand
 	void CommandSliderFloatLegacy::setValue(float value, Click& click)
 	{
 		const auto scalar = getPrecisionScalar();
-		CommandSliderLegacy::setValue(click, static_cast<int>(value * static_cast<float>(scalar)));
+		CommandSlider::setValue(click, static_cast<int>(value * static_cast<float>(scalar)));
 	}
 }

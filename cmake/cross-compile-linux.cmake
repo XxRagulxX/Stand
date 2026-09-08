@@ -16,6 +16,14 @@ if(CROSSCOMPILE)
     message(STATUS "Cross-compile is enabled (clang-cl / MSVC ABI).")
 
     # ------------------------------------------------------------
+    # Add msvc-wine bin to PATH so bare 'ml64' resolves at build time
+    # (CMake's ASM_MASM language detection caches the bare name; the
+    # wrapper scripts that call wine live only in this directory).
+    # ------------------------------------------------------------
+    set(MSVC_WINE_BIN "$ENV{HOME}/my_msvc/opt/msvc/bin/x64")
+    set(ENV{PATH} "${MSVC_WINE_BIN}:$ENV{PATH}")
+
+    # ------------------------------------------------------------
     # Target system
     # ------------------------------------------------------------
     set(CMAKE_SYSTEM_NAME Windows)
@@ -133,6 +141,31 @@ if(CROSSCOMPILE)
     set(CMAKE_MT "${MSVC_MT_EXECUTABLE}" CACHE FILEPATH "" FORCE)
 
     # ------------------------------------------------------------
+    # MASM assembler (ml64) - used when enable_language(ASM_MASM)
+    # is called later in CMakeLists.txt.  Without an explicit full
+    # path cmake stores the bare name "ml64", which is not on PATH
+    # at build time (only the msvc-wine bin dir has it).
+    # ------------------------------------------------------------
+    # Use the wrapper script that rewrites relative -Fo paths to absolute
+    # paths before calling ml64 via wine (wine's CWD differs from the
+    # shell's CWD, so relative output paths write to the wrong place).
+    set(_ml64_wrapper "${MSVC_WINE_ROOT}/bin/x64/ml64-wrapper")
+    if(EXISTS "${_ml64_wrapper}")
+        set(CMAKE_ASM_MASM_COMPILER "${_ml64_wrapper}" CACHE FILEPATH "" FORCE)
+    else()
+        find_program(MSVC_ML64_EXECUTABLE
+            NAMES ml64 ml64.exe
+            PATHS "${MSVC_WINE_ROOT}/bin/x64"
+            NO_DEFAULT_PATH
+        )
+        if(MSVC_ML64_EXECUTABLE)
+            set(CMAKE_ASM_MASM_COMPILER "${MSVC_ML64_EXECUTABLE}" CACHE FILEPATH "" FORCE)
+        else()
+            message(WARNING "ml64 not found in ${MSVC_WINE_ROOT}/bin/x64 — MASM (.asm) files will not assemble.")
+        endif()
+    endif()
+
+    # ------------------------------------------------------------
     # Disable MinGW / Unix search behavior
     # ------------------------------------------------------------
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -141,13 +174,16 @@ if(CROSSCOMPILE)
 
     # ------------------------------------------------------------
     # Compiler flags (safe for DLL injection)
+    # CXX-only flags use generator expressions so they are NOT passed
+    # to the MASM assembler — ml64 does not understand /Zc:__cplusplus
+    # and silently drops its output when it appears on the command line.
     # ------------------------------------------------------------
     add_compile_options(
-        /EHsc
-        /permissive-
-        /Zc:__cplusplus
-        /Zc:inline
-        /GS-
+        $<$<COMPILE_LANGUAGE:CXX>:/EHsc>
+        $<$<COMPILE_LANGUAGE:CXX>:/permissive->
+        $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
+        $<$<COMPILE_LANGUAGE:CXX>:/Zc:inline>
+        $<$<COMPILE_LANGUAGE:CXX>:/GS->
     )
 
     # ------------------------------------------------------------
