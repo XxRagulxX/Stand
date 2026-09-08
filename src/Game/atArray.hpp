@@ -1,152 +1,65 @@
 #pragma once
-
-#include <utility> // std::move
-
-#include "Game/sysMemSimpleAllocator.hpp"
-#include "Network/tlsContext.hpp"
+#include <cstdint>
 
 namespace rage
 {
-#pragma pack(push, 8)
-	template <typename T>
+	template<typename T>
 	class atArray
 	{
 	public:
-		T* m_Elements = nullptr;
-		uint16_t m_Count = 0;
-		uint16_t m_Capacity = 0;
-
-		atArray() = default;
-
-		~atArray()
+		atArray() :
+		    m_Data(nullptr),
+		    m_Size(0),
+		    m_Capacity(0)
 		{
-			if (m_Elements)
-			{
-				rage::tlsContext::get()->sysMemAllocator_sm_Container->Free(m_Elements);
-			}
 		}
 
-		T* begin() noexcept
+		T* begin() const
 		{
-			return m_Elements;
+			return &m_Data[0];
 		}
 
-		T* end() noexcept
+		T* end() const
 		{
-			return m_Elements + m_Count;
+			return &m_Data[m_Size];
 		}
 
-		const T* begin() const noexcept
+		T* data() const
 		{
-			return m_Elements;
+			return m_Data;
 		}
 
-		const T* end() const noexcept
+		std::uint16_t size() const
 		{
-			return m_Elements + m_Count;
+			return m_Size;
 		}
 
-		T* data() noexcept
-		{
-			return m_Elements;
-		}
-
-		const T* data() const noexcept
-		{
-			return m_Elements;
-		}
-
-		uint16_t size() const noexcept
-		{
-			return m_Count;
-		}
-
-		uint16_t GetCount() const noexcept
-		{
-			return m_Count;
-		}
-
-		uint16_t capacity() const noexcept
+		std::uint16_t capacity() const
 		{
 			return m_Capacity;
 		}
 
-		T& operator[](uint16_t index) noexcept
+		T& operator[](std::uint16_t index) const
 		{
-			return m_Elements[index];
+			return m_Data[index];
 		}
 
-		const T& operator[](uint16_t index) const noexcept
+		bool contains(T comparator)
 		{
-			return m_Elements[index];
-		}
-
-		void operator=(atArray<T>&& b) noexcept
-
-		{
-			m_Elements = b.m_Elements;
-			m_Count = b.m_Count;
-			m_Capacity = b.m_Capacity;
-
-			b.m_Elements = nullptr;
-			b.m_Count = 0;
-			b.m_Capacity = 0;
-		}
-
-		void clear()
-		{
-			if (m_Elements)
+			for (auto iter_value : this)
 			{
-				rage::tlsContext::get()->sysMemAllocator_sm_Container->Free(m_Elements);
-				m_Elements = nullptr;
-			}
-			m_Count = 0;
-			m_Capacity = 0;
-		}
-
-		void emplace_back(T val)
-		{
-			if (m_Count == m_Capacity)
-			{
-				reserve(m_Count + 1);
-			}
-			m_Elements[m_Count++] = std::move(val);
-		}
-
-		void reserve(uint16_t new_capacity)
-		{
-			auto new_data = (T*)rage::tlsContext::get()->sysMemAllocator_sm_Container->Allocate(new_capacity * sizeof(T), 16, 0);
-			if (m_Elements != nullptr)
-			{
-				memcpy(new_data, m_Elements, m_Count * sizeof(T));
-				rage::tlsContext::get()->sysMemAllocator_sm_Container->Free(m_Elements);
-			}
-			m_Elements = new_data;
-			m_Capacity = new_capacity;
-		}
-
-		int Find(const T& t) const
-		{
-			for (int i = 0; i < m_Count; ++i)
-			{
-				if (m_Elements[i] == t)
+				if (iter_value == comparator)
 				{
-					return i;
+					return true;
 				}
 			}
-			return -1;
+			return false;
 		}
 
-		void Delete(uint16_t index)
-		{
-			SOUP_ASSERT(index != -1);
-			for (uint16_t i = index; i < m_Count - 1; ++i)
-			{
-				m_Elements[i] = m_Elements[i + 1];
-			}
-			--m_Count;
-		}
+	public:
+		T* m_Data;
+		std::uint16_t m_Size;
+		std::uint16_t m_Capacity; // includes items allocated due to reservations and alignment
 	};
-	static_assert(sizeof(atArray<int>) == 0x10);
-#pragma pack(pop)
+	static_assert(sizeof(rage::atArray<std::uint32_t>) == 0x10, "rage::atArray is not properly sized");
 }

@@ -2,90 +2,60 @@
     "version": 6,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 25,
+        "minor": 23,
         "patch": 0
     },
     "configurePresets": [
         {
-            "name": "base",
+            "name": "windows-base",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-            }
-        },
-        {
-            "name": "linux-cross-debug",
-            "displayName": "Linux -> Windows cross-compile (Debug)",
-            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake. Unity build is off (STAND_UNITY_BUILD=OFF) so compile_commands.json has one real entry per .cpp file, which clangd needs.",
-            "inherits": "base",
-            "condition": {
-                "type": "notEquals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CROSSCOMPILE": "ON",
-                "STAND_UNITY_BUILD": "OFF"
-            }
-        },
-        {
-            "name": "linux-cross-release",
-            "displayName": "Linux -> Windows cross-compile (Release)",
-            "description": "Cross-compiles Stand.dll on Linux using clang-cl. Requires LLVM (clang-cl) and msvc-wine; see cmake/cross-compile.cmake. Unity build is on (STAND_UNITY_BUILD=ON) for a fast full rebuild.",
-            "inherits": "linux-cross-debug",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "CROSSCOMPILE": "ON",
-                "STAND_UNITY_BUILD": "ON"
-            }
-        },
-        {
-            "name": "windows-debug",
-            "displayName": "Native Windows (Debug)",
-            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required. Unity build is off (STAND_UNITY_BUILD=OFF) so compile_commands.json has one real entry per .cpp file, which clangd needs.",
-            "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
             },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CROSSCOMPILE": "OFF",
-                "STAND_UNITY_BUILD": "OFF"
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
             }
         },
         {
-            "name": "windows-release",
-            "displayName": "Native Windows (Release)",
-            "description": "Builds Stand.dll natively on Windows with MSVC or clang-cl. Pick a matching CMake Tools kit (e.g. \"Visual Studio Build Tools 2022 - amd64\" or an LLVM/clang-cl kit) before configuring, so cl.exe/clang-cl.exe and the Windows SDK are on the environment - no full Visual Studio IDE required. Unity build is on (STAND_UNITY_BUILD=ON) for a fast full rebuild.",
-            "inherits": "windows-debug",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "CROSSCOMPILE": "OFF",
-                "STAND_UNITY_BUILD": "ON"
+            "name": "x64-Release-MSVC",
+            "displayName": "x64 Release (MSVC)",
+            "description": "Ninja + cl.exe, matching CMakeSettings.json's own \"msvc_x64_x64\" Visual Studio environment - same out/build/x64-Release-MSVC directory that config already used.",
+            "inherits": "windows-base",
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "x64-Release-Clang",
+            "displayName": "x64 Release (Clang)",
+            "description": "Ninja + clang-cl.exe (LLVM toolset bundled with Visual Studio), matching CMakeSettings.json's own \"clang_cl_x64_x64\" Visual Studio environment - same out/build/x64-Release-Clang directory that config already used.",
+            "inherits": "windows-base",
+            "toolset": {
+                "value": "ClangCL,host=x64",
+                "strategy": "external"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "linux-cross-debug",
-            "configurePreset": "linux-cross-debug"
+            "name": "x64-Release-MSVC",
+            "displayName": "x64 Release (MSVC)",
+            "configurePreset": "x64-Release-MSVC"
         },
         {
-            "name": "linux-cross-release",
-            "configurePreset": "linux-cross-release"
-        },
-        {
-            "name": "windows-debug",
-            "configurePreset": "windows-debug"
-        },
-        {
-            "name": "windows-release",
-            "configurePreset": "windows-release"
+            "name": "x64-Release-Clang",
+            "displayName": "x64 Release (Clang)",
+            "configurePreset": "x64-Release-Clang"
         }
     ]
 }

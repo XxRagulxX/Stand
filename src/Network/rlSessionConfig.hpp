@@ -1,20 +1,16 @@
 #pragma once
-
-#include "Network/rl.hpp"
-#include "Network/rl_matching.hpp"
+#include "Network/MatchmakingAttributes.hpp"
 
 namespace rage
 {
-	struct rlSessionConfig
+	class rlSessionConfig
 	{
-		/* 0x00 */ rlNetworkMode m_NetworkMode;
-		/* 0x04 */ unsigned max_public_slots;
-		/* 0x08 */ unsigned max_private_slots;
-		/* 0x0C */ rlMatchingAttributes m_Attrs;
-		unsigned m_CreateFlags;
-		unsigned m_PresenceFlags;
-		uint64_t session_id;
-		uint64_t arbitration_cookie;
+	public:
+		char m_pad[0x4];                               // 0x00
+		int m_PublicSlots;                             // 0x04
+		int m_PrivateSlots;                            // 0x08
+		MatchmakingAttributes m_MatchmakingAttributes; // 0x0C
+		char m_pad2[0x18];                             // 0x10C
 	};
-	static_assert(offsetof(rlSessionConfig, m_Attrs) == 0x0C);
+	static_assert(sizeof(rage::rlSessionConfig) == 0x130);
 }

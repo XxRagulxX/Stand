@@ -1,17 +1,15 @@
 #pragma once
+#include "Commands/Online/CommandName.hpp"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-#include "Commands/Online/CommandName.hpp"
-
-// 32 bits are reserved for the virtual key value
-#define FLAG_CTRL		0b100000000000000000000000000000000
-#define FLAG_SHIFT		0b1000000000000000000000000000000000
-#define FLAG_ALT		0b10000000000000000000000000000000000
-#define FLAG_HOLDMODE	0b100000000000000000000000000000000000
-#define FLAG_REPEAT		0b1000000000000000000000000000000000000
+#define FLAG_CTRL 0b100000000000000000000000000000000ull
+#define FLAG_SHIFT 0b1000000000000000000000000000000000ull
+#define FLAG_ALT 0b10000000000000000000000000000000000ull
+#define FLAG_HOLDMODE 0b100000000000000000000000000000000000ull
+#define FLAG_REPEAT 0b1000000000000000000000000000000000000ull
 
 namespace Stand
 {
@@ -30,34 +28,26 @@ namespace Stand
 	public:
 		inline static HotkeyModkeyBehaviour modkey_behaviour = HMB_STRICT_IF_HAS_MODKEY;
 
-		constexpr Hotkey(uint64_t value = 0)
-			: value(value)
+		constexpr Hotkey(uint64_t value = 0) :
+		    value(value)
 		{
 		}
 
-		explicit constexpr Hotkey(unsigned int vk, bool ctrl, bool shift, bool alt, bool repeat = false)
-			: value(vk)
+		explicit constexpr Hotkey(unsigned int vk, bool ctrl, bool shift, bool alt, bool repeat = false) :
+		    value(vk)
 		{
 			if (ctrl)
-			{
 				value |= FLAG_CTRL;
-			}
 			if (shift)
-			{
 				value |= FLAG_SHIFT;
-			}
 			if (alt)
-			{
 				value |= FLAG_ALT;
-			}
 			if (repeat)
-			{
 				value |= FLAG_REPEAT;
-			}
 		}
 
 		explicit Hotkey(std::string str);
-		
+
 		[[nodiscard]] static Hotkey fromPressing(unsigned int vk, bool repeat = false);
 
 		void operator=(const Hotkey b);
@@ -74,7 +64,7 @@ namespace Stand
 		[[nodiscard]] bool shift() const;
 		[[nodiscard]] bool alt() const;
 		[[nodiscard]] uint64_t getKeyValue() const;
-		
+
 		[[nodiscard]] bool isHoldMode() const;
 		void setHoldMode(bool on) noexcept;
 		void enableHoldMode() noexcept;

@@ -1,51 +1,9 @@
 CompileFlags:
-  # All four CMake presets (see CMakePresets.json) use the same binaryDir,
-  # so this is correct regardless of which one was last configured -
-  # linux-cross-{debug,release} or windows-{debug,release}.
-  CompilationDatabase: build
-
-  # Belt-and-suspenders on top of that database: these paths get appended
-  # to *every* file clangd compiles, including one with no compile command
-  # of its own (a header with no same-named .cpp to borrow flags from, or
-  # any file opened before background-indexing has found one) - cases
-  # where clangd otherwise falls back to a generic guess with none of this
-  # project's include paths at all. CMake already puts every path below on
-  # the Stand target's real compile commands (see the "Stand include
-  # directories" section of CMakeLists.txt) - and since STAND_UNITY_BUILD
-  # defaults to OFF, most .cpp/.hpp pairs get a real, complete entry of
-  # their own and don't even need this - but a header with no matching
-  # .cpp of its own still does, and this is what makes it work regardless.
-  #
-  # Relative paths here resolve relative to this .clangd file itself (the
-  # repo root), the same on Windows and Linux - no OS-specific paths
-  # needed for this part.
-  Add:
-    # src/ itself. Every Stand-own header and every vendored library
-    # under src/lib/ is reached with a fully qualified #include relative
-    # to this one root - e.g. #include "Game/CObject.hpp" or
-    # #include "lib/soup/rand.hpp" - so this single path is all that's
-    # needed to resolve any of them, regardless of which folder a header
-    # lives in or moves to. See src/README.md.
-    - -Isrc
-
-    # These vendored libraries are instead reached the way any
-    # third-party library normally is - unqualified, by their own public
-    # header name (<fmt/core.h>, <rapidjson/document.h>, <MinHook.h>,
-    # <lua.h>, DirectXTK's own headers) - matching how each one's
-    # target_include_directories() exposes it in CMakeLists.txt.
-    - -Isrc/lib/pluto
-    - -Isrc/lib/fmt/include
-    - -Isrc/lib/rapidjson/include
-    - -Isrc/lib/minhook/include
-    - -Isrc/lib/directxtk/Inc
-
-Diagnostics:
-  # This codebase leans on a shared precompiled header (src/Core/common.hpp)
-  # to pull in most of what any given file needs, and on the vendored
-  # libraries under src/lib/ having their own established include style.
-  # clangd's IncludeCleaner would otherwise flag a lot of headers as
-  # "missing" (reached transitively through the PCH) or "unused" (kept for
-  # a symbol IncludeCleaner doesn't attribute to it) that aren't actually
-  # either - so both are turned off rather than fought file by file.
-  UnusedIncludes: None
-  MissingIncludes: None
+  # Was "build" - a directory that's never existed in this repo. The
+  # real compilation database lives under out/build/<preset>/ (one per
+  # CMake preset - see CMakePresets.json), copied to the workspace root
+  # after every configure via .vscode/settings.json's
+  # "cmake.copyCompileCommands", so clangd always has one stable,
+  # preset-independent place to find it regardless of which preset is
+  # active or which OS this is built on.
+  CompilationDatabase: .

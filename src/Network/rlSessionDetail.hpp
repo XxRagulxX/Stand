@@ -1,40 +1,36 @@
 #pragma once
-
-#include "Network/rl.hpp"
-#include "Network/rlPeerInfo.hpp"
-#include "Network/rlSessionInfo.hpp"
 #include "Network/rlSessionConfig.hpp"
-#include "Network/rlGamerHandle.hpp"
+#include "Network/rlGamerInfoBase.hpp"
+#include "Network/rlSessionInfo.hpp"
 
 namespace rage
 {
-	struct rlSessionDetail
+	class rlSessionDetail
 	{
-		/* 0x00 */ rlPeerInfo m_HostPeerInfo;
-		/* 0x68 */ rlSessionInfo m_SessionInfo;
-		/* 0xD8 */ rlSessionConfig m_SessionConfig;
-		rlGamerHandle m_HostHandle;
-		char m_HostName[RL_MAX_NAME_BUF_SIZE];
-		unsigned m_NumFilledPublicSlots;
-		unsigned m_NumFilledPrivateSlots;
-		uint16_t m_SessionUserDataSize;
-		uint8_t m_SessionUserData[RL_MAX_SESSION_USER_DATA_SIZE];
-		uint16_t m_SessionInfoMineDataSize;
-		uint8_t m_SessionInfoMineData[RL_MAX_SESSION_DATA_MINE_SIZE];
-	};
-	//static_assert(offsetof(rlSessionDetail, m_SessionConfig) == 0xD8);
+	public:
+		class rage::rlGamerInfoBase m_BaseGamerInfo; // 0x00
+		std::uint64_t m_HostToken;                   // 0xC0
+		class rage::rlSessionInfo m_SessionInfo;     // 0xC8
+		class rage::rlSessionConfig m_SessionConfig; // 0x198
+		rage::rlGamerHandle m_Handle;                // 0x2C8
+		char m_Name[0x14];                           // 0x2D8
+		uint32_t m_PlayerCount;                      // 0x2EC
+		uint32_t m_SpectatorCount;                   // 0x2F0
+		uint16_t m_SessionDataStructSize;            // 0x2F4
+		char m_SessionDataStruct[0x100];             // 0x2F6 likely a union of two structs, sizes 0x44 and 0x28
+		uint16_t m_MatchmakingDataStructSize;        // 0x3F6
+		char m_MatchmakingDataStruct[0x80];          // 0x3F8 stores matchmaking tunable data?
+	}; //Size: 0x03CA
+	static_assert(sizeof(rlSessionDetail) == 0x478);
 
-	struct rlSessionDetailResponse
+	class rlSessionDetailMsg
 	{
-		uint32_t m_Response;
-		uint32_t m_ResponseParam;
-		uint32_t m_UniqueID;
-		rlPeerInfo m_HostPeerInfo;
-		rlSessionInfo m_SessionInfo;
-		rlSessionConfig m_Config;
-		rlGamerHandle m_HostHandle;
-		char m_HostName[RL_MAX_NAME_BUF_SIZE];
-		uint32_t m_NumFilledPublicSlots;
-		uint32_t m_NumFilledPrivateSlots;
+	public:
+		int m_Status;
+		int m_RequiredVersion;
+		int m_RequestToken;
+		int m_Unk;
+		rlSessionDetail m_Detail;
 	};
+	static_assert(sizeof(rlSessionDetailMsg) == 0x488);
 }

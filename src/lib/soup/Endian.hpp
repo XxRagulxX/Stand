@@ -6,7 +6,7 @@
 #endif
 
 #include "base.hpp"
-#include <bit>
+
 #include "IntStruct.hpp"
 
 NAMESPACE_SOUP

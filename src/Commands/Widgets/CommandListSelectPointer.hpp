@@ -1,23 +1,37 @@
 #pragma once
+#include "Commands/CommandListSelect.hpp"
 
-#include "Commands/Widgets/CommandListSelect.hpp"
+#include <utility>
+#include <vector>
 
-namespace Stand
+namespace Stand::StandWidgets
 {
+	// Ported from real Stand's own CommandListSelectPointer - the
+	// CommandListSelect equivalent of CommandTogglePointer.hpp/CommandSliderPointer.hpp (see
+	// either's own doc comment for the shared reasoning: a one-way sync
+	// onto CommandListSelect's own OnChange() hook, no changes to
+	// CommandListSelect.hpp needed).
 	class CommandListSelectPointer : public CommandListSelect
 	{
-	private:
-		long long* ptr;
-
 	public:
-		explicit CommandListSelectPointer(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, std::vector<CommandListActionItemData>&& options, long long* ptr)
-			: CommandListSelect(parent, std::move(menu_name), std::move(command_names), std::move(help_text), std::move(options), *ptr), ptr(ptr)
+		CommandListSelectPointer(std::string name,
+		    std::string label,
+		    std::string description,
+		    std::vector<std::pair<int, const char*>> list,
+		    int* ptr) :
+		    CommandListSelect(std::move(name), std::move(label), std::move(description), std::move(list), ptr ? *ptr : 0),
+		    m_Ptr(ptr)
 		{
 		}
 
-		void onChange(Click& click, long long prev_value) final
+	protected:
+		void OnChange() override
 		{
-			*ptr = value;
+			if (m_Ptr)
+				*m_Ptr = GetState();
 		}
+
+	private:
+		int* m_Ptr;
 	};
 }

@@ -1,7 +1,0 @@
-#pragma once
-
-enum eTaskThreatResponseFlags
-{
-	TASK_THREAT_RESPONSE_NONE = 0,
-	TASK_THREAT_RESPONSE_CAN_FIGHT_ARMED_PEDS_WHEN_NOT_ARMED = 16
-};

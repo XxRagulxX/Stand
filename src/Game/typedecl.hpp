@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Game/hashtype.hpp"
+#include "Util/hashtype.hpp"
 
 #define CMDFLAG_BITS 23
 
@@ -10,6 +10,7 @@ namespace Stand
 {
 	using time_t = int64_t;
 	using unixtime_t = int64_t;
+
 	constexpr time_t TIME_MAX = 0x7FFFFFFFFFFFFFFF;
 
 	using lang_t = uint8_t;

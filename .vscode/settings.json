@@ -1,44 +1,118 @@
 {
-    // --- CMake Tools ---
-    // Presets live in CMakePresets.json (see that file for what each one
-    // does). On Windows, pick a matching kit - e.g. "Visual Studio Build
-    // Tools 2022 - amd64" or an LLVM/clang-cl kit - before configuring, so
-    // cl.exe/clang-cl.exe and the Windows SDK are on the environment; CMake
-    // Tools applies the kit's environment on top of the preset
-    // automatically. No full Visual Studio IDE needed - Build Tools alone
-    // (or standalone LLVM + the Windows SDK) is enough.
     "cmake.useCMakePresets": "always",
-    "cmake.configureOnOpen": true,
-
-    // --- clangd ---
-    // Reads build/compile_commands.json (written by CMake because
-    // CMAKE_EXPORT_COMPILE_COMMANDS is ON in CMakeLists.txt - see .clangd
-    // for the CompilationDatabase path itself), which lists the exact
-    // include paths, defines, and flags each file was actually compiled
-    // with - so headers resolve identically to however you last
-    // configured the project, on both Windows and Linux, without a
-    // hand-maintained include list to fall out of sync. cmake/windows.cmake
-    // and cmake/cross-compile.cmake both go out of their way to bake the
-    // MSVC/Windows SDK header paths into that file as explicit flags
-    // (rather than leaving clangd to rely on inheriting whatever
-    // environment VS Code happened to start with), so this works the same
-    // way in both directions - native on Windows, cross-compiled from
-    // Linux.
-    //
-    // Re-run "CMake: Configure" after switching presets/kits so this file
-    // reflects the toolchain you're currently building with.
-    "clangd.arguments": [
-        "--background-index",
-        "--header-insertion=never"
-    ],
-
-    // Avoids double diagnostics/completion if ms-vscode.cpptools is also
-    // installed (e.g. just for its debugger) - clangd is the one actually
-    // driving IntelliSense here.
+    "cmake.useVsDeveloperEnvironment": "always",
+    // Copied here (not read straight from out/build/<preset>/) so clangd
+    // has one stable, preset-independent location to find it - see
+    // .clangd's own comment. Re-copied after every successful configure.
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    // clangd, not the C/C++ extension's own IntelliSense engine, is this
+    // project's single source of truth for diagnostics/completion -
+    // driven entirely by compile_commands.json (cmake.copyCompileCommands
+    // above), so it needs no separate Windows-specific configuration at
+    // all and carries over unchanged once this project moves to Linux.
+    // Running both engines at once produces duplicate/conflicting
+    // squiggles, and the C/C++ extension's own engine (c_cpp_properties.json-
+    // driven, no compile_commands.json awareness by default) is what was
+    // producing the false "header not found" errors.
     "C_Cpp.intelliSenseEngine": "disabled",
-
+    // --query-driver allowlists cl.exe/clang-cl.exe so clangd can ask the
+    // real compiler where its own built-in headers live (MSVC/clang-cl
+    // invocations rely on the ambient INCLUDE env var for system headers
+    // rather than explicit -I flags, which clangd can't see otherwise -
+    // the actual cause of "header not found" without this) - gcc/g++/
+    // clang/clang++ included too, ready for the Linux build.
+    "clangd.arguments": [
+        "--query-driver=**/cl.exe,**/clang-cl.exe,**/clang,**/clang++,**/gcc,**/g++"
+    ],
     "files.associations": {
-        "*.hpp": "cpp",
-        "*.ipp": "cpp"
+        ".clangd": "yaml",
+        "string_view": "cpp",
+        "algorithm": "cpp",
+        "atomic": "cpp",
+        "bit": "cpp",
+        "cctype": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "clocale": "cpp",
+        "cmath": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "cstddef": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "cwchar": "cpp",
+        "exception": "cpp",
+        "format": "cpp",
+        "forward_list": "cpp",
+        "initializer_list": "cpp",
+        "iomanip": "cpp",
+        "ios": "cpp",
+        "iosfwd": "cpp",
+        "istream": "cpp",
+        "iterator": "cpp",
+        "limits": "cpp",
+        "locale": "cpp",
+        "memory": "cpp",
+        "mutex": "cpp",
+        "new": "cpp",
+        "optional": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "sstream": "cpp",
+        "stdexcept": "cpp",
+        "stop_token": "cpp",
+        "streambuf": "cpp",
+        "string": "cpp",
+        "system_error": "cpp",
+        "thread": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "utility": "cpp",
+        "vector": "cpp",
+        "xfacet": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocbuf": "cpp",
+        "xlocinfo": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp",
+        "xstddef": "cpp",
+        "xstring": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp",
+        "array": "cpp",
+        "condition_variable": "cpp",
+        "deque": "cpp",
+        "fstream": "cpp",
+        "functional": "cpp",
+        "iostream": "cpp",
+        "list": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "source_location": "cpp",
+        "span": "cpp",
+        "unordered_map": "cpp",
+        "xhash": "cpp",
+        "filesystem": "cpp",
+        "any": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "future": "cpp",
+        "map": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp",
+        "xtree": "cpp"
     }
 }

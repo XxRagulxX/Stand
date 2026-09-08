@@ -1,33 +1,24 @@
 #include "Scripting/Script.hpp"
 
-#include "Core/Exceptional.hpp"
-#include "Core/ExecCtx.hpp"
-#include "Util/get_current_time_millis.hpp"
-#include "AntiCheat/Hooking.hpp"
+#include <soup/base.hpp>
+
+#include "Scripting/ExecCtx.hpp"
+#include "Core/ExceptionHandler.hpp"
 #include "Scripting/ScriptMgr.hpp"
 #include "Util/Util.hpp"
-
-#if REPORT_YIELD_WITH_LOCK
-#include "Rendering/Gui.hpp"
-#endif
+#include "Util/get_current_time_millis.hpp"
 
 namespace Stand
 {
-	Script::Script(script_func_t func)
-		: func(func)
+	Script::Script(script_func_t func) :
+	    func(func)
 	{
-		fiber = CreateFiber(0, [](void* param)
-		{
-			static_cast<Script*>(param)->fiberFunc();
-		}, this);
+		fiber = CreateFiber(0, [](void* param) {static_cast<Script*>(param)->fiberFunc();},this);
 	}
 
 	Script::~Script()
 	{
-		if (fiber != nullptr)
-		{
-			DeleteFiber(fiber);
-		}
+		stop();
 	}
 
 	Script* Script::current()
@@ -47,11 +38,13 @@ namespace Stand
 
 	void Script::stop()
 	{
-		if (fiber != nullptr)
+		if (fiber == nullptr)
 		{
-			DeleteFiber(fiber);
-			fiber = nullptr;
+			return;
 		}
+
+		DeleteFiber(fiber);
+		fiber = nullptr;
 	}
 
 	bool Script::tick()
@@ -60,8 +53,11 @@ namespace Stand
 		{
 			return false;
 		}
+
 		ExecCtx::get().tc = TC_SCRIPT_YIELDABLE;
+
 		SwitchToFiber(fiber);
+
 		return func != nullptr;
 	}
 
@@ -69,45 +65,27 @@ namespace Stand
 	{
 		SOUP_ASSERT(ExecCtx::get().isScript());
 		SOUP_ASSERT(!isCurrent());
-		const auto prev_ret_fiber = ret_fiber;
+
+		const auto previous_ret_fiber = ret_fiber;
+
 		ret_fiber = GetCurrentFiber();
-#if REPORT_YIELD_WITH_LOCK
-		nested = true;
-#endif
+
 		tick();
-#if REPORT_YIELD_WITH_LOCK
-		nested = false;
-#endif
-		ret_fiber = prev_ret_fiber;
+
+		ret_fiber = previous_ret_fiber;
 	}
 
 	void Script::yield()
 	{
-#if REPORT_YIELD_IN_NOYIELD
-		if (ExecCtx::get().tc != TC_SCRIPT_YIELDABLE)
-		{
-			Exceptional::report("Yielding not allowed in this context");
-		}
-#endif
-#if REPORT_YIELD_WITH_LOCK
-		if (!nested)
-		{
-			if (g_gui.root_mtx.isWriteLockedByThisThread())
-			{
-				Exceptional::report("Yielding while having root write lock");
-			}
-			else if (g_gui.root_mtx.isReadLockedByThisThread())
-			{
-				Exceptional::report("Yielding while having root read lock");
-			}
-		}
-#endif
+		SOUP_ASSERT(ret_fiber != nullptr);
+
 		SwitchToFiber(ret_fiber);
 	}
 
 	void Script::yield(time_t minSleepMs)
 	{
 		const auto deadline = get_current_time_millis() + minSleepMs;
+
 		do
 		{
 			yield();
@@ -123,13 +101,12 @@ namespace Stand
 		__EXCEPTIONAL()
 		{
 		}
+
 		func = nullptr;
-#if REPORT_YIELD_IN_NOYIELD
-		ExecCtx::get().tc = TC_SCRIPT_YIELDABLE;
-#endif
-		do
+
+		for (;;)
 		{
 			yield();
-		} while (true);
+		}
 	}
 }

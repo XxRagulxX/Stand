@@ -1,8 +1,0 @@
-+*.cpp
-static
-
-arg -O3
-
-if not windows
-	arg -fPIC
-endif

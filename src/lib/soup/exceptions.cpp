@@ -193,14 +193,6 @@ NAMESPACE_SOUP
 #endif
 
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
-	// exception_name is taken by rvalue reference (the caller's static, not
-	// owned by this function), so this function's __try never shares a stack
-	// frame with an object requiring unwinding.
-	[[noreturn]] static void throwOsException(std::string&& exception_name)
-	{
-		SOUP_THROW(osException(std::move(exception_name)));
-	}
-
 	static void isolateNoUnwind(void(*f)(void*, void*, void*), void* a1, void* a2, void* a3)
 	{
 		bool is_stk_oflw;
@@ -214,7 +206,7 @@ NAMESPACE_SOUP
 			{
 				_resetstkoflw();
 			}
-			throwOsException(std::move(exception_name));
+			SOUP_THROW(osException(std::move(exception_name)));
 		}
 	}
 #endif
@@ -302,7 +294,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	static void parseSehExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
+	static void parseExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
 	{
 		switch (info[0])
 		{
@@ -360,12 +352,12 @@ NAMESPACE_SOUP
 
 		case EXCEPTION_ACCESS_VIOLATION:
 			exception_name = "Access violation";
-			parseSehExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
+			parseExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
 			break;
 
 		case EXCEPTION_IN_PAGE_ERROR:
 			exception_name = "In-page error";
-			parseSehExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
+			parseExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
 			exception_name.append(" (Status ").append(std::to_string(exp->ExceptionRecord->ExceptionInformation[2])).push_back(')');
 			break;
 

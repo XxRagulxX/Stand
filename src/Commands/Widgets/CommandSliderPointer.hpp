@@ -1,22 +1,32 @@
 #pragma once
+#include "Commands/CommandSliderLegacy.hpp"
 
-namespace Stand
+#include <utility>
+
+namespace Stand::StandWidgets
 {
-	template <class Super, class Int = int>
-	class CommandSliderPointer : public Super
+	// Ported from real Stand's own CommandSliderPointer - see
+	// CommandTogglePointer.hpp's own doc comment for the shared reasoning (same
+	// one-way sync, onto CommandSlider::OnChange() instead of CommandToggle's
+	// OnEnable()/OnDisable() - no changes to CommandSlider.hpp needed
+	// either).
+	class CommandSliderPointer : public CommandSliderLegacy
 	{
-	private:
-		Int* const ptr;
-
 	public:
-		explicit CommandSliderPointer(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, Int* const ptr, const int min_value, const int max_value, const int skip = 1, commandflags_t flags = CMDFLAGS_SLIDER)
-			: Super(parent, std::move(menu_name), std::move(command_names), std::move(help_text), min_value, max_value, static_cast<int>(*ptr), skip, flags), ptr(ptr)
+		CommandSliderPointer(std::string name, std::string label, std::string description, int* ptr, int min, int max) :
+		    CommandSliderLegacy(std::move(name), std::move(label), std::move(description), min, max, ptr ? *ptr : min),
+		    m_Ptr(ptr)
 		{
 		}
 
-		void onChange(Click& click, int prev_value) final
+	protected:
+		void OnChange() override
 		{
-			*ptr = static_cast<Int>(reinterpret_cast<Super*>(this)->value);
+			if (m_Ptr)
+				*m_Ptr = GetState();
 		}
+
+	private:
+		int* m_Ptr;
 	};
 }

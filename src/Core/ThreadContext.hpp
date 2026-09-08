@@ -26,3 +26,16 @@ namespace Stand
 		return thread_context <= TC_RENDERER;
 	}
 }
+
+// The Stand-ported Command backend (Click, CommandPhysical, ...) was
+// written against Stand's own Stand::ThreadContext and uses it (and its
+// TC_* enumerators) unqualified. Rather than keep a second, duplicate
+// copy of the same enum under namespace Stand, re-export the one real
+// definition above so both namespaces share it.
+namespace Stand
+{
+	using Stand::ThreadContext;
+	using enum Stand::ThreadContext;
+	using Stand::thread_context_has_game_tls;
+	using Stand::thread_context_is_script;
+}

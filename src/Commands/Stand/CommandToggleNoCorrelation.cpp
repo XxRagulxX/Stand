@@ -1,58 +1,31 @@
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
-#include "Util/get_next_arg.hpp"
-#include "Rendering/Gui.hpp"
-#include "Core/regular_event.hpp"
-#include "Network/RelayCon.hpp"
-#include "Scripting/Script.hpp"
-#include "Util/StringUtils.hpp"
+#include "Commands/Widgets/CommandStateSerializer.hpp"
+#include "Menu/Click.hpp"
 
 namespace Stand
 {
-	CommandToggleNoCorrelation::CommandToggleNoCorrelation(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, const bool default_on, const commandflags_t flags, const CommandPerm perm, const std::vector<Hotkey>& default_hotkeys, CommandType type)
-		: CommandPhysical(type, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags, perm, default_hotkeys), default_on(default_on), m_on(default_on)
-	{
-	}
-
-	std::wstring CommandToggleNoCorrelation::getCommandSyntax() const
-	{
-		return command_names.empty() ? std::wstring{} : std::move(LANG_GET_W("CMD").append(L": ").append(cmdNameToUtf16(command_names.at(0))).append(L" [on/off]"));
-	}
-
 	void CommandToggleNoCorrelation::onClick(Click& click)
 	{
-		if (!job_queued)
-		{
-			onClickSoundEffect(click);
-			toggleState(click);
-			onChange(click);
-		}
-	}
-
-	void CommandToggleNoCorrelation::onClickSoundEffect(Click& click) const noexcept
-	{
 		click.sound_feedback = m_on ? SOUND_NO : SOUND_YES;
+		toggleState(click);
+		onChange(click);
 	}
 
-	void CommandToggleNoCorrelation::onClickImplUnavailable(Click& click)
+	std::string CommandToggleNoCorrelation::getCommandSyntax() const
 	{
-		click.setUnavailable();
-		if (click.isWeb())
-		{
-			updateWebState();
-		}
+		if (command_names.empty())
+			return {};
+
+		return CommandPhysical::getCommandSyntax() + " [on/off]";
 	}
 
 	void CommandToggleNoCorrelation::onChange(Click& click)
 	{
 		if (m_on)
-		{
 			onEnable(click);
-		}
 		else
-		{
 			onDisable(click);
-		}
 	}
 
 	void CommandToggleNoCorrelation::onEnable(Click& click)
@@ -63,89 +36,32 @@ namespace Stand
 	{
 	}
 
-	void CommandToggleNoCorrelation::onChangeImplUnavailable(Click& click)
-	{
-		click.setUnavailable();
-		setOnIndication(!m_on);
-	}
-
-	void CommandToggleNoCorrelation::onCommand(Click& click, std::wstring& args)
-	{
-		auto arg = get_next_arg(args);
-		StringUtils::to_lower(arg);
-		bool desired_on = (arg == L"on" || arg == L"yes" || arg == L"true");
-		if (!desired_on && (arg == L"default"))
-		{
-			desired_on = default_on;
-		}
-		if (arg.empty() || desired_on != m_on)
-		{
-			onClick(click);
-		}
-		else if (click.canHaveGenericErrorResponse())
-		{
-			auto activation_name = getActivationName();
-			if (activation_name == ATSTRINGHASH("ON"))
-			{
-				click.setResponse(m_on ? LOC("CMDSTATE_OON_E") : LOC("CMDSTATE_OOFF_E"));
-			}
-			else
-			{
-				click.setResponse(LIT(fmt::format(fmt::runtime(Lang::get(m_on ? ATSTRINGHASH("CMDSTATE_LON_E") : ATSTRINGHASH("CMDSTATE_LOFF_E"))), activation_name.getLocalisedUtf8())));
-			}
-		}
-	}
-
 	std::string CommandToggleNoCorrelation::getState() const
 	{
-		return (m_on ? "On" : "Off");
+		return m_on ? "On" : "Off";
 	}
 
 	std::string CommandToggleNoCorrelation::getDefaultState() const
 	{
-		return (default_on ? "On" : "Off");
+		return default_on ? "On" : "Off";
 	}
 
-	void CommandToggleNoCorrelation::setState(Click& click, const std::string& _state)
+	void CommandToggleNoCorrelation::setState(Click& click, const std::string& state)
 	{
-		setStateBool(click, _state == "On");
+		setStateBool(click, state == "On");
 	}
 
 	void CommandToggleNoCorrelation::applyDefaultState()
 	{
 		Click click(CLICK_BULK, TC_SCRIPT_YIELDABLE);
-		applyDefaultStateImpl(click, default_on);
-	}
-
-	void CommandToggleNoCorrelation::applyDefaultStateImpl(Click& click, bool should_be_on)
-	{
-		if (m_on != should_be_on)
-		{
-			for (int j = 0; j < 2; j++)
-			{
-				onClick(click);
-				if (click.sound_feedback == SOUND_ERROR)
-				{
-					break;
-				}
-				for (int i = 0; i < 100; i++)
-				{
-					if (m_on == should_be_on)
-					{
-						return;
-					}
-					Script::current()->yield();
-				}
-			}
-		}
+		if (m_on != default_on)
+			onClick(click);
 	}
 
 	void CommandToggleNoCorrelation::setStateBool(Click& click, bool toggle)
 	{
 		if (m_on != toggle)
-		{
 			onClick(click);
-		}
 	}
 
 	void CommandToggleNoCorrelation::toggleState(Click& click)
@@ -156,98 +72,30 @@ namespace Stand
 
 	void CommandToggleNoCorrelation::updateState(Click& click)
 	{
+		// Real Stand's own equivalent just sets a bare "On"/"Off" - this
+		// project's own request instead wants the toast to name the
+		// feature itself (e.g. "Immortality is now enabled"), since a
+		// bare "On"/"Off" toast is meaningless without already knowing
+		// which row you just clicked/hotkeyed/typed into the command
+		// console. Only fires when this actually reaches
+		// Notifications::Show() at all - see Click::respond()'s own
+		// gating (canHaveResponse()/non-empty response) and, more
+		// importantly, every Click-producing call site that actually has
+		// to call ensureResponse()+respond() itself for this to show up
+		// (GridItemStandCommand.cpp's own ToggleClicked(), MenuCommandConsole.cpp's
+		// own Stand-command activation, CommandHotkeyDispatch.cpp already
+		// did) - a real, previously-missing wire-up this project's own
+		// request surfaced, not something real Stand's own source needed
+		// (its own menu-click/hotkey dispatch already always calls
+		// respond() generically).
 		if (click.canHaveGenericResponse())
-		{
-			auto activation_name = getActivationName();
-			if (activation_name == ATSTRINGHASH("ON"))
-			{
-				click.setGenericResponse(m_on ? LOC("CMDSTATE_OON") : LOC("CMDSTATE_OOFF"));
-			}
-			else
-			{
-				click.setGenericResponse(LIT(fmt::format(fmt::runtime(Lang::get(m_on ? ATSTRINGHASH("CMDSTATE_LON") : ATSTRINGHASH("CMDSTATE_LOFF"))), activation_name.getLocalisedUtf8())));
-			}
-		}
-		processVisualUpdate(true);
-		if (click.type != CLICK_BULK && supportsStateOperations())
-		{
-			processStateChange();
-		}
-		if (!click.isWeb())
-		{
-			updateWebState();
-		}
-	}
+			click.setGenericResponse(LIT(getMenuName().getLocalisedUtf8() + (m_on ? " is now enabled" : " is now disabled")));
 
-	void CommandToggleNoCorrelation::setOnIndication(bool on)
-	{
-		if (m_on != on)
-		{
-			m_on = on;
-			processVisualUpdate(true);
-			updateWebState();
-		}
-	}
-
-	void CommandToggleNoCorrelation::updateWebState()
-	{
-		if (isActiveOnWeb())
-		{
-			g_relay.sendLineAsync(std::move(std::string(m_on ? "n " : "f ").append(menu_name.getWebString())));
-		}
-	}
-
-	void CommandToggleNoCorrelation::toggleScriptTickEventHandler(const bool on, Click& click, void handler())
-	{
-		if (on)
-		{
-			if (thread_context_is_script(click.thread_context))
-			{
-				handler();
-			}
-			reScriptTickEvent::registerHandler(handler);
-		}
-		else
-		{
-			reScriptTickEvent::unregisterHandler(handler);
-		}
-	}
-
-	void CommandToggleNoCorrelation::onClickToggleScriptTickEventHandler(Click& click, void handler()) const
-	{
-		toggleScriptTickEventHandler(!m_on, click, handler);
-	}
-
-	void CommandToggleNoCorrelation::onChangeToggleScriptTickEventHandler(bool execute_now_if_on, void handler()) const
-	{
-		if (m_on)
-		{
-			if (execute_now_if_on)
-			{
-				handler();
-			}
-			reScriptTickEvent::registerHandler(handler);
-		}
-		else
-		{
-			reScriptTickEvent::unregisterHandler(handler);
-		}
-	}
-
-	void CommandToggleNoCorrelation::onChangeToggleScriptTickEventHandler(Click& click, void handler()) const
-	{
-		toggleScriptTickEventHandler(m_on, click, handler);
-	}
-
-	void CommandToggleNoCorrelation::onChangeTogglePostTickEventHandler(void handler()) const
-	{
-		if (m_on)
-		{
-			rePostTickEvent::registerHandler(handler);
-		}
-		else
-		{
-			rePostTickEvent::unregisterHandler(handler);
-		}
+		// Every path that actually changes m_on (toggleState() from a
+		// real click, setStateBool() from setState()/applyDefaultState())
+		// funnels through here - see CommandStateSerializer.hpp's own
+		// class comment for why persistence is driven off dirty-marking
+		// rather than saving unconditionally every tick.
+		CommandStateSerializer::MarkDirty();
 	}
 }

@@ -1,23 +1,36 @@
 #pragma once
+#include "Commands/CommandListSelect.hpp"
 
-#include "Commands/Widgets/CommandListSelect.hpp"
+#include <functional>
+#include <utility>
+#include <vector>
 
-namespace Stand
+namespace Stand::StandWidgets
 {
+	// Ported from real Stand's own CommandLambdaListSelect - see
+	// CommandLambdaToggle.hpp's own doc comment for why this whole file exists.
 	class CommandLambdaListSelect : public CommandListSelect
 	{
-	private:
-		const std::function<void(long long, Click&)> on_change;
-
 	public:
-		explicit CommandLambdaListSelect(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, std::function<void(long long, Click&)>&& on_change, std::vector<CommandListActionItemData>&& options, long long default_value, const commandflags_t flags = CMDFLAGS_LIST_SELECT, const commandflags_t item_flags = 0)
-			: CommandListSelect(parent, std::move(menu_name), std::move(command_names), std::move(help_text), std::move(options), default_value, flags, item_flags), on_change(std::move(on_change))
+		CommandLambdaListSelect(std::string name,
+		    std::string label,
+		    std::string description,
+		    std::vector<std::pair<int, const char*>> list,
+		    int def_val,
+		    std::function<void(int)> onChange) :
+		    CommandListSelect(std::move(name), std::move(label), std::move(description), std::move(list), def_val),
+		    m_OnChange(std::move(onChange))
 		{
 		}
 
-		void onChange(Click& click, long long prev_value) final
+	protected:
+		void OnChange() override
 		{
-			return on_change(value, click);
+			if (m_OnChange)
+				m_OnChange(GetState());
 		}
+
+	private:
+		std::function<void(int)> m_OnChange;
 	};
 }

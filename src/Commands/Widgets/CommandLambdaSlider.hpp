@@ -1,24 +1,42 @@
 #pragma once
+#include "Commands/CommandSliderLegacy.hpp"
 
 #include <functional>
+#include <optional>
+#include <utility>
 
-namespace Stand
+namespace Stand::StandWidgets
 {
-	template <class T>
-	class CommandLambdaSlider : public T
+	// Ported from real Stand's own CommandLambdaSlider (a template over
+	// which slider base it wraps there - this project only has one
+	// integer slider base, CommandSlider, so no template needed here) - see
+	// CommandLambdaToggle.hpp's own doc comment for why this whole file exists.
+	// Callback receives the new value directly (CommandSlider::OnChange()
+	// already runs after m_State is updated - see CommandSlider::SetState())
+	// rather than needing a separate GetState() call.
+	class CommandLambdaSlider : public CommandSliderLegacy
 	{
-	private:
-		std::function<void(int, Click&)> on_change_impl;
-
 	public:
-		explicit CommandLambdaSlider(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, const int min_value, const int max_value, const int default_value, const int skip, std::function<void(int, Click&)>&& on_change_impl, commandflags_t flags = CMDFLAGS_SLIDER)
-			: T(parent, std::move(menu_name), std::move(command_names), std::move(help_text), min_value, max_value, default_value, skip, flags), on_change_impl(std::move(on_change_impl))
+		CommandLambdaSlider(std::string name,
+		    std::string label,
+		    std::string description,
+		    std::optional<int> min,
+		    std::optional<int> max,
+		    int def_val,
+		    std::function<void(int)> onChange) :
+		    CommandSliderLegacy(std::move(name), std::move(label), std::move(description), min, max, def_val),
+		    m_OnChange(std::move(onChange))
 		{
 		}
 
-		void onChange(Click& click, int prev_value) final
+	protected:
+		void OnChange() override
 		{
-			on_change_impl(((T*)this)->value, click);
+			if (m_OnChange)
+				m_OnChange(GetState());
 		}
+
+	private:
+		std::function<void(int)> m_OnChange;
 	};
 }

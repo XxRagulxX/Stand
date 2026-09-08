@@ -8,4 +8,4 @@ namespace Stand
 }
 
 #define GET_MILLIS_SINCE(since) (::Stand::get_current_time_millis() - (since))
-#define IS_DEADLINE_REACHED(deadline) (::Stand::get_current_time_millis() >= deadline)
+#define IS_DEADLINE_REACHED(deadline) (::Stand::get_current_time_millis() >= (deadline))

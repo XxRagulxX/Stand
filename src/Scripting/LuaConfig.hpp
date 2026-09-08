@@ -1,22 +1,23 @@
 #pragma once
+#include "Core/File.hpp"
 
 namespace Stand
 {
-	struct LuaConfig
+	class LuaConfig
 	{
-		inline static CommandToggleNoCorrelation* warn_money;
-		inline static CommandToggleNoCorrelation* warn_dangerous;
+		bool m_Dirty;
+		File m_ConfigFile;
+		std::mutex m_Mutex;
+		
+		std::unordered_map<std::uint32_t, nlohmann::json> m_ItemStates;
 
-		inline static CommandListSelect* enforce_silent_start;
-		inline static CommandListSelect* enforce_silent_stop;
-
-		inline static CommandToggleNoCorrelation* enable_warnings;
-		inline static CommandToggleNoCorrelation* notify_deprecated;
-		inline static CommandToggleNoCorrelation* notify_bad_practice;
-		inline static CommandToggleNoCorrelation* notify_missed_cleanup_blurrect;
-		inline static CommandToggleNoCorrelation* notify_missed_cleanup_arspinner;
-		inline static CommandToggleNoCorrelation* notify_missed_cleanup_graceland;
-		inline static CommandToggleNoCorrelation* notify_ref_by_path_upgrade;
-		inline static CommandToggleNoCorrelation* notify_get_value_fail;
+	public:
+		LuaConfig(std::string_view script_name);
+		// call when a script is loaded
+		void Load();
+		// should be called every now and then (10s?) and before unload
+		void Update();
+		std::optional<nlohmann::json> GetItemState(std::uint32_t hash);
+		void SetItemState(std::uint32_t hash, nlohmann::json value);
 	};
 }

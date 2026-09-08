@@ -7,22 +7,22 @@ namespace Stand
 		switch (perm)
 		{
 		case COMMANDPERM_FRIENDLY:
-			return LOC("PERM_F");
+			return LIT("Friendly");
 
 		case COMMANDPERM_NEUTRAL:
-			return LOC("PERM_N");
+			return LIT("Neutral");
 
 		case COMMANDPERM_SPAWN:
-			return LOC("PERM_S");
+			return LIT("Spawn");
 
 		case COMMANDPERM_RUDE:
-			return LOC("PERM_R");
+			return LIT("Rude");
 
 		case COMMANDPERM_AGGRESSIVE:
-			return LOC("PERM_A");
+			return LIT("Aggressive");
 
 		case COMMANDPERM_TOXIC:
-			return LOC("PERM_T");
+			return LIT("Toxic");
 		}
 		return NOLABEL;
 	}

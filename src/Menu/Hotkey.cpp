@@ -1,21 +1,43 @@
 #include "Menu/Hotkey.hpp"
 
-#include "lib/soup/Key.hpp"
-
-#include "Core/input.hpp"
-#include "Util/is_number_char.hpp"
-#include "Localization/lang.hpp"
-#include "Localization/LangId.hpp"
-#include "Util/str2int.hpp"
-#include "Util/StringUtils.hpp"
-#include "Util/vk_string_map.hpp"
+#include <algorithm>
+#include <cctype>
+#include <windows.h>
 
 namespace Stand
 {
-	Hotkey::Hotkey(std::string str)
-		: value(0)
+	namespace
 	{
-		StringUtils::to_lower(str);
+		// Same GetKeyNameTextA(MapVirtualKey(vk, MAPVK_VK_TO_VSC) << 16, ...)
+		// idiom this project's own HotkeySystem::GetHotkeyLabel() already
+		// uses - kept consistent with it rather than introducing a second,
+		// slightly different VK-name lookup.
+		std::string GetKeyNameA(unsigned int vk)
+		{
+			char keyName[32]{};
+			GetKeyNameTextA(static_cast<LONG>(MapVirtualKeyA(vk, MAPVK_VK_TO_VSC) << 16), keyName, sizeof(keyName));
+			if (keyName[0] == '\0')
+				return std::to_string(vk);
+			return keyName;
+		}
+
+		void ToLower(std::string& str)
+		{
+			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
+				return static_cast<char>(std::tolower(c));
+			});
+		}
+
+		bool IsNumberChar(char c)
+		{
+			return c >= '0' && c <= '9';
+		}
+	}
+
+	Hotkey::Hotkey(std::string str) :
+	    value(0)
+	{
+		ToLower(str);
 		if (str.length() > 5 && str.substr(0, 5) == "hold ")
 		{
 			str.erase(0, 5);
@@ -39,52 +61,46 @@ namespace Stand
 		if (str.length() == 1)
 		{
 			const char c = str.at(0);
-			if (is_number_char(c))
+			if (IsNumberChar(c))
 			{
-				value |= c;
+				value |= static_cast<uint64_t>(c);
 				return;
 			}
 			if (c >= 'a' && c <= 'z')
 			{
-				value |= (c + ('A' - 'a'));
+				value |= static_cast<uint64_t>(c + ('A' - 'a'));
 				return;
 			}
 		}
-		for (const auto& entry : vk_string_map)
+		for (unsigned int vk = 1; vk < 255; ++vk)
 		{
-			auto lang = Lang::id_to_data(LANG_EN);
-			auto entry_str = entry.to_string(*lang);
-			StringUtils::to_lower(entry_str);
-			if (entry_str == str)
+			auto name = GetKeyNameA(vk);
+			ToLower(name);
+			if (name == str)
 			{
-				value |= entry.key;
+				value |= vk;
 				return;
 			}
 		}
-		auto res = str2int<unsigned int>(str);
-		if (res.has_value())
+		try
 		{
-			value |= res.value();
-			return;
+			value |= std::stoul(str);
 		}
-		value = 0;
+		catch (...)
+		{
+			value = 0;
+		}
 	}
 
 	Hotkey Hotkey::fromPressing(unsigned int vk, bool repeat)
 	{
 		bool ctrl = false, shift = false, alt = false;
 		if (vk != VK_CONTROL && vk != VK_LCONTROL && vk != VK_RCONTROL)
-		{
-			ctrl = (GetKeyState(VK_CONTROL) & 0x8000);
-		}
+			ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
 		if (vk != VK_SHIFT && vk != VK_LSHIFT && vk != VK_RSHIFT)
-		{
-			shift = (GetKeyState(VK_SHIFT) & 0x8000);
-		}
+			shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 		if (vk != VK_MENU && vk != VK_LMENU && vk != VK_RMENU)
-		{
-			alt = (GetKeyState(VK_MENU) & 0x8000);
-		}
+			alt = (GetKeyState(VK_MENU) & 0x8000) != 0;
 		return Hotkey(vk, ctrl, shift, alt, repeat);
 	}
 
@@ -115,7 +131,7 @@ namespace Stand
 
 	unsigned int Hotkey::vk() const
 	{
-		return (unsigned int)(value & 0xFFFFFFFFF); // 32 bits
+		return static_cast<unsigned int>(value & 0xFFFFFFFFull);
 	}
 
 	bool Hotkey::hasModkeys() const
@@ -125,44 +141,40 @@ namespace Stand
 
 	bool Hotkey::hasModifiers() const
 	{
-		return value >> 32;
+		return (value >> 32) != 0;
 	}
 
 	bool Hotkey::ctrl() const
 	{
-		return value & FLAG_CTRL;
+		return (value & FLAG_CTRL) != 0;
 	}
 
 	bool Hotkey::shift() const
 	{
-		return value & FLAG_SHIFT;
+		return (value & FLAG_SHIFT) != 0;
 	}
 
 	bool Hotkey::alt() const
 	{
-		return value & FLAG_ALT;
+		return (value & FLAG_ALT) != 0;
 	}
 
 	uint64_t Hotkey::getKeyValue() const
 	{
-		return value & 0b11111111111111111111111111111111111; // 35 bits
+		return value & 0b11111111111111111111111111111111111ull;
 	}
 
 	bool Hotkey::isHoldMode() const
 	{
-		return value & FLAG_HOLDMODE;
+		return (value & FLAG_HOLDMODE) != 0;
 	}
 
 	void Hotkey::setHoldMode(bool on) noexcept
 	{
 		if (on)
-		{
 			enableHoldMode();
-		}
 		else
-		{
 			value &= ~FLAG_HOLDMODE;
-		}
 	}
 
 	void Hotkey::enableHoldMode() noexcept
@@ -172,38 +184,27 @@ namespace Stand
 
 	bool Hotkey::isRepeat() const
 	{
-		return value & FLAG_REPEAT;
+		return (value & FLAG_REPEAT) != 0;
 	}
 
 	std::string Hotkey::toString() const
 	{
-		std::string str = {};
+		std::string str;
 		if (isHoldMode())
-		{
-			str.append(LANG_GET("K_HOLD"));
-			str.push_back(' ');
-		}
+			str.append("Hold ");
 		if (ctrl())
-		{
-			str.append(LANG_GET("K_CTRL"));
-			str.push_back('+');
-		}
+			str.append("Ctrl+");
 		if (shift())
-		{
-			str.append(LANG_GET("K_SHFT"));
-			str.push_back('+');
-		}
+			str.append("Shift+");
 		if (alt())
-		{
-			str.append(LANG_GET("K_ALT"));
-			str.push_back('+');
-		}
-		return str.append(Input::vk_to_string_no_brackets(vk()));
+			str.append("Alt+");
+		return str.append(GetKeyNameA(vk()));
 	}
 
 	std::wstring Hotkey::toWString() const
 	{
-		return StringUtils::utf8_to_utf16(toString());
+		const auto narrow = toString();
+		return std::wstring(narrow.begin(), narrow.end());
 	}
 
 	CommandName Hotkey::toStringForCommandName() const
@@ -217,7 +218,7 @@ namespace Stand
 
 	std::string Hotkey::toBracketedString() const
 	{
-		auto str = std::string(1, '[');
+		std::string str(1, '[');
 		str.append(toString());
 		str.push_back(']');
 		return str;
@@ -225,95 +226,53 @@ namespace Stand
 
 	std::string Hotkey::toFileString() const
 	{
-		std::string str = {};
+		std::string str;
 		if (isHoldMode())
-		{
 			str.append("Hold ");
-		}
 		if (ctrl())
-		{
 			str.append("Ctrl+");
-		}
 		if (shift())
-		{
 			str.append("Shift+");
-		}
 		if (alt())
-		{
 			str.append("Alt+");
-		}
-		return str.append(Input::vk_to_file_string(vk()));
+		return str.append(GetKeyNameA(vk()));
 	}
 
 	bool Hotkey::isPressedAsync() const
 	{
-		const auto vk = this->vk();
-		if (!(GetAsyncKeyState(vk) & 0x8000))
-		{
+		const auto vkCode = vk();
+		if (!(GetAsyncKeyState(vkCode) & 0x8000))
 			return false;
-		}
-		return fromPressing(vk).overlapsWith(*this);
+		return fromPressing(vkCode).overlapsWith(*this);
 	}
-
-	// rage_input_helper.asm
-	extern "C" float(*rage_input_helper_get_override())[256];
 
 	float Hotkey::getNormal() const
 	{
-		const auto vk = this->vk();
-		if (fromPressing(vk).overlapsWith(*this)) // Modifier keys match?
-		{
-			// Check analogue input
-			if (float(*arr)[256] = rage_input_helper_get_override())
-			{
-				if (uint8_t sk = soup::virtual_key_to_soup_key(vk); sk != soup::KEY_NONE) // with respect to current layout
-				{
-					return (*arr)[soup::soup_key_to_virtual_key(sk)]; // without respect to current layout
-				}
-			}
-
-			// Check digital input
-			if (GetAsyncKeyState(vk) & 0x8000)
-			{
-				return 1.0f;
-			}
-		}
+		const auto vkCode = vk();
+		if (fromPressing(vkCode).overlapsWith(*this) && (GetAsyncKeyState(vkCode) & 0x8000))
+			return 1.0f;
 		return 0.0f;
 	}
 
 	bool Hotkey::overlapsWith(const Hotkey b) const
 	{
 		if (vk() != b.vk())
-		{
 			return false;
-		}
+
 		HotkeyModkeyBehaviour current_modkey_behaviour = Hotkey::modkey_behaviour;
 		if (current_modkey_behaviour == HMB_STRICT_IF_HAS_MODKEY)
-		{
 			current_modkey_behaviour = b.hasModkeys() ? HMB_STRICT : HMB_LAX;
-		}
+
 		if (current_modkey_behaviour == HMB_STRICT)
-		{
-			return ctrl() == b.ctrl()
-				&& shift() == b.shift()
-				&& alt() == b.alt();
-		}
-		else // if (current_modkey_behaviour == HMB_LAX)
-		{
-			if (b.ctrl() && !ctrl())
-			{
-				return false;
-			}
-			if (b.shift() && !shift())
-			{
-				return false;
-			}
-			if (b.alt() && !alt())
-			{
-				return false;
-			}
-			return true;
-		}
+			return ctrl() == b.ctrl() && shift() == b.shift() && alt() == b.alt();
+
+		if (b.ctrl() && !ctrl())
+			return false;
+		if (b.shift() && !shift())
+			return false;
+		if (b.alt() && !alt())
+			return false;
+		return true;
 	}
 
 	const Hotkey* Hotkey::getOverlap(const std::vector<Hotkey>& hotkeys) const
@@ -321,9 +280,7 @@ namespace Stand
 		for (const auto& hotkey : hotkeys)
 		{
 			if (overlapsWith(hotkey))
-			{
 				return &hotkey;
-			}
 		}
 		return nullptr;
 	}
@@ -333,17 +290,14 @@ namespace Stand
 		for (const auto& hotkey : hotkeys)
 		{
 			if (overlapsWith(hotkey))
-			{
 				return true;
-			}
 		}
 		return false;
 	}
 
 	bool Hotkey::overlapsWithIncludeHoldMode(const Hotkey b) const
 	{
-		return overlapsWith(b)
-			&& isHoldMode() == b.isHoldMode();
+		return overlapsWith(b) && isHoldMode() == b.isHoldMode();
 	}
 
 	bool Hotkey::overlapsWithIncludeHoldMode(const std::vector<Hotkey>& hotkeys) const
@@ -351,9 +305,7 @@ namespace Stand
 		for (const auto& hotkey : hotkeys)
 		{
 			if (overlapsWithIncludeHoldMode(hotkey))
-			{
 				return true;
-			}
 		}
 		return false;
 	}
@@ -363,9 +315,7 @@ namespace Stand
 		for (const auto& hotkey : hotkeys)
 		{
 			if (vk() == hotkey.vk())
-			{
 				return true;
-			}
 		}
 		return false;
 	}

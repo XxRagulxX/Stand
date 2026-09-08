@@ -66,8 +66,7 @@ NAMESPACE_SOUP
 			db.append(k - mLen - 2 * hLen - 2, '\0'); // Step 2
 			db.push_back('\x01');
 			db.append(msg); // Step 3
-			const auto db_size = db.size();
-			SOUP_DEBUG_ASSERT(db_size == k - hLen - 1);
+			SOUP_DEBUG_ASSERT(db.size() == k - hLen - 1);
 
 			// Step 4
 			uint8_t seed[hLen];

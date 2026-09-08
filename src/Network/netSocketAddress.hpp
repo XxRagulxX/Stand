@@ -1,32 +1,18 @@
 #pragma once
+#include <cstdint>
 
-#include "Network/netIpAddress.hpp"
-
-#pragma pack(push, 1)
-namespace rage
+struct netSocketAddress
 {
-	class netSocketAddress
-	{
-	public:
-		netIpAddress ip{};
-		soup::native_u16_t port = 0;
-	private:
-		uint16_t pad;
-
-	public:
-		[[nodiscard]] bool operator==(const netSocketAddress& b) const noexcept
+	union {
+		uint32_t m_Packed;
+		struct
 		{
-			return ip == b.ip && port == b.port;
-		}
-
-		template <typename T>
-		bool ser(T& bb)
-		{
-			return bb.serU32(ip.value)
-				&& bb.serU16(port)
-				;
-		}
-	};
-	static_assert(sizeof(netSocketAddress) == 8);
-}
-#pragma pack(pop)
+			uint8_t m_Field4;
+			uint8_t m_Field3;
+			uint8_t m_Field2;
+			uint8_t m_Field1;
+		};
+	} m_IpAddress;
+	std::uint16_t m_Port;
+};
+static_assert(sizeof(netSocketAddress) == 0x08);

@@ -1,27 +1,35 @@
 #pragma once
-
-#include "Commands/Widgets/CommandAction.hpp"
+#include "Commands/CommandLegacy.hpp"
 
 #include <functional>
+#include <utility>
 
-namespace Stand
+namespace Stand::StandWidgets
 {
-#pragma pack(push, 1)
-	class CommandLambdaAction : public CommandAction
+	// Ported from real Stand's own CommandLambdaAction - a one-shot
+	// action (button) whose behaviour is supplied inline, the Command
+	// equivalent of CommandLambdaToggle.hpp's own doc comment (see there for
+	// why this whole file exists). Every existing plain-Command feature
+	// in this codebase (CommandHeal.cpp, CommandSuicide.cpp, ...) still
+	// needs its own subclass file for a single OnCall() override - this
+	// lets a one-off action be dropped in with no subclass at all.
+	class CommandLambdaAction : public CommandLegacy
 	{
-	private:
-		const std::function<void(Click&)> on_click_impl;
-
 	public:
-		explicit CommandLambdaAction(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, std::function<void(Click&)>&& on_click_impl, commandflags_t flags = CMDFLAGS_ACTION, CommandPerm perm = COMMANDPERM_USERONLY, std::vector<Hotkey> default_hotkeys = {})
-			: CommandAction(parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags, perm, std::move(default_hotkeys)), on_click_impl(std::move(on_click_impl))
+		CommandLambdaAction(std::string name, std::string label, std::string description, std::function<void()> onCall) :
+		    CommandLegacy(std::move(name), std::move(label), std::move(description), 0),
+		    m_OnCall(std::move(onCall))
 		{
 		}
 
-		void onClick(Click& click) final
+	protected:
+		void OnCall() override
 		{
-			on_click_impl(click);
+			if (m_OnCall)
+				m_OnCall();
 		}
+
+	private:
+		std::function<void()> m_OnCall;
 	};
-#pragma pack(pop)
 }

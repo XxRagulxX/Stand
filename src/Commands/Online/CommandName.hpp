@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 
 #define COMPACT_COMMAND_NAMES true

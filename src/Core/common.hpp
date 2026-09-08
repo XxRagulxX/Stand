@@ -1,42 +1,25 @@
 #pragma once
+#include <AsyncLogger/Logger.hpp>
+#include <MinHook.h>
+#include <windows.h>
+#include <atomic>
 
-// This is the PCH (pre-compiled header). It makes Stand ~33% faster to compile.
+#include "Core/ImTypes.hpp"
 
-// Add headers here that are: Commonly used, mid-large size, and seldom modified.
-// - Headers that are too rare or simple might reduce compile time if added here.
-// - Headers that are often modified will make working on the project more painful.
 
-// C
-#include <cstddef>
-#include <cstdint>
+#include <nlohmann/json.hpp>
 
-// C++
-#include <array>
-#include <functional>
-#include <optional>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
+using namespace al;
 
-// GTA V
-#include "Game/gta_fwddecl.hpp"
+#undef Yield
 
-#include "Network/rlGamerInfo.hpp"
+namespace Stand
+{
+	using namespace std::chrono_literals;
+	using namespace std::string_view_literals;
 
-// Soup
-#include "lib/soup/ObfusString.hpp"
-
-// Stand
-#include "Core/fmt_enum_formatter.hpp"
-
-#include "Game/fwddecl.hpp"
-#include "Game/typedecl.hpp"
-
-#include "Commands/Widgets/CommandPhysical.hpp"
-#include "Commands/Widgets/CommandList.hpp"
-#include "Commands/Widgets/CommandToggle.hpp"
-
-#include "Localization/lang.hpp"
-
-#include "Game/natives.hpp"
+	extern std::atomic<bool> g_Running;
+	extern HINSTANCE g_DllInstance;
+	extern HANDLE g_MainThread;
+	extern DWORD g_MainThreadId;
+}

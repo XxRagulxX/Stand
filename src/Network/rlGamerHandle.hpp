@@ -1,65 +1,37 @@
 #pragma once
 
-#include "Util/struct_base.hpp"
+#include <cstdint>
 
 namespace rage
 {
-	struct rlGamerHandle
+	class datBitBuffer;
+	// this appears to have been unchanged in E&E
+	enum rlPlatforms : uint8_t
 	{
-		enum Platform : uint8_t
-		{
-			XBOX_ONE = 1,
-			PS4 = 2,
-			PC_ROS = 3,
-		};
-
-		/* 0 */ int64_t rockstar_id{};
-		/* 8 */ Platform platform{};
-		/* 9 */ uint8_t bot_index{};
-		PAD(10, 16);
-
-		rlGamerHandle() = default;
-
-		constexpr rlGamerHandle(int64_t rockstar_id) noexcept
-			: rockstar_id(rockstar_id), platform(PC_ROS)
-		{
-		}
-
-		[[nodiscard]] static rlGamerHandle fromString(const char* c) noexcept;
-
-		[[nodiscard]] constexpr bool isValid() const noexcept
-		{
-			return platform == PC_ROS;
-		}
-
-		void operator= (int64_t rockstar_id) noexcept
-		{
-			this->rockstar_id = rockstar_id;
-			this->platform = PC_ROS;
-		}
-
-		[[nodiscard]] bool operator==(const rlGamerHandle& b) const noexcept
-		{
-			// The game would also check the unk and if platform == PC_ROS
-			return rockstar_id == b.rockstar_id
-				&& platform == b.platform;
-		}
-
-		void Import(void* data) noexcept;
-#ifdef STAND_DEBUG
-		bool write(datBitBuffer& bb) const;
-#endif
-
-		template <typename T>
-		bool ser(T& bb)
-		{
-			return bb.serU8(*reinterpret_cast<uint8_t*>(&platform))
-				&& bb.serI64(rockstar_id)
-				&& bb.serU8(bot_index)
-				;
-		}
-
-		[[nodiscard]] static rlGamerHandle fromScript(void* data) noexcept;
+		UNK0,
+		XBOX,
+		PLAYSTATION,
+		PC,
 	};
-	static_assert(sizeof(rlGamerHandle) == 16);
+
+	class rlGamerHandle
+	{
+	public:
+		int64_t m_RockstarId;   // 0x00
+		uint8_t m_Platform;     // 0x08
+		uint8_t m_ProfileIndex; // 0x09 (maybe, or some kind of discriminator)
+
+		inline rlGamerHandle() = default;
+
+		inline rlGamerHandle(int64_t rockstar_id) :
+		    m_RockstarId(rockstar_id),
+		    m_Platform(rlPlatforms::PC),
+		    m_ProfileIndex(0)
+		{
+		}
+
+		void Serialize(rage::datBitBuffer& buffer) const;
+		void Deserialize(rage::datBitBuffer& buffer);
+	}; //Size: 0x0010
+	static_assert(sizeof(rlGamerHandle) == 0x10);
 }

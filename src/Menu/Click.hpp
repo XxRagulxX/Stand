@@ -1,23 +1,20 @@
 #pragma once
+#include "Core/ThreadContext.hpp"
+#include "Menu/ClickType.hpp"
+#include "Util/Label.hpp"
 
-#include <cstdint>
 #include <functional>
 
-#include "Game/fwddecl.hpp"
-#include "Game/gta_player.hpp"
-
-#include "Menu/ClickType.hpp"
-#include "Commands/Online/CommandPerm.hpp"
-
+// Real Stand's Click also carries a chat-command/web-command issuer
+// (compactplayer_t issued_by/issued_for, AbstractPlayer, edition/licensing
+// checks, command-box + chat-permission plumbing) - none of which this
+// project has or is building (no chat-command parser, no web bridge, no
+// commercial editions). Kept only what a Self-tab-style toggle/slider
+// command actually needs: click type, thread context, and a response/
+// sound-feedback pair. If a later ported command needs something dropped
+// here, that's the point to add it back for real, not stub it.
 namespace Stand
 {
-	enum class ChainState : uint8_t
-	{
-		NONE,
-		PASSED_THROUGH,
-		EXECUTED,
-	};
-
 	enum ClickResponseType : uint8_t
 	{
 		RESPONSE_CUSTOM,
@@ -33,29 +30,11 @@ namespace Stand
 		SOUND_ERROR,
 	};
 
-	[[nodiscard]] extern CommandList* getRootListPtr();
-
-#pragma pack(push, 1)
 	class Click
 	{
 	public:
-		inline static bool self_chat_commands_friends_perms = false;
-		inline static CommandPerm perms_friends = COMMANDPERM_FRIENDLY | COMMANDPERM_NEUTRAL | COMMANDPERM_SPAWN | COMMANDPERM_RUDE | COMMANDPERM_AGGRESSIVE;
-		inline static CommandPerm perms_crew = COMMANDPERM_FRIENDLY | COMMANDPERM_NEUTRAL | COMMANDPERM_SPAWN | COMMANDPERM_RUDE;
-		inline static CommandPerm perms_team = COMMANDPERM_FRIENDLY | COMMANDPERM_NEUTRAL | COMMANDPERM_SPAWN | COMMANDPERM_RUDE;
-		inline static CommandPerm perms_strangers = COMMANDPERM_FRIENDLY | COMMANDPERM_NEUTRAL | COMMANDPERM_SPAWN | COMMANDPERM_RUDE;
-		inline static bool auto_proceed_warnings_for_commands = false;
-		inline static bool auto_proceed_warnings_for_hotkeys = false;
-
-		inline static time_t last_successful_permission_check = 0;
-
 		const ClickType type;
 		ThreadContext thread_context;
-		const compactplayer_t issued_by;
-		compactplayer_t issued_for;
-		const bool issued_by_user;
-		bool issuer_is_explicit = false;
-		ChainState chain_state = ChainState::NONE;
 		Sound sound_feedback = SOUND_SELECT;
 		Label response = NOLABEL;
 		ClickResponseType response_type = RESPONSE_GENERIC;
@@ -63,7 +42,6 @@ namespace Stand
 
 		explicit Click(ClickType type) noexcept;
 		explicit Click(ClickType type, ThreadContext thread_context) noexcept;
-		explicit Click(ClickType type, ThreadContext thread_context, compactplayer_t issuer) noexcept;
 
 		Click(const Click& b) noexcept;
 		Click(Click&& b) noexcept;
@@ -73,46 +51,21 @@ namespace Stand
 		[[nodiscard]] Click derive(ClickType type) const noexcept;
 		[[nodiscard]] Click deriveAuto() const noexcept;
 
-		[[nodiscard]] bool canShowCommandBox() const noexcept;
-		void showCommandBoxIfPossible(const std::wstring& prefill);
-		void showCommandBox(const std::wstring& prefill);
-		[[nodiscard]] AbstractPlayer getIssuer() const noexcept;
-		[[nodiscard]] AbstractPlayer getEffectiveIssuer() const noexcept;
-		[[nodiscard]] bool issuedByUser() const noexcept;
-		[[nodiscard]] bool issuedByAndForUser() const noexcept;
-
+		// Runs func() immediately if already on a script thread, or via
+		// FiberPool::queueJob() otherwise - same shape as real Stand's own
+		// (FiberPool::queueJob is already the same name/signature in this
+		// project). ensureWorkerContext() also goes through FiberPool: this
+		// project has no separate background-Worker thread the way Stand
+		// does, so a script-thread job is the substitute.
 		void ensureYieldableScriptThread(std::function<void()>&& func) const;
-
 		void ensureScriptThread(std::function<void()>&& func) const;
 		void ensureScriptThread(std::function<void(Click&)>&& func);
-
 		void ensureWorkerContext(std::function<void()>&& func) const;
 
 		[[nodiscard]] bool isMenu() const noexcept;
 		[[nodiscard]] bool isAuto() const noexcept;
 		[[nodiscard]] bool isStand() const noexcept;
 		[[nodiscard]] bool isBulk() const noexcept;
-		[[nodiscard]] bool isChat() const noexcept;
-		[[nodiscard]] bool isWeb() const noexcept;
-
-		[[nodiscard]] bool isCommandBoxVariety() const noexcept;
-		[[nodiscard]] bool canOpenCommandBox() const noexcept;
-
-		void setUnavailable() noexcept;
-		[[nodiscard]] bool isStopInputAllowed() const noexcept;
-		void stopInputIfAllowed() const noexcept;
-		[[nodiscard]] bool inOnline() noexcept;
-		[[nodiscard]] bool inOnline() const noexcept;
-		[[nodiscard]] __declspec(noinline) bool isBasicEdition() noexcept;
-		[[nodiscard]] __declspec(noinline) bool isRegularEdition() noexcept;
-		[[nodiscard]] __declspec(noinline) bool isRegularEditionOrSp() noexcept;
-		[[nodiscard]] __declspec(noinline) bool isUltimateEdition() noexcept;
-		[[nodiscard]] bool canBypassEditionRestrictions() noexcept;
-		[[nodiscard]] bool isHost() noexcept;
-		[[nodiscard]] bool isBoss() noexcept;
-
-		[[nodiscard]] bool canExecuteChainCommand() noexcept;
-		void setChainCommandExecuted() noexcept;
 
 		[[nodiscard]] bool hasResponse() const noexcept;
 		[[nodiscard]] bool canHaveResponse() const noexcept;
@@ -122,26 +75,10 @@ namespace Stand
 		void setResponse(Label&& response) const;
 		void setGenericResponse(Label&& response);
 		void setNoResponse() noexcept;
-		void notAvailableOnUser();
-		void uwotm8();
-		void setSpoofUpdate();
 
 		void ensureResponse();
-		void ensureActivationName(const std::string& activation_name);
 		[[nodiscard]] Label getResponse();
 		void forgetResponse() noexcept;
 		void respond();
-
-		[[nodiscard]] bool isSoundAllowed() const noexcept;
-
-		CommandPerm getEffectivePermissions() const;
-
-		[[nodiscard]] bool shouldAutomaticallyProceedOnWarning(bool skippable) const noexcept;
-
-		void setResponseCommandUnknownOrAmbiguous(bool is_unknown, const std::wstring& input);
-
-		[[nodiscard]] CommandIssuable* getCommandIssuableFromArg(const std::wstring& arg);
-		[[nodiscard]] CommandPhysical* getCommandPhysicalFromArg(const std::wstring& arg);
 	};
-#pragma pack(pop)
 }

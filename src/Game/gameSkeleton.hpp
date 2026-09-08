@@ -1,110 +1,82 @@
 #pragma once
 
-#include "Util/struct_base.hpp"
+#include "Game/atArray.hpp"
+#include <cstdint>
 
-#pragma pack(push, 1)
 namespace rage
 {
+	struct gameSkeletonData
+	{
+		void* m_InitFunc;     // 0x0
+		void* m_ShutdownFunc; // 0x8
+		uint32_t m_unk1;      // 0x10
+		uint32_t m_unk2;      // 0x14
+		uint32_t m_unk3;      // 0x18
+		uint32_t m_unk4;      // 0x1C
+		uint32_t m_Hash;      // 0x20
+	};
+	static_assert(sizeof(gameSkeletonData) == 0x28);
+
+	struct gameSkeletonUpdateBase
+	{
+		virtual ~gameSkeletonUpdateBase() = default;
+		virtual void Run() = 0;
+		virtual bool ShouldIntegrityCheck() = 0;
+
+		uint64_t m_Pad;                 // 0x08
+		uint32_t m_Hash;                // 0x10
+		gameSkeletonUpdateBase* m_Next; // 0x18
+	};
+	static_assert(sizeof(gameSkeletonUpdateBase) == 0x20);
+
+	struct gameSkeletonUpdateGroup : gameSkeletonUpdateBase
+	{
+		gameSkeletonUpdateBase* m_Head; // 0x20
+	};
+	static_assert(sizeof(gameSkeletonUpdateGroup) == 0x28);
+
+	struct gameSkeletonUpdateElement : gameSkeletonUpdateBase
+	{
+		void (*m_Function)(); // 0x20
+	};
+	static_assert(sizeof(gameSkeletonUpdateElement) == 0x28);
+
+	struct gameSkeletonUpdateMode
+	{
+		int m_Type;                     // 0x00
+		gameSkeletonUpdateBase* m_Head; // 0x08
+		gameSkeletonUpdateMode* m_Next; // 0x10
+	};
+	static_assert(sizeof(gameSkeletonUpdateMode) == 0x18);
+
+	struct gameSkeletonInitDependency
+	{
+		int m_Level;                        // 0x00
+		atArray<uint32_t> m_Data;           // 0x08
+		gameSkeletonInitDependency* m_Next; // 0x10
+	};
+
+	struct gameSkeletonMode
+	{
+		int m_Type;                         // 0x00
+		gameSkeletonInitDependency* m_Head; // 0x08
+		gameSkeletonMode* m_Next;           // 0x10
+	};
+	static_assert(sizeof(gameSkeletonMode) == 0x18);
+
 	struct gameSkeleton
 	{
-		typedef void (*fnUpdateFunction) ();
-
-		struct updateBase
-		{
-			virtual ~updateBase() = default;
-			virtual void Update() = 0;
-
-			PAD(0x08, 0x10) uhash_t m_Name;
-			PAD(0x14, 0x18) updateBase* m_Next;
-		};
-		static_assert(sizeof(updateBase) == 0x20);
-
-		struct updateElement : public updateBase
-		{
-			/* 0x20 */ fnUpdateFunction m_UpdateFunction;
-		};
-		static_assert(sizeof(updateElement) == 0x28);
-
-		struct updateGroup : public updateBase
-		{
-			/* 0x20 */ updateBase* m_Head;
-
-			void Update()
-			{
-				for (updateBase* element = m_Head; element; element = element->m_Next)
-				{
-					element->Update();
-				}
-			}
-		};
-		static_assert(sizeof(updateGroup) == 0x28);
-
-		struct updateMode
-		{
-			/* 0x00 */ uint32_t m_ModeType;
-			PAD(0x04, 0x08) updateBase* m_Head;
-			/* 0x10 */ updateMode* m_Next;
-
-			void Update()
-			{
-				for (updateBase* element = m_Head; element; element = element->m_Next)
-				{
-					element->Update();
-				}
-			}
-		};
-		static_assert(sizeof(updateMode) == 0x18);
-
-		virtual ~gameSkeleton() = default;
-
-		PAD(0x008, 0x140) updateMode* m_UpdateModes;
-
-		void Update(uint32_t updateModeType)
-		{
-			for (updateMode* mode = m_UpdateModes; mode; mode = mode->m_Next)
-			{
-				if (mode->m_ModeType == updateModeType)
-				{
-					return mode->Update();
-				}
-			}
-		}
-
-		[[nodiscard]] updateMode* findUpdateMode(uint32_t updateModeType) const noexcept
-		{
-			for (updateMode* mode = m_UpdateModes; mode; mode = mode->m_Next)
-			{
-				if (mode->m_ModeType == updateModeType)
-				{
-					return mode;
-				}
-			}
-			return nullptr;
-		}
-
-		[[nodiscard]] updateElement* findUpdateElement(uint32_t name) noexcept
-		{
-			for (auto* mode = this->m_UpdateModes; mode; mode = mode->m_Next)
-			{
-				for (auto* update_node = mode->m_Head; update_node; update_node = update_node->m_Next)
-				{
-					if (update_node->m_Name == ATSTRINGHASH("Common Main"))
-					{
-						auto* group = static_cast<rage::gameSkeleton::updateGroup*>(update_node);
-						for (auto* group_child_node = group->m_Head; group_child_node; group_child_node = group_child_node->m_Next)
-						{
-							if (group_child_node->m_Name == name)
-							{
-								return static_cast<rage::gameSkeleton::updateElement*>(group_child_node);
-							}
-						}
-						break;
-					}
-				}
-			}
-			return nullptr;
-		}
+		virtual ~gameSkeleton() = 0;
+		uint32_t m_unk1;                       // 0x08
+		uint32_t m_unk2;                       // 0x0C
+		uint32_t m_unk3;                       // 0x10
+		uint32_t m_unk4;                       // 0x14
+		atArray<gameSkeletonData> m_SysData;   // 0x18
+		uint32_t m_unk5;                       // 0x28
+		void* m_unk6[32];                      // 0x30
+		gameSkeletonMode* m_InitModes;         // 0x130
+		gameSkeletonMode* m_ShutdownModes;     // 0x138
+		gameSkeletonUpdateMode* m_UpdateModes; // 0x140
 	};
-	static_assert(sizeof(gameSkeleton) == 0x140 + 8);
+	static_assert(sizeof(gameSkeleton) == 0x148);
 }
-#pragma pack(pop)

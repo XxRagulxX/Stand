@@ -1,395 +1,230 @@
-#include "Commands/Self/CommandLevitate.hpp"
+#include "Commands/CommandToggleLegacy.hpp"
+#include "Game/ControllerInputs.hpp"
+#include "Commands/CommandSliderFloatLegacy.hpp"
+#include "Commands/CommandSliderLegacy.hpp"
+#include "Commands/LoopedCommand.hpp"
+#include "Scripting/Natives.hpp"
+#include "World/Self.hpp"
 
-#include "Core/AbstractEntity.hpp"
-#include "Menu/ButtonInstructions.hpp"
-#include "Commands/Widgets/CommandSlider.hpp"
-#include "Ped/CPedIntelligence.hpp"
-#include "Ped/eTaskType.hpp"
-#include "Core/FiberPool.hpp"
-#include "Ped/free_movement.hpp"
-#include "Util/get_ground_z.hpp"
-#include "Game/gta_input.hpp"
-#include "Game/gta_ped.hpp"
-#include "Game/gta_task.hpp"
-#include "Game/gta_vehicle.hpp"
-#include "Rendering/Gui.hpp"
-#include "Core/input.hpp"
-#include "Network/is_session.hpp"
-#include "Game/natives.hpp"
-#include "Core/paused.hpp"
-#include "Scripting/Script.hpp"
-#include "Core/tbFreecam.hpp"
+#include <algorithm>
+#include <chrono>
+#include <cmath>
 
-namespace Stand
+// Ported from stand-reference's src/Commands/Self/CommandLevitate.cpp,
+// through this project's own LoopedCommand/CommandToggle/CommandSliderFloat/
+// CommandSlider pattern rather than Stand's own Command-class hierarchy -
+// see the earlier, simpler version of this file for why. This pass adds
+// every option Stand's real Levitation exposes: pitch-aware movement,
+// momentum on disable, entity pitch tilt, rotate-only-while-moving, the
+// passive up/down bob, and the ground/water hover assist (using
+// MISC::GET_GROUND_Z_FOR_3D_COORD/WATER::GET_WATER_HEIGHT - the same
+// natives this project's own CommandTpToWaypoint.cpp already calls
+// successfully, just per-tick instead of one-shot). "Show Button
+// Instructions" is registered but not wired to anything yet - Stand's
+// own on-screen button-prompt overlay has no equivalent here, so the
+// toggle exists for parity but currently does nothing.
+namespace Stand::Features
 {
-	void CommandLevitate::onChange(Click& click)
-	{
-		levitate_is_on = m_on;
-		CommandToggle::onChange(click);
-	}
+	constexpr float kPi = 3.14159265358979323846f;
 
-	bool CommandLevitate::isPedTooHigh() noexcept
+	static CommandSliderFloatLegacy _LevitateSpeed{"levitatespeed", "Movement Speed", "How fast you move while levitating", 0.01f, 10000.0f, 1.0f};
+	static CommandSliderFloatLegacy _LevitateSprintSpeed{"levitatesprintmultiplier", "Sprint Multiplier", "How fast you go while holding Sprint", 0.01f, 10000.0f, 5.0f};
+	static CommandSliderFloatLegacy _LevitateAccel{"levitateaccel", "Acceleration", "Increases the speed of levitation the longer you move. Resets once you sprint or stop moving", 0.0f, 10.0f, 0.0f};
+	static CommandToggleLegacy _LevitateIgnorePitch{"levitateignorepitch", "Movement Ignores Pitch", "Disables forward and backward movement affecting height depending on where you're looking", true};
+	static CommandToggleLegacy _KeepMomentum{"keepmomentum", "Keep Momentum", "Carries your velocity forward for a moment after turning levitation off", false};
+	static CommandToggleLegacy _LevitateApplyPitch{"levitateapplypitch", "Apply Pitch to Entity", "Tilts your character to match where the camera is looking", false};
+	static CommandToggleLegacy _LevitateOnlyRotateOnMovement{"levitaterotate", "Only Rotate On Movement", "Only turns your character to face the camera while actually moving", true};
+	static CommandToggleLegacy _LevitateButtonInstructions{"levitatebuttoninstructions", "Show Button Instructions", "Shows an on-screen reminder of the levitation controls (not yet implemented)", true};
+	static CommandSliderFloatLegacy _LevitatePassiveMin{"levitatepassivemin", "Min Distance From Ground", "Lower bound of the passive up/down hover effect", -10000.0f, 10000.0f, 0.0f};
+	static CommandSliderFloatLegacy _LevitatePassiveMax{"levitatepassivemax", "Max Distance From Ground", "Upper bound of the passive up/down hover effect", -10000.0f, 10000.0f, 0.6f};
+	static CommandSliderLegacy _LevitatePassiveSpeed{"levitatepassivespeed", "Speed", "How fast the passive up/down hover effect moves", 0, 1000000, 5};
+	static CommandSliderFloatLegacy _LevitateAssistUp{"levitateassistup", "Upward Force", "How fast the ground assistant pulls you up when you're below the surface", 0.0f, 10000.0f, 0.6f};
+	static CommandSliderFloatLegacy _LevitateAssistDown{"levitateassistdown", "Downward Force", "How fast the ground assistant pulls you down when you're above the surface", 0.0f, 10000.0f, 0.6f};
+	static CommandSliderLegacy _LevitateAssistDeadzone{"levitateassistdeadzone", "Downward Deadzone", "How far from the ground you have to be before the assistant stops trying to pull you down", 0, 100000, 13};
+	static CommandSliderFloatLegacy _LevitateAssistSnap{"levitateassistsnap", "Snapping", "How close to the surface counts as \"there\" - snaps to it exactly instead of easing in", 0.0f, 10000.0f, 0.1f};
+
+	class Levitate : public LoopedCommand
 	{
-		if (g_player_ent.isPed())
+		using LoopedCommand::LoopedCommand;
+
+		float m_CurrentSpeed = 0.0f;
+		bool m_HasLastPos = false;
+		rage::fvector3 m_LastPos{};
+		float m_ZExtra = 0.0f;
+		bool m_ZExtraGoingDown = false;
+		bool m_HasMomentum = false;
+		rage::fvector3 m_MomentumPos{};
+		std::chrono::steady_clock::time_point m_MomentumTime{};
+
+		virtual void OnEnable() override
 		{
-			return ENTITY::GET_ENTITY_HEIGHT_ABOVE_GROUND(g_player_ent) > 1.0f;
+			m_CurrentSpeed = _LevitateSpeed.GetState();
+			m_HasLastPos = false;
+			m_ZExtra = 0.0f;
+			m_ZExtraGoingDown = false;
+			m_HasMomentum = false;
 		}
 
-		return false;
-	}
-
-	bool CommandLevitate::isFirstPerson() noexcept
-	{
-		return CAM::GET_CAM_VIEW_MODE_FOR_CONTEXT(CAM::GET_CAM_ACTIVE_VIEW_MODE_CONTEXT()) == 4;
-	}
-
-	void CommandLevitate::onEnable(Click& click)
-	{
-		ensureScriptThread(click, [this]
+		virtual void OnDisable() override
 		{
-			z_extra_alt = false;
-			z_extra = 0.0f;
-			registerScriptTickEventHandler(TC_SCRIPT_NOYIELD, [this]
+			auto ped = Self::GetPed();
+			if (!ped || !ped.IsValid())
+				return;
+
+			if (_KeepMomentum.GetState() && m_HasMomentum)
 			{
-				if (!m_on)
+				const auto elapsed = std::chrono::duration<float>(std::chrono::steady_clock::now() - m_MomentumTime).count();
+				if (elapsed > 0.01f)
 				{
-					ENTITY::FREEZE_ENTITY_POSITION(g_player_ped, FALSE);
-
-					if (!is_session_started()
-						&& isFirstPerson()
-						)
-					{
-						ENTITY::SET_ENTITY_VISIBLE(g_player_ped, TRUE, FALSE);
-					}
-
-					if (keep_momentum->m_on
-						&& momentum_time != 0
-						&& !momentum_pos.isNull()
-						)
-					{
-						auto diff = get_current_time_millis() - momentum_time;
-						auto delta = (diff / 1000.0f) * 1.5f;
-						auto delta_pos = (g_player_ent.getPos() - momentum_pos) / delta;
-
-						ENTITY::SET_ENTITY_VELOCITY(g_player_ent, delta_pos.x, delta_pos.y, delta_pos.z);
-
-						if (g_player_ent.isVehicle())
-						{
-							SOUP_IF_LIKELY (auto cveh = g_player_veh.getCVehicle())
-							{
-								cveh->m_Transmission.m_nGear = 1; // The game locks us into reverse for some reason.
-							}
-						}
-
-						// If we're above the ground, enable grace until we're settled.
-						// Some natural motion tasks (even when killed) result in our velocity being reset.
-						if (isPedTooHigh() && !grace_job_busy)
-						{
-							++g_gui.grace;
-							grace_job_busy = true;
-							FiberPool::queueJob([this]
-							{
-								while (keep_momentum->m_on && isPedTooHigh())
-								{
-									Script::current()->yield(10);
-								}
-
-								grace_job_busy = false;
-								--g_gui.grace;
-							});
-						}
-					}
-
-					last_set_pos.reset();
-					momentum_pos.reset();
-					momentum_time = 0;
-					speed = 0.0f;
-					return false;
+					const auto delta = (ped.GetPosition() - m_MomentumPos) * (1.0f / elapsed);
+					ped.SetVelocity(delta);
 				}
+			}
 
-				if (speed == 0.0f)
+			ped.SetFrozen(false);
+		}
+
+		virtual void OnTick() override
+		{
+			static constexpr ControllerInputs controls[] = {ControllerInputs::INPUT_SPRINT, ControllerInputs::INPUT_JUMP, ControllerInputs::INPUT_DUCK, ControllerInputs::INPUT_MOVE_UP_ONLY, ControllerInputs::INPUT_MOVE_DOWN_ONLY, ControllerInputs::INPUT_MOVE_LEFT_ONLY, ControllerInputs::INPUT_MOVE_RIGHT_ONLY};
+			for (const auto& control : controls)
+				PAD::DISABLE_CONTROL_ACTION(0, static_cast<int>(control), true);
+
+			auto ped = Self::GetPed();
+			if (!ped || !ped.IsValid())
+				return;
+
+			rage::fvector3 dir{};
+			if (PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_MOVE_UP_ONLY))
+				dir.y += 1.0f;
+			if (PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_MOVE_DOWN_ONLY))
+				dir.y -= 1.0f;
+			if (PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_MOVE_LEFT_ONLY))
+				dir.x -= 1.0f;
+			if (PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_MOVE_RIGHT_ONLY))
+				dir.x += 1.0f;
+			if (PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_JUMP))
+				dir.z += 1.0f;
+			if (PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_DUCK))
+				dir.z -= 1.0f;
+
+			const bool sprinting = PAD::IS_DISABLED_CONTROL_PRESSED(0, (int)ControllerInputs::INPUT_SPRINT);
+			const bool moving = (dir.x != 0.0f || dir.y != 0.0f || dir.z != 0.0f);
+
+			if (moving && !sprinting && _LevitateAccel.GetState() != 0.0f)
+				m_CurrentSpeed = std::min(m_CurrentSpeed + _LevitateAccel.GetState() / 100.0f, 12.5f);
+			else
+				m_CurrentSpeed = sprinting ? _LevitateSprintSpeed.GetState() : _LevitateSpeed.GetState();
+
+			ped.SetFrozen(true);
+
+			auto pos = m_HasLastPos ? m_LastPos : ped.GetPosition();
+			pos.z -= m_ZExtra;
+
+			const auto camRot = CAMERA::GET_GAMEPLAY_CAM_ROT(2);
+			const float yawRad = camRot.z * (kPi / 180.0f);
+			const float pitchRad = camRot.x * (kPi / 180.0f);
+
+			bool moved = false;
+			if (moving)
+			{
+				const rage::fvector3 right{std::cos(yawRad), std::sin(yawRad), 0.0f};
+				rage::fvector3 forward{-std::sin(yawRad), std::cos(yawRad), 0.0f};
+				if (!_LevitateIgnorePitch.GetState())
+					forward = rage::fvector3{-std::sin(yawRad) * std::cos(pitchRad), std::cos(yawRad) * std::cos(pitchRad), std::sin(pitchRad)};
+
+				rage::fvector3 move = right * (dir.x * m_CurrentSpeed) + forward * (dir.y * m_CurrentSpeed);
+				move.z += dir.z * m_CurrentSpeed;
+				pos = pos + move;
+				moved = true;
+			}
+
+			float groundZ;
+			const bool hasGround = MISC::GET_GROUND_Z_FOR_3D_COORD(pos.x, pos.y, pos.z, &groundZ, false, false);
+			float waterZ;
+			const bool hasWater = WATER::GET_WATER_HEIGHT(pos.x, pos.y, pos.z, &waterZ);
+
+			if (hasGround || hasWater)
+			{
+				float surfaceZ = (hasWater && (!hasGround || waterZ > groundZ)) ? waterZ : groundZ;
+				surfaceZ += 1.0f; // approximate ped half-height, so we hover just above the surface rather than inside it
+
+				const float snap = _LevitateAssistSnap.GetState() / 100.0f;
+				const float deadzone = static_cast<float>(_LevitateAssistDeadzone.GetState());
+				if (std::abs(pos.z - surfaceZ) < snap)
 				{
-					speed = base_speed->getFloatValue();
+					pos.z = surfaceZ;
 				}
-				
-				if (keep_momentum->m_on)
+				else if (pos.z - surfaceZ < deadzone)
 				{
-					momentum_pos = g_player_ent.getPos();
-					momentum_time = get_current_time_millis();
+					if (pos.z < surfaceZ)
+					{
+						pos.z += _LevitateAssistUp.GetState() / 100.0f;
+						if (pos.z > surfaceZ)
+							pos.z = surfaceZ;
+					}
+					else if (pos.z > surfaceZ)
+					{
+						pos.z -= _LevitateAssistDown.GetState() / 100.0f;
+						if (pos.z < surfaceZ)
+							pos.z = surfaceZ;
+					}
+				}
+			}
+
+			const float passiveMinRaw = _LevitatePassiveMin.GetState();
+			const float passiveMaxRaw = _LevitatePassiveMax.GetState();
+			if (passiveMinRaw == passiveMaxRaw)
+			{
+				m_ZExtra = passiveMinRaw;
+			}
+			else
+			{
+				float passiveMin = passiveMinRaw;
+				float passiveMax = passiveMaxRaw;
+				if (passiveMax < passiveMin)
+					std::swap(passiveMin, passiveMax);
+
+				const float step = static_cast<float>(_LevitatePassiveSpeed.GetState()) / 1000.0f;
+				if (m_ZExtraGoingDown)
+				{
+					m_ZExtra -= step;
+					if (m_ZExtra <= passiveMin)
+						m_ZExtraGoingDown = false;
 				}
 				else
 				{
-					momentum_pos.reset();
-					momentum_time = 0;
+					m_ZExtra += step;
+					if (m_ZExtra >= passiveMax)
+						m_ZExtraGoingDown = true;
 				}
+			}
+			pos.z += m_ZExtra;
 
-				if (!g_paused)
-				{
-					const bool can_move = Input::canMovementCommandPerformMovement();
+			ped.SetPosition(pos);
+			m_LastPos = pos;
+			m_HasLastPos = true;
 
-					if (can_move && show_button_instructions->m_on)
-					{
-						ButtonInstructions::setFreeMovementThisTick();
-					}
+			if (_KeepMomentum.GetState())
+			{
+				m_MomentumPos = pos;
+				m_MomentumTime = std::chrono::steady_clock::now();
+				m_HasMomentum = true;
+			}
+			else
+			{
+				m_HasMomentum = false;
+			}
 
-					v3 pos = g_player_ent.getPos();
-					if (pos.distance(last_set_pos) < 5.0f)
-					{
-						pos = last_set_pos;
-					}
-					pos.z -= z_extra;
-					float perfect_z = pos.z;
-					v3 rot;
-					if (g_tb_freecam.isEnabled())
-					{
-						rot = g_player_ent.getRot();
-					}
-					else
-					{
-						rot = CAM::GET_FINAL_RENDERED_CAM_ROT(2);
-					}
-					rot.y = 0.0f;
-					if (PAD::IS_DISABLED_CONTROL_PRESSED(0, INPUT_LOOK_BEHIND))
-					{
-						rot.z += 180.0f;
-					}
-					bool moved = false;
-					if (can_move)
-					{
-						const auto pitch = rot.x;
-						if (ignore_pitch->m_on)
-						{
-							rot.x = 0.0f;
-						}
-						moved = free_movement(pos, rot, speed, sprint_speed->getFloatValue());
+			if (!_LevitateOnlyRotateOnMovement.GetState() || moved)
+			{
+				rage::fvector3 rot{0.0f, 0.0f, camRot.z};
+				if (_LevitateApplyPitch.GetState())
+					rot.x = camRot.x;
+				ped.SetRotation(rot);
+			}
+		}
+	};
 
-						if (acceleration->value != 0 && moved && !Input::isControlPressed(Input::getFreeSprint()))
-						{
-							if (const auto new_v = speed + (acceleration->getFloatValue() / 100); new_v < 12.5f) // Stuttering begins to occur around this range. (for high-end systems, at least)
-							{
-								speed = new_v;
-							}
-						}
-						else
-						{
-							speed = base_speed->getFloatValue();
-						}
-
-						rot.x = pitch;
-					}
-					if (!apply_pitch_to_entity->m_on)
-					{
-						rot.x = 0.0f;
-					}
-					// Assistant: Calculate "perfect Z"
-					{
-						bool using_z_from_heightmap = false;
-					shoot_ray:
-						float ground_z_shapetest = get_ground_z_shapetest(pos.x, pos.y, perfect_z);
-						float ground_z_water = get_ground_z_water(pos.x, pos.y);
-
-						static constexpr float mode_switch_threshold = 1.5f;
-
-						if (water)
-						{
-							if (abs(ground_z_shapetest - pos.z) < mode_switch_threshold && abs(ground_z_water - pos.z) > mode_switch_threshold)
-							{
-								water = false;
-							}
-						}
-						else
-						{
-							if (abs(ground_z_water - pos.z) < mode_switch_threshold && abs(ground_z_shapetest - pos.z) > mode_switch_threshold)
-							{
-								water = true;
-							}
-						}
-
-						if (water)
-						{
-							if (ground_z_water != -200.0f)
-							{
-								perfect_z = ground_z_water;
-							}
-							else
-							{
-								if (ground_z_shapetest != -200.0f)
-								{
-									perfect_z = ground_z_shapetest;
-									water = false;
-								}
-								else
-								{
-									if (!using_z_from_heightmap)
-									{
-										perfect_z = pos.getZFromHeightmap();
-										using_z_from_heightmap = true;
-										goto shoot_ray;
-									}
-								}
-							}
-						}
-						else
-						{
-							if (ground_z_shapetest != -200.0f)
-							{
-								if (ground_z_water != -200.0f && ground_z_water > ground_z_shapetest)
-								{
-									perfect_z = ground_z_water;
-									water = true;
-								}
-								else
-								{
-									perfect_z = ground_z_shapetest;
-								}
-							}
-							else
-							{
-								if (using_z_from_heightmap)
-								{
-									if (ground_z_water != -200.0f)
-									{
-										perfect_z = ground_z_water;
-										water = true;
-									}
-								}
-								else
-								{
-									perfect_z = pos.getZFromHeightmap();
-									using_z_from_heightmap = true;
-									goto shoot_ray;
-								}
-							}
-						}
-					}
-					perfect_z += g_player_ent.getDimensions().z;
-					// Assistant: Nudge towards "perfect Z"
-					if (abs(pos.z - perfect_z) < (float)assist_snap->value / 100.0f)
-					{
-						pos.z = perfect_z;
-					}
-					else if (pos.z - perfect_z < (float)assist_deadzone->value)
-					{
-						if (pos.z < perfect_z)
-						{
-							pos.z += (float)assist_up->value / 100.0f;
-							if (pos.z > perfect_z)
-							{
-								pos.z = perfect_z;
-							}
-						}
-						else if (pos.z > perfect_z)
-						{
-							pos.z -= (float)assist_down->value / 100.0f;
-							if (pos.z < perfect_z)
-							{
-								pos.z = perfect_z;
-							}
-						}
-					}
-					// Up & down hovering effect
-					if (passive_min->value == passive_max->value)
-					{
-						z_extra = (float)passive_min->value / 100.0f;
-					}
-					else
-					{
-						auto passive_min = (float)this->passive_min->value / 100.0f;
-						auto passive_max = (float)this->passive_max->value / 100.0f;
-						if (passive_max < passive_min)
-						{
-							std::swap(passive_min, passive_max);
-						}
-						if (z_extra_alt)
-						{
-							z_extra -= (float)passive_speed->value / 1000.0f;
-							if (z_extra <= passive_min)
-							{
-								z_extra_alt = false;
-							}
-						}
-						else
-						{
-							z_extra += (float)passive_speed->value / 1000.0f;
-							if (z_extra >= passive_max)
-							{
-								z_extra_alt = true;
-							}
-						}
-					}
-					pos.z += z_extra;
-
-					// Commit
-					ENTITY::FREEZE_ENTITY_POSITION(g_player_ped, TRUE);
-
-					if (!is_session_started())
-					{
-						ENTITY::SET_ENTITY_VISIBLE(g_player_ped, !isFirstPerson(), FALSE);
-					}
-
-					bool set_rot = !only_rotate_on_movement->m_on;
-					if (PED::IS_PED_IN_PARACHUTE_FREE_FALL(g_player_ped)
-						|| TASK::GET_IS_TASK_ACTIVE(g_player_ped, CTaskTypes::TASK_PARACHUTE)
-						)
-					{
-						g_player_ent.setPos(pos);
-						last_set_pos = pos;
-						set_rot = true;
-					}
-					else if (!g_player_ent.isPed())
-					{
-						tbFreecam::ensureNotInVehicleFirstPerson(0);
-						g_player_ent.setPos(pos);
-						last_set_pos = pos;
-						if (moved)
-						{
-							set_rot = true;
-						}
-					}
-					else if (isFirstPerson())
-					{
-						if (g_player_ent.getPos() != pos)
-						{
-							g_player_ent.setPos(pos);
-							last_set_pos = pos;
-							set_rot = true;
-						}
-					}
-					else if (g_player_ent.getPos() != pos)
-					{
-						g_player_ent.setPos(pos);
-						last_set_pos = pos;
-						if (moved)
-						{
-							set_rot = true;
-						}
-					}
-					
-					if (set_rot)
-					{
-						g_player_ent.setRot(rot);
-					}
-
-					// Prevent rolling and other stupid shit
-					for (const int input : g_movement_inputs)
-					{
-						PAD::DISABLE_CONTROL_ACTION(0, input, true);
-					}
-
-					// We want to retain control over the ped
-					if (g_player_ent.isPed())
-					{
-						if (auto cped = g_player_ent.getCPed())
-						{
-							if (auto task = cped->intelligence->FindTaskActiveByType(CTaskTypes::TASK_FALL))
-							{
-								task->MakeAbortable(rage::aiTask::ABORT_PRIORITY_URGENT);
-							}
-						}
-					}
-				}
-				return true;
-			});
-		});
-	}
+	static Levitate _Levitate{"levitate", "Levitation", "Fly freely, hovering in place when still - WASD to move, Jump/Duck for up/down, hold Sprint to go faster"};
 }

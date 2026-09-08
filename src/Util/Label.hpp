@@ -1,119 +1,112 @@
 #pragma once
+#include "Util/Joaat.hpp"
 
 #include <string>
+#include <utility>
 
-#include "lib/soup/compiletime.hpp"
-
-#include "Game/atStringHash.hpp"
-#include "Commands/Online/CommandName.hpp"
-
-#define LOC(key) Label(ATSTRINGHASH(key), Label::TagLocalised{})
-#define LOC_RT(...) Label(__VA_ARGS__, Label::TagLocalised{})
-#define LIT(...) Label(__VA_ARGS__, Label::TagLiteral{})
-#define LIT_OBF(x) Label(x, Label::TagLiteral{})
-#define NOLABEL Label()
-#if STAND_DEBUG
-#define PHSTR(str) "[PH] " str
-#define PH(str) LIT(PHSTR(str))
-#endif
+// This project has no equivalent of Stand's own translation database
+// (Localization/lang_en.cpp and friends) - a real Stand Label can be
+// hash-only (LOC), resolved later against that database. Without one,
+// there's nothing for a hash-only Label to resolve to, so this Label
+// always keeps the literal text alongside its hash: LOC(key) stores key
+// itself as literal_str (displays as the raw translation key, e.g. "SLF",
+// until/unless a real English text table is ported) rather than being
+// unrenderable. LIT(text) is the one to use for actually-correct display
+// text ported from Stand's own English lang_en.cpp values by hand.
+#define LOC(key) Stand::Label(key, Stand::Label::TagLiteral{})
+#define LIT(text) Stand::Label(text, Stand::Label::TagLiteral{})
+#define NOLABEL Stand::Label()
 
 namespace Stand
 {
-#pragma pack(push, 1)
 	class Label
 	{
 	public:
-		static const Label sNoLabel;
-
-		struct TagLocalised {};
-		struct TagLiteral {};
+		struct TagLiteral
+		{
+		};
 
 	private:
-		hash_t hash = 0;
+		Stand::joaat_t hash = 0;
+
 	public:
 		std::string literal_str{};
 
-		constexpr Label() noexcept = default;
+		Label() noexcept = default;
 
-		constexpr Label(hash_t hash, TagLocalised) noexcept
-			: hash(hash)
+		Label(const std::string& str, TagLiteral) noexcept :
+		    hash(Stand::Joaat(str)),
+		    literal_str(str)
 		{
 		}
 
-		Label(const std::string& hash, TagLocalised) noexcept
-			: hash(rage::atStringHash(hash))
+		Label(std::string&& str, TagLiteral) noexcept :
+		    hash(Stand::Joaat(str)),
+		    literal_str(std::move(str))
 		{
 		}
 
-		constexpr Label(const std::string& str, TagLiteral) noexcept
-			: literal_str(str)
+		Label(const char* str, TagLiteral) noexcept :
+		    Label(std::string(str), TagLiteral{})
 		{
 		}
 
-		constexpr Label(std::string&& str, TagLiteral) noexcept
-			: literal_str(std::move(str))
+		Label(const Label&) noexcept = default;
+		Label(Label&&) noexcept = default;
+		Label& operator=(const Label&) noexcept = default;
+		Label& operator=(Label&&) noexcept = default;
+
+		void setLiteral(const std::string& str) noexcept
 		{
+			hash = Stand::Joaat(str);
+			literal_str = str;
 		}
 
-		constexpr Label(size_t n, char c, TagLiteral) noexcept
-			: literal_str(std::string(n, c))
+		void setLiteral(std::string&& str) noexcept
 		{
+			hash = Stand::Joaat(str);
+			literal_str = std::move(str);
 		}
 
-		Label(const std::wstring& b, TagLiteral);
-
-		constexpr Label(Label&& b) noexcept
-			: hash(b.hash), literal_str(std::move(b.literal_str))
+		[[nodiscard]] bool empty() const noexcept
 		{
+			return literal_str.empty();
 		}
 
-		constexpr Label(const Label& b) noexcept
-			: hash(b.hash), literal_str(b.literal_str)
+		void reset() noexcept
 		{
+			hash = 0;
+			literal_str.clear();
 		}
 
-		[[nodiscard]] static Label combineWithSpace(const Label& primary, const Label& secondary);
-		[[nodiscard]] static Label combineWithBrackets(const Label& primary, const Label& secondary);
+		[[nodiscard]] bool operator==(const Label& b) const noexcept
+		{
+			return hash == b.hash && literal_str == b.literal_str;
+		}
 
-		void operator=(const char* b) noexcept = delete;
-		void operator=(const std::string& b) noexcept = delete;
-		void operator=(const Label& b) noexcept;
-		void operator=(Label&& b) noexcept;
+		[[nodiscard]] bool operator!=(const Label& b) const noexcept
+		{
+			return !operator==(b);
+		}
 
-		void setLiteral(const std::string& str) noexcept;
-		void setLiteral(std::string&& str) noexcept;
-		void setLocalised(hash_t hash) noexcept;
+		[[nodiscard]] Stand::joaat_t getHash() const noexcept
+		{
+			return hash;
+		}
 
-		[[nodiscard]] bool isLiteral() const noexcept;
-		[[nodiscard]] bool empty() const noexcept;
-		void reset() noexcept;
-		[[nodiscard]] bool operator==(const hash_t hash) const noexcept;
-		[[nodiscard]] bool operator==(const char* b) const noexcept = delete;
-		[[nodiscard]] bool operator==(const std::string& b) const noexcept = delete;
-		[[nodiscard]] bool operator==(const Label& b) const noexcept;
-		[[nodiscard]] bool operator!=(const char* b) const noexcept = delete;
-		[[nodiscard]] bool operator!=(const std::string& b) const noexcept = delete;
-		[[nodiscard]] bool operator!=(const Label& b) const noexcept;
+		[[nodiscard]] const std::string& getLocalisedUtf8() const noexcept
+		{
+			return literal_str;
+		}
 
-		[[nodiscard]] bool isLiteralString(const std::string& b) const noexcept;
+		[[nodiscard]] const std::string& getEnglishUtf8() const noexcept
+		{
+			return literal_str;
+		}
 
-		[[nodiscard]] uint64_t getHash() const noexcept;
-		[[nodiscard]] constexpr hash_t getLocalisationHash() const noexcept { return hash; }
-
-		[[nodiscard]] std::string getWebString() const noexcept;
-
-		[[nodiscard]] std::string getLiteralUtf8() const noexcept;
-		[[nodiscard]] std::wstring getLiteralUtf16() const noexcept;
-		[[nodiscard]] CommandName getLiteralForCommandName() const noexcept;
-
-		[[nodiscard]] std::string getLocalisedUtf8() const noexcept;
-		[[nodiscard]] std::wstring getLocalisedUtf16() const noexcept;
-
-		[[nodiscard]] std::string getEnglishUtf8() const noexcept;
-		[[nodiscard]] std::wstring getEnglishUtf16() const noexcept;
-		[[nodiscard]] CommandName getEnglishForCommandName() const noexcept;
-
-		void makeLiteralLocalised() noexcept;
+		[[nodiscard]] const std::string& getWebString() const noexcept
+		{
+			return literal_str;
+		}
 	};
-#pragma pack(pop)
 }

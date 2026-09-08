@@ -1,50 +1,19 @@
-#include "Network/rlGamerHandle.hpp"
-
 #include "Game/datBitBuffer.hpp"
-#include "Util/str2int.hpp"
+#include "Network/rlGamerHandle.hpp"
 
 namespace rage
 {
-	using namespace Stand;
-
-	rlGamerHandle rlGamerHandle::fromString(const char* c) noexcept
+	void rlGamerHandle::Serialize(rage::datBitBuffer& buffer) const
 	{
-		rlGamerHandle res{};
-		if (c[0] == 'S' && c[1] == 'C' && c[2] == ' ')
-		{
-			auto opt = str2int<int64_t>(c + 3);
-			if (opt.has_value())
-			{
-				res = opt.value();
-			}
-		}
-		return res;
+		buffer.Write<uint8_t>(m_Platform, 8);
+		buffer.WriteInt64(m_RockstarId, 64);
+		buffer.Write<uint8_t>(m_ProfileIndex, 8);
 	}
 
-	void rlGamerHandle::Import(void* data) noexcept
+	void rlGamerHandle::Deserialize(rage::datBitBuffer& buffer)
 	{
-		datImportBuffer bb{};
-		bb.SetReadOnlyBytes(data, 13);
-		ser(bb);
-	}
-
-#ifdef STAND_DEBUG
-	bool rlGamerHandle::write(datBitBuffer& bb) const
-	{
-		char buf[13];
-		datExportBuffer innerBb;
-		innerBb.SetReadWriteBytes(buf, 13);
-		const_cast<rlGamerHandle*>(this)->ser(innerBb);
-		return bb.WriteBytes(buf, innerBb.GetNumBytesWritten());
-	}
-#endif
-
-	rlGamerHandle rlGamerHandle::fromScript(void* data) noexcept
-	{
-		datBitBuffer buf{};
-		buf.SetReadOnlyBytes(data, 13);
-		rlGamerHandle gh;
-		gh.Import(data);
-		return gh;
+		m_Platform = buffer.Read<uint8_t>(8);
+		buffer.ReadInt64(&m_RockstarId, 64);
+		m_ProfileIndex = buffer.Read<uint8_t>(8);
 	}
 }

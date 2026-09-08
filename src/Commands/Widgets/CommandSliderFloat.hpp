@@ -1,27 +1,27 @@
 #pragma once
+#include "Commands/Widgets/CommandSliderLegacy.hpp"
 
-#include "Commands/Widgets/CommandSlider.hpp"
-
+// Stores its value as an int scaled by 10^precision (real Stand's own
+// representation) - e.g. min=1/max=1000000/default=100/step=10 at the
+// default precision (2) is really a 0.01-10000.00 range, default 1.00,
+// step 0.10. getFloatValue()/setValue(float, Click&) convert to/from the
+// real float; onLeft()/onRight()'s integer step logic (inherited from
+// CommandSlider, unchanged) is what actually moves the scaled value.
 namespace Stand
 {
-#pragma pack(push, 1)
-	class CommandSliderFloat : public CommandSlider
+	class CommandSliderFloatLegacy : public CommandSliderLegacy
 	{
 	public:
 		uint8_t precision = 2;
 
-		explicit CommandSliderFloat(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, const int min_value, const int max_value, const int default_value, const unsigned int step_size = 1, const commandflags_t flags = CMDFLAGS_SLIDER, const CommandPerm perm = COMMANDPERM_USERONLY, bool is_click_to_apply = false, const std::vector<Hotkey>& default_hotkeys = {});
+		explicit CommandSliderFloatLegacy(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, const std::vector<Hotkey>& default_hotkeys = {}) :
+		    CommandSliderLegacy(parent, std::move(menu_name), std::move(command_names), std::move(help_text), min_value, max_value, default_value, step_size, flags, perm, default_hotkeys, COMMAND_SLIDER_FLOAT)
+		{
+		}
 
 		[[nodiscard]] int getPrecisionScalar() const;
-		[[nodiscard]] float getFloatValue() const;
-		[[nodiscard]] std::wstring formatNumber(int num, bool allow_replacements) const override;
-
-		void onCommand(Click& click, std::wstring& args) override;
-
-		[[nodiscard]] std::string getState() const final;
-		[[nodiscard]] std::string getDefaultState() const final;
+		[[nodiscard]] float getFloatValue() const override;
 
 		void setValue(float value, Click& click);
 	};
-#pragma pack(pop)
 }
