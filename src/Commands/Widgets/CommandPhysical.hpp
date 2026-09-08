@@ -8,29 +8,15 @@
 #include <functional>
 #include <vector>
 
-// Real Stand's CommandPhysical also carries a web-command viewport
-// (isInViewport/onTickInWebViewport/isActiveOnWeb/updateWebState), a
-// right-click context-menu integration (isOpenInContextMenu/
-// updateHotkeysInContextMenu), its own per-command hotkey-binding UI
-// (applyDefaultHotkeys/modifyHotkeys/hasHotkey/onHotkeysChanged - a
-// different model from this project's own existing, chain-based
-// HotkeySystem), commercial-edition feature-list text, chat-command
-// syntax/argument helpers, and a generic tick-event-handler registration
-// system tied to its own TickMgr - none of which this project has or is
-// building. Kept the part every widget actually needs: display content
-// (menu_name/help_text/hotkeys, the hotkeys field kept only as a data
-// member for now - not wired to any input dispatch yet), the getState/
-// setState/applyDefaultState virtual triplet a real command overrides
-// with its actual behaviour, onClick/onLeft/onRight dispatch, and the
-// ensureScriptThread/ensureYieldableScriptThread/ensureWorkerContext/
-// queueJob family (same shape as Stand's own, through this project's own
-// FiberPool).
 namespace Stand
 {
 	class CommandPhysical : public CommandIssuable
 	{
 	private:
 		bool m_JobQueued = false;
+
+	protected:
+		std::function<bool()> m_tickHandler;
 
 	public:
 		Label menu_name;
@@ -91,19 +77,6 @@ namespace Stand
 			return (flags & CMDFLAG_NO_SAVED_STATE) == 0;
 		}
 
-		// Ported from real Stand's own CommandPhysical::getCommandSyntax()
-		// (CommandPhysical.cpp on origin/stand-reference) - "Command: "
-		// plus the command's own primary name (command_names.front()),
-		// e.g. "Command: godmode". CommandToggleNoCorrelation overrides
-		// this to append " [on/off]" (its own real Stand equivalent,
-		// confirmed against origin/stand-reference's own
-		// CommandToggleNoCorrelation::getCommandSyntax()) - see
-		// GridItemStandCommand::GetDescription() for where this actually
-		// shows up (the second line under a focused command's own
-		// help_text, matching real Stand's own populateCorner()). Not
-		// gated behind anything like real Stand's own g_gui.show_syntax
-		// setting - this project has no such setting, so it's always
-		// shown whenever it's non-empty.
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
 
 		virtual void onClick(Click& click)
@@ -134,22 +107,11 @@ namespace Stand
 		{
 		}
 
-		// Needs a script thread; NOYIELD is fine - same requirement real
-		// Stand's own applyDefaultState() has.
 		virtual void applyDefaultState()
 		{
 		}
 
-		// NOT real Stand's own generic tick-event-handler system (tied
-		// to its own TickMgr - see this class's own top comment, not
-		// ported) - a plain empty-default virtual instead, called only
-		// for whichever commands opt into CommandTickDispatch themselves
-		// (see that class's own doc comment for why this isn't wired in
-		// automatically here the way getState()/setState()/
-		// applyDefaultState() are for CommandStateSerializer above).
-		virtual void onTick()
-		{
-		}
+		virtual void onTick();
 
 		void queueJob(std::function<void()>&& func);
 		void queueJob(std::function<void(ThreadContext)>&& func);

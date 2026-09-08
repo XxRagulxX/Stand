@@ -1,6 +1,8 @@
 #pragma once
 #include "Commands/Widgets/CommandPhysical.hpp"
 
+#include <string>
+
 // Real Stand's CommandSlider also carries a command-box prefill/parse
 // path (openCommandBoxWithPrefill/onCommand), chat-syntax help, and a
 // web-relay state sync (updateState's g_relay.sendLine calls). None of
@@ -48,6 +50,11 @@ namespace Stand
 		std::string getDefaultState() const override;
 		void setState(Click& click, const std::string& state) override;
 		void applyDefaultState() override;
+
+		[[nodiscard]] virtual std::string getValueText() const
+		{
+			return std::to_string(value);
+		}
 
 		virtual void onChange(Click& click, int prev_value)
 		{

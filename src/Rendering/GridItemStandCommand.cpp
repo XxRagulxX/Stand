@@ -128,7 +128,7 @@ namespace Stand::Rendering
 			auto* slider = m_Command->as<Stand::CommandSlider>();
 			const auto layout = ComputeSliderLayout();
 
-			const auto valueStr = std::to_string(slider->value);
+			const auto valueStr = slider->getValueText();
 			const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
 			GridRenderer::DrawText(layout.valueX + std::max(0.f, (layout.valueWidth - valueSize.x) * 0.5f),
 			    y + std::max(0.f, (height - valueSize.y) * 0.5f),

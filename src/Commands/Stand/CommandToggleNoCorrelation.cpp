@@ -1,6 +1,7 @@
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 
 #include "Commands/Widgets/CommandStateSerializer.hpp"
+#include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Menu/Click.hpp"
 
 namespace Stand
@@ -70,32 +71,20 @@ namespace Stand
 		updateState(click);
 	}
 
+	void CommandToggleNoCorrelation::onChangeToggleScriptTickEventHandler(Click& click, std::function<bool()>&& handler)
+	{
+		if (m_on)
+		{
+			m_tickHandler = std::move(handler);
+			CommandTickDispatch::AddCommand(this);
+		}
+	}
+
 	void CommandToggleNoCorrelation::updateState(Click& click)
 	{
-		// Real Stand's own equivalent just sets a bare "On"/"Off" - this
-		// project's own request instead wants the toast to name the
-		// feature itself (e.g. "Immortality is now enabled"), since a
-		// bare "On"/"Off" toast is meaningless without already knowing
-		// which row you just clicked/hotkeyed/typed into the command
-		// console. Only fires when this actually reaches
-		// Notifications::Show() at all - see Click::respond()'s own
-		// gating (canHaveResponse()/non-empty response) and, more
-		// importantly, every Click-producing call site that actually has
-		// to call ensureResponse()+respond() itself for this to show up
-		// (GridItemStandCommand.cpp's own ToggleClicked(), MenuCommandConsole.cpp's
-		// own Stand-command activation, CommandHotkeyDispatch.cpp already
-		// did) - a real, previously-missing wire-up this project's own
-		// request surfaced, not something real Stand's own source needed
-		// (its own menu-click/hotkey dispatch already always calls
-		// respond() generically).
 		if (click.canHaveGenericResponse())
 			click.setGenericResponse(LIT(getMenuName().getLocalisedUtf8() + (m_on ? " is now enabled" : " is now disabled")));
 
-		// Every path that actually changes m_on (toggleState() from a
-		// real click, setStateBool() from setState()/applyDefaultState())
-		// funnels through here - see CommandStateSerializer.hpp's own
-		// class comment for why persistence is driven off dirty-marking
-		// rather than saving unconditionally every tick.
 		CommandStateSerializer::MarkDirty();
 	}
 }
