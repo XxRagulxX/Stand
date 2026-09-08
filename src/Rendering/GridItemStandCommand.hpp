@@ -71,7 +71,7 @@ namespace Stand::Rendering
 			float plusX;
 			float buttonSize;
 		};
-		SliderLayout ComputeSliderLayout() const;
+		SliderLayout ComputeSliderLayout(const std::string& valueText) const;
 
 		Stand::Command* m_Command;
 	};

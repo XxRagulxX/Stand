@@ -126,9 +126,9 @@ namespace Stand::Rendering
 		if (m_Command->isSlider())
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
-			const auto layout = ComputeSliderLayout();
-
 			const auto valueStr = slider->getValueText();
+			const auto layout = ComputeSliderLayout(valueStr);
+
 			const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
 			GridRenderer::DrawText(layout.valueX + std::max(0.f, (layout.valueWidth - valueSize.x) * 0.5f),
 			    y + std::max(0.f, (height - valueSize.y) * 0.5f),
@@ -156,7 +156,8 @@ namespace Stand::Rendering
 
 		if (m_Command->isSlider())
 		{
-			const auto layout = ComputeSliderLayout();
+			auto* slider = m_Command->as<Stand::CommandSlider>();
+			const auto layout = ComputeSliderLayout(slider->getValueText());
 			if (cursorX >= layout.plusX && cursorX < layout.plusX + layout.buttonSize)
 				SliderStep(1);
 			else if (cursorX >= layout.minusX && cursorX < layout.minusX + layout.buttonSize)
@@ -248,13 +249,14 @@ namespace Stand::Rendering
 		MenuNavigation::Push(Label(m_Command), &GridStandCommandList::GetOrCreate(list));
 	}
 
-	GridItemStandCommand::SliderLayout GridItemStandCommand::ComputeSliderLayout() const
+	GridItemStandCommand::SliderLayout GridItemStandCommand::ComputeSliderLayout(const std::string& valueText) const
 	{
+		const float measuredWidth = GridRenderer::MeasureText(valueText.c_str()).x;
 		SliderLayout layout;
 		layout.buttonSize = kButtonSize;
-		layout.valueWidth = kValueWidth;
+		layout.valueWidth = std::max(kValueWidth, measuredWidth + kGap);
 		layout.plusX = x + width - kButtonSize;
-		layout.valueX = layout.plusX - kGap - kValueWidth;
+		layout.valueX = layout.plusX - kGap - layout.valueWidth;
 		layout.minusX = layout.valueX - kGap - kButtonSize;
 		return layout;
 	}
