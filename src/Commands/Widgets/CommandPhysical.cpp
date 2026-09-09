@@ -20,7 +20,7 @@ namespace Stand
 		if (command_names.empty())
 			return {};
 
-		return "CommandLegacy: " + command_names.front();
+		return "Command: " + command_names.front();
 	}
 
 	void CommandPhysical::queueJob(std::function<void()>&& func)

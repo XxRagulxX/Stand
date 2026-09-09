@@ -2,6 +2,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 
 #include <string>
+#include <utility>
 
 // Real Stand's CommandSlider also carries a command-box prefill/parse
 // path (openCommandBoxWithPrefill/onCommand), chat-syntax help, and a
@@ -54,6 +55,11 @@ namespace Stand
 		[[nodiscard]] virtual std::string getValueText() const
 		{
 			return std::to_string(value);
+		}
+
+		[[nodiscard]] virtual std::vector<std::pair<int, std::string>> getNamedValues() const
+		{
+			return {};
 		}
 
 		virtual void onChange(Click& click, int prev_value)

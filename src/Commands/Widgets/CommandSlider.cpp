@@ -113,6 +113,14 @@ namespace Stand
 		int updated_value = default_value;
 		if (!state.empty())
 		{
+			for (const auto& [intVal, strName] : getNamedValues())
+			{
+				if (state == strName)
+				{
+					setValue(click, intVal);
+					return;
+				}
+			}
 			try
 			{
 				updated_value = std::stoi(state);

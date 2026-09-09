@@ -16,6 +16,11 @@ namespace Stand::Rendering
 	{
 		constexpr float kPadding = 8.f;
 		constexpr float kLineGap = 2.f;
+		// Extra vertical space inserted between the description paragraph
+		// and the command syntax line - matches real Stand's own corner panel
+		// where help_text and getCommandSyntax() appear as two visually
+		// distinct stacked groups, not a single run-together block.
+		constexpr float kGroupGap = 12.f;
 
 		GridItem* FocusedItem()
 		{
@@ -26,51 +31,51 @@ namespace Stand::Rendering
 			return MenuFocus::GetFocusedItem(current);
 		}
 
-		// Recomputed fresh on every Draw()/DrawText() call rather than
-		// cached - cheap (one virtual call plus a word-wrap over a
-		// handful of words), and there's no shared per-frame state to
-		// cache into here the way MenuGrid's own populate() has.
-		//
-		// GetDescription() may embed '\n' as a hard break between
-		// distinct logical lines (e.g. GridItemStandCommand's own
-		// help_text + "Command: ... [on/off]" - see its own comment) -
-		// WrapText()'s own word-splitting (istringstream's `>>`) treats
-		// any whitespace, '\n' included, as just another space, so a
-		// naive single WrapText() call over the whole description would
-		// run those two logical lines together into one paragraph
-		// instead of keeping them on their own line(s). Split on '\n'
-		// first, word-wrap each resulting segment independently, then
-		// concatenate - matches real Stand's own populateCorner(), which
-		// builds each corner entry as its own separate GridItemText row
-		// rather than one big joined block.
-		std::vector<std::string> WrappedLines()
+		// Two-group content: the description paragraph (help_text, word-
+		// wrapped) and the command syntax line ("Command: name [on/off]",
+		// word-wrapped). Separated by the single '\n' GetDescription()
+		// embeds between them - everything before the first '\n' is the
+		// description group, everything after is the syntax group.
+		// Either group may be empty (a command with no help text has only
+		// a syntax group; a list/action with no syntax has only a desc
+		// group; a command with neither returns both empty).
+		struct ContentGroups
+		{
+			std::vector<std::string> descLines;
+			std::vector<std::string> syntaxLines;
+		};
+
+		ContentGroups GetContent()
 		{
 			auto* item = FocusedItem();
 			if (!item)
 				return {};
 
-			auto description = item->GetDescription();
+			const auto description = item->GetDescription();
 			if (description.empty())
 				return {};
 
-			const auto maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
+			const float maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
 
-			std::vector<std::string> lines;
-			size_t start = 0;
-			while (start <= description.size())
+			ContentGroups groups;
+			const auto split = description.find('\n');
+
+			auto wrapInto = [&](const std::string& text, std::vector<std::string>& target) {
+				for (auto& line : WrapText(text, maxWidth, Theme::kSmallTextScale))
+					target.push_back(std::move(line));
+			};
+
+			if (split == std::string::npos)
 			{
-				const auto end = description.find('\n', start);
-				const auto segment = description.substr(start, end == std::string::npos ? std::string::npos : end - start);
-
-				for (auto& wrapped : WrapText(segment, maxWidth, Theme::kSmallTextScale))
-					lines.push_back(std::move(wrapped));
-
-				if (end == std::string::npos)
-					break;
-				start = end + 1;
+				wrapInto(description, groups.descLines);
+			}
+			else
+			{
+				wrapInto(description.substr(0, split), groups.descLines);
+				wrapInto(description.substr(split + 1), groups.syntaxLines);
 			}
 
-			return lines;
+			return groups;
 		}
 
 		// The box's own top-left corner, in H-space - see this class's
@@ -87,30 +92,65 @@ namespace Stand::Rendering
 		{
 			return static_cast<float>(sidebarBottomY > contentY ? sidebarBottomY : contentY);
 		}
+
+		float TotalHeight(const ContentGroups& groups, float lineHeight)
+		{
+			const auto descCount = static_cast<int>(groups.descLines.size());
+			const auto syntaxCount = static_cast<int>(groups.syntaxLines.size());
+			const auto totalLines = descCount + syntaxCount;
+			if (totalLines == 0)
+				return 0.f;
+
+			float h = kPadding * 2.f
+			    + static_cast<float>(totalLines) * lineHeight
+			    + static_cast<float>(totalLines - 1) * kLineGap;
+
+			// Extra inter-group gap when both groups are present.
+			if (descCount > 0 && syntaxCount > 0)
+				h += kGroupGap;
+
+			return h;
+		}
 	}
 
 	void DescriptionPanel::Draw(int16_t contentX, int16_t contentY, int16_t sidebarBottomY)
 	{
-		const auto lines = WrappedLines();
-		if (lines.empty())
+		const auto groups = GetContent();
+		if (groups.descLines.empty() && groups.syntaxLines.empty())
 			return;
 
 		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScale).y;
-		const float height = kPadding * 2.f + static_cast<float>(lines.size()) * lineHeight + static_cast<float>(lines.size() - 1) * kLineGap;
-
-		GridRenderer::DrawRect(OriginX(contentX), OriginY(contentY, sidebarBottomY), static_cast<float>(Theme::kInfoWidth), height, Theme::kPanelBackground);
+		GridRenderer::DrawRect(OriginX(contentX), OriginY(contentY, sidebarBottomY),
+		    static_cast<float>(Theme::kInfoWidth), TotalHeight(groups, lineHeight), Theme::kPanelBackground);
 	}
 
 	void DescriptionPanel::DrawText(int16_t contentX, int16_t contentY, int16_t sidebarBottomY)
 	{
-		const auto lines = WrappedLines();
-		if (lines.empty())
+		const auto groups = GetContent();
+		if (groups.descLines.empty() && groups.syntaxLines.empty())
 			return;
 
 		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScale).y;
 		const float x = OriginX(contentX) + kPadding;
 		float y = OriginY(contentY, sidebarBottomY) + kPadding;
-		for (const auto& line : lines)
+
+		// Description paragraph - normal text color.
+		for (const auto& line : groups.descLines)
+		{
+			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScale);
+			y += lineHeight + kLineGap;
+		}
+
+		// Extra gap before the syntax group when both are present -
+		// matches real Stand's visual: the "Command: name [on/off]" line
+		// sits clearly separate from the help_text paragraph above it.
+		if (!groups.descLines.empty() && !groups.syntaxLines.empty())
+			y += kGroupGap;
+
+		// Command syntax line(s) - placeholder/dimmer color, matching
+		// real Stand's own corner where the syntax entry is visually
+		// subordinate to the description text above it.
+		for (const auto& line : groups.syntaxLines)
 		{
 			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScale);
 			y += lineHeight + kLineGap;

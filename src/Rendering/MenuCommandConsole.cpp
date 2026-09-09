@@ -4,6 +4,7 @@
 #include "Commands/Commands.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandRegistry.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/InputCapture.hpp"
@@ -43,12 +44,20 @@ namespace Stand::Rendering
 		// ever has the one), display is what a match's own hint line
 		// shows regardless of which alias matched (real Stand's own
 		// getCompletionHint() always uses command_names.at(0), never the
-		// alias that actually matched - mirrored here).
+		// alias that actually matched - mirrored here). label is the
+		// plain menu name shown when args-mode matching is active (buffer
+		// contains a space - see UpdateMatches).
 		struct Candidate
 		{
 			std::vector<std::string> names;
-			std::string display; // "<name> - <label>"
+			std::string label;   // plain label, e.g. "Set Wanted Level"
+			std::string display; // "name - label" for prefix-match rows
 			std::function<void()> activate;
+			// Non-null for CommandSlider-derived Stand-tree commands:
+			// called with the args string (everything after the space) when
+			// the buffer is "cmdname args" - routes to setState() which
+			// handles both numeric ("wanted 2") and named ("paralock off").
+			std::function<void(const std::string&)> activate_with_args;
 		};
 
 		std::vector<Candidate> CollectCandidates()
@@ -60,9 +69,12 @@ namespace Stand::Rendering
 				if (command->GetName().empty())
 					continue;
 
+				const std::string name = command->GetName();
+				const std::string lbl = command->GetLabel();
 				candidates.push_back({
-				    {command->GetName()},
-				    command->GetName() + " - " + command->GetLabel(),
+				    {name},
+				    lbl,
+				    name + " - " + lbl,
 				    // Queued onto a script thread rather than called
 				    // inline - Command::Call() (a toggle's OnEnable()/
 				    // OnDisable(), a one-shot's OnCall()) commonly
@@ -77,6 +89,7 @@ namespace Stand::Rendering
 						    command->Call();
 					    });
 				    },
+				    nullptr,
 				});
 			}
 
@@ -100,9 +113,50 @@ namespace Stand::Rendering
 				if (!seenStandCommands.insert(physical).second)
 					continue;
 
+				const std::string lbl = physical->getMenuName().getLocalisedUtf8();
+				const std::string disp = physical->command_names.front() + " - " + lbl;
+
+				// CommandSlider: expose an activate_with_args so the user
+				// can type "wanted 2" or "paralock off" in the console and
+				// have it call setState() with the args portion - matching
+				// real Stand's own parseCommand split behaviour (the buffer
+				// up to the first space is the command name; everything
+				// after is the value token passed to setState).
+				if (auto* slider = dynamic_cast<Stand::CommandSlider*>(physical))
+				{
+					candidates.push_back({
+					    physical->command_names,
+					    lbl,
+					    disp,
+					    // onClick() is a no-op for sliders (no args = no
+					    // meaningful state change) - keep it for the
+					    // toggle-path so exact-match "paralock" without a
+					    // space still shows the row, even if Enter does
+					    // nothing useful without an args token.
+					    [physical] {
+						    FiberPool::queueJob([physical] {
+							    Stand::Click click(Stand::CLICK_COMMAND, Stand::TC_SCRIPT_YIELDABLE);
+							    physical->onClick(click);
+							    click.ensureResponse();
+							    click.respond();
+						    });
+					    },
+					    [slider](const std::string& args) {
+						    FiberPool::queueJob([slider, args] {
+							    Stand::Click click(Stand::CLICK_COMMAND, Stand::TC_SCRIPT_YIELDABLE);
+							    slider->setState(click, args);
+							    click.ensureResponse();
+							    click.respond();
+						    });
+					    },
+					});
+					continue;
+				}
+
 				candidates.push_back({
 				    physical->command_names,
-				    physical->command_names.front() + " - " + physical->getMenuName().getLocalisedUtf8(),
+				    lbl,
+				    disp,
 				    // CommandPhysical::onClick() (not the empty-stub
 				    // onCommand() a much earlier pass here mistakenly
 				    // gated this whole registry on) is the real generic
@@ -140,6 +194,7 @@ namespace Stand::Rendering
 						    click.respond();
 					    });
 				    },
+				    nullptr,
 				});
 			}
 
@@ -184,6 +239,37 @@ namespace Stand::Rendering
 			return;
 
 		auto candidates = CollectCandidates();
+
+		// If the buffer contains a space, the portion before it is the
+		// command name and the portion after is the args string - find the
+		// command by exact name match and route the args to setState().
+		// This matches real Stand's own parseCommand split: "wanted 2" sets
+		// the wanted slider to 2; "paralock off" sets paralock to Off.
+		// When args-mode fires, the hint row shows just the label (not the
+		// full "name - label" format), mirroring the screenshots.
+		const auto spacePos = s_Buffer.find(' ');
+		if (spacePos != std::string::npos)
+		{
+			const std::string cmdPart = s_Buffer.substr(0, spacePos);
+			const std::string argsPart = s_Buffer.substr(spacePos + 1);
+			for (auto& candidate : candidates)
+			{
+				if (candidate.activate_with_args
+				    && std::ranges::find(candidate.names, cmdPart) != candidate.names.end())
+				{
+					s_Matches = {{candidate.label, [fn = std::move(candidate.activate_with_args), argsPart] {
+					    fn(argsPart);
+					}}};
+					s_SelectedIndex = 0;
+					return;
+				}
+			}
+			return;
+		}
+
+		// No space in buffer: normal exact/grazed matching on the full
+		// buffer text, same as real Stand's own checkCommandNameMatch
+		// NMT_HIT (exact) and NMT_GRAZED (prefix-longer) paths.
 
 		// Exact match (on ANY of a candidate's own aliases) short-
 		// circuits to the one result, the same as real Stand's own
@@ -296,7 +382,9 @@ namespace Stand::Rendering
 
 		// "<name> - <label>", exactly CommandIssuable::getCompletionHint()'s
 		// own format on real Stand (confirmed against origin/stand-
-		// reference) - e.g. "godmode - Immortality".
+		// reference) - e.g. "godmode - Immortality". In args mode (buffer
+		// has a space), the hint is just the plain label to match real
+		// Stand's own console - see UpdateMatches.
 		const auto shown = (std::min)(s_Matches.size(), kMaxShown);
 		for (size_t i = 0; i != shown; ++i)
 		{

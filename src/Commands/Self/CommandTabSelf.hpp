@@ -3,6 +3,8 @@
 #include "Commands/Self/CommandAutoHeal.hpp"
 #include "Commands/Self/CommandFakeWanted.hpp"
 #include "Commands/Self/CommandFreezeWanted.hpp"
+#include "Commands/Self/CommandInfiniteStamina.hpp"
+#include "Commands/Self/CommandParalock.hpp"
 #include "Commands/Self/CommandGod.hpp"
 #include "Commands/Self/CommandGrace.hpp"
 #include "Commands/Self/CommandMaxHealth.hpp"
@@ -22,6 +24,8 @@ namespace Stand
 		CommandWanted* const wanted;
 		CommandFreezeWanted* const freezeWanted;
 		CommandFakeWanted* const fakeWanted;
+		CommandInfiniteStamina* const infiniteStamina;
+		CommandParalock* const paralock;
 
 		explicit CommandTabSelf() :
 		    CommandList(nullptr, LIT("Self")),
@@ -32,7 +36,9 @@ namespace Stand
 		    seatGlue(createChild<CommandSeatGlue>()),
 		    wanted(createChild<CommandWanted>()),
 		    freezeWanted(createChild<CommandFreezeWanted>(wanted)),
-		    fakeWanted(createChild<CommandFakeWanted>())
+		    fakeWanted(createChild<CommandFakeWanted>()),
+		    infiniteStamina(createChild<CommandInfiniteStamina>()),
+		    paralock(createChild<CommandParalock>())
 		{
 		}
 	};

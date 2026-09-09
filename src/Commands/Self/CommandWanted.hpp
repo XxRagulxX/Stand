@@ -14,6 +14,12 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
+			if (click.type != CLICK_MENU)
+				Stand::Self::GetPlayer().SetWantedLevel(value);
+		}
+
+		void onClick(Click& click) override
+		{
 			Stand::Self::GetPlayer().SetWantedLevel(value);
 		}
 	};

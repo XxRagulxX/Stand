@@ -26,7 +26,11 @@ namespace Stand
 				CommandTickDispatch::RemoveCommand(this);
 				auto ped = Stand::Self::GetPed();
 				if (ped)
+				{
+					PED::SET_PED_MAX_HEALTH(ped.GetHandle(), 200);
 					ENTITY::SET_ENTITY_MAX_HEALTH(ped.GetHandle(), 200);
+					HUD::SET_MAX_HEALTH_HUD_DISPLAY(200);
+				}
 			}
 			else
 			{
@@ -39,7 +43,11 @@ namespace Stand
 			auto ped = Stand::Self::GetPed();
 			if (!ped || ped.IsDead())
 				return;
+			PED::SET_PED_MAX_HEALTH(ped.GetHandle(), value);
 			ENTITY::SET_ENTITY_MAX_HEALTH(ped.GetHandle(), value);
+			HUD::SET_MAX_HEALTH_HUD_DISPLAY(value);
+			if (ENTITY::GET_ENTITY_HEALTH(ped.GetHandle()) < value)
+				ENTITY::SET_ENTITY_HEALTH(ped.GetHandle(), value, 0, 0);
 		}
 
 		~CommandMaxHealth() override
