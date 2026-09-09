@@ -1,6 +1,8 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Self/CommandAutoHeal.hpp"
+#include "Commands/Self/CommandFakeWanted.hpp"
+#include "Commands/Self/CommandFreezeWanted.hpp"
 #include "Commands/Self/CommandGod.hpp"
 #include "Commands/Self/CommandGrace.hpp"
 #include "Commands/Self/CommandMaxHealth.hpp"
@@ -18,6 +20,8 @@ namespace Stand
 		CommandGrace* const grace;
 		CommandSeatGlue* const seatGlue;
 		CommandWanted* const wanted;
+		CommandFreezeWanted* const freezeWanted;
+		CommandFakeWanted* const fakeWanted;
 
 		explicit CommandTabSelf() :
 		    CommandList(nullptr, LIT("Self")),
@@ -26,7 +30,9 @@ namespace Stand
 		    maxHealth(createChild<CommandMaxHealth>()),
 		    grace(createChild<CommandGrace>()),
 		    seatGlue(createChild<CommandSeatGlue>()),
-		    wanted(createChild<CommandWanted>())
+		    wanted(createChild<CommandWanted>()),
+		    freezeWanted(createChild<CommandFreezeWanted>(wanted)),
+		    fakeWanted(createChild<CommandFakeWanted>())
 		{
 		}
 	};
