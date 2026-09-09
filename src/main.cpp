@@ -29,6 +29,7 @@
 #include "Commands/World/CommandDailyActivities.hpp"
 #include "Core/LogHelper.hpp"
 #include "Core/ExceptionHandler.hpp"
+#include "Commands/Self/CommandTabSelf.hpp"
 
 namespace Stand
 {
@@ -45,6 +46,7 @@ namespace Stand
 
 		g_HotkeySystem.RegisterCommands();
 		SavedLocations::FetchSavedLocations();
+		(void)Features::GetCommandTabSelf();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;
