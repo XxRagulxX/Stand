@@ -1,6 +1,5 @@
 #include "Core/common.hpp"
 #include "Scripting/ScriptMgr.hpp"
-#include "Scripting/FiberPool.hpp"
 #include "Commands/Commands.hpp"
 #include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
@@ -29,6 +28,7 @@
 #include "Commands/World/CommandDailyActivities.hpp"
 #include "Core/LogHelper.hpp"
 #include "Core/ExceptionHandler.hpp"
+#include "Commands/Self/CommandTabLevitation.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
 
 namespace Stand
@@ -47,6 +47,7 @@ namespace Stand
 		g_HotkeySystem.RegisterCommands();
 		SavedLocations::FetchSavedLocations();
 		(void)Features::GetCommandTabSelf();
+		(void)Features::GetCommandTabLevitation();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;

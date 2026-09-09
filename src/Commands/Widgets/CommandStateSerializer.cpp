@@ -58,15 +58,6 @@ namespace Stand
 			if (!name)
 				continue;
 
-			// Applied through queueJob(), not called inline - this runs
-			// during Settings::InitializeImpl(), long before any script
-			// thread is guaranteed ready, and setState()/
-			// applyDefaultState() both end up touching game natives
-			// through a real command's onEnable()/onChange() (e.g.
-			// CommandGod's SetInvincible()) - same "queue it, don't call
-			// it inline" convention as every other click dispatch this
-			// session (GridItemStandCommand.cpp's own ToggleClicked()/
-			// SliderStep()/ButtonClicked()).
 			if (command->supportsSavedState() && state.contains(*name) && state[*name].is_string())
 			{
 				auto saved = state[*name].get<std::string>();

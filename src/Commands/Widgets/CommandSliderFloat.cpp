@@ -1,21 +1,18 @@
 #include "Commands/Widgets/CommandSliderFloat.hpp"
 
+#include <iomanip>
+#include <sstream>
+
 namespace Stand
 {
-	int CommandSliderFloatLegacy::getPrecisionScalar() const
+	std::string CommandSliderFloat::getValueText() const
 	{
-		int scalar = 1;
-		for (uint8_t i = 0; i < precision; ++i)
-			scalar *= 10;
-		return scalar;
+		std::ostringstream oss;
+		oss << std::fixed << std::setprecision(precision) << getFloatValue();
+		return oss.str();
 	}
 
-	float CommandSliderFloatLegacy::getFloatValue() const
-	{
-		return static_cast<float>(value) / static_cast<float>(getPrecisionScalar());
-	}
-
-	void CommandSliderFloatLegacy::setValue(float value, Click& click)
+	void CommandSliderFloat::setValue(float value, Click& click)
 	{
 		const auto scalar = getPrecisionScalar();
 		CommandSlider::setValue(click, static_cast<int>(value * static_cast<float>(scalar)));
