@@ -227,6 +227,23 @@ namespace Stand::Rendering::Theme
 	inline bool kShowCursorPos = false;
 	inline bool kCursorPosIncludesDividers = false;
 
+	inline int kCursorPadding = 2;
+	inline int16_t kCursorBorderWidth = 0;
+	inline bool kCursorBorderRounded = false;
+	inline DirectX::XMFLOAT4 kCursorBorderColour{1.f, 1.f, 1.f, 1.f};
+
+	inline int16_t kTabsWidth = kSidebarWidth;
+	inline int16_t kTabsHeight = kSidebarEntryHeight;
+	inline float kTabsTextScale = kTextScale;
+	inline float kTabsTextXOffset = 5.f;
+	inline float kTabsTextYOffset = 0.f;
+	enum class TabsAlignment : uint8_t { Left, Centre, Right };
+	inline TabsAlignment kTabsAlignment = TabsAlignment::Left;
+	inline bool kTabsShowLeftIcon = false;
+	inline bool kTabsShowName = true;
+	inline bool kTabsShowRightIcon = false;
+	inline bool kTabsIconsUseTextColour = false;
+
 	// Real Stand's own Direction enum (Util/Direction.hpp on
 	// origin/stand-reference), narrowed to just the four values its own
 	// g_renderer.tabs_pos actually uses for the sidebar/tab strip -

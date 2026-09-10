@@ -23,15 +23,34 @@ namespace Stand::Rendering
 
 	void GridItemTabsVertical::drawText()
 	{
+		if (!Theme::kTabsShowName)
+			return;
+
+		const float scale = Theme::kTabsTextScale;
+
 		for (size_t i = 0; i < m_Entries.size(); ++i)
 		{
 			const float rowY = y + m_EntryHeight * static_cast<float>(i);
-			const auto size = GridRenderer::MeasureText(m_Entries[i].c_str());
+			const auto size = GridRenderer::MeasureText(m_Entries[i].c_str(), scale);
+			float textX;
+			switch (Theme::kTabsAlignment)
+			{
+			case Theme::TabsAlignment::Centre:
+				textX = x + (width - size.x) * 0.5f;
+				break;
+			case Theme::TabsAlignment::Right:
+				textX = x + width - size.x - Theme::kTabsTextXOffset;
+				break;
+			default:
+				textX = x + Theme::kTabsTextXOffset;
+				break;
+			}
 			GridRenderer::DrawText(
-			    x + 5.f,
-			    rowY + std::max(0.f, (m_EntryHeight - size.y) * 0.5f),
+			    textX,
+			    rowY + Theme::kTabsTextYOffset + std::max(0.f, (m_EntryHeight - size.y) * 0.5f),
 			    m_Entries[i].c_str(),
-			    Theme::kText);
+			    Theme::kText,
+			    scale);
 		}
 	}
 

@@ -114,7 +114,7 @@ namespace Stand::Rendering
 		// stacks under/over the header instead of beside it, so the
 		// header itself only needs to span the content column's own
 		// width in that case (or when hidden entirely).
-		const int16_t headerW = (visible && sidebarIsVertical) ? static_cast<int16_t>(Theme::kSidebarWidth + kSpacer + Theme::kContentWidth) : Theme::kContentWidth;
+		const int16_t headerW = (visible && sidebarIsVertical) ? static_cast<int16_t>(Theme::kTabsWidth + kSpacer + Theme::kContentWidth) : Theme::kContentWidth;
 
 		m_Header = nullptr;
 		m_Sidebar = nullptr;
@@ -133,7 +133,7 @@ namespace Stand::Rendering
 			// real menu opens on Self by default.
 			if (sidebarIsVertical)
 			{
-				auto sidebar = std::make_unique<GridItemTabsVertical>(Theme::kSidebarWidth, Theme::kSidebarEntryHeight, SidebarLabels(), kSelfIndex);
+				auto sidebar = std::make_unique<GridItemTabsVertical>(Theme::kTabsWidth, Theme::kTabsHeight, SidebarLabels(), kSelfIndex);
 
 				if (position == Theme::TabsPosition::Right)
 				{
@@ -160,7 +160,7 @@ namespace Stand::Rendering
 			}
 			else
 			{
-				auto sidebar = std::make_unique<GridItemTabsHorizontal>(static_cast<float>(Theme::kSidebarEntryHeight), SidebarLabels(), kSelfIndex);
+				auto sidebar = std::make_unique<GridItemTabsHorizontal>(static_cast<float>(Theme::kTabsHeight), SidebarLabels(), kSelfIndex);
 
 				if (position == Theme::TabsPosition::Bottom)
 				{
@@ -171,7 +171,7 @@ namespace Stand::Rendering
 					// Theme::GetContentOrigin()) rather than growing to
 					// meet wherever this row ends up.
 					sidebar->x = kHeaderX;
-					sidebar->y = static_cast<int16_t>(Theme::kHudHeight - Theme::kContentBottomMargin - Theme::kSidebarEntryHeight);
+					sidebar->y = static_cast<int16_t>(Theme::kHudHeight - Theme::kContentBottomMargin - Theme::kTabsHeight);
 					sidebar->keep_pos = true;
 				}
 				// Top: default ALIGN_BOTTOM_LEFT stacks this under

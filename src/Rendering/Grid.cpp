@@ -379,13 +379,14 @@ namespace Stand::Rendering
 
 		ensurePopulated();
 
+		const auto pad = static_cast<int16_t>(Theme::kCursorPadding * item->height);
 		const auto viewTop = static_cast<int16_t>(origin.y + m_ScrollOffset);
 		const auto viewBottom = static_cast<int16_t>(viewTop + visibleHeight);
 
-		if (item->y < viewTop)
-			m_ScrollOffset = static_cast<int16_t>(m_ScrollOffset - (viewTop - item->y));
-		else if (static_cast<int16_t>(item->y + item->height) > viewBottom)
-			m_ScrollOffset = static_cast<int16_t>(m_ScrollOffset + ((item->y + item->height) - viewBottom));
+		if (item->y - pad < viewTop)
+			m_ScrollOffset = static_cast<int16_t>(m_ScrollOffset - (viewTop - (item->y - pad)));
+		else if (static_cast<int16_t>(item->y + item->height + pad) > viewBottom)
+			m_ScrollOffset = static_cast<int16_t>(m_ScrollOffset + ((item->y + item->height + pad) - viewBottom));
 
 		clampScroll(visibleHeight);
 	}

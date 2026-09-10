@@ -32,7 +32,9 @@
 #include "Commands/Self/CommandTabSelf.hpp"
 #include "Commands/Settings/CommandTabAddressBar.hpp"
 #include "Commands/Settings/CommandTabColours.hpp"
+#include "Commands/Settings/CommandTabCursor.hpp"
 #include "Commands/Settings/CommandTabPosition.hpp"
+#include "Commands/Settings/CommandTabTabs.hpp"
 
 namespace Stand
 {
@@ -53,7 +55,9 @@ namespace Stand
 		(void)Features::GetCommandTabLevitation();
 		(void)Features::GetCommandTabAddressBar();
 		(void)Features::GetCommandTabColours();
+		(void)Features::GetCommandTabCursor();
 		(void)Features::GetCommandTabPosition();
+		(void)Features::GetCommandTabTabs();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;
