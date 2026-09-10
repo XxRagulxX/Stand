@@ -126,9 +126,10 @@ namespace Stand::Rendering
 		const auto& textColour = focused ? Theme::kFocusText : Theme::kUnfocusedText;
 		const auto& rightColour = focused ? Theme::kFocusRightText : Theme::kUnfocusedRightText;
 
+		const float textScale = Theme::kCommandTextScale;
 		const auto label = Label(m_Command);
-		const auto labelSize = GridRenderer::MeasureText(label.c_str());
-		GridRenderer::DrawText(x + 5.f, y + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour);
+		const auto labelSize = GridRenderer::MeasureText(label.c_str(), textScale);
+		GridRenderer::DrawText(x + Theme::kCommandTextXOffset, y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
 
 		if (m_Command->isList())
 		{

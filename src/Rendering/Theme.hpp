@@ -256,6 +256,17 @@ namespace Stand::Rendering::Theme
 	inline ScrollbarMode kScrollbarMode = ScrollbarMode::EnabledWhenNeeded;
 	inline int16_t kScrollbarWidthMutable = 6;
 
+	inline float kCommandTextScale = kTextScale;
+	inline float kCommandTextXOffset = 5.f;
+	inline float kCommandTextYOffset = 0.f;
+	inline bool kPreviewColourInTexture = true;
+	inline bool kPreviewColourInList = true;
+	inline bool kPrefillSliders = true;
+	inline bool kPrefillTextInputs = true;
+	inline bool kSelectableNASliders = false;
+	inline bool kSlidersRightbound = false;
+	inline bool kSelectableDividers = false;
+
 	// Real Stand's own Direction enum (Util/Direction.hpp on
 	// origin/stand-reference), narrowed to just the four values its own
 	// g_renderer.tabs_pos actually uses for the sidebar/tab strip -

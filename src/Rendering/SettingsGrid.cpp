@@ -6,6 +6,7 @@
 #include "Rendering/HotkeysGrid.hpp"
 #include "Rendering/LuaScriptsGrid.hpp"
 #include "Rendering/SettingsAppearanceGrid.hpp"
+#include "Rendering/SettingsCommandsGrid.hpp"
 #include "Rendering/SettingsGameGrid.hpp"
 #include "Rendering/SettingsGuiGrid.hpp"
 #include "Rendering/Theme.hpp"
@@ -23,6 +24,7 @@ namespace Stand::Rendering
 		SettingsGuiGrid g_GuiContent{};
 		SettingsGameGrid g_GameContent{};
 		SettingsAppearanceGrid g_AppearanceContent{};
+		SettingsCommandsGrid g_CommandsContent{};
 		CustomizeGrid g_CustomizeContent{};
 		LuaScriptsGrid g_LuaScriptsContent{};
 	}
@@ -45,6 +47,7 @@ namespace Stand::Rendering
 	{
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Categories", Theme::kText));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Appearance", &g_AppearanceContent));
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Commands", &g_CommandsContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Hotkeys", &g_HotkeysContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "GUI", &g_GuiContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Game", &g_GameContent));
