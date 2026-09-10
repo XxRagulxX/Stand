@@ -33,6 +33,7 @@
 #include "Commands/Settings/CommandTabAddressBar.hpp"
 #include "Commands/Settings/CommandTabAppearanceDirect.hpp"
 #include "Commands/Settings/CommandTabBorder.hpp"
+#include "Commands/Settings/CommandTabEntityPreviews.hpp"
 #include "Commands/Settings/CommandTabFontText.hpp"
 #include "Commands/Settings/CommandTabTextures.hpp"
 #include "Commands/Settings/CommandTabColours.hpp"
@@ -63,6 +64,7 @@ namespace Stand
 		(void)Features::GetCommandTabAddressBar();
 		(void)Features::GetCommandTabAppearanceDirect();
 		(void)Features::GetCommandTabBorder();
+		(void)Features::GetCommandTabEntityPreviews();
 		(void)Features::GetCommandTabFontText();
 		(void)Features::GetCommandTabTextures();
 		(void)Features::GetCommandTabColours();

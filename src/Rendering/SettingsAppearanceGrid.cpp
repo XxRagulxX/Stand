@@ -10,6 +10,7 @@
 #include "Rendering/SettingsCommandInfoTextGrid.hpp"
 #include "Rendering/SettingsCommandsGrid.hpp"
 #include "Rendering/SettingsCursorGrid.hpp"
+#include "Rendering/SettingsEntityPreviewsGrid.hpp"
 #include "Rendering/SettingsFontTextGrid.hpp"
 #include "Rendering/SettingsNotificationsGrid.hpp"
 #include "Rendering/SettingsPositionGrid.hpp"
@@ -31,6 +32,7 @@ namespace Stand::Rendering
 		SettingsCommandInfoTextGrid g_CommandInfoTextContent{};
 		SettingsCommandsGrid g_CommandsContent{};
 		SettingsCursorGrid g_CursorContent{};
+		SettingsEntityPreviewsGrid g_EntityPreviewsContent{};
 		SettingsFontTextGrid g_FontTextContent{};
 		SettingsPositionGrid g_PositionContent{};
 		SettingsScrollbarGrid g_ScrollbarContent{};
@@ -62,6 +64,7 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Border", &g_BorderContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Tabs", &g_TabsContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Textures", &g_TexturesContent));
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Entity Previews", &g_EntityPreviewsContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Font & Text", &g_FontTextContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Command Info Text", &g_CommandInfoTextContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Commands", &g_CommandsContent));

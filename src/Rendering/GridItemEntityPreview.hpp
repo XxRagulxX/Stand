@@ -33,11 +33,11 @@ namespace Stand::Rendering
 	//   query, so a fixed forward offset is used instead; a very large
 	//   or very small model may spawn too close/far rather than exactly
 	//   filling the same amount of screen space every time.
-	// - No CommandEntityPreviews-equivalent settings page (opacity
-	//   toggle, rotation speed, per-model extra offset) - this project
-	//   has no feature yet that would need those configurable, so fixed,
-	//   reasonable defaults are used instead (see this file's own
-	//   constants).
+	// - CommandEntityPreviews-equivalent settings (opacity, rotation
+	//   speed, per-model extra offset, disable toggle) are wired through
+	//   Theme::kPreviewOpaque/kPreviewRotationSpeed/kPreview*Dist/
+	//   kDisableEntityPreviews; subclasses return the appropriate dist
+	//   via GetAdditionalOffset() (default 0).
 	// - Always rotates (real Stand's own version skips rotation for
 	//   object previews specifically, since a static prop looks odd
 	//   spinning) - a subclass previewing a prop can override
@@ -61,6 +61,11 @@ namespace Stand::Rendering
 		[[nodiscard]] virtual bool ShouldRotate() const
 		{
 			return true;
+		}
+
+		[[nodiscard]] virtual float GetAdditionalOffset() const
+		{
+			return 0.f;
 		}
 
 	private:

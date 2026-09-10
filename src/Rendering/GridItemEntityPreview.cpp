@@ -1,5 +1,6 @@
 #include "Rendering/GridItemEntityPreview.hpp"
 
+#include "Rendering/Theme.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Self.hpp"
 
@@ -14,7 +15,6 @@ namespace Stand::Rendering
 		// (a per-model configurable extra distance) has no equivalent
 		// settings page here - see this class's own header comment.
 		constexpr float kForwardOffset = 3.f;
-		constexpr float kRotationSpeedDegreesPerTick = 1.f;
 		// Real Stand's own speed_perc formula (CommandWithEntityPreview.hpp):
 		// "200 - speed_perc * 150", speed_perc = min(playerSpeed/80, 1) -
 		// ported verbatim, just against the player ped's own speed always
@@ -37,6 +37,13 @@ namespace Stand::Rendering
 
 	void GridItemEntityPreview::draw()
 	{
+		if (Theme::kDisableEntityPreviews)
+		{
+			if (m_Preview)
+				DestroyPreview();
+			return;
+		}
+
 		const bool focused = isKeyboardFocused();
 		m_FocusTracker.Update(focused);
 
@@ -66,10 +73,11 @@ namespace Stand::Rendering
 			const auto camPos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 			const auto camRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 			const float yawRad = camRot.z * (3.14159265f / 180.f);
+			const float totalOffset = kForwardOffset + GetAdditionalOffset();
 
 			rage::fvector3 spawnPos{
-			    camPos.x - std::sin(yawRad) * kForwardOffset,
-			    camPos.y + std::cos(yawRad) * kForwardOffset,
+			    camPos.x - std::sin(yawRad) * totalOffset,
+			    camPos.y + std::cos(yawRad) * totalOffset,
 			    camPos.z,
 			};
 
@@ -85,14 +93,22 @@ namespace Stand::Rendering
 		}
 		else if (ShouldRotate())
 		{
-			m_RotationDegrees += kRotationSpeedDegreesPerTick;
+			m_RotationDegrees += Theme::kPreviewRotationSpeed;
 			rage::fvector3 rot{};
 			rot.z = m_RotationDegrees;
 			m_Preview->SetRotation(rot);
 		}
 
-		const float speedPerc = std::min(Self::GetPed().GetSpeed() / kSpeedForFullFade, 1.f);
-		const int alpha = static_cast<int>(kMaxAlpha - speedPerc * kAlphaFadeRange);
+		int alpha;
+		if (Theme::kPreviewOpaque)
+		{
+			alpha = 255;
+		}
+		else
+		{
+			const float speedPerc = std::min(Self::GetPed().GetSpeed() / kSpeedForFullFade, 1.f);
+			alpha = static_cast<int>(kMaxAlpha - speedPerc * kAlphaFadeRange);
+		}
 		m_Preview->SetAlpha(alpha);
 	}
 

@@ -281,6 +281,13 @@ namespace Stand::Rendering::Theme
 
 	inline bool kShowTextBoundingBoxes = false;
 
+	inline bool kDisableEntityPreviews = false;
+	inline bool kPreviewOpaque = false;
+	inline float kPreviewRotationSpeed = 1.f;
+	inline float kPreviewPedDist = 0.f;
+	inline float kPreviewObjDist = 0.f;
+	inline float kPreviewVehDist = 0.f;
+
 	enum class LeftTexturesMode : uint8_t { Disabled, AllCommands, AllCommandsCompact, TogglesOnly, TogglesOnlyCompact };
 	inline LeftTexturesMode kLeftTextures = LeftTexturesMode::Disabled;
 
