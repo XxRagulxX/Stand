@@ -347,7 +347,7 @@ namespace Stand::Rendering
 			m_ContentScrollbar.SetView(content);
 			m_ContentScrollbar.x = static_cast<int16_t>(content->origin.x + Theme::kContentWidth + Theme::kScrollbarGap + offsetX);
 			m_ContentScrollbar.y = static_cast<int16_t>(content->origin.y + offsetY);
-			m_ContentScrollbar.width = Theme::kScrollbarWidth;
+			m_ContentScrollbar.width = Theme::kScrollbarWidthMutable;
 			m_ContentScrollbar.height = visibleHeight;
 			m_ContentScrollbar.draw();
 		}

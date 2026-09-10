@@ -244,6 +244,10 @@ namespace Stand::Rendering::Theme
 	inline bool kTabsShowRightIcon = false;
 	inline bool kTabsIconsUseTextColour = false;
 
+	enum class ScrollbarMode : uint8_t { Enabled, EnabledWhenNeeded, Disabled };
+	inline ScrollbarMode kScrollbarMode = ScrollbarMode::EnabledWhenNeeded;
+	inline int16_t kScrollbarWidthMutable = 6;
+
 	// Real Stand's own Direction enum (Util/Direction.hpp on
 	// origin/stand-reference), narrowed to just the four values its own
 	// g_renderer.tabs_pos actually uses for the sidebar/tab strip -

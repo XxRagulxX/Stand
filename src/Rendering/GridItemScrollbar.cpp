@@ -12,13 +12,20 @@ namespace Stand::Rendering
 	{
 		if (!m_View)
 			return;
-
-		GridRenderer::DrawRect(x, y, width, height, Theme::kPanelBackground);
+		if (Theme::kScrollbarMode == Theme::ScrollbarMode::Disabled)
+			return;
 
 		int16_t x1, y1, x2, y2;
 		m_View->getBounds(x1, y1, x2, y2);
 		const auto contentHeight = static_cast<float>(y2 - y1);
-		if (contentHeight <= static_cast<float>(height))
+		const bool scrollable = contentHeight > static_cast<float>(height);
+
+		if (!scrollable && Theme::kScrollbarMode == Theme::ScrollbarMode::EnabledWhenNeeded)
+			return;
+
+		GridRenderer::DrawRect(x, y, width, height, Theme::kPanelBackground);
+
+		if (!scrollable)
 			return;
 
 		const auto thumbHeight = std::max(1.f, static_cast<float>(height) * static_cast<float>(height) / contentHeight);

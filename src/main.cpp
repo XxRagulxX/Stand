@@ -34,6 +34,7 @@
 #include "Commands/Settings/CommandTabColours.hpp"
 #include "Commands/Settings/CommandTabCursor.hpp"
 #include "Commands/Settings/CommandTabPosition.hpp"
+#include "Commands/Settings/CommandTabScrollbar.hpp"
 #include "Commands/Settings/CommandTabTabs.hpp"
 
 namespace Stand
@@ -57,6 +58,7 @@ namespace Stand
 		(void)Features::GetCommandTabColours();
 		(void)Features::GetCommandTabCursor();
 		(void)Features::GetCommandTabPosition();
+		(void)Features::GetCommandTabScrollbar();
 		(void)Features::GetCommandTabTabs();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
