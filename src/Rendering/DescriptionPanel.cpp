@@ -49,7 +49,7 @@ namespace Stand::Rendering
 			const auto split = description.find('\n');
 
 			auto wrapInto = [&](const std::string& text, std::vector<std::string>& target) {
-				for (auto& line : WrapText(text, maxWidth, Theme::kSmallTextScale))
+				for (auto& line : WrapText(text, maxWidth, Theme::kSmallTextScaleMutable))
 					target.push_back(std::move(line));
 			};
 
@@ -121,7 +121,7 @@ namespace Stand::Rendering
 			return;
 
 		const auto origin = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
-		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScale).y;
+		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScaleMutable).y;
 		GridRenderer::DrawRect(origin.x, origin.y, origin.width, TotalHeight(groups, lineHeight), Theme::kPanelBackground);
 	}
 
@@ -132,13 +132,13 @@ namespace Stand::Rendering
 			return;
 
 		const auto origin = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
-		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScale).y;
-		const float x = origin.x + kPadding;
-		float y = origin.y + kPadding;
+		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScaleMutable).y;
+		const float x = origin.x + kPadding + Theme::kSmallTextXOffset;
+		float y = origin.y + kPadding + Theme::kSmallTextYOffset;
 
 		for (const auto& line : groups.descLines)
 		{
-			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScale);
+			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScaleMutable);
 			y += lineHeight + kLineGap;
 		}
 
@@ -147,7 +147,7 @@ namespace Stand::Rendering
 
 		for (const auto& line : groups.syntaxLines)
 		{
-			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScale);
+			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScaleMutable);
 			y += lineHeight + kLineGap;
 		}
 	}

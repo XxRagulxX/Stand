@@ -217,6 +217,44 @@ namespace Stand::Rendering
 
 		EnsureDeviceResources(device);
 
+		if (Theme::kFontReloadPending && m_FontDescriptorHeap)
+		{
+			Theme::kFontReloadPending = false;
+			m_Font.reset();
+			m_SpriteBatch.reset();
+			try
+			{
+				DirectX::ResourceUploadBatch upload(m_Device);
+				upload.Begin();
+				if (Theme::kFontPath.empty())
+				{
+					m_Font = std::make_unique<DirectX::SpriteFont>(m_Device, upload,
+					    reinterpret_cast<const uint8_t*>(font_bevietnamprolight::chunk_1),
+					    sizeof(font_bevietnamprolight::chunk_1),
+					    m_FontDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+					    m_FontDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+				}
+				else
+				{
+					std::wstring wpath(Theme::kFontPath.begin(), Theme::kFontPath.end());
+					m_Font = std::make_unique<DirectX::SpriteFont>(m_Device, upload,
+					    wpath.c_str(),
+					    m_FontDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+					    m_FontDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+				}
+				m_Font->SetDefaultCharacter(L'?');
+				DirectX::RenderTargetState rtState(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN);
+				DirectX::SpriteBatchPipelineStateDescription spritePd(rtState);
+				m_SpriteBatch = std::make_unique<DirectX::SpriteBatch>(m_Device, upload, spritePd);
+				upload.End(Renderer::GetCommandQueue()).wait();
+			}
+			catch (...)
+			{
+				m_Font.reset();
+				m_SpriteBatch.reset();
+			}
+		}
+
 		// No mouse-hover suppression here any more - this menu is
 		// keyboard-only by design, nothing in it ever reacts to the
 		// cursor (see WndProcImpl below).

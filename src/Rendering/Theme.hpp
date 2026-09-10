@@ -271,6 +271,19 @@ namespace Stand::Rendering::Theme
 	inline bool kSlidersRightbound = false;
 	inline bool kSelectableDividers = false;
 
+	inline float kCommandBoxInputScale = kTextScale;
+	inline float kCommandBoxInputXOffset = 0.f;
+	inline float kCommandBoxInputYOffset = 0.f;
+
+	inline float kSmallTextScaleMutable = kSmallTextScale;
+	inline float kSmallTextXOffset = 0.f;
+	inline float kSmallTextYOffset = 0.f;
+
+	inline bool kShowTextBoundingBoxes = false;
+
+	inline std::string kFontPath = "";
+	inline bool kFontReloadPending = false;
+
 	inline int8_t kColumns = 1;
 	inline uint8_t kMenuHeight = 20;
 	inline int16_t kListWidth = 0;
