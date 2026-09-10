@@ -821,7 +821,7 @@ namespace Stand
 			EXCEPTIONAL_LOCK(g_relay.send_mtx)
 			if (isActiveOnWeb())
 			{
-				g_relay.sendRaw("j\n");
+				g_relay.sendLine("j");
 				updateWebStateImpl();
 			}
 			/*else
@@ -923,7 +923,7 @@ namespace Stand
 			}
 			if (physical->type == COMMAND_INPUT)
 			{
-				g_relay.sendRaw("v\n");
+				g_relay.sendLine("v");
 			}
 			if (++cap == max_web_commands)
 			{

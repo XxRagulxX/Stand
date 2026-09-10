@@ -1066,7 +1066,7 @@ namespace Stand
 
 		g_logger.log(soup::ObfusString("Stopping threads..."));
 
-		if (g_relay.thread_running)
+		if (g_relay.isRunning())
 		{
 			g_relay.close();
 			uint8_t counter = 0;
@@ -1082,9 +1082,8 @@ namespace Stand
 				{
 					g_logger.log(soup::ObfusString("#1 seems to be holding us up."));
 				}
-			} while (g_relay.thread_running);
+			} while (g_relay.isRunning());
 		}
-		CloseHandle(g_relay.thread);
 
 		{
 			uint8_t counter = 0;
@@ -3031,12 +3030,11 @@ namespace Stand
 						handled = true; mainFlashWindow();
 						JoinUtil::connectViaCode(JM_DEFAULT, clipboard.substr(6 + 9), true);
 					}
-					else if (clipboard.substr(6, 6) == soup::ObfusString("Relay-").str())
+					else if (clipboard.substr(6) == soup::ObfusString("Relay2").str())
 					{
 						handled = true;
 						if (g_auth.license_permissions >= LICPERM_REGULAR)
 						{
-							g_relay.server = clipboard.substr(6 + 6);
 							g_relay.init();
 						}
 					}

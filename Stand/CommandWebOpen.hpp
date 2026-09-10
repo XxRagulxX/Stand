@@ -27,7 +27,7 @@ namespace Stand
 			{
 				return;
 			}
-			g_relay.setServerAndInit();
+			g_relay.init();
 			g_gui.shellExecute(CommandWeb::getUri().c_str());
 		}
 	};

@@ -5,6 +5,7 @@
 #include <fmt/xchar.h>
 #include <rapidjson/document.h>
 
+#include <soup/faketls.hpp>
 #include <soup/netIntel.hpp>
 #include <soup/ObfusString.hpp>
 #include <soup/os.hpp>
@@ -1861,7 +1862,7 @@ namespace Stand
 	void Gui::sendRootListToWeb() const
 	{
 		EXCEPTIONAL_LOCK(g_relay.send_mtx)
-		g_relay.sendRaw("tabs\n");
+		g_relay.sendLine("tabs");
 		for (const auto& command : root_list->children)
 		{
 			g_relay.sendLine(std::move(std::string("b ").append(command->getPhysical()->menu_name.getWebString())));
@@ -1873,7 +1874,7 @@ namespace Stand
 	{
 		for (; steps != 0; --steps)
 		{
-			g_relay.sendRaw("<\n");
+			g_relay.sendLine("<");
 			web_focus = web_focus->parent;
 		}
 		web_focus->updateWebStateImpl();
@@ -2489,6 +2490,7 @@ namespace Stand
 		Exceptional::createManagedThread([]
 		{
 			THREAD_NAME("Init Soup");
+
 			__try
 			{
 				g_gui.getNetIntel().init(true, false);
@@ -2497,6 +2499,14 @@ namespace Stand
 			{
 			}
 			g_gui.inited_netIntel = true;
+
+			__try
+			{
+				g_relay.faketls_cert = soup::faketls::getLatestCert();
+			}
+			__EXCEPTIONAL()
+			{
+			}
 		});
 
 		g_tunables.download();

@@ -31,7 +31,7 @@ if (count($res) == 1)
 	{
 		$db->query("UPDATE `accounts` SET `activation_key`=?, `regens`=`regens`+1, `last_regen_time`=? WHERE `id`=?", "sis", $key, time(), $_POST["account_id"]);
 		$db->query("DELETE FROM `menus` WHERE `account_id`=?", "s", $_POST["account_id"]);
-		pubSubSend($res[0]["activation_key"], "c");
+		pubSubSend(hash("sha256", $res[0]["activation_key"]), "c");
 	}
 	else
 	{

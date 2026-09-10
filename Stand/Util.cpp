@@ -173,17 +173,8 @@ namespace Stand
 		Exceptional::createManagedThread([message{ std::move(message) }]() mutable
 		{
 			EXCEPTIONAL_LOCK(g_relay.send_mtx)
-			size_t del_pos;
-			while ((del_pos = message.find('\n')) != std::string::npos)
-			{
-				del_pos++;
-				g_relay.sendRaw(std::string("toast ").append(message.substr(0, del_pos)));
-				message.erase(0, del_pos);
-			}
-			if (!message.empty())
-			{
-				g_relay.sendLine(std::move(std::string("toast ").append(message)));
-			}
+			message.insert(0, "toast ");
+			g_relay.sendLine(std::move(message));
 			EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
 		});
 	}
@@ -231,16 +222,29 @@ namespace Stand
 		);
 		toast_web_uwotm8();
 	}
-	
+
 	void Util::toast_web_uwotm8()
 	{
-		Util::toast_web(LOC("WOT1"));
 		if (LANG_GET("WOT1") != LANG_GET("WOT2"))
 		{
-			Util::toast_web(LOC("WOT2"));
-			Util::toast_web(LOC("WOT3"));
-			Util::toast_web(LOC("WOT4"));
-			Util::toast_web(LOC("WOT5"));
+			if (!g_gui.isWebGuiActive())
+			{
+				return;
+			}
+			Exceptional::createManagedThread([]()
+			{
+				EXCEPTIONAL_LOCK(g_relay.send_mtx)
+				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(LOC("WOT1").getLocalisationHash()))));
+				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(LOC("WOT2").getLocalisationHash()))));
+				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(LOC("WOT3").getLocalisationHash()))));
+				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(LOC("WOT4").getLocalisationHash()))));
+				g_relay.sendLine(std::move(std::string("toast ").append(Util::to_padded_hex_string(LOC("WOT5").getLocalisationHash()))));
+				EXCEPTIONAL_UNLOCK(g_relay.send_mtx)
+			});
+		}
+		else
+		{
+			Util::toast_web(LOC("WOT1"));
 		}
 	}
 

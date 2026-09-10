@@ -1,4 +1,8 @@
 <p>Time is provided as observed in Central Europe.</p>
+<?php printHeader('Stand 26.9.1', '10/09/2026 21:57'); ?>
+<ul>
+	<li>Updated the communication protocol of the web interface to be more responsive by using a LAN route when available</li>
+</ul>
 <?php printHeader('Stand 26.8.1', '22/08/2026 08:05'); ?>
 <ul>
 	<li>Fixed detach wing</li>

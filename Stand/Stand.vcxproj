@@ -2020,7 +2020,6 @@
     <ClInclude Include="sysMemSimpleAllocator.hpp" />
     <ClInclude Include="TargetingData.hpp" />
     <ClInclude Include="eTaskType.hpp" />
-    <ClInclude Include="TcpConnection.hpp" />
     <ClInclude Include="tbTempEmptyParachute.hpp" />
     <ClInclude Include="Textbox.hpp" />
     <ClInclude Include="TextColour.hpp" />
@@ -2791,7 +2790,6 @@
     <ClCompile Include="StatUtil.cpp" />
     <ClCompile Include="StringCastable.cpp" />
     <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="TcpConnection.cpp" />
     <ClCompile Include="tbTempEmptyParachute.cpp" />
     <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="TextboxInterface.cpp" />

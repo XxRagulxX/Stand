@@ -20,7 +20,7 @@ namespace Stand
 			&& g_auth.license_permissions >= LICPERM_REGULAR
 			)
 		{
-			g_relay.setServerAndInit();
+			g_relay.init();
 		}
 		return getUri();
 	}
