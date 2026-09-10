@@ -325,11 +325,19 @@ namespace Stand::Rendering
 			// before content->draw(), so every row's own focused-only
 			// highlight still layers on top of it exactly like Stand's
 			// own focusRectColour rect does over its own bgRectColour.
-			const auto visibleHeight = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
+			auto visibleHeight = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
+			if (Theme::kListHeight > 0)
+				visibleHeight = std::min(visibleHeight, Theme::kListHeight);
 
 			int16_t cx, cy, cw, ch;
 			content->getDimensions(cx, cy, cw, ch);
-			const auto panelHeight = (ch > 0 && ch < visibleHeight) ? ch : visibleHeight;
+			auto panelHeight = (ch > 0 && ch < visibleHeight) ? ch : visibleHeight;
+			if (Theme::kMenuHeight > 0)
+			{
+				const auto maxH = static_cast<int16_t>(Theme::kMenuHeight * Theme::kContentItemHeight);
+				panelHeight = std::min(panelHeight, maxH);
+				visibleHeight = std::min(visibleHeight, maxH);
+			}
 
 			// Same runtime menu-position offset Grid::forEachVisibleItem()
 			// applies to every regular item - needed here too since this

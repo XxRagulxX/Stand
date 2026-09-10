@@ -271,6 +271,14 @@ namespace Stand::Rendering::Theme
 	inline bool kSlidersRightbound = false;
 	inline bool kSelectableDividers = false;
 
+	inline int8_t kColumns = 1;
+	inline uint8_t kMenuHeight = 20;
+	inline int16_t kListWidth = 0;
+	inline int16_t kListHeight = 0;
+	inline int16_t kSpacerSize = 0;
+	inline int16_t kSmoothScroll = 0;
+	inline uint8_t kBlur = 0;
+
 	// Real Stand's own Direction enum (Util/Direction.hpp on
 	// origin/stand-reference), narrowed to just the four values its own
 	// g_renderer.tabs_pos actually uses for the sidebar/tab strip -

@@ -31,6 +31,7 @@
 #include "Commands/Self/CommandTabLevitation.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
 #include "Commands/Settings/CommandTabAddressBar.hpp"
+#include "Commands/Settings/CommandTabAppearanceDirect.hpp"
 #include "Commands/Settings/CommandTabBorder.hpp"
 #include "Commands/Settings/CommandTabColours.hpp"
 #include "Commands/Settings/CommandTabCommandInfoText.hpp"
@@ -58,6 +59,7 @@ namespace Stand
 		(void)Features::GetCommandTabSelf();
 		(void)Features::GetCommandTabLevitation();
 		(void)Features::GetCommandTabAddressBar();
+		(void)Features::GetCommandTabAppearanceDirect();
 		(void)Features::GetCommandTabBorder();
 		(void)Features::GetCommandTabColours();
 		(void)Features::GetCommandTabCommandInfoText();

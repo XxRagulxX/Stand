@@ -1,6 +1,9 @@
 #include "Rendering/SettingsAppearanceGrid.hpp"
 
+#include "Commands/Settings/CommandTabAppearanceDirect.hpp"
+#include "Rendering/GridItemCommandButton.hpp"
 #include "Rendering/GridItemFolder.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/SettingsAddressBarGrid.hpp"
 #include "Rendering/SettingsBorderGrid.hpp"
 #include "Rendering/SettingsColoursGrid.hpp"
@@ -12,6 +15,7 @@
 #include "Rendering/SettingsScrollbarGrid.hpp"
 #include "Rendering/SettingsTabsGrid.hpp"
 #include "Rendering/Theme.hpp"
+#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -38,6 +42,7 @@ namespace Stand::Rendering
 
 	void SettingsAppearanceGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
+		auto& tab = Features::GetCommandTabAppearanceDirect();
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Colours", &g_ColoursContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Position", &g_PositionContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Address Bar", &g_AddressBarContent));
@@ -48,5 +53,13 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Commands", &g_CommandsContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Scrollbar", &g_ScrollbarContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Notifications", &g_NotificationsContent));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.columns));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.menuheight));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.listwidth));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.listheight));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.spacersize));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.smoothscroll));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.blur));
+		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "openthemefolder"_J));
 	}
 }
