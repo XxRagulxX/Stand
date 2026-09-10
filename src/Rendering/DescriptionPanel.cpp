@@ -16,10 +16,6 @@ namespace Stand::Rendering
 	{
 		constexpr float kPadding = 8.f;
 		constexpr float kLineGap = 2.f;
-		// Extra vertical space inserted between the description paragraph
-		// and the command syntax line - matches real Stand's own corner panel
-		// where help_text and getCommandSyntax() appear as two visually
-		// distinct stacked groups, not a single run-together block.
 		constexpr float kGroupGap = 12.f;
 
 		GridItem* FocusedItem()
@@ -31,14 +27,6 @@ namespace Stand::Rendering
 			return MenuFocus::GetFocusedItem(current);
 		}
 
-		// Two-group content: the description paragraph (help_text, word-
-		// wrapped) and the command syntax line ("Command: name [on/off]",
-		// word-wrapped). Separated by the single '\n' GetDescription()
-		// embeds between them - everything before the first '\n' is the
-		// description group, everything after is the syntax group.
-		// Either group may be empty (a command with no help text has only
-		// a syntax group; a list/action with no syntax has only a desc
-		// group; a command with neither returns both empty).
 		struct ContentGroups
 		{
 			std::vector<std::string> descLines;
@@ -67,30 +55,44 @@ namespace Stand::Rendering
 
 			if (split == std::string::npos)
 			{
-				wrapInto(description, groups.descLines);
+				if (Theme::kShowHelpText)
+					wrapInto(description, groups.descLines);
 			}
 			else
 			{
-				wrapInto(description.substr(0, split), groups.descLines);
-				wrapInto(description.substr(split + 1), groups.syntaxLines);
+				if (Theme::kShowHelpText)
+					wrapInto(description.substr(0, split), groups.descLines);
+				if (Theme::kShowSyntax)
+					wrapInto(description.substr(split + 1), groups.syntaxLines);
 			}
 
 			return groups;
 		}
 
-		// The box's own top-left corner, in H-space - see this class's
-		// own header comment for the setPositions() collision this
-		// mirrors: right edge just left of content's own left edge
-		// (contentX - spacer - kInfoWidth), y at whichever of content's
-		// own top or the sidebar's own bottom edge is lower.
-		float OriginX(int16_t contentX)
+		struct PanelOrigin
 		{
-			return static_cast<float>(contentX) - Theme::kSpacer - static_cast<float>(Theme::kInfoWidth);
-		}
+			float x;
+			float y;
+			float width;
+		};
 
-		float OriginY(int16_t contentY, int16_t sidebarBottomY)
+		PanelOrigin ComputeOrigin(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 		{
-			return static_cast<float>(sidebarBottomY > contentY ? sidebarBottomY : contentY);
+			const float pad = static_cast<float>(Theme::kInfoPadding);
+			const float w = static_cast<float>(Theme::kInfoWidth);
+
+			switch (Theme::kInfoTextPosition)
+			{
+			case Theme::InfoTextPosition::Right:
+				return {static_cast<float>(contentRightX) + pad, static_cast<float>(contentY), w};
+			case Theme::InfoTextPosition::Bottom:
+				return {static_cast<float>(contentX), static_cast<float>(sidebarBottomY) + pad, w};
+			case Theme::InfoTextPosition::BelowTabs:
+				return {static_cast<float>(sidebarX), static_cast<float>(sidebarBottomY) + pad, w};
+			default:
+				return {static_cast<float>(contentX) - Theme::kSpacer - w - pad,
+				    static_cast<float>(sidebarBottomY > contentY ? sidebarBottomY : contentY), w};
+			}
 		}
 
 		float TotalHeight(const ContentGroups& groups, float lineHeight)
@@ -105,7 +107,6 @@ namespace Stand::Rendering
 			    + static_cast<float>(totalLines) * lineHeight
 			    + static_cast<float>(totalLines - 1) * kLineGap;
 
-			// Extra inter-group gap when both groups are present.
 			if (descCount > 0 && syntaxCount > 0)
 				h += kGroupGap;
 
@@ -113,43 +114,37 @@ namespace Stand::Rendering
 		}
 	}
 
-	void DescriptionPanel::Draw(int16_t contentX, int16_t contentY, int16_t sidebarBottomY)
+	void DescriptionPanel::Draw(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 	{
 		const auto groups = GetContent();
 		if (groups.descLines.empty() && groups.syntaxLines.empty())
 			return;
 
+		const auto origin = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
 		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScale).y;
-		GridRenderer::DrawRect(OriginX(contentX), OriginY(contentY, sidebarBottomY),
-		    static_cast<float>(Theme::kInfoWidth), TotalHeight(groups, lineHeight), Theme::kPanelBackground);
+		GridRenderer::DrawRect(origin.x, origin.y, origin.width, TotalHeight(groups, lineHeight), Theme::kPanelBackground);
 	}
 
-	void DescriptionPanel::DrawText(int16_t contentX, int16_t contentY, int16_t sidebarBottomY)
+	void DescriptionPanel::DrawText(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 	{
 		const auto groups = GetContent();
 		if (groups.descLines.empty() && groups.syntaxLines.empty())
 			return;
 
+		const auto origin = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
 		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScale).y;
-		const float x = OriginX(contentX) + kPadding;
-		float y = OriginY(contentY, sidebarBottomY) + kPadding;
+		const float x = origin.x + kPadding;
+		float y = origin.y + kPadding;
 
-		// Description paragraph - normal text color.
 		for (const auto& line : groups.descLines)
 		{
 			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScale);
 			y += lineHeight + kLineGap;
 		}
 
-		// Extra gap before the syntax group when both are present -
-		// matches real Stand's visual: the "Command: name [on/off]" line
-		// sits clearly separate from the help_text paragraph above it.
 		if (!groups.descLines.empty() && !groups.syntaxLines.empty())
 			y += kGroupGap;
 
-		// Command syntax line(s) - placeholder/dimmer color, matching
-		// real Stand's own corner where the syntax entry is visually
-		// subordinate to the description text above it.
 		for (const auto& line : groups.syntaxLines)
 		{
 			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScale);

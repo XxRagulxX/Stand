@@ -145,7 +145,15 @@ namespace Stand::Rendering::Theme
 	// "Left" included, uses this instead). See DescriptionPanel's own
 	// class comment for the placement this project ports (Left, not
 	// Below Tabs - a previous pass here had this backwards).
-	constexpr int16_t kInfoWidth = 300;
+	inline int16_t kInfoWidth = 300;
+	enum class InfoTextPosition : uint8_t { Left, Bottom, Right, BelowTabs };
+	inline InfoTextPosition kInfoTextPosition = InfoTextPosition::Left;
+	inline int16_t kInfoPadding = 0;
+	inline bool kShowHelpText = true;
+	inline bool kShowSyntax = true;
+	inline bool kShowSliderBehaviour = true;
+	inline bool kShowNonUserOnly = true;
+	inline bool kShowOwners = true;
 
 	// Stand's own command_text/tabs_text scale: float(15.0 *
 	// TEXT_HEIGHT_PX * 2.0), TEXT_HEIGHT_PX = 0.021875 - both confirmed

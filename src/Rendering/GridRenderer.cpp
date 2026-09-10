@@ -262,15 +262,16 @@ namespace Stand::Rendering
 					const auto contentY = static_cast<int16_t>(content->origin.y + offsetY);
 
 					int16_t sidebarBottomY = contentY; // no sidebar to collide with by default (Theme::kTabsVisible false)
-					int16_t sidebarX, sidebarY, sidebarWidth, sidebarHeight;
+					int16_t sidebarX = contentX;
+					int16_t sidebarY, sidebarWidth, sidebarHeight;
 					if (g_MenuGrid.GetSidebarRect(sidebarX, sidebarY, sidebarWidth, sidebarHeight))
 					{
-						(void)sidebarX; // only y/height wanted here - x comes from content's own origin instead
 						(void)sidebarWidth;
 						sidebarBottomY = static_cast<int16_t>(sidebarY + sidebarHeight + Theme::kSpacer);
 					}
+					const auto contentRightX = static_cast<int16_t>(contentX + Theme::kContentWidth + Theme::kScrollbarGap + Theme::kScrollbarWidthMutable + Theme::kSpacer);
 
-					DescriptionPanel::Draw(contentX, contentY, sidebarBottomY);
+					DescriptionPanel::Draw(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
 				}
 				// Drawn last, on top of everything else - see MenuPopup's
 				// own class comment for why this is a free-standing
@@ -337,15 +338,16 @@ namespace Stand::Rendering
 					const auto contentY = static_cast<int16_t>(content->origin.y + offsetY);
 
 					int16_t sidebarBottomY = contentY;
-					int16_t sidebarX, sidebarY, sidebarWidth, sidebarHeight;
-					if (g_MenuGrid.GetSidebarRect(sidebarX, sidebarY, sidebarWidth, sidebarHeight))
+					int16_t sidebarX2 = contentX;
+					int16_t sidebarY2, sidebarWidth2, sidebarHeight2;
+					if (g_MenuGrid.GetSidebarRect(sidebarX2, sidebarY2, sidebarWidth2, sidebarHeight2))
 					{
-						(void)sidebarX;
-						(void)sidebarWidth;
-						sidebarBottomY = static_cast<int16_t>(sidebarY + sidebarHeight + Theme::kSpacer);
+						(void)sidebarWidth2;
+						sidebarBottomY = static_cast<int16_t>(sidebarY2 + sidebarHeight2 + Theme::kSpacer);
 					}
+					const auto contentRightX2 = static_cast<int16_t>(contentX + Theme::kContentWidth + Theme::kScrollbarGap + Theme::kScrollbarWidthMutable + Theme::kSpacer);
 
-					DescriptionPanel::DrawText(contentX, contentY, sidebarBottomY);
+					DescriptionPanel::DrawText(contentX, contentY, contentRightX2, sidebarX2, sidebarBottomY);
 				}
 				MenuPopup::DrawText();
 				MenuCommandBox::DrawText();

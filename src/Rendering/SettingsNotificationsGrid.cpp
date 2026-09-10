@@ -62,11 +62,13 @@ namespace Stand::Rendering
 
 		AddColorCommandRows(items_draft, Theme::kContentWidth, "notifyborder"_J, "Border Colour");
 		items_draft.push_back(std::make_unique<GridItemCommandSlider>(Theme::kContentWidth, kItemH, "notifyborderrainbow"_J, "Rainbow Mode"));
+		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "notifycopyprimary"_J, "Copy Primary Colour"));
 
 		AddColorCommandRows(items_draft, Theme::kContentWidth, "notifyflash"_J, "Flash Colour");
 		items_draft.push_back(std::make_unique<GridItemCommandSlider>(Theme::kContentWidth, kItemH, "notifyflashrainbow"_J, "Rainbow Mode"));
 
 		AddColorCommandRows(items_draft, Theme::kContentWidth, "notifybg"_J, "Background Colour");
+		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "notifycopybg"_J, "Copy Background Colour"));
 
 		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "notifyflashnow"_J, "Flash Notification"));
 
