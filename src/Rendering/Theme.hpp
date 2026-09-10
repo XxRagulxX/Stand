@@ -69,6 +69,27 @@ namespace Stand::Rendering::Theme
 	// bgTextColour/focusTextColour (identical in both states there).
 	inline DirectX::XMFLOAT4 kText{1.f, 1.f, 1.f, 1.f};
 
+	// Focused-row colour variants — Stand's own focusTextColour,
+	// focusRightTextColour, focusSpriteColour. Default white matches real
+	// Stand where bgTextColour == focusTextColour == {1,1,1,1}.
+	inline DirectX::XMFLOAT4 kFocusText{1.f, 1.f, 1.f, 1.f};
+	inline DirectX::XMFLOAT4 kFocusRightText{1.f, 1.f, 1.f, 1.f};
+	inline DirectX::XMFLOAT4 kFocusTexture{1.f, 1.f, 1.f, 1.f};
+
+	// Unfocused-row colour variants — Stand's own bgTextColour,
+	// bgRightTextColour, bgSpriteColour (commands: unfocusedtext,
+	// unfocusedrighttext, unfocusedtexture). Default white same as kText.
+	inline DirectX::XMFLOAT4 kUnfocusedText{1.f, 1.f, 1.f, 1.f};
+	inline DirectX::XMFLOAT4 kUnfocusedRightText{1.f, 1.f, 1.f, 1.f};
+	inline DirectX::XMFLOAT4 kUnfocusedTexture{1.f, 1.f, 1.f, 1.f};
+
+	// Renderer overlay colours for HUD, AR, and Minigame elements —
+	// Stand's own g_renderer.hudColour/arColour/minigameColour. Default
+	// pink matches real Stand's own primaryColour copy-from default.
+	inline DirectX::XMFLOAT4 kHud{1.f, 0.f, 1.f, 1.f};
+	inline DirectX::XMFLOAT4 kAr{1.f, 0.f, 1.f, 1.f};
+	inline DirectX::XMFLOAT4 kMinigame{1.f, 0.f, 1.f, 1.f};
+
 	// NOT part of Stand's own palette - its Renderer only exposes one
 	// accent (focusRectColour) and one panel colour (bgRectColour), with
 	// no dedicated "off"/"unknown" look of its own. These are this

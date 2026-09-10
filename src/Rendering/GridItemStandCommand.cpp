@@ -94,7 +94,7 @@ namespace Stand::Rendering
 		auto* toggle = m_Command->as<Stand::CommandToggleNoCorrelation>();
 		const float indicatorX = x + width - kIndicatorSize;
 		const float indicatorY = y + std::max(0.f, (height - kIndicatorSize) * 0.5f);
-		GridRenderer::DrawRect(indicatorX, indicatorY, kIndicatorSize, kIndicatorSize, Theme::kText);
+		GridRenderer::DrawRect(indicatorX, indicatorY, kIndicatorSize, kIndicatorSize, isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture);
 		GridRenderer::DrawRect(indicatorX + kIndicatorBorderWidth,
 		    indicatorY + kIndicatorBorderWidth,
 		    kIndicatorSize - kIndicatorBorderWidth * 2.f,
@@ -112,14 +112,18 @@ namespace Stand::Rendering
 			return;
 		}
 
+		const bool focused = isKeyboardFocused();
+		const auto& textColour = focused ? Theme::kFocusText : Theme::kUnfocusedText;
+		const auto& rightColour = focused ? Theme::kFocusRightText : Theme::kUnfocusedRightText;
+
 		const auto label = Label(m_Command);
 		const auto labelSize = GridRenderer::MeasureText(label.c_str());
-		GridRenderer::DrawText(x + 5.f, y + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), Theme::kText);
+		GridRenderer::DrawText(x + 5.f, y + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour);
 
 		if (m_Command->isList())
 		{
 			const auto arrowSize = GridRenderer::MeasureText(">");
-			GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, y + std::max(0.f, (height - arrowSize.y) * 0.5f), ">", Theme::kText);
+			GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, y + std::max(0.f, (height - arrowSize.y) * 0.5f), ">", rightColour);
 			return;
 		}
 
@@ -133,19 +137,19 @@ namespace Stand::Rendering
 			GridRenderer::DrawText(layout.valueX + std::max(0.f, (layout.valueWidth - valueSize.x) * 0.5f),
 			    y + std::max(0.f, (height - valueSize.y) * 0.5f),
 			    valueStr.c_str(),
-			    Theme::kText);
+			    rightColour);
 
 			const auto minusSize = GridRenderer::MeasureText("<");
 			GridRenderer::DrawText(layout.minusX + std::max(0.f, (layout.buttonSize - minusSize.x) * 0.5f),
 			    y + std::max(0.f, (height - minusSize.y) * 0.5f),
 			    "<",
-			    Theme::kText);
+			    rightColour);
 
 			const auto plusSize = GridRenderer::MeasureText(">");
 			GridRenderer::DrawText(layout.plusX + std::max(0.f, (layout.buttonSize - plusSize.x) * 0.5f),
 			    y + std::max(0.f, (height - plusSize.y) * 0.5f),
 			    ">",
-			    Theme::kText);
+			    rightColour);
 		}
 	}
 
