@@ -302,6 +302,39 @@ namespace Stand::Rendering::Theme
 	inline int16_t kSmoothScroll = 0;
 	inline uint8_t kBlur = 0;
 
+	enum class InputPreset : uint8_t { Flexible, NoNumpad, Numpad };
+	inline InputPreset kInputPreset = InputPreset::Flexible;
+
+	inline bool kMouse = false;
+	inline bool kMouseCursorOnNavigation = true;
+	inline bool kControllerSupport = false;
+	inline bool kBackReset = false;
+	inline bool kBackClose = false;
+	inline bool kInterruptHoldWrapAround = true;
+	inline bool kTabsKeepCursor = true;
+	inline bool kListsKeepCursor = true;
+	inline bool kListsKeepCursorReducedHuge = true;
+	inline int kKeyRepeatInterval = 0;
+	inline int kKeyLongRepeatInterval = 0;
+	inline int kTabRepeatInterval = 0;
+	inline bool kDisableHotkeys = false;
+
+	enum class ModifierKeyMatching : uint8_t { Strict, Smart, Lax };
+	inline ModifierKeyMatching kModifierKeyMatching = ModifierKeyMatching::Smart;
+
+	inline uint8_t kControllerOpenClose1 = 0;
+	inline uint8_t kControllerOpenClose2 = 0;
+	inline uint8_t kControllerPrevTab = 0;
+	inline uint8_t kControllerNextTab = 0;
+	inline uint8_t kControllerUp = 0;
+	inline uint8_t kControllerDown = 0;
+	inline uint8_t kControllerLeft = 0;
+	inline uint8_t kControllerRight = 0;
+	inline uint8_t kControllerClick = 0;
+	inline uint8_t kControllerBack = 0;
+	inline uint8_t kControllerContextMenu = 0;
+	inline uint8_t kControllerCommandBox = 0;
+
 	// Real Stand's own Direction enum (Util/Direction.hpp on
 	// origin/stand-reference), narrowed to just the four values its own
 	// g_renderer.tabs_pos actually uses for the sidebar/tab strip -

@@ -35,6 +35,7 @@
 #include "Commands/Settings/CommandTabBorder.hpp"
 #include "Commands/Settings/CommandTabEntityPreviews.hpp"
 #include "Commands/Settings/CommandTabFontText.hpp"
+#include "Commands/Settings/CommandTabInput.hpp"
 #include "Commands/Settings/CommandTabTextures.hpp"
 #include "Commands/Settings/CommandTabColours.hpp"
 #include "Commands/Settings/CommandTabCommandInfoText.hpp"
@@ -66,6 +67,7 @@ namespace Stand
 		(void)Features::GetCommandTabBorder();
 		(void)Features::GetCommandTabEntityPreviews();
 		(void)Features::GetCommandTabFontText();
+		(void)Features::GetCommandTabInput();
 		(void)Features::GetCommandTabTextures();
 		(void)Features::GetCommandTabColours();
 		(void)Features::GetCommandTabCommandInfoText();
