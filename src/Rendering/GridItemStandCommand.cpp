@@ -103,6 +103,29 @@ namespace Stand::Rendering
 			GridRenderer::DrawRect(x, y, width, height, Theme::kAccent);
 		}
 
+		{
+			const auto mode = Theme::kLeftTextures;
+			const bool isToggle = m_Command && m_Command->isToggle();
+			const bool drawAll = (mode == Theme::LeftTexturesMode::AllCommands || mode == Theme::LeftTexturesMode::AllCommandsCompact);
+			const bool drawToggle = (mode == Theme::LeftTexturesMode::TogglesOnly || mode == Theme::LeftTexturesMode::TogglesOnlyCompact);
+			const bool compact = (mode == Theme::LeftTexturesMode::AllCommandsCompact || mode == Theme::LeftTexturesMode::TogglesOnlyCompact);
+
+			if (drawAll || (drawToggle && isToggle))
+			{
+				const auto& texColour = isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture;
+				if (compact)
+				{
+					GridRenderer::DrawRect(x, y, 4.f, height, texColour);
+				}
+				else
+				{
+					const float texSize = kIndicatorSize;
+					const float texY = y + std::max(0.f, (height - texSize) * 0.5f);
+					GridRenderer::DrawRect(x + 2.f, texY, texSize, texSize, texColour);
+				}
+			}
+		}
+
 		if (!m_Command || !m_Command->isToggle())
 			return;
 

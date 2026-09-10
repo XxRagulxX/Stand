@@ -15,6 +15,7 @@
 #include "Rendering/SettingsPositionGrid.hpp"
 #include "Rendering/SettingsScrollbarGrid.hpp"
 #include "Rendering/SettingsTabsGrid.hpp"
+#include "Rendering/SettingsTexturesGrid.hpp"
 #include "Rendering/Theme.hpp"
 #include "Util/Joaat.hpp"
 
@@ -34,6 +35,7 @@ namespace Stand::Rendering
 		SettingsPositionGrid g_PositionContent{};
 		SettingsScrollbarGrid g_ScrollbarContent{};
 		SettingsTabsGrid g_TabsContent{};
+		SettingsTexturesGrid g_TexturesContent{};
 		SettingsNotificationsGrid g_NotificationsContent{};
 	}
 
@@ -59,6 +61,7 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Cursor", &g_CursorContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Border", &g_BorderContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Tabs", &g_TabsContent));
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Textures", &g_TexturesContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Font & Text", &g_FontTextContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Command Info Text", &g_CommandInfoTextContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Commands", &g_CommandsContent));

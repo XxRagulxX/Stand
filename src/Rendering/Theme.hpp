@@ -281,6 +281,9 @@ namespace Stand::Rendering::Theme
 
 	inline bool kShowTextBoundingBoxes = false;
 
+	enum class LeftTexturesMode : uint8_t { Disabled, AllCommands, AllCommandsCompact, TogglesOnly, TogglesOnlyCompact };
+	inline LeftTexturesMode kLeftTextures = LeftTexturesMode::Disabled;
+
 	inline std::string kFontPath = "";
 	inline bool kFontReloadPending = false;
 
