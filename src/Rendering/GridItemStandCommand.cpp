@@ -81,6 +81,15 @@ namespace Stand::Rendering
 
 	void GridItemStandCommand::draw()
 	{
+		if (Theme::kBorderWidth > 0)
+		{
+			const float bw = static_cast<float>(Theme::kBorderWidth);
+			GridRenderer::DrawRect(x, y, width, bw, Theme::kBorderColour);
+			GridRenderer::DrawRect(x, y + height - bw, width, bw, Theme::kBorderColour);
+			GridRenderer::DrawRect(x, y, bw, height, Theme::kBorderColour);
+			GridRenderer::DrawRect(x + width - bw, y, bw, height, Theme::kBorderColour);
+		}
+
 		if (isKeyboardFocused())
 		{
 			if (Theme::kCursorBorderWidth > 0)

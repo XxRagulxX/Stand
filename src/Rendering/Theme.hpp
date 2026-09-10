@@ -240,6 +240,10 @@ namespace Stand::Rendering::Theme
 	inline bool kCursorBorderRounded = false;
 	inline DirectX::XMFLOAT4 kCursorBorderColour{1.f, 1.f, 1.f, 1.f};
 
+	inline int16_t kBorderWidth = 0;
+	inline bool kBorderRounded = false;
+	inline DirectX::XMFLOAT4 kBorderColour{1.f, 1.f, 1.f, 1.f};
+
 	inline int16_t kTabsWidth = kSidebarWidth;
 	inline int16_t kTabsHeight = kSidebarEntryHeight;
 	inline float kTabsTextScale = kTextScale;
