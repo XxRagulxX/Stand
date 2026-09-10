@@ -116,12 +116,16 @@ namespace Stand::Rendering
 		// width in that case (or when hidden entirely).
 		const int16_t headerW = (visible && sidebarIsVertical) ? static_cast<int16_t>(Theme::kSidebarWidth + kSpacer + Theme::kContentWidth) : Theme::kContentWidth;
 
-		auto header = std::make_unique<GridItemAddressbar>(headerW, Theme::kHeaderHeight, "StandEnhanced");
-		m_Header = header.get();
-		items_draft.push_back(std::move(header));
-
+		m_Header = nullptr;
 		m_Sidebar = nullptr;
 		m_SidebarHorizontal = nullptr;
+
+		if (Theme::kAddressBarVisible)
+		{
+			auto header = std::make_unique<GridItemAddressbar>(headerW, Theme::kAddressBarHeight, "StandEnhanced");
+			m_Header = header.get();
+			items_draft.push_back(std::move(header));
+		}
 
 		if (visible)
 		{
@@ -276,7 +280,23 @@ namespace Stand::Rendering
 		// without touching the sidebar at all, and still needs the
 		// breadcrumb to catch up.
 		if (m_Header)
-			m_Header->SetTitle("StandEnhanced > " + MenuNavigation::BreadcrumbPath());
+		{
+			const auto& sep = Theme::kAddressSeparator;
+			const auto path = MenuNavigation::BreadcrumbPath();
+			std::string title;
+			if (Theme::kAddressCurrentListOnly)
+			{
+				const auto pos = path.rfind(sep);
+				title = pos == std::string::npos ? path : path.substr(pos + sep.size());
+				if (title.empty())
+					title = "StandEnhanced";
+			}
+			else
+			{
+				title = "StandEnhanced" + sep + path;
+			}
+			m_Header->SetTitle(std::move(title));
+		}
 	}
 
 	void MenuGrid::draw()

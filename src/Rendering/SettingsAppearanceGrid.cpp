@@ -1,6 +1,7 @@
 #include "Rendering/SettingsAppearanceGrid.hpp"
 
 #include "Rendering/GridItemFolder.hpp"
+#include "Rendering/SettingsAddressBarGrid.hpp"
 #include "Rendering/SettingsColoursGrid.hpp"
 #include "Rendering/SettingsNotificationsGrid.hpp"
 #include "Rendering/SettingsPositionGrid.hpp"
@@ -12,6 +13,7 @@ namespace Stand::Rendering
 	{
 		constexpr float kItemH = Theme::kContentItemHeight;
 
+		SettingsAddressBarGrid g_AddressBarContent{};
 		SettingsColoursGrid g_ColoursContent{};
 		SettingsPositionGrid g_PositionContent{};
 		SettingsNotificationsGrid g_NotificationsContent{};
@@ -28,6 +30,7 @@ namespace Stand::Rendering
 	{
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Colours", &g_ColoursContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Position", &g_PositionContent));
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Address Bar", &g_AddressBarContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Notifications", &g_NotificationsContent));
 	}
 }

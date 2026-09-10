@@ -14,7 +14,8 @@ namespace Stand::Rendering
 
 	void GridItemAddressbar::drawText()
 	{
-		const float textY = y + std::max(0.f, (height - GridRenderer::MeasureText(m_Title.c_str(), Theme::kSmallTextScale).y) * 0.5f);
-		GridRenderer::DrawText(x + 5.f, textY, m_Title.c_str(), Theme::kText, Theme::kSmallTextScale);
+		const float scale = Theme::kAddressbarTextScale;
+		const float textY = y + Theme::kAddressbarTextYOffset + std::max(0.f, (height - GridRenderer::MeasureText(m_Title.c_str(), scale).y) * 0.5f);
+		GridRenderer::DrawText(x + Theme::kAddressbarTextXOffset, textY, m_Title.c_str(), Theme::kText, scale);
 	}
 }

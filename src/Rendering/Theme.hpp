@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 
 #include <cstdint>
+#include <string>
 
 namespace Stand::Rendering::Theme
 {
@@ -213,6 +214,18 @@ namespace Stand::Rendering::Theme
 	constexpr int16_t kDefaultMenuOriginY = 560;
 	inline int16_t kMenuOriginX = kDefaultMenuOriginX;
 	inline int16_t kMenuOriginY = kDefaultMenuOriginY;
+
+	inline bool kAddressBarVisible = true;
+	inline int16_t kAddressBarHeight = kHeaderHeight;
+	inline std::string kAddressSeparator = " > ";
+	inline bool kAddressCurrentListOnly = false;
+	inline bool kAddressbarWidthAffectedByScrollbar = false;
+	inline bool kAddressbarWidthAffectedByColumns = false;
+	inline float kAddressbarTextScale = kSmallTextScale;
+	inline float kAddressbarTextXOffset = 5.f;
+	inline float kAddressbarTextYOffset = 0.f;
+	inline bool kShowCursorPos = false;
+	inline bool kCursorPosIncludesDividers = false;
 
 	// Real Stand's own Direction enum (Util/Direction.hpp on
 	// origin/stand-reference), narrowed to just the four values its own

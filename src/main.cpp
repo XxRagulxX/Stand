@@ -30,7 +30,9 @@
 #include "Core/ExceptionHandler.hpp"
 #include "Commands/Self/CommandTabLevitation.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
+#include "Commands/Settings/CommandTabAddressBar.hpp"
 #include "Commands/Settings/CommandTabColours.hpp"
+#include "Commands/Settings/CommandTabPosition.hpp"
 
 namespace Stand
 {
@@ -49,7 +51,9 @@ namespace Stand
 		SavedLocations::FetchSavedLocations();
 		(void)Features::GetCommandTabSelf();
 		(void)Features::GetCommandTabLevitation();
+		(void)Features::GetCommandTabAddressBar();
 		(void)Features::GetCommandTabColours();
+		(void)Features::GetCommandTabPosition();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;
