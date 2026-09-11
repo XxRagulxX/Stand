@@ -1,4 +1,6 @@
 #include "Commands/CommandLegacy.hpp"
+#include "Rendering/Notifications.hpp"
+#include "Scripting/Script.hpp"
 
 namespace Stand::Features
 {
@@ -6,11 +8,17 @@ namespace Stand::Features
 	{
 		using CommandLegacy::CommandLegacy;
 
-		virtual void OnCall() override
+		void OnCall() override
 		{
+			Notifications::Show(
+			    "Stand Enhanced",
+			    "Stand is being unloaded.",
+			    NotificationType::Info,
+			    3000);
+			Script::current()->yield(1500);
 			g_Running = false;
 		}
 	};
 
-	static UnloadMenu _UnloadMenu{"unloadmenu", "Unload", "Unload StandEnhanced."};
+	static UnloadMenu _UnloadMenu{"unload", "Unload Stand", "Removes Stand from the game until you re-inject it."};
 }

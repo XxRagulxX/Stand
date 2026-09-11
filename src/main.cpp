@@ -27,6 +27,9 @@
 #include "Commands/Weapons/CommandOpenGunLocker.hpp"
 #include "Commands/World/CommandDailyActivities.hpp"
 #include "Core/LogHelper.hpp"
+#include "Scripting/FiberPool.hpp"
+#include "Scripting/Script.hpp"
+#include "Scripting/Natives.hpp"
 #include "Core/ExceptionHandler.hpp"
 #include "Commands/Self/CommandTabLevitation.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
@@ -54,7 +57,7 @@ namespace Stand
 
 		HMODULE module = GetModuleHandle(nullptr);
 
-		LogHelper::Init("StandEnhanced", FileMgr::GetProjectFile("./cout.log"));
+		LogHelper::Init("StandEnhanced", FileMgr::GetProjectFile("./cout.log"), false);
 
 		LOGF(INFO, "Welcome to StandEnhanced! Build date: {} at {}", __DATE__, __TIME__);
 
@@ -144,7 +147,11 @@ namespace Stand
 		if (!Pointers.LateInit())
 			LOG(WARNING) << "Socialclub patterns failed to load";
 
-		Notifications::Show("StandEnhanced", "Loaded succesfully", NotificationType::Success);
+		FiberPool::queueJob([] {
+			while (DLC::GET_IS_LOADING_SCREEN_ACTIVE())
+				Script::current()->yield(500);
+			Notifications::Show("StandEnhanced", "Loaded successfully", NotificationType::Success);
+		});
 
 		if (InWine().value_or(false))
 		    LOG(INFO) << "Running in Wine!";

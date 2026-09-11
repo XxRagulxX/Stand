@@ -86,6 +86,25 @@ namespace Stand
 				return ctx->SetReturnValue(FALSE);
 			return ctx->SetReturnValue(PAD::IS_DISABLED_CONTROL_JUST_RELEASED(ctx->GetArg<int>(0), ctx->GetArg<int>(1)));
 		}
+
+		bool IsPhoneControl(int action)
+		{
+			return static_cast<ControllerInputs>(action) == ControllerInputs::INPUT_PHONE;
+		}
+
+		void IsControlPressedHook(rage::scrNativeCallContext* ctx)
+		{
+			if (GUI::IsOpen() && IsPhoneControl(ctx->GetArg<int>(1)))
+				return ctx->SetReturnValue(FALSE);
+			return ctx->SetReturnValue(PAD::IS_CONTROL_PRESSED(ctx->GetArg<int>(0), ctx->GetArg<int>(1)));
+		}
+
+		void IsControlJustPressedHook(rage::scrNativeCallContext* ctx)
+		{
+			if (GUI::IsOpen() && IsPhoneControl(ctx->GetArg<int>(1)))
+				return ctx->SetReturnValue(FALSE);
+			return ctx->SetReturnValue(PAD::IS_CONTROL_JUST_PRESSED(ctx->GetArg<int>(0), ctx->GetArg<int>(1)));
+		}
 	}
 
 	GUI::GUI() :
@@ -109,6 +128,8 @@ namespace Stand
 		NativeHooks::AddHook(NativeHooks::ALL_SCRIPTS, NativeIndex::IS_DISABLED_CONTROL_RELEASED, &IsDisabledControlReleasedHook);
 		NativeHooks::AddHook(NativeHooks::ALL_SCRIPTS, NativeIndex::IS_DISABLED_CONTROL_JUST_PRESSED, &IsDisabledControlJustPressedHook);
 		NativeHooks::AddHook(NativeHooks::ALL_SCRIPTS, NativeIndex::IS_DISABLED_CONTROL_JUST_RELEASED, &IsDisabledControlJustReleasedHook);
+		NativeHooks::AddHook(NativeHooks::ALL_SCRIPTS, NativeIndex::IS_CONTROL_PRESSED, &IsControlPressedHook);
+		NativeHooks::AddHook(NativeHooks::ALL_SCRIPTS, NativeIndex::IS_CONTROL_JUST_PRESSED, &IsControlJustPressedHook);
 
 		Renderer::SetSafeToRender();
 	}

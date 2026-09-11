@@ -94,8 +94,11 @@ namespace Stand
 		}
 		else
 		{
-			m_ConsoleOut.open("CONOUT$", std::ios_base::out | std::ios_base::app);
 			AllocConsole();
+			SetConsoleTitleA(m_ConsoleTitle.data());
+			SetConsoleOutputCP(CP_UTF8);
+			m_ConsoleOut.clear();
+			m_ConsoleOut.open("CONOUT$", std::ios_base::out | std::ios_base::app);
 		}
 
 		m_AttachConsole = !m_AttachConsole;
