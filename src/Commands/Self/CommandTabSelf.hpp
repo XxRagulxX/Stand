@@ -2,6 +2,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Self/CommandAutoHeal.hpp"
 #include "Commands/Self/CommandTabOutfit.hpp"
+#include "Commands/Self/CommandTabAppearanceMisc.hpp"
 #include "Commands/Self/CommandFakeWanted.hpp"
 #include "Commands/Self/CommandFreezeWanted.hpp"
 #include "Commands/Self/CommandInfiniteStamina.hpp"
@@ -25,6 +26,7 @@ namespace Stand
 	{
 	public:
 		CommandTabOutfit* const outfit;
+		CommandTabAppearanceMisc* const character;
 		CommandGod* const god;
 		CommandAutoHeal* const autoHeal;
 		CommandMaxHealth* const maxHealth;
@@ -46,6 +48,7 @@ namespace Stand
 		explicit CommandTabSelf() :
 		    CommandList(nullptr, LIT("Self")),
 		    outfit(createChild<CommandTabOutfit>()),
+		    character(createChild<CommandTabAppearanceMisc>()),
 		    god(createChild<CommandGod>()),
 		    autoHeal(createChild<CommandAutoHeal>()),
 		    maxHealth(createChild<CommandMaxHealth>()),
