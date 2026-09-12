@@ -8,6 +8,7 @@
 #include "Commands/Self/CommandInvisibility.hpp"
 #include "Commands/Self/CommandDeathEffect.hpp"
 #include "Commands/Self/CommandRespawnEffect.hpp"
+#include "Commands/Self/CommandTabAnimations.hpp"
 
 namespace Stand
 {
@@ -25,6 +26,7 @@ namespace Stand
 			createChild<CommandInvisibility>();
 			createChild<CommandDeathEffect>();
 			createChild<CommandRespawnEffect>();
+			createChild<CommandTabAnimations>();
 		}
 	};
 }
