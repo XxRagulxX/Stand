@@ -13,6 +13,8 @@ namespace Stand
 		const Hash m_hash;
 
 	public:
+		[[nodiscard]] Hash GetHash() const { return m_hash; }
+
 		CommandTransformModel(CommandList* const parent, Label&& label, Hash hash)
 			: CommandPhysical(COMMAND_ACTION, parent, std::move(label), {}, NOLABEL)
 			, m_hash(hash)
