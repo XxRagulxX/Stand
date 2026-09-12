@@ -9,6 +9,7 @@
 #include "Commands/Self/CommandDeathEffect.hpp"
 #include "Commands/Self/CommandRespawnEffect.hpp"
 #include "Commands/Self/CommandTabAnimations.hpp"
+#include "Commands/Self/CommandTabPtfxTrails.hpp"
 
 namespace Stand
 {
@@ -18,6 +19,8 @@ namespace Stand
 		explicit CommandTabAppearanceMisc(CommandList* parent)
 			: CommandList(parent, LIT("Character"), CMDNAMES("character"))
 		{
+			createChild<CommandTabAnimations>();
+			createChild<CommandTabPtfxTrails>();
 			createChild<CommandWalkStyle>();
 			createChild<CommandPreserveWalkStyle>();
 			createChild<CommandNoBlood>();
@@ -26,7 +29,6 @@ namespace Stand
 			createChild<CommandInvisibility>();
 			createChild<CommandDeathEffect>();
 			createChild<CommandRespawnEffect>();
-			createChild<CommandTabAnimations>();
 		}
 	};
 }
