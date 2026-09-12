@@ -31,8 +31,11 @@
 #include "Scripting/Script.hpp"
 #include "Scripting/Natives.hpp"
 #include "Core/ExceptionHandler.hpp"
+#include "Commands/Self/CommandTabFloppy.hpp"
 #include "Commands/Self/CommandTabLevitation.hpp"
+#include "Commands/Self/CommandTabMovement.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
+#include "Commands/Self/CommandTabSuperFlight.hpp"
 #include "Commands/Settings/CommandTabAddressBar.hpp"
 #include "Commands/Settings/CommandTabAppearanceDirect.hpp"
 #include "Commands/Settings/CommandTabBorder.hpp"
@@ -57,7 +60,7 @@ namespace Stand
 
 		HMODULE module = GetModuleHandle(nullptr);
 
-		LogHelper::Init("StandEnhanced", FileMgr::GetProjectFile("./cout.log"), false);
+		LogHelper::Init("StandEnhanced", FileMgr::GetProjectFile("./cout.log"), true);
 
 		LOGF(INFO, "Welcome to StandEnhanced! Build date: {} at {}", __DATE__, __TIME__);
 
@@ -65,6 +68,9 @@ namespace Stand
 		SavedLocations::FetchSavedLocations();
 		(void)Features::GetCommandTabSelf();
 		(void)Features::GetCommandTabLevitation();
+		(void)Features::GetCommandTabMovement();
+		(void)Features::GetCommandTabSuperFlight();
+		(void)Features::GetCommandTabFloppy();
 		(void)Features::GetCommandTabAddressBar();
 		(void)Features::GetCommandTabAppearanceDirect();
 		(void)Features::GetCommandTabBorder();
