@@ -4,6 +4,7 @@
 #include "Rendering/InvisibilityGrid.hpp"
 #include "Rendering/OutfitEditorGrid.hpp"
 #include "Rendering/Theme.hpp"
+#include "Rendering/TransformGrid.hpp"
 
 namespace Stand::Rendering
 {
@@ -11,10 +12,9 @@ namespace Stand::Rendering
 	{
 		constexpr float kItemH = Theme::kContentItemHeight;
 
-		// Owned here rather than in SelfGrid.cpp - only ever reached
-		// through their own folder row below now.
 		OutfitEditorGrid g_OutfitEditorContent{};
 		InvisibilityGrid g_InvisibilityContent{};
+		TransformGrid g_TransformContent{};
 	}
 
 	// Origin/spacer match every other content Grid's - see SelfGrid.cpp's
@@ -35,6 +35,7 @@ namespace Stand::Rendering
 		// Scale (+affects-camera/affects-speed), Visual Z Correction, No
 		// Blood, Moist(+lock), Death Particle, Respawn Particle - none
 		// of these have a command in this project yet.
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Transform", &g_TransformContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Outfit Editor", &g_OutfitEditorContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Invisibility", &g_InvisibilityContent));
 	}

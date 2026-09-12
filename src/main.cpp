@@ -36,6 +36,7 @@
 #include "Commands/Self/CommandTabMovement.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
 #include "Commands/Self/CommandTabSuperFlight.hpp"
+#include "Commands/Self/CommandTabTransform.hpp"
 #include "Commands/Settings/CommandTabAddressBar.hpp"
 #include "Commands/Settings/CommandTabAppearanceDirect.hpp"
 #include "Commands/Settings/CommandTabBorder.hpp"
@@ -71,6 +72,7 @@ namespace Stand
 		(void)Features::GetCommandTabMovement();
 		(void)Features::GetCommandTabSuperFlight();
 		(void)Features::GetCommandTabFloppy();
+		(void)Features::GetCommandTabTransform();
 		(void)Features::GetCommandTabAddressBar();
 		(void)Features::GetCommandTabAppearanceDirect();
 		(void)Features::GetCommandTabBorder();
