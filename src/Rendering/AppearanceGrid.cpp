@@ -1,8 +1,9 @@
 #include "Rendering/AppearanceGrid.hpp"
 
+#include "Commands/Self/CommandTabSelf.hpp"
 #include "Rendering/GridItemFolder.hpp"
+#include "Rendering/GridStandCommandList.hpp"
 #include "Rendering/InvisibilityGrid.hpp"
-#include "Rendering/OutfitEditorGrid.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/TransformGrid.hpp"
 
@@ -12,7 +13,6 @@ namespace Stand::Rendering
 	{
 		constexpr float kItemH = Theme::kContentItemHeight;
 
-		OutfitEditorGrid g_OutfitEditorContent{};
 		InvisibilityGrid g_InvisibilityContent{};
 		TransformGrid g_TransformContent{};
 	}
@@ -36,7 +36,7 @@ namespace Stand::Rendering
 		// Blood, Moist(+lock), Death Particle, Respawn Particle - none
 		// of these have a command in this project yet.
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Transform", &g_TransformContent));
-		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Outfit Editor", &g_OutfitEditorContent));
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Outfit", &GridStandCommandList::GetOrCreate(Features::GetCommandTabSelf().outfit)));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Invisibility", &g_InvisibilityContent));
 	}
 }

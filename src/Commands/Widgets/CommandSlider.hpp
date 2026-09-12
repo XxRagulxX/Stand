@@ -81,6 +81,13 @@ namespace Stand
 			this->step_size = step_size;
 		}
 
+		void setValueIndicator(const Click&, int v)
+		{
+			if (v < min_value)      v = min_value;
+			else if (v > max_value) v = max_value;
+			this->value = v;
+		}
+
 	private:
 		void updateValue(Click& click, int value);
 		void updateState(const Click& click);

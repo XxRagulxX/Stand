@@ -1,6 +1,7 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Self/CommandAutoHeal.hpp"
+#include "Commands/Self/CommandTabOutfit.hpp"
 #include "Commands/Self/CommandFakeWanted.hpp"
 #include "Commands/Self/CommandFreezeWanted.hpp"
 #include "Commands/Self/CommandInfiniteStamina.hpp"
@@ -23,6 +24,7 @@ namespace Stand
 	class CommandTabSelf : public CommandList
 	{
 	public:
+		CommandTabOutfit* const outfit;
 		CommandGod* const god;
 		CommandAutoHeal* const autoHeal;
 		CommandMaxHealth* const maxHealth;
@@ -43,6 +45,7 @@ namespace Stand
 
 		explicit CommandTabSelf() :
 		    CommandList(nullptr, LIT("Self")),
+		    outfit(createChild<CommandTabOutfit>()),
 		    god(createChild<CommandGod>()),
 		    autoHeal(createChild<CommandAutoHeal>()),
 		    maxHealth(createChild<CommandMaxHealth>()),
