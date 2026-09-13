@@ -31,6 +31,7 @@
 #include "Scripting/Script.hpp"
 #include "Scripting/Natives.hpp"
 #include "Core/ExceptionHandler.hpp"
+#include "Commands/ESP/CommandTabESP.hpp"
 #include "Commands/Self/CommandTabFloppy.hpp"
 #include "Commands/Self/CommandTabLevitation.hpp"
 #include "Commands/Self/CommandTabMovement.hpp"
@@ -68,6 +69,7 @@ namespace Stand
 
 		g_HotkeySystem.RegisterCommands();
 		SavedLocations::FetchSavedLocations();
+		(void)Features::GetCommandTabESP();
 		(void)Features::GetCommandTabSelf();
 		(void)Features::GetCommandTabWeapons();
 		(void)Features::GetCommandTabLevitation();

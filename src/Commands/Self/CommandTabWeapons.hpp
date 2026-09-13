@@ -1,13 +1,21 @@
 #pragma once
+#include "Commands/Weapons/CommandAimbot.hpp"
+#include "Commands/Weapons/CommandTriggerbot.hpp"
+#include "Commands/Weapons/CommandDamageMultiplier.hpp"
 #include "Commands/Weapons/CommandDisableCriticalHits.hpp"
 #include "Commands/Weapons/CommandExplosionRadius.hpp"
 #include "Commands/Weapons/CommandExplosionType.hpp"
 #include "Commands/Weapons/CommandExplosiveAmmo.hpp"
+#include "Commands/Weapons/CommandFillAmmo.hpp"
+#include "Commands/Weapons/CommandImpactParticles.hpp"
 #include "Commands/Weapons/CommandInfiniteAmmo.hpp"
 #include "Commands/Weapons/CommandInfiniteClip.hpp"
 #include "Commands/Weapons/CommandInfiniteParachutes.hpp"
 #include "Commands/Weapons/CommandMeleeDamage.hpp"
+#include "Commands/Weapons/CommandNoReload.hpp"
 #include "Commands/Weapons/CommandRapidFire.hpp"
+#include "Commands/Weapons/CommandRemoveAmmo.hpp"
+#include "Commands/Weapons/CommandSuperMelee.hpp"
 #include "Commands/Weapons/CommandWeaponDamage.hpp"
 #include "Commands/Weapons/CommandWeaponsTools.hpp"
 #include "Commands/Widgets/CommandList.hpp"
@@ -128,16 +136,22 @@ namespace Stand
 		};
 
 	public:
+		CommandFillAmmo* const            fillAmmo;
+		CommandRemoveAmmo* const          removeAmmo;
 		CommandInfiniteAmmo* const        infiniteAmmo;
 		CommandInfiniteClip* const        infiniteClip;
+		CommandNoReload* const            noReload;
 		CommandInfiniteParachutes* const  infiniteParachutes;
 		CommandRapidFire* const           rapidFire;
 		CommandExplosiveAmmo* const       explosiveAmmo;
 		CommandExplosionType* const       explosionType;
 		CommandSliderFloat* const         explosionDamage;
 		CommandSliderFloat* const         explosionCameraShake;
+		CommandImpactParticles* const     impactParticles;
+		CommandDamageMultiplier* const    damageMultiplier;
 		CommandWeaponDamage* const        weaponDamage;
 		CommandSliderFloat* const         weaponDamageScale;
+		CommandSuperMelee* const          superMelee;
 		CommandMeleeDamage* const         meleeDamage;
 		CommandSliderFloat* const         meleeDamageScale;
 		CommandExplosionRadius* const     explosionRadius;
@@ -146,11 +160,16 @@ namespace Stand
 		CommandGiveAllWeapons* const      giveAllWeapons;
 		CommandGiveMaxAmmo* const         giveMaxAmmo;
 		CommandOpenGunLockerTree* const   openGunLocker;
+		CommandAimbot* const              aimbot;
+		CommandTriggerbot* const          triggerbot;
 
 		explicit CommandTabWeapons()
 			: CommandList(nullptr, LIT("Weapons"), CMDNAMES("weapons")),
+			  fillAmmo(createChild<CommandFillAmmo>()),
+			  removeAmmo(createChild<CommandRemoveAmmo>()),
 			  infiniteAmmo(createChild<CommandInfiniteAmmo>()),
 			  infiniteClip(createChild<CommandInfiniteClip>()),
+			  noReload(createChild<CommandNoReload>()),
 			  infiniteParachutes(createChild<CommandInfiniteParachutes>()),
 			  rapidFire(createChild<CommandRapidFire>()),
 			  explosiveAmmo(createChild<CommandExplosiveAmmo>()),
@@ -161,10 +180,13 @@ namespace Stand
 			  explosionCameraShake(createChild<CommandSliderFloat>(
 			      LIT("Explosion Camera Shake"), CMDNAMES("explosioncamerashake"),
 			      NOLABEL, 0, 1000, 10)),
+			  impactParticles(createChild<CommandImpactParticles>()),
+			  damageMultiplier(createChild<CommandDamageMultiplier>()),
 			  weaponDamage(createChild<CommandWeaponDamage>()),
 			  weaponDamageScale(createChild<CommandSliderFloat>(
 			      LIT("Weapon Damage Scale"), CMDNAMES("weapondamagescale"),
 			      NOLABEL, 0, 1000, 100)),
+			  superMelee(createChild<CommandSuperMelee>()),
 			  meleeDamage(createChild<CommandMeleeDamage>()),
 			  meleeDamageScale(createChild<CommandSliderFloat>(
 			      LIT("Melee Damage Scale"), CMDNAMES("meleedamagescale"),
@@ -176,7 +198,9 @@ namespace Stand
 			  disableCriticalHits(createChild<CommandDisableCriticalHits>()),
 			  giveAllWeapons(createChild<CommandGiveAllWeapons>()),
 			  giveMaxAmmo(createChild<CommandGiveMaxAmmo>()),
-			  openGunLocker(createChild<CommandOpenGunLockerTree>())
+			  openGunLocker(createChild<CommandOpenGunLockerTree>()),
+			  aimbot(createChild<CommandAimbot>()),
+			  triggerbot(createChild<CommandTriggerbot>())
 		{
 			explosiveAmmo->m_type   = explosionType;
 			explosiveAmmo->m_damage = explosionDamage;

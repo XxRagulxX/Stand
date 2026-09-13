@@ -108,8 +108,11 @@ namespace Stand::Rendering
 	{
 		auto& tab = Features::GetCommandTabWeapons();
 
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.fillAmmo));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.removeAmmo));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.infiniteAmmo));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.infiniteClip));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.noReload));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.infiniteParachutes));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.rapidFire));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosiveAmmo));
@@ -119,9 +122,15 @@ namespace Stand::Rendering
 			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionDamage));
 			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionCameraShake));
 		}
+
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.aimbot));
+
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.impactParticles));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.damageMultiplier));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.weaponDamage));
 		if (watchCondition([cmd = tab.weaponDamage] { return cmd->m_on; }))
 			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.weaponDamageScale));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.superMelee));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.meleeDamage));
 		if (watchCondition([cmd = tab.meleeDamage] { return cmd->m_on; }))
 			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.meleeDamageScale));
@@ -145,17 +154,6 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemCommandListSelect>(Theme::kContentWidth, kItemH, "gunvan_weapon"_J));
 		items_draft.push_back(std::make_unique<GridItemCommandListSelect>(Theme::kContentWidth, kItemH, "gunvan_slot"_J));
 		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "gunvan_apply"_J));
-
-		// Aimbot (weaponsAimbotGroup) - the three head/drivers/dead-ped
-		// toggles are all gated on aimbot directly.
-		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Aimbot", Theme::kText));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "aimbot"_J));
-		if (watchCondition("aimbot"_J))
-		{
-			items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "aimbotaimforhead"_J));
-			items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "aimbottargetdrivers"_J));
-			items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "aimbotreleasedeadped"_J));
-		}
 
 		// Custom Weapons (RenderCustomWeaponsMenu()) - see this file's own
 		// IsCustomWeaponEnabled()/CustomWeaponType()/IsGravityGunRow()/

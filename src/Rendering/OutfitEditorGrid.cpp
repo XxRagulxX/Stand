@@ -22,27 +22,9 @@ namespace Stand::Rendering
 	{
 		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
 		constexpr float kItemH = Theme::kContentItemHeight;
-
-		// Generous static clamp for every stepper's own [min,max] - see
-		// this class's header comment for why: populate() only runs
-		// once, so a stepper can't track drawable_id_max/texture_id_max
-		// changing after a later RefreshStats(). The real bounds check
-		// (CheckBoundsDrawable/CheckBoundsTexture, against whatever
-		// RefreshStats() last read) happens in each row's onChange
-		// instead - this just needs to be wide enough it never itself
-		// blocks a legitimate step.
 		constexpr int kMaxIndex = 200;
 	}
 
-	// Origin (1438, 587) matches every other content Grid's. Spacer is
-	// 0, not 3 - confirmed against real Stand's own source (origin/
-	// stand-reference) that individual list rows have zero gap between
-	// them; the 3-unit spacer real Stand does use is only ever between
-	// distinct chrome pieces (addressbar/tabs/list), never between rows -
-	// see the comment in MenuGrid.cpp's anonymous namespace for why (no
-	// shared header for these yet). Each item below specifies its own
-	// width (Theme::kContentWidth) rather than the Grid itself, matching
-	// Stand's real Grid - see Grid.hpp's class comment.
 	OutfitEditorGrid::OutfitEditorGrid() :
 	    Grid(Theme::GetContentOrigin(), 0)
 	{
@@ -76,9 +58,6 @@ namespace Stand::Rendering
 		});
 	}
 
-	// Mirrors RenderComponents(): a drawable id change always sends
-	// texture 0 to SET_PED_COMPONENT_VARIATION, not the component's
-	// current texture_id - matching the original exactly, not "fixed".
 	void OutfitEditorGrid::AddComponentDrawableRows(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		for (auto& [id, item] : m_Components.items)
@@ -104,7 +83,6 @@ namespace Stand::Rendering
 		}
 	}
 
-	// Mirrors RenderComponentsTextures().
 	void OutfitEditorGrid::AddComponentTextureRows(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		for (auto& [id, item] : m_Components.items)
@@ -131,8 +109,6 @@ namespace Stand::Rendering
 		}
 	}
 
-	// Mirrors RenderProps(): -1 clears the prop entirely instead of
-	// setting a drawable index, same as the original.
 	void OutfitEditorGrid::AddPropDrawableRows(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		for (auto& [id, item] : m_Props.items)
@@ -161,7 +137,6 @@ namespace Stand::Rendering
 		}
 	}
 
-	// Mirrors RenderPropsTextures().
 	void OutfitEditorGrid::AddPropTextureRows(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		for (auto& [id, item] : m_Props.items)
@@ -213,9 +188,6 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Prop Textures", Theme::kText));
 		AddPropTextureRows(items_draft);
 
-		// Folder browsing - "Root" (m_Folder == "") prepended to
-		// whatever Outfit::OutfitEditor::RefreshList() last populated
-		// m_Folders with, same pattern as SavedVehiclesGrid's own.
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Folder", Theme::kText));
 		items_draft.push_back(std::make_unique<GridItemSelectList>(
 		    Theme::kContentWidth,
@@ -230,11 +202,6 @@ namespace Stand::Rendering
 			    RefreshList();
 		    }));
 
-		// Saved outfits in the current folder - selecting one just
-		// records it (matching the original's own onSelect, which only
-		// sets file); a separate "Apply Selected Outfit" button below
-		// actually applies it, unlike SavedVehiclesGrid's own list,
-		// which applies immediately through a confirm popup.
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Saved Outfits", Theme::kText));
 		items_draft.push_back(std::make_unique<GridItemSelectList>(
 		    Theme::kContentWidth,
@@ -246,11 +213,6 @@ namespace Stand::Rendering
 			    m_File = value;
 		    }));
 
-		// Load/save controls - File Name/New Folder always shown (same
-		// deliberate deviation from the original as SavedVehiclesGrid's
-		// own - see that class's header comment for why), Apply hair via
-		// GridItemBoundToggle bound to m_ApplyHair, reset after every
-		// apply same as the original's own static bool.
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Load / Save", Theme::kText));
 
 		items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Refresh List", [this] {
@@ -284,13 +246,6 @@ namespace Stand::Rendering
 		m_NewFolderInput = newFolderInput.get();
 		items_draft.push_back(std::move(newFolderInput));
 
-		// Save - resolves the actual save destination (targetFolder)
-		// before saving into it, same fix SavedVehiclesGrid's own Save
-		// button already applies relative to its own original source
-		// (which saves into the *old* folder even when a New Folder
-		// name was given, then only switches folder = newFolder
-		// afterwards - a real bug, not a deliberate quirk, so not
-		// preserved here either).
 		items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Save Outfit", [this] {
 			FiberPool::queueJob([this] {
 				if (!m_OutfitNameInput)
