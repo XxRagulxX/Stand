@@ -35,6 +35,7 @@
 #include "Commands/Self/CommandTabLevitation.hpp"
 #include "Commands/Self/CommandTabMovement.hpp"
 #include "Commands/Self/CommandTabSelf.hpp"
+#include "Commands/Self/CommandTabWeapons.hpp"
 #include "Commands/Self/CommandTabSuperFlight.hpp"
 #include "Commands/Self/CommandTabTransform.hpp"
 #include "Commands/Settings/CommandTabAddressBar.hpp"
@@ -68,6 +69,7 @@ namespace Stand
 		g_HotkeySystem.RegisterCommands();
 		SavedLocations::FetchSavedLocations();
 		(void)Features::GetCommandTabSelf();
+		(void)Features::GetCommandTabWeapons();
 		(void)Features::GetCommandTabLevitation();
 		(void)Features::GetCommandTabMovement();
 		(void)Features::GetCommandTabSuperFlight();

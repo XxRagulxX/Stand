@@ -4,13 +4,14 @@
 #include "Commands/CommandToggleLegacy.hpp"
 #include "Commands/Weapons/CommandCustomWeapon.hpp"
 #include "Commands/Commands.hpp"
+#include "Commands/Self/CommandTabWeapons.hpp"
 #include "Rendering/GridItemCommandButton.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
-#include "Rendering/GridItemCommandSliderFloat.hpp"
 #include "Rendering/GridItemCommandSlider.hpp"
 #include "Rendering/GridItemCommandListSelect.hpp"
 #include "Rendering/GridItemCommandInput.hpp"
 #include "Rendering/GridItemCommandToggle.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/GridItemText.hpp"
 #include "Util/Joaat.hpp"
 #include "Commands/CommandListSelect.hpp"
@@ -105,35 +106,32 @@ namespace Stand::Rendering
 
 	void WeaponsGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		// Globals (weaponsGlobalsGroup) - every conditional float/list row
-		// is gated on the single CommandToggle right above it.
-		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Globals", Theme::kText));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "infiniteammo"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "infiniteclip"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "rapidfire"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "infiniteparachutes"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "ExplosiveAmmo"_J));
-		if (watchCondition("ExplosiveAmmo"_J))
-		{
-			items_draft.push_back(std::make_unique<GridItemCommandListSelect>(Theme::kContentWidth, kItemH, "selectedexplosion"_J));
-			items_draft.push_back(std::make_unique<GridItemCommandSliderFloat>(Theme::kContentWidth, kItemH, "explosiondamage"_J));
-			items_draft.push_back(std::make_unique<GridItemCommandSliderFloat>(Theme::kContentWidth, kItemH, "explosioncamerashake"_J));
-		}
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "weapondamage"_J));
-		if (watchCondition("weapondamage"_J))
-			items_draft.push_back(std::make_unique<GridItemCommandSliderFloat>(Theme::kContentWidth, kItemH, "weapondamagescale"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "meleedamage"_J));
-		if (watchCondition("meleedamage"_J))
-			items_draft.push_back(std::make_unique<GridItemCommandSliderFloat>(Theme::kContentWidth, kItemH, "meleedamagescale"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "explosionradius"_J));
-		if (watchCondition("explosionradius"_J))
-			items_draft.push_back(std::make_unique<GridItemCommandSliderFloat>(Theme::kContentWidth, kItemH, "explosionradiusscale"_J));
+		auto& tab = Features::GetCommandTabWeapons();
 
-		// Tools (weaponsToolsGroup) - all plain CommandItem buttons.
-		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Tools", Theme::kText));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "giveallweapons"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "givemaxammo"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "opengunlocker"_J));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.infiniteAmmo));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.infiniteClip));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.infiniteParachutes));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.rapidFire));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosiveAmmo));
+		if (watchCondition([cmd = tab.explosiveAmmo] { return cmd->m_on; }))
+		{
+			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionType));
+			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionDamage));
+			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionCameraShake));
+		}
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.weaponDamage));
+		if (watchCondition([cmd = tab.weaponDamage] { return cmd->m_on; }))
+			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.weaponDamageScale));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.meleeDamage));
+		if (watchCondition([cmd = tab.meleeDamage] { return cmd->m_on; }))
+			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.meleeDamageScale));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionRadius));
+		if (watchCondition([cmd = tab.explosionRadius] { return cmd->m_on; }))
+			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.explosionRadiusScale));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.disableCriticalHits));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.giveAllWeapons));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.giveMaxAmmo));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.openGunLocker));
 
 		// Ammu-Nation (weaponsAmmuNationGroup) - see AddAmmuNationRows()'s
 		// own doc comment for what it covers.
