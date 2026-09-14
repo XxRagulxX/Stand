@@ -1,6 +1,19 @@
 #pragma once
 #include "Commands/Weapons/CommandAimbot.hpp"
+#include "Commands/Weapons/CommandNoRecoil.hpp"
+#include "Commands/Weapons/CommandRangeMultiplier.hpp"
+#include "Commands/Weapons/CommandRocketSpeedMultiplier.hpp"
+#include "Commands/Weapons/CommandShotgunBatchSize.hpp"
+#include "Commands/Weapons/CommandInstantLockon.hpp"
+#include "Commands/Weapons/CommandInstantProxyDetonate.hpp"
+#include "Commands/Weapons/CommandGunFreedom.hpp"
+#include "Commands/Weapons/CommandTeleportGun.hpp"
+#include "Commands/Weapons/CommandLaserSights.hpp"
+#include "Commands/Weapons/CommandNoSpooling.hpp"
+#include "Commands/Weapons/CommandNoSpread.hpp"
+#include "Commands/Weapons/CommandProximityRockets.hpp"
 #include "Commands/Weapons/CommandTriggerbot.hpp"
+#include "Commands/Weapons/CommandVehicleRapidFire.hpp"
 #include "Commands/Weapons/CommandDamageMultiplier.hpp"
 #include "Commands/Weapons/CommandDisableCriticalHits.hpp"
 #include "Commands/Weapons/CommandExplosionRadius.hpp"
@@ -160,8 +173,21 @@ namespace Stand
 		CommandGiveAllWeapons* const      giveAllWeapons;
 		CommandGiveMaxAmmo* const         giveMaxAmmo;
 		CommandOpenGunLockerTree* const   openGunLocker;
+		CommandRangeMultiplier* const     rangeMultiplier;
+		CommandNoSpread* const            noSpread;
+		CommandNoRecoil* const            noRecoil;
+		CommandNoSpooling* const          noSpooling;
 		CommandAimbot* const              aimbot;
 		CommandTriggerbot* const          triggerbot;
+		CommandProximityRockets* const    proximityRockets;
+		CommandVehicleRapidFire* const      vehicleRapidFire;
+		CommandRocketSpeedMultiplier* const rocketSpeedMultiplier;
+		CommandShotgunBatchSize* const      shotgunBatchSize;
+		CommandInstantLockon* const         instantLockon;
+		CommandInstantProxyDetonate* const  instantProxy;
+		CommandGunFreedom* const            gunFreedom;
+		CommandTeleportGun* const           teleportGun;
+		CommandLaserSights* const           laserSights;
 
 		explicit CommandTabWeapons()
 			: CommandList(nullptr, LIT("Weapons"), CMDNAMES("weapons")),
@@ -199,8 +225,21 @@ namespace Stand
 			  giveAllWeapons(createChild<CommandGiveAllWeapons>()),
 			  giveMaxAmmo(createChild<CommandGiveMaxAmmo>()),
 			  openGunLocker(createChild<CommandOpenGunLockerTree>()),
+			  rangeMultiplier(createChild<CommandRangeMultiplier>()),
+			  noSpread(createChild<CommandNoSpread>()),
+			  noRecoil(createChild<CommandNoRecoil>()),
+			  noSpooling(createChild<CommandNoSpooling>()),
 			  aimbot(createChild<CommandAimbot>()),
-			  triggerbot(createChild<CommandTriggerbot>())
+			  triggerbot(createChild<CommandTriggerbot>()),
+			  proximityRockets(createChild<CommandProximityRockets>()),
+			  vehicleRapidFire(createChild<CommandVehicleRapidFire>()),
+			  rocketSpeedMultiplier(createChild<CommandRocketSpeedMultiplier>()),
+			  shotgunBatchSize(createChild<CommandShotgunBatchSize>()),
+			  instantLockon(createChild<CommandInstantLockon>()),
+			  instantProxy(createChild<CommandInstantProxyDetonate>()),
+			  gunFreedom(createChild<CommandGunFreedom>()),
+			  teleportGun(createChild<CommandTeleportGun>()),
+			  laserSights(createChild<CommandLaserSights>())
 		{
 			explosiveAmmo->m_type   = explosionType;
 			explosiveAmmo->m_damage = explosionDamage;
