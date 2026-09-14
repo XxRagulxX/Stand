@@ -5,7 +5,6 @@
 namespace Stand
 {
 	const CommandExplosionType::Entry CommandExplosionType::kTypes[] = {
-		{static_cast<int>(ExplosionType::DONTCARE),               "Don't Care"},
 		{static_cast<int>(ExplosionType::GRENADE),                "Grenade"},
 		{static_cast<int>(ExplosionType::GRENADELAUNCHER),        "Grenade Launcher"},
 		{static_cast<int>(ExplosionType::STICKYBOMB),             "Sticky Bomb"},
@@ -93,5 +92,5 @@ namespace Stand
 	};
 
 	const int CommandExplosionType::kCount        = static_cast<int>(std::size(kTypes));
-	const int CommandExplosionType::kDefaultIndex = 19;
+	const int CommandExplosionType::kDefaultIndex = 18;
 }

@@ -13,8 +13,9 @@ namespace Stand
 		static const int   kDefaultIndex;
 
 		explicit CommandExplosionType(CommandList* parent)
-			: CommandSlider(parent, LIT("Explosion Type"), CMDNAMES("selectedexplosion"),
-			                NOLABEL, 0, kCount - 1, kDefaultIndex, 1, 0)
+			: CommandSlider(parent, LIT("Explosion Type"), CMDNAMES("exptype"),
+			                LIT("Lets you select the explosion type of Explosive Hits."),
+			                0, kCount - 1, kDefaultIndex, 1, 0)
 		{
 		}
 

@@ -12,6 +12,10 @@
 #include "Commands/Weapons/CommandWhenShooting.hpp"
 #include "Commands/Weapons/CommandWhenAiming.hpp"
 #include "Commands/Weapons/CommandGravityGun.hpp"
+#include "Commands/Weapons/CommandVehicleGun.hpp"
+#include "Commands/Weapons/CommandGunVan.hpp"
+#include "Commands/Weapons/CommandWeaponComponents.hpp"
+#include "Commands/Weapons/CommandWeaponTint.hpp"
 #include "Commands/Weapons/CommandNoSpooling.hpp"
 #include "Commands/Weapons/CommandNoSpread.hpp"
 #include "Commands/Weapons/CommandProximityRockets.hpp"
@@ -25,14 +29,11 @@
 #include "Commands/Weapons/CommandFillAmmo.hpp"
 #include "Commands/Weapons/CommandImpactParticles.hpp"
 #include "Commands/Weapons/CommandInfiniteAmmo.hpp"
-#include "Commands/Weapons/CommandInfiniteClip.hpp"
-#include "Commands/Weapons/CommandInfiniteParachutes.hpp"
 #include "Commands/Weapons/CommandMeleeDamage.hpp"
 #include "Commands/Weapons/CommandNoReload.hpp"
 #include "Commands/Weapons/CommandRapidFire.hpp"
 #include "Commands/Weapons/CommandRemoveAmmo.hpp"
 #include "Commands/Weapons/CommandSuperMelee.hpp"
-#include "Commands/Weapons/CommandWeaponDamage.hpp"
 #include "Commands/Weapons/CommandWeaponsTools.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
@@ -81,18 +82,15 @@ namespace Stand
 		CommandFillAmmo* const            fillAmmo;
 		CommandRemoveAmmo* const          removeAmmo;
 		CommandInfiniteAmmo* const        infiniteAmmo;
-		CommandInfiniteClip* const        infiniteClip;
 		CommandNoReload* const            noReload;
-		CommandInfiniteParachutes* const  infiniteParachutes;
 		CommandRapidFire* const           rapidFire;
 		CommandExplosiveAmmo* const       explosiveAmmo;
 		CommandExplosionType* const       explosionType;
 		CommandSliderFloat* const         explosionDamage;
 		CommandSliderFloat* const         explosionCameraShake;
 		CommandImpactParticles* const     impactParticles;
+		CommandImpactParticleSelect* const impactParticleSelect;
 		CommandDamageMultiplier* const    damageMultiplier;
-		CommandWeaponDamage* const        weaponDamage;
-		CommandSliderFloat* const         weaponDamageScale;
 		CommandSuperMelee* const          superMelee;
 		CommandMeleeDamage* const         meleeDamage;
 		CommandSliderFloat* const         meleeDamageScale;
@@ -122,15 +120,18 @@ namespace Stand
 		CommandWhenShooting* const          whenShooting;
 		CommandWhenAiming* const            whenAiming;
 		CommandGravityGun* const            gravityGun;
+		CommandVehicleGun* const            vehicleGun;
+		CommandWeaponComponents* const      weaponComponents;
+		CommandWeaponTint* const            weaponTint;
+		CommandWeaponTintRainbow* const     weaponTintRainbow;
+		CommandGunVan* const               gunVan;
 
 		explicit CommandTabWeapons()
 			: CommandList(nullptr, LIT("Weapons"), CMDNAMES("weapons")),
 			  fillAmmo(createChild<CommandFillAmmo>()),
 			  removeAmmo(createChild<CommandRemoveAmmo>()),
 			  infiniteAmmo(createChild<CommandInfiniteAmmo>()),
-			  infiniteClip(createChild<CommandInfiniteClip>()),
 			  noReload(createChild<CommandNoReload>()),
-			  infiniteParachutes(createChild<CommandInfiniteParachutes>()),
 			  rapidFire(createChild<CommandRapidFire>()),
 			  explosiveAmmo(createChild<CommandExplosiveAmmo>()),
 			  explosionType(createChild<CommandExplosionType>()),
@@ -141,11 +142,8 @@ namespace Stand
 			      LIT("Explosion Camera Shake"), CMDNAMES("explosioncamerashake"),
 			      NOLABEL, 0, 1000, 10)),
 			  impactParticles(createChild<CommandImpactParticles>()),
+			  impactParticleSelect(createChild<CommandImpactParticleSelect>()),
 			  damageMultiplier(createChild<CommandDamageMultiplier>()),
-			  weaponDamage(createChild<CommandWeaponDamage>()),
-			  weaponDamageScale(createChild<CommandSliderFloat>(
-			      LIT("Weapon Damage Scale"), CMDNAMES("weapondamagescale"),
-			      NOLABEL, 0, 1000, 100)),
 			  superMelee(createChild<CommandSuperMelee>()),
 			  meleeDamage(createChild<CommandMeleeDamage>()),
 			  meleeDamageScale(createChild<CommandSliderFloat>(
@@ -158,7 +156,7 @@ namespace Stand
 			  disableCriticalHits(createChild<CommandDisableCriticalHits>()),
 			  getWeapons(createChild<CommandList>(LIT("Get Weapons"), CMDNAMES("getgun"))),
 			  removeWeapons(createChild<CommandList>(LIT("Remove Weapons"), CMDNAMES("removegun"))),
-			  giveAllWeapons(createChild<CommandGiveAllWeapons>()),
+			  giveAllWeapons(getWeapons->createChild<CommandGiveAllWeapons>()),
 			  giveMaxAmmo(createChild<CommandGiveMaxAmmo>()),
 			  openGunLocker(createChild<CommandOpenGunLockerTree>()),
 			  rangeMultiplier(createChild<CommandRangeMultiplier>()),
@@ -178,12 +176,18 @@ namespace Stand
 			  laserSights(createChild<CommandLaserSights>()),
 			  whenShooting(createChild<CommandWhenShooting>()),
 			  whenAiming(createChild<CommandWhenAiming>()),
-			  gravityGun(createChild<CommandGravityGun>())
+			  gravityGun(createChild<CommandGravityGun>()),
+			  vehicleGun(createChild<CommandVehicleGun>()),
+			  weaponComponents(createChild<CommandWeaponComponents>()),
+			  weaponTint(createChild<CommandWeaponTint>()),
+			  weaponTintRainbow(createChild<CommandWeaponTintRainbow>()),
+			  gunVan(createChild<CommandGunVan>())
 		{
-			explosiveAmmo->m_type   = explosionType;
+			impactParticles->m_particle   = impactParticleSelect;
+			weaponTintRainbow->m_tint     = weaponTint;
+			explosiveAmmo->m_type         = explosionType;
 			explosiveAmmo->m_damage = explosionDamage;
 			explosiveAmmo->m_shake  = explosionCameraShake;
-			weaponDamage->m_scale   = weaponDamageScale;
 			meleeDamage->m_scale    = meleeDamageScale;
 			explosionRadius->m_scale = explosionRadiusScale;
 

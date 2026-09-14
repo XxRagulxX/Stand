@@ -35,6 +35,8 @@ namespace Stand::Rendering
 		// reason (a ColorCommand's own R/G/B/A sub-page).
 		static GridStandCommandList& GetOrCreate(Stand::CommandList* list);
 
+		void invalidateContent() { invalidate(); }
+
 	protected:
 		void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override;
 
