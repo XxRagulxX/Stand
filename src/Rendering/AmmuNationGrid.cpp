@@ -14,7 +14,7 @@
 #include "Scripting/Scripts.hpp"
 #include "World/Self.hpp"
 #include "Rendering/Theme.hpp"
-#include "Weapons/WeaponsHashes.hpp"
+#include "Weapons/Weapon.hpp"
 #include "Scripting/scrThread.hpp"
 
 #include <algorithm>
@@ -56,7 +56,7 @@ namespace Stand::Rendering
 						{
 							thread->m_Context.m_State = rage::scrThread::State::PAUSED;
 
-							for (const auto& weap : g_WeaponHashes)
+							for (const auto& weap : Weapon::getAllHashes())
 							{
 								static ScriptFunction getWeaponNameLabel("mp_weapons"_J, ScriptPointer("GetWeaponNameLabel", "2D 02 2B 00 00"));
 								static ScriptFunction getWeaponDescLabel("mp_weapons"_J, ScriptPointer("GetWeaponDescLabel", "2D 02 A0 00 00"));

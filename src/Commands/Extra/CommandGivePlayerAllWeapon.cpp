@@ -1,5 +1,5 @@
 #include "Commands/PlayerCommand.hpp"
-#include "Weapons/WeaponsHashes.hpp"
+#include "Weapons/Weapon.hpp"
 
 
 namespace Stand::Features
@@ -10,7 +10,7 @@ namespace Stand::Features
 
 		virtual void OnCall(Player player) override
 		{
-			for (auto weapon : g_WeaponHashes)
+			for (auto weapon : Weapon::getAllHashes())
 				player.GetPed().GiveWeapon(weapon);
 		}
 	};

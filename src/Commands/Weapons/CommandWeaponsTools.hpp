@@ -7,7 +7,7 @@
 #include "Network/GlobalPlayerBD.hpp"
 #include "Rendering/Notifications.hpp"
 #include "Util/Label.hpp"
-#include "Weapons/WeaponsHashes.hpp"
+#include "Weapons/Weapon.hpp"
 #include "World/Self.hpp"
 
 namespace Stand
@@ -24,7 +24,7 @@ namespace Stand
 		{
 			if (auto ped = Stand::Self::GetPed())
 			{
-				for (auto weapon : g_WeaponHashes)
+				for (auto weapon : Weapon::getAllHashes())
 					ped.GiveWeapon(weapon);
 			}
 		}
@@ -42,7 +42,7 @@ namespace Stand
 		{
 			if (auto ped = Stand::Self::GetPed())
 			{
-				for (auto weapon : g_WeaponHashes)
+				for (auto weapon : Weapon::getAllHashes())
 					ped.SetMaxAmmoForWeapon(weapon);
 			}
 		}

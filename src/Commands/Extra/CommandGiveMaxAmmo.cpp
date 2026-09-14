@@ -1,6 +1,6 @@
 #include "Commands/CommandLegacy.hpp"
 #include "World/Self.hpp"
-#include "Weapons/WeaponsHashes.hpp"
+#include "Weapons/Weapon.hpp"
 
 namespace Stand::Features
 {
@@ -10,7 +10,7 @@ namespace Stand::Features
 
 		virtual void OnCall() override
 		{
-			for (auto weapon : g_WeaponHashes)
+			for (auto weapon : Weapon::getAllHashes())
 			{
 				Self::GetPed().SetMaxAmmoForWeapon(weapon);
 			}

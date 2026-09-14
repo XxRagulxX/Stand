@@ -3,7 +3,7 @@
 #include "Menu/Click.hpp"
 #include "Scripting/Natives.hpp"
 #include "Util/Label.hpp"
-#include "Weapons/WeaponsHashes.hpp"
+#include "Weapons/Weapon.hpp"
 #include "World/Self.hpp"
 
 namespace Stand
@@ -21,7 +21,7 @@ namespace Stand
 			if (auto ped = Stand::Self::GetPed())
 			{
 				const auto handle = ped.GetHandle();
-				for (auto weapon : g_WeaponHashes)
+				for (auto weapon : Weapon::getAllHashes())
 				{
 					if (WEAPON::HAS_PED_GOT_WEAPON(handle, weapon, FALSE))
 						WEAPON::ADD_AMMO_TO_PED(handle, weapon, 9999);

@@ -15,7 +15,7 @@
 #include "World/Self.hpp"
 #include "Scripting/Scripts.hpp"
 #include "Rendering/Theme.hpp"
-#include "Weapons/WeaponsHashes.hpp"
+#include "Weapons/Weapon.hpp"
 
 namespace Stand::Rendering
 {
@@ -124,7 +124,7 @@ namespace Stand::Rendering
 
 				    if (m_GiveAllWeapons && m_GiveAllWeapons->GetState())
 				    {
-					    for (auto weaponHash : g_WeaponHashes)
+					    for (auto weaponHash : Weapon::getAllHashes())
 						    handle.GiveWeapon(weaponHash);
 				    }
 
