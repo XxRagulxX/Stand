@@ -1,7 +1,5 @@
 #include "Commands/Self/CommandTabTransform.hpp"
-
-#include "Core/LogHelper.hpp"
-#include "Util/Joaat.hpp"
+#include "Commands/Self/CommandTransformModel.hpp"
 
 #include <string>
 

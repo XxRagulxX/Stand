@@ -22,14 +22,11 @@
 #include "Commands/Weapons/CommandTriggerbot.hpp"
 #include "Commands/Weapons/CommandVehicleRapidFire.hpp"
 #include "Commands/Weapons/CommandDamageMultiplier.hpp"
-#include "Commands/Weapons/CommandDisableCriticalHits.hpp"
-#include "Commands/Weapons/CommandExplosionRadius.hpp"
 #include "Commands/Weapons/CommandExplosionType.hpp"
 #include "Commands/Weapons/CommandExplosiveAmmo.hpp"
 #include "Commands/Weapons/CommandFillAmmo.hpp"
 #include "Commands/Weapons/CommandImpactParticles.hpp"
 #include "Commands/Weapons/CommandInfiniteAmmo.hpp"
-#include "Commands/Weapons/CommandMeleeDamage.hpp"
 #include "Commands/Weapons/CommandNoReload.hpp"
 #include "Commands/Weapons/CommandRapidFire.hpp"
 #include "Commands/Weapons/CommandRemoveAmmo.hpp"
@@ -37,7 +34,6 @@
 #include "Commands/Weapons/CommandWeaponsTools.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
-#include "Commands/Widgets/CommandSliderFloat.hpp"
 #include "Menu/Click.hpp"
 #include "Util/Label.hpp"
 #include "Weapons/Weapon.hpp"
@@ -86,17 +82,10 @@ namespace Stand
 		CommandRapidFire* const           rapidFire;
 		CommandExplosiveAmmo* const       explosiveAmmo;
 		CommandExplosionType* const       explosionType;
-		CommandSliderFloat* const         explosionDamage;
-		CommandSliderFloat* const         explosionCameraShake;
 		CommandImpactParticles* const     impactParticles;
 		CommandImpactParticleSelect* const impactParticleSelect;
 		CommandDamageMultiplier* const    damageMultiplier;
 		CommandSuperMelee* const          superMelee;
-		CommandMeleeDamage* const         meleeDamage;
-		CommandSliderFloat* const         meleeDamageScale;
-		CommandExplosionRadius* const     explosionRadius;
-		CommandSliderFloat* const         explosionRadiusScale;
-		CommandDisableCriticalHits* const disableCriticalHits;
 		CommandList* const                getWeapons;
 		CommandList* const                removeWeapons;
 		CommandGiveAllWeapons* const      giveAllWeapons;
@@ -135,25 +124,10 @@ namespace Stand
 			  rapidFire(createChild<CommandRapidFire>()),
 			  explosiveAmmo(createChild<CommandExplosiveAmmo>()),
 			  explosionType(createChild<CommandExplosionType>()),
-			  explosionDamage(createChild<CommandSliderFloat>(
-			      LIT("Explosion Damage Scale"), CMDNAMES("explosiondamage"),
-			      NOLABEL, 0, 100000, 100)),
-			  explosionCameraShake(createChild<CommandSliderFloat>(
-			      LIT("Explosion Camera Shake"), CMDNAMES("explosioncamerashake"),
-			      NOLABEL, 0, 1000, 10)),
 			  impactParticles(createChild<CommandImpactParticles>()),
 			  impactParticleSelect(createChild<CommandImpactParticleSelect>()),
 			  damageMultiplier(createChild<CommandDamageMultiplier>()),
 			  superMelee(createChild<CommandSuperMelee>()),
-			  meleeDamage(createChild<CommandMeleeDamage>()),
-			  meleeDamageScale(createChild<CommandSliderFloat>(
-			      LIT("Melee Damage Scale"), CMDNAMES("meleedamagescale"),
-			      NOLABEL, 0, 1000, 100)),
-			  explosionRadius(createChild<CommandExplosionRadius>()),
-			  explosionRadiusScale(createChild<CommandSliderFloat>(
-			      LIT("Explosion Radius Scale"), CMDNAMES("explosionradiusscale"),
-			      NOLABEL, 0, 1000, 100)),
-			  disableCriticalHits(createChild<CommandDisableCriticalHits>()),
 			  getWeapons(createChild<CommandList>(LIT("Get Weapons"), CMDNAMES("getgun"))),
 			  removeWeapons(createChild<CommandList>(LIT("Remove Weapons"), CMDNAMES("removegun"))),
 			  giveAllWeapons(getWeapons->createChild<CommandGiveAllWeapons>()),
@@ -186,10 +160,6 @@ namespace Stand
 			impactParticles->m_particle   = impactParticleSelect;
 			weaponTintRainbow->m_tint     = weaponTint;
 			explosiveAmmo->m_type         = explosionType;
-			explosiveAmmo->m_damage = explosionDamage;
-			explosiveAmmo->m_shake  = explosionCameraShake;
-			meleeDamage->m_scale    = meleeDamageScale;
-			explosionRadius->m_scale = explosionRadiusScale;
 
 			auto populate = [this](CommandList* list, bool give)
 			{

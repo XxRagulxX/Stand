@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <string>
 
 namespace Stand
 {
@@ -43,6 +44,13 @@ namespace Stand
 			                NOLABEL, 0, 16, 0, 1)
 		{
 			CommandTickDispatch::AddCommand(this);
+		}
+
+		[[nodiscard]] std::string getValueText() const override
+		{
+			if (value == 0)
+				return "Don't Override";
+			return std::to_string(value);
 		}
 
 		void onTick() override

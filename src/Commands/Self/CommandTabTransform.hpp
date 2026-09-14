@@ -1,9 +1,7 @@
 #pragma once
-#include "Commands/Self/CommandTransformModel.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Menu/Click.hpp"
-#include "Util/Joaat.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand
