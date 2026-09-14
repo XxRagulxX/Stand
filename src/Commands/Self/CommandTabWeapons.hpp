@@ -9,6 +9,9 @@
 #include "Commands/Weapons/CommandGunFreedom.hpp"
 #include "Commands/Weapons/CommandTeleportGun.hpp"
 #include "Commands/Weapons/CommandLaserSights.hpp"
+#include "Commands/Weapons/CommandWhenShooting.hpp"
+#include "Commands/Weapons/CommandWhenAiming.hpp"
+#include "Commands/Weapons/CommandGravityGun.hpp"
 #include "Commands/Weapons/CommandNoSpooling.hpp"
 #include "Commands/Weapons/CommandNoSpread.hpp"
 #include "Commands/Weapons/CommandProximityRockets.hpp"
@@ -116,6 +119,9 @@ namespace Stand
 		CommandGunFreedom* const            gunFreedom;
 		CommandTeleportGun* const           teleportGun;
 		CommandLaserSights* const           laserSights;
+		CommandWhenShooting* const          whenShooting;
+		CommandWhenAiming* const            whenAiming;
+		CommandGravityGun* const            gravityGun;
 
 		explicit CommandTabWeapons()
 			: CommandList(nullptr, LIT("Weapons"), CMDNAMES("weapons")),
@@ -169,7 +175,10 @@ namespace Stand
 			  instantProxy(createChild<CommandInstantProxyDetonate>()),
 			  gunFreedom(createChild<CommandGunFreedom>()),
 			  teleportGun(createChild<CommandTeleportGun>()),
-			  laserSights(createChild<CommandLaserSights>())
+			  laserSights(createChild<CommandLaserSights>()),
+			  whenShooting(createChild<CommandWhenShooting>()),
+			  whenAiming(createChild<CommandWhenAiming>()),
+			  gravityGun(createChild<CommandGravityGun>())
 		{
 			explosiveAmmo->m_type   = explosionType;
 			explosiveAmmo->m_damage = explosionDamage;
