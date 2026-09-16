@@ -1,6 +1,7 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Self/CommandAutoHeal.hpp"
+#include "Commands/Self/CommandBodyguards.hpp"
 #include "Commands/Self/CommandTabOutfit.hpp"
 #include "Commands/Self/CommandTabAppearanceMisc.hpp"
 #include "Commands/Self/CommandFakeWanted.hpp"
@@ -44,6 +45,7 @@ namespace Stand
 		CommandRefillHealth* const refillHealth;
 		CommandRefillArmour* const refillArmour;
 		CommandSuicide* const suicide;
+		CommandBodyguards* const bodyguards;
 
 		explicit CommandTabSelf() :
 		    CommandList(nullptr, LIT("Self")),
@@ -65,7 +67,8 @@ namespace Stand
 		    regenerationRate(createChild<CommandRegenerationRate>()),
 		    refillHealth(createChild<CommandRefillHealth>()),
 		    refillArmour(createChild<CommandRefillArmour>()),
-		    suicide(createChild<CommandSuicide>())
+		    suicide(createChild<CommandSuicide>()),
+		    bodyguards(createChild<CommandBodyguards>())
 		{
 		}
 	};
