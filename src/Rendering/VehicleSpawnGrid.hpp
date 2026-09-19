@@ -1,13 +1,9 @@
 #pragma once
-#include "Rendering/GridTabbed.hpp"
+#include "Rendering/Grid.hpp"
 
 namespace Stand::Rendering
 {
-	// Content grid for Vehicle > Spawn: mirrors SpawnVehicle.cpp's
-	// BuildSpawnVehicleMenu() TabBarItem in full - New Vehicle/Personal
-	// Vehicle tabs (VehicleSpawnNewGrid/VehicleSpawnPersonalGrid), each
-	// with its own search-list spawn UI plus Settings toggles.
-	class VehicleSpawnGrid : public GridTabbed
+	class VehicleSpawnGrid : public Grid
 	{
 	public:
 		VehicleSpawnGrid();

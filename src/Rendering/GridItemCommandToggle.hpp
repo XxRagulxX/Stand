@@ -1,5 +1,5 @@
 #pragma once
-#include "Commands/CommandToggleLegacy.hpp"
+#include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 #include "Rendering/GridItem.hpp"
 #include "Util/Joaat.hpp"
 
@@ -34,7 +34,7 @@ namespace Stand::Rendering
 	private:
 		const std::string& Label() const;
 
-		CommandToggleLegacy* m_Command;
+		CommandToggleNoCorrelation* m_Command;
 		std::optional<std::string> m_LabelOverride;
 	};
 }

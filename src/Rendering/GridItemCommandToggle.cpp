@@ -1,6 +1,7 @@
 #include "Rendering/GridItemCommandToggle.hpp"
 
-#include "Commands/Commands.hpp"
+#include "Commands/Widgets/CommandRegistry.hpp"
+#include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
 
@@ -16,14 +17,14 @@ namespace Stand::Rendering
 
 	GridItemCommandToggle::GridItemCommandToggle(int16_t width, int16_t height, joaat_t id, std::optional<std::string> labelOverride) :
 	    GridItem(GRIDITEM_INDIFFERENT, width, height),
-	    m_Command(Commands::GetCommand<CommandToggleLegacy>(id)),
+	    m_Command(CommandRegistry::GetCommand<CommandToggleNoCorrelation>(id)),
 	    m_LabelOverride(std::move(labelOverride))
 	{
 	}
 
 	std::string GridItemCommandToggle::GetDescription() const
 	{
-		return m_Command ? m_Command->GetDescription() : std::string{};
+		return m_Command ? m_Command->help_text.getLocalisedUtf8() : std::string{};
 	}
 
 	const std::string& GridItemCommandToggle::Label() const
@@ -32,7 +33,7 @@ namespace Stand::Rendering
 		if (!m_Command)
 			return unknown;
 
-		return m_LabelOverride.has_value() ? *m_LabelOverride : m_Command->GetLabel();
+		return m_LabelOverride.has_value() ? *m_LabelOverride : m_Command->menu_name.getLocalisedUtf8();
 	}
 
 	void GridItemCommandToggle::draw()
@@ -44,7 +45,7 @@ namespace Stand::Rendering
 		const float indicatorY = y + std::max(0.f, (height - kIndicatorSize) * 0.5f);
 
 		const auto borderColour = m_Command ? Theme::kText : Theme::kError;
-		const auto fillColour = !m_Command ? Theme::kError : (m_Command->GetState() ? Theme::kAccent : Theme::kPanelBackground);
+		const auto fillColour = !m_Command ? Theme::kError : (m_Command->m_on ? Theme::kAccent : Theme::kPanelBackground);
 		GridRenderer::DrawRect(indicatorX, indicatorY, kIndicatorSize, kIndicatorSize, borderColour);
 		GridRenderer::DrawRect(indicatorX + kBorderWidth,
 		    indicatorY + kBorderWidth,
@@ -70,8 +71,7 @@ namespace Stand::Rendering
 		if (!m_Command)
 			return;
 
-		// Matches BoolCommandItem::Draw() exactly: read the live state,
-		// flip it, SetState() - not a locally-tracked bool.
-		m_Command->SetState(!m_Command->GetState());
+		Click click(CLICK_MENU, TC_RENDERER);
+		m_Command->setStateBool(click, !m_Command->m_on);
 	}
 }

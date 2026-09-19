@@ -8,7 +8,7 @@
 #include "Util/get_current_time_millis.hpp"
 #include "Util/Label.hpp"
 #include "Util/Math.hpp"
-#include "Vehicle/Vehicles.hpp"
+#include "Vehicle/VehicleData.hpp"
 #include "World/Self.hpp"
 
 #include <array>
@@ -56,8 +56,9 @@ namespace Stand
 		{
 			for (auto& b : m_classBuckets)
 				b.clear();
-			for (auto hash : g_VehicleHashes)
+			for (size_t i = 0; i < g_VehicleCount; ++i)
 			{
+				const joaat_t hash = Stand::Joaat(g_VehicleData[i].hash_name);
 				const int cls = VEHICLE::GET_VEHICLE_CLASS_FROM_NAME(hash);
 				if (cls >= 0 && cls < 23)
 					m_classBuckets[cls].push_back(hash);
@@ -68,10 +69,8 @@ namespace Stand
 		[[nodiscard]] joaat_t pickHash() const
 		{
 			const int cls = model ? model->value : -1;
-			if (cls == -1)
-				return g_VehicleHashes[std::rand() % g_VehicleHashes.size()];
-			if (cls < 0 || cls >= 23 || m_classBuckets[cls].empty())
-				return g_VehicleHashes[std::rand() % g_VehicleHashes.size()];
+			if (cls == -1 || cls < 0 || cls >= 23 || m_classBuckets[cls].empty())
+				return Stand::Joaat(g_VehicleData[std::rand() % g_VehicleCount].hash_name);
 			return m_classBuckets[cls][std::rand() % m_classBuckets[cls].size()];
 		}
 

@@ -1,9 +1,9 @@
 #include "Vehicle/Vehicle.hpp"
 #include "Scripting/Natives.hpp"
-#include "Scripting/ScriptMgr.hpp"
+#include "Scripting/Script.hpp"
 #include "Core/Pointers.hpp"
+#include "Vehicle/VehicleData.hpp"
 #include "Vehicle/VehicleValues.hpp"
-#include "Vehicle/Vehicles.hpp"
 
 namespace Stand
 {

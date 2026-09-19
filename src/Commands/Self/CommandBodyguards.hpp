@@ -14,9 +14,12 @@
 #include "World/Self.hpp"
 
 #include <cmath>
+#include <vector>
 
 namespace Stand
 {
+	inline std::vector<int> g_bodyguards;
+
 	class CommandBodyguardCount : public CommandSlider
 	{
 	public:
@@ -28,11 +31,11 @@ namespace Stand
 
 	class CommandSpawnBodyguards : public CommandPhysical
 	{
-		CommandBodyguardCount*     m_count;
-		CommandBodyguardModel*     m_model;
+		CommandBodyguardCount*           m_count;
+		CommandBodyguardModel*           m_model;
 		CommandBodyguardPrimaryWeapon*   m_primary;
 		CommandBodyguardSecondaryWeapon* m_secondary;
-		CommandBodyguardBehaviour* m_behaviour;
+		CommandBodyguardBehaviour*       m_behaviour;
 
 	public:
 		CommandSpawnBodyguards(CommandList* parent, CommandBodyguardCount* count,
@@ -85,6 +88,9 @@ namespace Stand
 					Script::current()->yield(10);
 					if (!bg) continue;
 
+					ENTITY::SET_ENTITY_AS_MISSION_ENTITY(bg, false, true);
+					g_bodyguards.push_back(bg);
+
 					PED::SET_PED_AS_GROUP_MEMBER(bg, group);
 					PED::SET_PED_NEVER_LEAVES_GROUP(bg, true);
 					WEAPON::GIVE_WEAPON_TO_PED(bg, pedPrimary,   9999, false, true);
@@ -112,13 +118,11 @@ namespace Stand
 					PED::SET_PED_FLEE_ATTRIBUTES(bg, 0, false);
 
 					const Hash bgRelGroup = PED::GET_PED_RELATIONSHIP_GROUP_HASH(bg);
-					if (exPlayers)    PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "PLAYER"_J);
-					if (exFriends)    PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "CIVMALE"_J);
-					if (exAuth)       PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "COP"_J);
-					if (exCrew)       PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "PRIVATECREW"_J);
-					if (exOrg)        PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "SECURITY"_J);
-
-					ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&bg);
+					if (exPlayers) PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "PLAYER"_J);
+					if (exFriends) PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "CIVMALE"_J);
+					if (exAuth)    PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "COP"_J);
+					if (exCrew)    PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "PRIVATECREW"_J);
+					if (exOrg)     PED::SET_RELATIONSHIP_BETWEEN_GROUPS(1, bgRelGroup, "SECURITY"_J);
 				}
 
 				if (formation != 0)
@@ -132,10 +136,10 @@ namespace Stand
 	class CommandBodyguardsSpawn : public CommandList
 	{
 	public:
-		CommandBodyguardModel* const model;
-		CommandBodyguardPrimaryWeapon* const primary;
+		CommandBodyguardModel* const           model;
+		CommandBodyguardPrimaryWeapon* const   primary;
 		CommandBodyguardSecondaryWeapon* const secondary;
-		CommandBodyguardCount* const count;
+		CommandBodyguardCount* const           count;
 
 		explicit CommandBodyguardsSpawn(CommandList* parent, CommandBodyguardBehaviour* behaviour)
 			: CommandList(parent, LIT("Spawn"), CMDNAMES("bgspawn"))
@@ -150,24 +154,20 @@ namespace Stand
 
 	class CommandBGImmortality : public CommandToggle
 	{
-		static void applyToGroup(bool invincible)
+		static void apply(bool invincible)
 		{
-			const int group = PLAYER::GET_PLAYER_GROUP(PLAYER::GET_PLAYER_INDEX());
-			int count = 0;
-			PED::GET_GROUP_SIZE(group, nullptr, &count);
-			for (int i = 0; i < count; ++i)
+			for (int h : g_bodyguards)
 			{
-				int member = PED::GET_PED_AS_GROUP_MEMBER(group, i);
-				if (member)
-					ENTITY::SET_ENTITY_INVINCIBLE(member, invincible, false);
+				if (h)
+					ENTITY::SET_ENTITY_INVINCIBLE(h, invincible, false);
 			}
 		}
 	public:
 		explicit CommandBGImmortality(CommandList* parent)
 			: CommandToggle(parent, LIT("Immortality"), CMDNAMES("bodyguardimmortality"), NOLABEL)
 		{}
-		void onEnable(Click& click) override { FiberPool::queueJob([] { applyToGroup(true); }); }
-		void onDisable(Click& click) override { FiberPool::queueJob([] { applyToGroup(false); }); }
+		void onEnable(Click& click) override  { FiberPool::queueJob([] { apply(true); }); }
+		void onDisable(Click& click) override { FiberPool::queueJob([] { apply(false); }); }
 	};
 
 	class CommandBGTeleportToMe : public CommandPhysical
@@ -179,23 +179,20 @@ namespace Stand
 		void onClick(Click& click) override
 		{
 			FiberPool::queueJob([] {
-				const int player = PLAYER::GET_PLAYER_INDEX();
-				const int playerPed = PLAYER::GET_PLAYER_PED(player);
-				const int group = PLAYER::GET_PLAYER_GROUP(player);
-				Vector3 pos = ENTITY::GET_ENTITY_COORDS(playerPed, true);
-				int count = 0;
-				PED::GET_GROUP_SIZE(group, nullptr, &count);
-				const float step = count > 0 ? (6.283185f / static_cast<float>(count)) : 0.0f;
-				for (int i = 0; i < count; ++i)
+				if (g_bodyguards.empty()) return;
+				const int playerPed = PLAYER::GET_PLAYER_PED(PLAYER::GET_PLAYER_INDEX());
+				const Vector3 pos = ENTITY::GET_ENTITY_COORDS(playerPed, true);
+				const float step = 6.283185f / static_cast<float>(g_bodyguards.size());
+				for (int i = 0; i < static_cast<int>(g_bodyguards.size()); ++i)
 				{
-					int member = PED::GET_PED_AS_GROUP_MEMBER(group, i);
-					if (!member) continue;
+					int h = g_bodyguards[i];
+					if (!h) continue;
 					const float angle = static_cast<float>(i) * step;
-					ENTITY::SET_ENTITY_COORDS(member,
-						pos.x + std::cosf(angle) * 2.0f,
-						pos.y + std::sinf(angle) * 2.0f,
-						pos.z, false, false, false, true);
-					Script::current()->yield(10);
+					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(h,
+						pos.x + std::cosf(angle) * 2.5f,
+						pos.y + std::sinf(angle) * 2.5f,
+						pos.z, true, true, true);
+					Script::current()->yield();
 				}
 			});
 		}
@@ -212,26 +209,25 @@ namespace Stand
 			FiberPool::queueJob([this] {
 				while (m_on)
 				{
-					const int player = PLAYER::GET_PLAYER_INDEX();
-					const int playerPed = PLAYER::GET_PLAYER_PED(player);
-					const int group = PLAYER::GET_PLAYER_GROUP(player);
-					Vector3 pos = ENTITY::GET_ENTITY_COORDS(playerPed, true);
-					int count = 0;
-					PED::GET_GROUP_SIZE(group, nullptr, &count);
-					const float step = count > 0 ? (6.283185f / static_cast<float>(count)) : 0.0f;
-					for (int i = 0; i < count; ++i)
+					if (!g_bodyguards.empty())
 					{
-						int member = PED::GET_PED_AS_GROUP_MEMBER(group, i);
-						if (!member) continue;
-						Vector3 mPos = ENTITY::GET_ENTITY_COORDS(member, true);
-						const float dx = pos.x - mPos.x, dy = pos.y - mPos.y;
-						if (dx * dx + dy * dy > 900.0f)
+						const int playerPed = PLAYER::GET_PLAYER_PED(PLAYER::GET_PLAYER_INDEX());
+						const Vector3 pos = ENTITY::GET_ENTITY_COORDS(playerPed, true);
+						const float step = 6.283185f / static_cast<float>(g_bodyguards.size());
+						for (int i = 0; i < static_cast<int>(g_bodyguards.size()); ++i)
 						{
-							const float angle = static_cast<float>(i) * step;
-							ENTITY::SET_ENTITY_COORDS(member,
-								pos.x + std::cosf(angle) * 2.0f,
-								pos.y + std::sinf(angle) * 2.0f,
-								pos.z, false, false, false, true);
+							int h = g_bodyguards[i];
+							if (!h) continue;
+							const Vector3 mPos = ENTITY::GET_ENTITY_COORDS(h, true);
+							const float dx = pos.x - mPos.x, dy = pos.y - mPos.y;
+							if (dx * dx + dy * dy > 400.0f)
+							{
+								const float angle = static_cast<float>(i) * step;
+								ENTITY::SET_ENTITY_COORDS_NO_OFFSET(h,
+									pos.x + std::cosf(angle) * 2.5f,
+									pos.y + std::sinf(angle) * 2.5f,
+									pos.z, true, true, true);
+							}
 						}
 					}
 					Script::current()->yield(2000);
@@ -249,22 +245,14 @@ namespace Stand
 		void onClick(Click& click) override
 		{
 			FiberPool::queueJob([] {
-				const int group = PLAYER::GET_PLAYER_GROUP(PLAYER::GET_PLAYER_INDEX());
-				int count = 0;
-				PED::GET_GROUP_SIZE(group, nullptr, &count);
-				std::vector<int> members;
-				members.reserve(count);
-				for (int i = 0; i < count; ++i)
+				for (int h : g_bodyguards)
 				{
-					int m = PED::GET_PED_AS_GROUP_MEMBER(group, i);
-					if (m) members.push_back(m);
+					if (!h) continue;
+					PED::REMOVE_PED_FROM_GROUP(h);
+					PED::DELETE_PED(&h);
+					Script::current()->yield();
 				}
-				for (int m : members)
-				{
-					PED::REMOVE_PED_FROM_GROUP(m);
-					PED::DELETE_PED(&m);
-					Script::current()->yield(10);
-				}
+				g_bodyguards.clear();
 			});
 		}
 	};

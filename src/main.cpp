@@ -23,7 +23,6 @@
 #include "Scripting/ScriptPointers.hpp"
 #include "Menu/GUI.hpp"
 #include "Core/Pointers.hpp"
-#include "Commands/Vehicle/CommandSavePersonalVehicle.hpp"
 #include "Commands/Weapons/CommandOpenGunLocker.hpp"
 #include "Commands/World/CommandDailyActivities.hpp"
 #include "Core/LogHelper.hpp"
@@ -151,7 +150,6 @@ namespace Stand
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Commands::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Stand::CommandHotkeyDispatch::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Stand::CommandTickDispatch::RunScript));
-		g_script_mgr.addScript(module, std::make_unique<Script>(&Features::SavePersonalVehicle::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Features::OpenGunLocker::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Features::OpenStreetDealerMenu::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&SavedPlayers::RunScript));

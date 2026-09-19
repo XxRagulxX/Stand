@@ -2,7 +2,6 @@
 
 #include "Core/FileMgr.hpp"
 #include "Menu/GUI.hpp"
-#include "Rendering/AutoDriveHUD.hpp"
 #include "Rendering/ChatDisplay.hpp"
 #include "Rendering/DescriptionPanel.hpp"
 #include "Rendering/ESP.hpp"
@@ -348,7 +347,6 @@ namespace Stand::Rendering
 			ESP::Draw();
 			ChatDisplay::Draw();
 			Onboarding::Draw();
-			AutoDriveHUD::Draw();
 			MenuCommandConsole::Draw();
 
 			m_Batch->End();
@@ -396,7 +394,6 @@ namespace Stand::Rendering
 			ESP::DrawText();
 			ChatDisplay::DrawText();
 			Onboarding::DrawText();
-			AutoDriveHUD::DrawText();
 			MenuCommandConsole::DrawText();
 
 			m_SpriteBatch->End();

@@ -4,7 +4,6 @@
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
 #include "Ped/PedConfigFlag.hpp"
-#include "Scripting/Natives.hpp"
 #include "Util/Label.hpp"
 #include "World/Self.hpp"
 
