@@ -4,6 +4,8 @@
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
 #include "Commands/Vehicle/Spawn/CommandSpawnPlate.hpp"
+#include "Commands/Vehicle/Spawn/CommandSpawnColours.hpp"
+#include "Commands/Vehicle/Spawn/CommandSpawnBlips.hpp"
 #include "Scripting/Natives.hpp"
 #include "Scripting/Script.hpp"
 #include "Vehicle/SpawnedVehicleMgr.hpp"
@@ -22,6 +24,23 @@ namespace Stand
             const int h = veh.GetHandle();
             ENTITY::SET_ENTITY_INVINCIBLE(h, TRUE, FALSE);
             ENTITY::SET_ENTITY_PROOFS(h, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE);
+        }
+
+        void ApplyColour(Vehicle veh)
+        {
+            if (!Features::GetCommandTabSpawnSettings().spawnColour->enabled->m_on)
+                return;
+            const int h = veh.GetHandle();
+            const auto p = Features::GetSpawnPrimaryColour();
+            const auto s = Features::GetSpawnSecondaryColour();
+            VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(h,
+                static_cast<int>(p.x * 255.f),
+                static_cast<int>(p.y * 255.f),
+                static_cast<int>(p.z * 255.f));
+            VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(h,
+                static_cast<int>(s.x * 255.f),
+                static_cast<int>(s.y * 255.f),
+                static_cast<int>(s.z * 255.f));
         }
 
         void ApplyTune(Vehicle veh, int tune)
@@ -105,12 +124,14 @@ namespace Stand
         if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
         ApplyTune(veh, cfg.spawntune->value);
+        ApplyColour(veh);
 
         const auto plateText = Features::GetSpawnPlateText();
         if (!plateText.empty())
             veh.SetPlateText(plateText);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
+        Features::AddSpawnedVehicleBlip(veh.GetHandle());
         g_FootPreviousHandle = veh.GetHandle();
 
         if (foot.drivespawned->m_on)
@@ -190,12 +211,14 @@ namespace Stand
         if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
         ApplyTune(veh, cfg.spawntune->value);
+        ApplyColour(veh);
 
         const auto plateText = Features::GetSpawnPlateText();
         if (!plateText.empty())
             veh.SetPlateText(plateText);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
+        Features::AddSpawnedVehicleBlip(veh.GetHandle());
         g_VehPreviousHandle = veh.GetHandle();
 
         if (veh_tab.drivespawned->m_on)

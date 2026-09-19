@@ -12,6 +12,7 @@ namespace Stand
         {
             int handle;
             std::string name;
+            int blip = 0;
         };
 
         static inline std::vector<Entry> s_Vehicles{};

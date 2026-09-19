@@ -1,5 +1,6 @@
 #include "Vehicle/SpawnedVehicleMgr.hpp"
 
+#include "Scripting/Natives.hpp"
 #include "Vehicle/Vehicle.hpp"
 
 #include <algorithm>
@@ -28,6 +29,8 @@ namespace Stand
             [handle](const Entry& e) { return e.handle == handle; });
         if (it != s_Vehicles.end())
         {
+            if (it->blip && HUD::DOES_BLIP_EXIST(it->blip))
+                HUD::REMOVE_BLIP(&it->blip);
             s_Vehicles.erase(it);
             ++s_Version;
         }
@@ -40,6 +43,8 @@ namespace Stand
         {
             if (!Vehicle(it->handle).IsValid())
             {
+                if (it->blip && HUD::DOES_BLIP_EXIST(it->blip))
+                    HUD::REMOVE_BLIP(&it->blip);
                 it = s_Vehicles.erase(it);
                 changed = true;
             }

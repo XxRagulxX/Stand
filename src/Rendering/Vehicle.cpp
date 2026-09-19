@@ -4,6 +4,8 @@
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
 #include "Rendering/GridItemButton.hpp"
+#include "Rendering/GridItemCommandButton.hpp"
+#include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
@@ -172,6 +174,42 @@ namespace Stand::Rendering
             }
         };
 
+        // ── Colour Grid ───────────────────────────────────────────────────────
+
+        class VehicleSpawnColourGrid : public Grid
+        {
+        public:
+            VehicleSpawnColourGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabSpawnSettings();
+                items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tab.spawnColour->enabled));
+                AddColorCommandRows(items_draft, Theme::kContentWidth, "spawnprimarycolour"_J);
+                AddColorCommandRows(items_draft, Theme::kContentWidth, "spawnsecondarycolour"_J);
+            }
+        };
+
+        // ── Blips Grid ────────────────────────────────────────────────────────
+
+        class VehicleSpawnBlipsGrid : public Grid
+        {
+        public:
+            VehicleSpawnBlipsGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabSpawnSettings();
+                items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tab.spawnBlips->enabled));
+                items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tab.spawnBlips->colour));
+                items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tab.spawnBlips->scale));
+                items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tab.spawnBlips->latestOnly));
+                items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "clearspawnedblips"_J));
+            }
+        };
+
         // ── On Foot Behaviour Grid ────────────────────────────────────────────
 
         class VehicleSpawnOnFootGrid : public Grid
@@ -216,8 +254,10 @@ namespace Stand::Rendering
         VehicleSpawnDlcGrid       g_DlcContent{};
         VehicleSpawnClassGrid     g_ClassContent{};
         SpawnedVehicleListGrid    g_SpawnList{};
+        VehicleSpawnColourGrid    g_ColourContent{};
+        VehicleSpawnBlipsGrid     g_BlipsContent{};
         VehicleSpawnOnFootGrid    g_OnFootContent{};
-        VehicleSpawnInVehicle g_InVehicleContent{};
+        VehicleSpawnInVehicle     g_InVehicleContent{};
 
         class VehicleSpawnGrid : public Grid
         {
@@ -233,6 +273,8 @@ namespace Stand::Rendering
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawngod));
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawntune));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Spawned Vehicles License Plate", Stand::Features::OpenSpawnPlate));
+                items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Colour Spawned Vehicles",         &g_ColourContent));
+                items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Blips On Spawned Vehicles",        &g_BlipsContent));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Search", Stand::OpenVehicleSearch));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Input Model Name", Stand::OpenInputModelName));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Classes",                  &g_ClassContent));
