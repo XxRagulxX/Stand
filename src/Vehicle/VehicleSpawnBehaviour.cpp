@@ -1,6 +1,8 @@
 #include "Vehicle/VehicleSpawnBehaviour.hpp"
 
-#include "Commands/Vehicle/CommandTabVehicle.hpp"
+#include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
+#include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
+#include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
 #include "Scripting/Natives.hpp"
 #include "Scripting/Script.hpp"
 #include "Vehicle/SpawnedVehicleMgr.hpp"
@@ -24,9 +26,10 @@ namespace Stand
 
     void SpawnVehicleOnFoot(joaat_t hash, const std::string& name)
     {
-        auto& tab = Features::GetCommandTabVehicle();
+        auto& foot = Features::GetCommandTabSpawnOnFoot();
+        auto& cfg  = Features::GetCommandTabSpawnSettings();
 
-        if (tab.footDelete->m_on && g_FootPreviousHandle != 0)
+        if (foot.deleteprevious->m_on && g_FootPreviousHandle != 0)
         {
             Vehicle prev(g_FootPreviousHandle);
             if (prev.IsValid())
@@ -42,7 +45,7 @@ namespace Stand
         float heading = Self::GetPed().GetHeading();
         rage::fvector3 spawnPos{};
 
-        if (tab.footLikePV->m_on)
+        if (foot.likepv->m_on)
         {
             const auto pedPos = Self::GetPed().GetPosition();
             Vector3 nodePos{0.f, 0.f, 0.f};
@@ -54,7 +57,7 @@ namespace Stand
             spawnPos = { nodePos.x, nodePos.y, nodePos.z };
             heading = nodeHeading;
         }
-        else if (tab.footFront->m_on)
+        else if (foot.spawnfront->m_on)
         {
             auto loc = Vehicle::GetSpawnLocRelToPed(Self::GetPed().GetHandle(), hash);
             spawnPos = { loc.x, loc.y, loc.z };
@@ -64,7 +67,7 @@ namespace Stand
             spawnPos = Self::GetPed().GetPosition();
         }
 
-        if (tab.footAir->m_on &&
+        if (foot.spawnair->m_on &&
             (VEHICLE::IS_THIS_MODEL_A_HELI(hash) || VEHICLE::IS_THIS_MODEL_A_PLANE(hash)))
         {
             spawnPos.z += 30.f;
@@ -74,13 +77,13 @@ namespace Stand
         if (!veh.IsValid())
             return;
 
-        if (tab.spawngod->m_on)
+        if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
         g_FootPreviousHandle = veh.GetHandle();
 
-        if (tab.footDrive->m_on)
+        if (foot.drivespawned->m_on)
         {
             Script::current()->yield(200);
             Self::GetPed().SetInVehicle(veh);
@@ -89,12 +92,13 @@ namespace Stand
 
     void SpawnVehicleInVehicle(joaat_t hash, const std::string& name)
     {
-        auto& tab = Features::GetCommandTabVehicle();
+        auto& veh_tab = Features::GetCommandTabSpawnInVehicle();
+        auto& cfg     = Features::GetCommandTabSpawnSettings();
 
         const int pedHandle    = Self::GetPed().GetHandle();
         const int curVehHandle = PED::GET_VEHICLE_PED_IS_IN(pedHandle, false);
 
-        if (tab.vehDelete->m_on && g_VehPreviousHandle != 0)
+        if (veh_tab.deleteprevious->m_on && g_VehPreviousHandle != 0)
         {
             Vehicle prev(g_VehPreviousHandle);
             if (prev.IsValid())
@@ -108,13 +112,13 @@ namespace Stand
         }
 
         rage::fvector3 curVelocity{};
-        if (tab.vehVelocity->m_on && curVehHandle != 0)
+        if (veh_tab.keepvelocity->m_on && curVehHandle != 0)
             curVelocity = Vehicle(curVehHandle).GetVelocity();
 
         float heading = Self::GetPed().GetHeading();
         rage::fvector3 spawnPos{};
 
-        if (tab.vehLikePV->m_on)
+        if (veh_tab.likepv->m_on)
         {
             const auto pedPos = Self::GetPed().GetPosition();
             Vector3 nodePos{0.f, 0.f, 0.f};
@@ -126,7 +130,7 @@ namespace Stand
             spawnPos = { nodePos.x, nodePos.y, nodePos.z };
             heading = nodeHeading;
         }
-        else if (tab.vehFront->m_on && curVehHandle != 0)
+        else if (veh_tab.spawnfront->m_on && curVehHandle != 0)
         {
             Vector3 curMin{}, curMax{}, newMin{}, newMax{};
             MISC::GET_MODEL_DIMENSIONS(Vehicle(curVehHandle).GetModel(), &curMin, &curMax);
@@ -140,7 +144,7 @@ namespace Stand
             spawnPos = Self::GetPed().GetPosition();
         }
 
-        if (tab.vehAir->m_on &&
+        if (veh_tab.spawnair->m_on &&
             (VEHICLE::IS_THIS_MODEL_A_HELI(hash) || VEHICLE::IS_THIS_MODEL_A_PLANE(hash)))
         {
             spawnPos.z += 30.f;
@@ -150,16 +154,16 @@ namespace Stand
         if (!veh.IsValid())
             return;
 
-        if (tab.vehVelocity->m_on)
+        if (veh_tab.keepvelocity->m_on)
             veh.SetVelocity(curVelocity);
 
-        if (tab.spawngod->m_on)
+        if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
         g_VehPreviousHandle = veh.GetHandle();
 
-        if (tab.vehDrive->m_on)
+        if (veh_tab.drivespawned->m_on)
         {
             Script::current()->yield(200);
             Self::GetPed().SetInVehicle(veh);

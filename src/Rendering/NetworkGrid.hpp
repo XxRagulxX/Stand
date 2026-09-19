@@ -6,7 +6,7 @@ namespace Stand::Rendering
 	// Content grid for Network > Session: mirrors MenuNetwork.cpp's
 	// joinGroup (the joinSession subgroup only), bountyGroup,
 	// trollGroup, miscGroup and enhancements - the working subset of
-	// "Session", wired the same way SelfGrid/VehicleGrid wire their own
+	// "Session", wired the same way Self/Vehicle wire their own
 	// unconditional items.
 	//
 	// Deliberately NOT included, and for a reason distinct from every

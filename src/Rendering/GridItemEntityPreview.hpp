@@ -68,6 +68,8 @@ namespace Stand::Rendering
 			return 0.f;
 		}
 
+		virtual void OnPreviewTick(Entity& entity) {}
+
 	private:
 		void TickFocused();
 		void DestroyPreview();
@@ -75,5 +77,6 @@ namespace Stand::Rendering
 		GridItemFocusTracker m_FocusTracker;
 		std::optional<Entity> m_Preview;
 		float m_RotationDegrees = 0.f;
+		float m_TotalOffset = 0.f;
 	};
 }

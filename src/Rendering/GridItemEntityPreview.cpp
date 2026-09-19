@@ -73,11 +73,11 @@ namespace Stand::Rendering
 			const auto camPos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 			const auto camRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
 			const float yawRad = camRot.z * (3.14159265f / 180.f);
-			const float totalOffset = kForwardOffset + GetAdditionalOffset();
+			m_TotalOffset = kForwardOffset + GetAdditionalOffset();
 
 			rage::fvector3 spawnPos{
-			    camPos.x - std::sin(yawRad) * totalOffset,
-			    camPos.y + std::cos(yawRad) * totalOffset,
+			    camPos.x - std::sin(yawRad) * m_TotalOffset,
+			    camPos.y + std::cos(yawRad) * m_TotalOffset,
 			    camPos.z,
 			};
 
@@ -91,13 +91,30 @@ namespace Stand::Rendering
 			rot.z = m_RotationDegrees;
 			m_Preview->SetRotation(rot);
 		}
-		else if (ShouldRotate())
+		else
 		{
-			m_RotationDegrees += Theme::kPreviewRotationSpeed;
-			rage::fvector3 rot{};
-			rot.z = m_RotationDegrees;
-			m_Preview->SetRotation(rot);
+			if (ShouldRotate())
+			{
+				m_RotationDegrees += Theme::kPreviewRotationSpeed;
+				rage::fvector3 rot{};
+				rot.z = m_RotationDegrees;
+				m_Preview->SetRotation(rot);
+			}
+
+			const auto curCamPos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
+			const auto curCamRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
+			const float curYawRad = curCamRot.z * (3.14159265f / 180.f);
+			m_Preview->SetPosition({
+			    curCamPos.x - std::sin(curYawRad) * m_TotalOffset,
+			    curCamPos.y + std::cos(curYawRad) * m_TotalOffset,
+			    curCamPos.z,
+			});
 		}
+
+		const int h = m_Preview->GetHandle();
+		ENTITY::SET_ENTITY_HAS_GRAVITY(h, FALSE);
+		ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(h, FALSE, FALSE);
+		OnPreviewTick(*m_Preview);
 
 		int alpha;
 		if (Theme::kPreviewOpaque)

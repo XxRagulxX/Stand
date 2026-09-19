@@ -17,8 +17,8 @@ namespace Stand::Rendering
 	// the same list).
 	//
 	// A free-standing global (not a member of MenuGrid) on purpose:
-	// GridItemFolder - built inside content Grids like SelfGrid/
-	// VehicleGrid, which have no reference to MenuGrid itself - needs to
+	// GridItemFolder - built inside content Grids like Self/
+	// Vehicle, which have no reference to MenuGrid itself - needs to
 	// push onto this directly from onClick(). MenuGrid only reads it
 	// (Current()/BreadcrumbPath()) and resets it when the sidebar
 	// selection changes (Reset()).

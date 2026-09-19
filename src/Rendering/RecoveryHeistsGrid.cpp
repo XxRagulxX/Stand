@@ -12,7 +12,7 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		// Owned here rather than in MenuGrid.cpp - see SelfGrid.cpp's
+		// Owned here rather than in MenuGrid.cpp - see Self.cpp's
 		// identical note about WeaponsGrid. Each already hardcodes its
 		// own origin below where this Grid's own tab strip draws - see
 		// their own class comments.

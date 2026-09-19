@@ -26,7 +26,7 @@ namespace Stand::Rendering
 	// Backspace (MenuNavigation::Pop(), wired in GridRenderer.cpp).
 	//
 	// Every sidebar entry has a root Grid (m_Roots below) - real
-	// content in every case now (SelfGrid, VehicleGrid, ...,
+	// content in every case now (Self, Vehicle, ...,
 	// NetworkGrid, SettingsGrid); there is no placeholder fallback
 	// left to fall back to. There's no separate "nothing selected"
 	// placeholder path any more: MenuNavigation::Current() is always

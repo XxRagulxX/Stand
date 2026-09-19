@@ -10,11 +10,11 @@
 #include "Rendering/NetworkGrid.hpp"
 #include "Rendering/PlayersGrid.hpp"
 #include "Rendering/RecoveryGrid.hpp"
-#include "Rendering/SelfGrid.hpp"
+#include "Rendering/Self.hpp"
 #include "Rendering/SettingsGrid.hpp"
 #include "Rendering/TeleportGrid.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/VehicleGrid.hpp"
+#include "Rendering/Vehicle.hpp"
 #include "Rendering/WorldGrid.hpp"
 
 #include <utility>
@@ -84,8 +84,8 @@ namespace Stand::Rendering
 		// The only real content grids this system has so far. Live here
 		// (not in GridRenderer.cpp) since MenuGrid is the only thing that
 		// decides when any of them is actually shown.
-		SelfGrid g_SelfContent{};
-		VehicleGrid g_VehicleContent{};
+		Self g_SelfContent{};
+		Vehicle g_VehicleContent{};
 		TeleportGrid g_TeleportContent{};
 		NetworkGrid g_NetworkContent{};
 		PlayersGrid g_PlayersContent{};

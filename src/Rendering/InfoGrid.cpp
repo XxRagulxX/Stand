@@ -220,7 +220,7 @@ namespace Stand::Rendering
 		// redundant control for the same CommandToggle). No section header
 		// of its own - one repeating "Info" while already inside the
 		// folder labeled "Info" (PlayersGrid's own row leading here) is a
-		// redundant label, not a distinguishing one - see SelfGrid.cpp's
+		// redundant label, not a distinguishing one - see Self.cpp's
 		// identical comment on its own former "Self" header.
 		items_draft.push_back(std::make_unique<GridItemLiveText>(Theme::kContentWidth, kItemH, SelectedName, Theme::kText));
 		items_draft.push_back(std::make_unique<GridItemLiveText>(Theme::kContentWidth, kItemH, SelectedRankRP, Theme::kText));

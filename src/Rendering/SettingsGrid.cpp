@@ -22,7 +22,7 @@ namespace Stand::Rendering
 		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
 		constexpr float kItemH = Theme::kContentItemHeight;
 
-		// Owned here rather than in MenuGrid.cpp - see SelfGrid.cpp's
+		// Owned here rather than in MenuGrid.cpp - see Self.cpp's
 		// identical note about WeaponsGrid.
 		HotkeysGrid g_HotkeysContent{};
 		SettingsGuiGrid g_GuiContent{};

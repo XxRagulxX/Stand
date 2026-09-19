@@ -4,7 +4,7 @@
 namespace Stand::Rendering
 {
 	// Content grid for Recovery > Main: mirrors MenuRecovery.cpp's
-	// generalGroup in full, wired the same way SelfGrid/VehicleGrid wire
+	// generalGroup in full, wired the same way Self/Vehicle wire
 	// their own conditional items.
 	//
 	// Every category folder now points at a real content Grid

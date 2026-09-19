@@ -27,7 +27,7 @@ namespace Stand::Rendering
 	// every time it's expanded.
 	//
 	// Owned directly as a ThreadsGrid member (not a file-scope static
-	// the way most content Grids are - see SelfGrid.cpp's own note on
+	// the way most content Grids are - see Self.cpp's own note on
 	// WeaponsGrid for that usual convention) since its content is
 	// intrinsically tied to whichever thread ThreadsGrid currently has
 	// selected, not an independent top-level category: ThreadsGrid calls

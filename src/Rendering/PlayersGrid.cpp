@@ -19,7 +19,7 @@ namespace Stand::Rendering
 		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
 		constexpr float kItemH = Theme::kContentItemHeight;
 
-		// Owned here rather than in MenuGrid.cpp - see SelfGrid.cpp's
+		// Owned here rather than in MenuGrid.cpp - see Self.cpp's
 		// identical note about WeaponsGrid.
 		InfoGrid g_InfoContent{};
 		ToxicGrid g_ToxicContent{};
@@ -50,7 +50,7 @@ namespace Stand::Rendering
 		// in the first place). No section header of its own - one
 		// repeating "Players" while already inside the Players tab
 		// (MenuGrid's own breadcrumb already reads "... > Players") is a
-		// redundant label, not a distinguishing one - see SelfGrid.cpp's
+		// redundant label, not a distinguishing one - see Self.cpp's
 		// identical comment on its own former "Self" header.
 		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "spectate"_J));
 		items_draft.push_back(std::make_unique<GridItemPlayerList>(Theme::kContentWidth));

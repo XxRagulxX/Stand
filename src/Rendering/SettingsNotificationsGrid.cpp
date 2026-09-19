@@ -18,13 +18,13 @@ namespace Stand::Rendering
 	{
 		constexpr float kItemH = Theme::kContentItemHeight;
 
-		// Owned here rather than in SettingsGrid.cpp - see SelfGrid.cpp's
+		// Owned here rather than in SettingsGrid.cpp - see Self.cpp's
 		// identical note about WeaponsGrid.
 		SettingsNotifyPositionGrid g_PositionContent{};
 		SettingsNotifyTimingGrid g_TimingContent{};
 	}
 
-	// Origin/spacer match every other content Grid's - see SelfGrid.cpp's
+	// Origin/spacer match every other content Grid's - see Self.cpp's
 	// identical comment.
 	SettingsNotificationsGrid::SettingsNotificationsGrid() :
 	    Grid(Theme::GetContentOrigin(), 0)
@@ -40,7 +40,7 @@ namespace Stand::Rendering
 		// comparing against that external instance's own pointer
 		// directly, which this file has no reach to (SettingsGrid.cpp
 		// owns it, same reasoning as every other content Grid here -
-		// see SelfGrid.cpp's own note about WeaponsGrid).
+		// see Self.cpp's own note about WeaponsGrid).
 		auto* current = MenuNavigation::Current();
 		return dynamic_cast<SettingsNotificationsGrid*>(current) != nullptr || dynamic_cast<SettingsNotifyPositionGrid*>(current) != nullptr;
 	}

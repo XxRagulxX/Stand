@@ -12,7 +12,7 @@ namespace Stand::Rendering
 		constexpr float kItemH = Theme::kContentItemHeight;
 	}
 
-	// Origin/spacer match every other content Grid's - see SelfGrid.cpp's
+	// Origin/spacer match every other content Grid's - see Self.cpp's
 	// identical comment.
 	SettingsNotifyPositionGrid::SettingsNotifyPositionGrid() :
 	    Grid(Theme::GetContentOrigin(), 0)

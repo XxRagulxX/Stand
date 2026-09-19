@@ -12,7 +12,7 @@ namespace Stand::Rendering
 	// entry (see e.g. "Spawner >", "Garage >" under its Vehicle submenu).
 	// Clicking one drills into m_Target via MenuNavigation::Push();
 	// there's no ownership here (m_Target is one of the content Grids
-	// like SelfGrid/VehicleGrid already own as file-scope statics).
+	// like Self/Vehicle already own as file-scope statics).
 	class GridItemFolder : public GridItem
 	{
 	public:

@@ -4,7 +4,7 @@
 namespace Stand::Rendering
 {
 	// Content grid for Teleport > Main: mirrors MenuTeleport.cpp's Misc
-	// group in full, wired the same way SelfGrid/VehicleGrid wire their
+	// group in full, wired the same way Self/Vehicle wire their
 	// own conditional items. The "Saved" category's own hand-rolled
 	// ImGui UI is ported too - see TeleportSavedGrid's own class comment.
 	class TeleportGrid : public Grid

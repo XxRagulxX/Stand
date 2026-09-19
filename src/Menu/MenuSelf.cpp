@@ -3,7 +3,7 @@
 namespace Stand::Submenus
 {
 	// Empty on purpose - see UIManager.hpp's own class comment for why
-	// (every category this used to build now lives in SelfGrid/
+	// (every category this used to build now lives in Self/
 	// WeaponsGrid/OutfitEditorGrid instead; this stays a real Submenu
 	// only so a Lua script can still attach into "Self" by name).
 	Self::Self() :
