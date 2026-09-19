@@ -1,5 +1,5 @@
 #pragma once
-#include "Commands/Self/CommandTransformModel.hpp"
+#include "Commands/Self/Appearance/CommandTransformModel.hpp"
 #include "Rendering/GridItem.hpp"
 
 #include <atomic>

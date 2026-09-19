@@ -1,9 +1,9 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Self/CommandAutoHeal.hpp"
-#include "Commands/Self/CommandBodyguards.hpp"
-#include "Commands/Self/CommandTabOutfit.hpp"
-#include "Commands/Self/CommandTabAppearanceMisc.hpp"
+#include "Commands/Self/Bodyguards/CommandBodyguards.hpp"
+#include "Commands/Self/Appearance/CommandTabOutfit.hpp"
+#include "Commands/Self/Appearance/CommandTabAppearanceMisc.hpp"
 #include "Commands/Self/CommandFakeWanted.hpp"
 #include "Commands/Self/CommandFreezeWanted.hpp"
 #include "Commands/Self/CommandInfiniteStamina.hpp"

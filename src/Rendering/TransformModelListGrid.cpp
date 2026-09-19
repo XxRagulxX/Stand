@@ -1,6 +1,6 @@
 #include "Rendering/TransformModelListGrid.hpp"
 
-#include "Commands/Self/CommandTransformModel.hpp"
+#include "Commands/Self/Appearance/CommandTransformModel.hpp"
 #include "Rendering/GridItemTransformModel.hpp"
 #include "Rendering/Theme.hpp"
 
