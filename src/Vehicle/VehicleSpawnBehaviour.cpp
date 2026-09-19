@@ -3,6 +3,7 @@
 #include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
+#include "Commands/Vehicle/Spawn/CommandSpawnPlate.hpp"
 #include "Scripting/Natives.hpp"
 #include "Scripting/Script.hpp"
 #include "Vehicle/SpawnedVehicleMgr.hpp"
@@ -105,6 +106,10 @@ namespace Stand
             ApplyGodMode(veh);
         ApplyTune(veh, cfg.spawntune->value);
 
+        const auto plateText = Features::GetSpawnPlateText();
+        if (!plateText.empty())
+            veh.SetPlateText(plateText);
+
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
         g_FootPreviousHandle = veh.GetHandle();
 
@@ -185,6 +190,10 @@ namespace Stand
         if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
         ApplyTune(veh, cfg.spawntune->value);
+
+        const auto plateText = Features::GetSpawnPlateText();
+        if (!plateText.empty())
+            veh.SetPlateText(plateText);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
         g_VehPreviousHandle = veh.GetHandle();

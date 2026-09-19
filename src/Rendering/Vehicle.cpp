@@ -13,6 +13,7 @@
 #include "Scripting/Natives.hpp"
 #include "Util/Joaat.hpp"
 #include "Vehicle/VehicleData.hpp"
+#include "Commands/Vehicle/Spawn/CommandSpawnPlate.hpp"
 
 #include <array>
 #include <cstddef>
@@ -231,6 +232,7 @@ namespace Stand::Rendering
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.manufacturerNames));
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawngod));
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawntune));
+                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Spawned Vehicles License Plate", Stand::Features::OpenSpawnPlate));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Search", Stand::OpenVehicleSearch));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Input Model Name", Stand::OpenInputModelName));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Classes",                  &g_ClassContent));
