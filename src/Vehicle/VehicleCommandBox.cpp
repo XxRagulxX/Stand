@@ -116,10 +116,8 @@ namespace Stand
                 if (results.empty())
                     return false;
 
-                FiberPool::queueJob([results = std::move(results), term]() mutable {
-                    g_SearchResults.SetResults(std::move(results));
-                    Rendering::MenuNavigation::Push("Search: " + term, &g_SearchResults);
-                });
+                g_SearchResults.SetResults(std::move(results));
+                Rendering::MenuNavigation::Push("Search: " + term, &g_SearchResults);
                 return true;
             },
             VehicleSuggestions

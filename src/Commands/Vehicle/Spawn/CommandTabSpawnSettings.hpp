@@ -2,6 +2,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Vehicle/Spawn/CommandSpawnManufacturerNames.hpp"
 #include "Commands/Vehicle/Spawn/CommandSpawnGod.hpp"
+#include "Commands/Vehicle/Spawn/CommandSpawnTune.hpp"
 
 namespace Stand
 {
@@ -10,11 +11,13 @@ namespace Stand
     public:
         CommandSpawnManufacturerNames* const manufacturerNames;
         CommandSpawnGod* const spawngod;
+        CommandSpawnTune* const spawntune;
 
         explicit CommandTabSpawnSettings(CommandList* const parent)
             : CommandList(parent, LIT("Spawn Settings")),
               manufacturerNames(createChild<CommandSpawnManufacturerNames>()),
-              spawngod(createChild<CommandSpawnGod>())
+              spawngod(createChild<CommandSpawnGod>()),
+              spawntune(createChild<CommandSpawnTune>())
         {
         }
     };

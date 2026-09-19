@@ -230,6 +230,7 @@ namespace Stand::Rendering
                 auto& settings = Features::GetCommandTabSpawnSettings();
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.manufacturerNames));
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawngod));
+                items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawntune));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Search", Stand::OpenVehicleSearch));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Input Model Name", Stand::OpenInputModelName));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Classes",                  &g_ClassContent));

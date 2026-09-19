@@ -1,6 +1,7 @@
 #include "Rendering/GridItemEntityPreview.hpp"
 
 #include "Rendering/Theme.hpp"
+#include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Self.hpp"
 
@@ -26,31 +27,73 @@ namespace Stand::Rendering
 	}
 
 	GridItemEntityPreview::GridItemEntityPreview(int16_t width, int16_t height) :
-	    GridItem(GRIDITEM_INDIFFERENT, width, height)
+	    GridItem(GRIDITEM_INDIFFERENT, width, height),
+	    m_Control(std::make_shared<PreviewControl>())
 	{
 	}
 
 	GridItemEntityPreview::~GridItemEntityPreview()
 	{
-		DestroyPreview();
+		m_Control->alive.store(false, std::memory_order_seq_cst);
+
+		if (m_Preview)
+		{
+			const int h = m_Preview->GetHandle();
+			m_Preview.reset();
+			FiberPool::queueJob([h] {
+				int hLocal = h;
+				if (!ENTITY::DOES_ENTITY_EXIST(hLocal))
+					return;
+				const auto model = ENTITY::GET_ENTITY_MODEL(hLocal);
+				if (!ENTITY::IS_ENTITY_A_MISSION_ENTITY(hLocal))
+					ENTITY::SET_ENTITY_AS_MISSION_ENTITY(hLocal, true, true);
+				ENTITY::DELETE_ENTITY(&hLocal);
+				STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+			});
+		}
 	}
 
 	void GridItemEntityPreview::draw()
 	{
-		if (Theme::kDisableEntityPreviews)
-		{
-			if (m_Preview)
-				DestroyPreview();
+		const bool kbFocused = isKeyboardFocused();
+		if (!kbFocused)
+			m_Control->suppressed.store(false, std::memory_order_relaxed);
+
+		const bool effectiveFocused = !Theme::kDisableEntityPreviews && kbFocused
+		                              && !m_Control->suppressed.load(std::memory_order_relaxed);
+		m_FocusTracker.Update(effectiveFocused);
+		m_Control->focused.store(effectiveFocused, std::memory_order_relaxed);
+
+		if (effectiveFocused && !m_Control->jobPending.exchange(true))
+			FiberPool::queueJob([this, ctrl = m_Control] { runWatchdog(ctrl); });
+	}
+
+	void GridItemEntityPreview::ClearPreview()
+	{
+		m_Control->suppressed.store(true, std::memory_order_relaxed);
+		m_Control->focused.store(false, std::memory_order_relaxed);
+		if (!m_Control->jobPending.exchange(true))
+			FiberPool::queueJob([this, ctrl = m_Control] { runWatchdog(ctrl); });
+	}
+
+	void GridItemEntityPreview::runWatchdog(std::shared_ptr<PreviewControl> ctrl)
+	{
+		const bool wasFocused = ctrl->focused.exchange(false, std::memory_order_relaxed);
+		ctrl->jobPending.store(false, std::memory_order_relaxed);
+
+		if (!ctrl->alive.load(std::memory_order_acquire))
 			return;
-		}
 
-		const bool focused = isKeyboardFocused();
-		m_FocusTracker.Update(focused);
-
-		if (focused)
+		if (wasFocused)
 			TickFocused();
 		else if (m_Preview)
 			DestroyPreview();
+
+		if (!ctrl->alive.load(std::memory_order_acquire))
+			return;
+
+		if (m_Preview && !ctrl->jobPending.exchange(true))
+			FiberPool::queueJob([this, ctrl] { runWatchdog(ctrl); });
 	}
 
 	void GridItemEntityPreview::TickFocused()
@@ -113,7 +156,7 @@ namespace Stand::Rendering
 
 		const int h = m_Preview->GetHandle();
 		ENTITY::SET_ENTITY_HAS_GRAVITY(h, FALSE);
-		ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(h, FALSE, FALSE);
+		ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(h, TRUE, FALSE);
 		OnPreviewTick(*m_Preview);
 
 		int alpha;

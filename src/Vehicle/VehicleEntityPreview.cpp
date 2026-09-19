@@ -4,7 +4,6 @@
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
-#include "Vehicle/Vehicle.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
 #include "Vehicle/VehicleSpawnBehaviour.hpp"
 
@@ -78,7 +77,11 @@ namespace Stand::Rendering
     Entity VehicleEntityPreview::CreateEntity(const rage::fvector3& pos) const
     {
         const auto camRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
-        return Vehicle::Create(m_Hash, pos, camRot.z, false);
+        const int h = VEHICLE::CREATE_VEHICLE(m_Hash, pos.x, pos.y, pos.z, camRot.z, false, false, false);
+        if (!ENTITY::DOES_ENTITY_EXIST(h))
+            return Entity(0);
+        ENTITY::SET_ENTITY_AS_MISSION_ENTITY(h, true, true);
+        return Entity(h);
     }
 
     float VehicleEntityPreview::GetAdditionalOffset() const
@@ -125,6 +128,7 @@ namespace Stand::Rendering
     void VehicleEntityPreview::activate()
     {
         EnsureDisplayName();
+        ClearPreview();
         const auto hash = m_Hash;
         const auto name = CurrentDisplayName();
         FiberPool::queueJob([hash, name] {

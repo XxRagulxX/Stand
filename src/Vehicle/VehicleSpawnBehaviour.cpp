@@ -22,6 +22,30 @@ namespace Stand
             ENTITY::SET_ENTITY_INVINCIBLE(h, TRUE, FALSE);
             ENTITY::SET_ENTITY_PROOFS(h, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE);
         }
+
+        void ApplyTune(Vehicle veh, int tune)
+        {
+            if (tune == 0)
+                return;
+
+            const int h = veh.GetHandle();
+
+            if (tune == 3)
+            {
+                veh.Upgrade();
+                return;
+            }
+
+            VEHICLE::SET_VEHICLE_MOD_KIT(h, 0);
+            VEHICLE::SET_VEHICLE_MOD(h, 11, VEHICLE::GET_NUM_VEHICLE_MODS(h, 11) - 1, false);
+            VEHICLE::SET_VEHICLE_MOD(h, 12, VEHICLE::GET_NUM_VEHICLE_MODS(h, 12) - 1, false);
+            VEHICLE::SET_VEHICLE_MOD(h, 13, VEHICLE::GET_NUM_VEHICLE_MODS(h, 13) - 1, false);
+            VEHICLE::SET_VEHICLE_MOD(h, 16, VEHICLE::GET_NUM_VEHICLE_MODS(h, 16) - 1, false);
+            VEHICLE::TOGGLE_VEHICLE_MOD(h, 18, TRUE);
+
+            if (tune == 2)
+                VEHICLE::SET_VEHICLE_MOD(h, 0, VEHICLE::GET_NUM_VEHICLE_MODS(h, 0) - 1, false);
+        }
     }
 
     void SpawnVehicleOnFoot(joaat_t hash, const std::string& name)
@@ -79,6 +103,7 @@ namespace Stand
 
         if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
+        ApplyTune(veh, cfg.spawntune->value);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
         g_FootPreviousHandle = veh.GetHandle();
@@ -159,6 +184,7 @@ namespace Stand
 
         if (cfg.spawngod->m_on)
             ApplyGodMode(veh);
+        ApplyTune(veh, cfg.spawntune->value);
 
         SpawnedVehicleMgr::Add(veh.GetHandle(), name);
         g_VehPreviousHandle = veh.GetHandle();

@@ -3,7 +3,9 @@
 #include "Rendering/GridItem.hpp"
 #include "Rendering/GridItemFocusTracker.hpp"
 
+#include <atomic>
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 namespace Stand::Rendering
@@ -70,11 +72,24 @@ namespace Stand::Rendering
 
 		virtual void OnPreviewTick(Entity& entity) {}
 
+	protected:
+		void ClearPreview();
+
 	private:
+		struct PreviewControl
+		{
+			std::atomic<bool> alive{true};
+			std::atomic<bool> jobPending{false};
+			std::atomic<bool> focused{false};
+			std::atomic<bool> suppressed{false};
+		};
+
 		void TickFocused();
 		void DestroyPreview();
+		void runWatchdog(std::shared_ptr<PreviewControl> ctrl);
 
 		GridItemFocusTracker m_FocusTracker;
+		std::shared_ptr<PreviewControl> m_Control;
 		std::optional<Entity> m_Preview;
 		float m_RotationDegrees = 0.f;
 		float m_TotalOffset = 0.f;
