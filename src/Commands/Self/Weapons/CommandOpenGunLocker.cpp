@@ -1,4 +1,4 @@
-#include "Commands/Weapons/CommandOpenGunLocker.hpp"
+#include "Commands/Self/Weapons/CommandOpenGunLocker.hpp"
 #include "Commands/CommandLegacy.hpp"
 #include "Scripting/ScriptMgr.hpp"
 #include "Rendering/Notifications.hpp"

@@ -1,5 +1,5 @@
 #pragma once
-#include "Commands/Weapons/CommandExplosionType.hpp"
+#include "Commands/Self/Weapons/CommandExplosionType.hpp"
 #include "Commands/Widgets/CommandSliderFloat.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"

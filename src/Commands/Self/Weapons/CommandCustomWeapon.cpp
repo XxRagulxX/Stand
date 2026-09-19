@@ -1,4 +1,4 @@
-#include "Commands/Weapons/CommandCustomWeapon.hpp"
+#include "Commands/Self/Weapons/CommandCustomWeapon.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Rendering/Notifications.hpp"
 #include "World/Self.hpp"

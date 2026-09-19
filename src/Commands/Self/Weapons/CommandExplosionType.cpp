@@ -1,4 +1,4 @@
-#include "Commands/Weapons/CommandExplosionType.hpp"
+#include "Commands/Self/Weapons/CommandExplosionType.hpp"
 
 #include "Game/ExplosionType.hpp"
 

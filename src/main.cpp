@@ -23,7 +23,7 @@
 #include "Scripting/ScriptPointers.hpp"
 #include "Menu/GUI.hpp"
 #include "Core/Pointers.hpp"
-#include "Commands/Weapons/CommandOpenGunLocker.hpp"
+#include "Commands/Self/Weapons/CommandOpenGunLocker.hpp"
 #include "Commands/World/CommandDailyActivities.hpp"
 #include "Core/LogHelper.hpp"
 #include "Scripting/FiberPool.hpp"

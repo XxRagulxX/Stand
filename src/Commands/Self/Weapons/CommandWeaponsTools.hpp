@@ -1,5 +1,5 @@
 #pragma once
-#include "Commands/Weapons/CommandOpenGunLocker.hpp"
+#include "Commands/Self/Weapons/CommandOpenGunLocker.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Core/Pointers.hpp"
