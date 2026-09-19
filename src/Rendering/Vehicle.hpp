@@ -3,10 +3,10 @@
 
 namespace Stand::Rendering
 {
-	class VehicleSpawnGrid : public Grid
+	class Vehicle : public Grid
 	{
 	public:
-		VehicleSpawnGrid();
+		Vehicle();
 
 	protected:
 		void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override;

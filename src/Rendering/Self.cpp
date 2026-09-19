@@ -1,4 +1,4 @@
-#include "Rendering/SelfGrid.hpp"
+#include "Rendering/Self.hpp"
 
 #include "Commands/Self/Movement/CommandTabFloppy.hpp"
 #include "Commands/Self/Movement/CommandTabLevitation.hpp"
@@ -197,12 +197,12 @@ namespace Stand::Rendering
 		WeaponsGrid   g_weapons{};
 	}
 
-	SelfGrid::SelfGrid() :
+	Self::Self() :
 	    Grid(Theme::GetContentOrigin(), 0)
 	{
 	}
 
-	void SelfGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
+	void Self::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		auto& self = Features::GetCommandTabSelf();
 

@@ -3,10 +3,10 @@
 
 namespace Stand::Rendering
 {
-	class SelfGrid : public Grid
+	class Self : public Grid
 	{
 	public:
-		SelfGrid();
+		Self();
 
 	protected:
 		void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override;
