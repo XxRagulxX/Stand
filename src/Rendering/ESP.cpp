@@ -1,5 +1,5 @@
 #include "Rendering/ESP.hpp"
-#include "Commands/ESP/CommandTabESP.hpp"
+#include "Commands/Settings/Game/CommandTabESP.hpp"
 #include "Commands/Self/Weapons/CommandTabWeapons.hpp"
 #include "Commands/CommandColourCustom.hpp"
 #include "World/Object.hpp"

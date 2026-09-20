@@ -1,10 +1,13 @@
 #pragma once
-#include "Commands/Settings/CommandTabColours.hpp"
+#include "Commands/CommandColourCustom.hpp"
+#include "Commands/Commands.hpp"
+#include "Commands/Settings/Appearance/CommandTabColours.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
+#include "Util/Joaat.hpp"
 
 #include <climits>
 
@@ -55,12 +58,14 @@ namespace Stand
 	public:
 		CommandBorderWidth* const width;
 		CommandBorderRounded* const rounded;
+		CommandColourCustom* const colour;
 		CommandBorderRainbow* const rainbow;
 
 		explicit CommandTabBorder()
 			: CommandList(nullptr, LIT("Border"), CMDNAMES())
 			, width(createChild<CommandBorderWidth>())
 			, rounded(createChild<CommandBorderRounded>())
+			, colour(Commands::GetCommand<CommandColourCustom>("border"_J))
 			, rainbow(createChild<CommandBorderRainbow>())
 		{
 		}

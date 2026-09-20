@@ -1,10 +1,9 @@
 #include "Rendering/SettingsColoursGrid.hpp"
 
-#include "Commands/Settings/CommandTabColours.hpp"
+#include "Commands/Settings/Appearance/CommandTabColours.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -22,32 +21,32 @@ namespace Stand::Rendering
 	{
 		auto& tab = Features::GetCommandTabColours();
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "primary"_J, "Primary Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.primary, "Primary Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.rainbow));
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "focustext"_J, "Focused Text Colour");
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "focusrighttext"_J, "Focused Right-Bound Text Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.focusText, "Focused Text Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.focusRightText, "Focused Right-Bound Text Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyFocusTextToRightText));
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "focustexture"_J, "Focused Texture Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.focusTexture, "Focused Texture Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyFocusTextToTexture));
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "background"_J, "Background Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.background, "Background Colour");
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "unfocusedtext"_J, "Unfocused Text Colour");
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "unfocusedrighttext"_J, "Unfocused Right-Bound Text Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.unfocusedText, "Unfocused Text Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.unfocusedRightText, "Unfocused Right-Bound Text Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyUnfocusedTextToRightText));
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "unfocusedtexture"_J, "Unfocused Texture Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.unfocusedTexture, "Unfocused Texture Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyUnfocusedTextToTexture));
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "hud"_J, "HUD Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.hud, "HUD Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.hudRainbow));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyPrimaryToHud));
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "ar"_J, "AR Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.ar, "AR Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.arRainbow));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyPrimaryToAr));
 
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "minigame"_J, "Minigame Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.minigame, "Minigame Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.minigameRainbow));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.copyPrimaryToMinigame));
 	}

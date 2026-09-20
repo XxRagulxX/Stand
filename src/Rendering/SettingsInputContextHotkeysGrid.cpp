@@ -1,6 +1,6 @@
 #include "Rendering/SettingsInputContextHotkeysGrid.hpp"
 
-#include "Commands/Settings/CommandTabInput.hpp"
+#include "Commands/Settings/Input/CommandTabInput.hpp"
 #include "Config/HotkeySystem.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemHotkeyCapture.hpp"

@@ -1,10 +1,8 @@
 #include "Rendering/SettingsTexturesGrid.hpp"
 
-#include "Commands/Settings/CommandTabTextures.hpp"
-#include "Rendering/GridItemCommandButton.hpp"
+#include "Commands/Settings/Appearance/CommandTabTextures.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -22,6 +20,6 @@ namespace Stand::Rendering
 	{
 		auto& tab = Features::GetCommandTabTextures();
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.leftTextures));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "reloadtextures"_J));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.reloadTextures));
 	}
 }

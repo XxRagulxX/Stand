@@ -1,10 +1,9 @@
 #include "Rendering/SettingsCursorGrid.hpp"
 
-#include "Commands/Settings/CommandTabCursor.hpp"
+#include "Commands/Settings/Appearance/CommandTabCursor.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -24,7 +23,7 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.padding));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.borderWidth));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.borderRounded));
-		AddColorCommandRows(items_draft, Theme::kContentWidth, "cursorborder"_J, "Colour");
+		AddColorCommandRows(items_draft, Theme::kContentWidth, tab.borderColour, "Colour");
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.borderRainbow));
 	}
 }

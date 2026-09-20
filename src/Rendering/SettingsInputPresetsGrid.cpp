@@ -1,8 +1,8 @@
 #include "Rendering/SettingsInputPresetsGrid.hpp"
 
-#include "Rendering/GridItemCommandButton.hpp"
+#include "Commands/Settings/Input/CommandTabInputPresets.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -18,8 +18,9 @@ namespace Stand::Rendering
 
 	void SettingsInputPresetsGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "inputpresetflexible"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "inputpresettkl"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "inputpresetfull"_J));
+		auto& tab = Features::GetCommandTabInputPresets();
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.flexible));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.tkl));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.full));
 	}
 }

@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabScrollbar.hpp"
+#include "Commands/Settings/Appearance/CommandTabScrollbar.hpp"
 
 namespace Stand::Features
 {

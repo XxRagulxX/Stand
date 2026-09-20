@@ -1,17 +1,8 @@
 #include "Commands/CommandColourCustom.hpp"
-#include "Commands/Widgets/CommandRainbow.hpp"
 #include "Rendering/NotifySettings.hpp"
 
 namespace Stand::Features
 {
-	// Ported from real Stand's own CommandNotifyFlashColour (Commands/
-	// Online/CommandListNotifySettings.cpp on origin/stand-reference) -
-	// unlike Border/Background Colour, this has no "copy from" default;
-	// its own distinct default (a magenta/purple, matching real Stand's
-	// own {0.6196, 0, 0.6196, 1}) - see Notifications.cpp's own
-	// DrawNotificationRect() for where this shows (briefly replacing
-	// Border Colour right after a notification first appears or
-	// re-triggers).
 	class CommandNotifyFlashColour : public CommandColourCustom
 	{
 	public:
@@ -41,9 +32,4 @@ namespace Stand::Features
 	};
 
 	static CommandNotifyFlashColour _NotifyFlashColour{};
-
-	static StandWidgets::CommandRainbow _NotifyFlashColourRainbow{"notifyflashrainbow",
-	    "Rainbow Mode",
-	    "Cycles the colour's hue every x milliseconds but still allows you to change the saturation, value, and opacity.",
-	    &Rendering::NotifySettings::kFlashColour};
 }

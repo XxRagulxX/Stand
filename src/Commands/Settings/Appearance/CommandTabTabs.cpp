@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabTabs.hpp"
+#include "Commands/Settings/Appearance/CommandTabTabs.hpp"
 
 namespace Stand::Features
 {

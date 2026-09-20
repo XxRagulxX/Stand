@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabColours.hpp"
+#include "Commands/Settings/Appearance/CommandTabColours.hpp"
 
 #include "Commands/CommandColourCustom.hpp"
 #include "Commands/Commands.hpp"

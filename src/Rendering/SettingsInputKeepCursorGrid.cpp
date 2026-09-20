@@ -1,6 +1,6 @@
 #include "Rendering/SettingsInputKeepCursorGrid.hpp"
 
-#include "Commands/Settings/CommandTabInput.hpp"
+#include "Commands/Settings/Input/CommandTabInput.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

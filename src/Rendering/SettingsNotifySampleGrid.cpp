@@ -1,8 +1,8 @@
 #include "Rendering/SettingsNotifySampleGrid.hpp"
 
-#include "Rendering/GridItemCommandButton.hpp"
+#include "Commands/Settings/Appearance/CommandTabNotifySample.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -18,8 +18,9 @@ namespace Stand::Rendering
 
 	void SettingsNotifySampleGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "notifysamplesmall"_J, "Small"));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "notifysamplemedium"_J, "Medium"));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "notifysamplelarge"_J, "Large"));
+		auto& tab = Features::GetCommandTabNotifySample();
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.small_));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.medium));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.large_));
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
@@ -44,14 +45,30 @@ namespace Stand
 		}
 	};
 
+	class CommandReloadTextures : public CommandPhysical
+	{
+	public:
+		explicit CommandReloadTextures(CommandList* const parent)
+			: CommandPhysical(COMMAND_ACTION, parent, LIT("Reload Textures"), CMDNAMES("reloadtextures"), NOLABEL)
+		{
+		}
+
+		void onClick(Click& click) override
+		{
+			// Placeholder - texture reload not yet implemented.
+		}
+	};
+
 	class CommandTabTextures : public CommandList
 	{
 	public:
 		CommandLeftTextures* const leftTextures;
+		CommandReloadTextures* const reloadTextures;
 
 		explicit CommandTabTextures()
 			: CommandList(nullptr, LIT("Textures"), CMDNAMES())
 			, leftTextures(createChild<CommandLeftTextures>())
+			, reloadTextures(createChild<CommandReloadTextures>())
 		{
 		}
 	};

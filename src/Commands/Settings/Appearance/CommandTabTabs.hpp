@@ -1,5 +1,5 @@
 #pragma once
-#include "Commands/Settings/CommandTabAddressBar.hpp"
+#include "Commands/Settings/Appearance/CommandTabAddressBar.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
@@ -7,11 +7,58 @@
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 
+#include <algorithm>
 #include <climits>
 #include <string>
 
 namespace Stand
 {
+	class CommandTabsVisible : public CommandToggle
+	{
+	public:
+		explicit CommandTabsVisible(CommandList* const parent)
+			: CommandToggle(parent, LIT("Show Tabs"), CMDNAMES("tabs"),
+				LIT("Whether the menu's own sidebar/tab strip is shown at all."),
+				true)
+		{
+		}
+
+		void onChange(Click& click) override
+		{
+			Rendering::Theme::kTabsVisible = m_on;
+			Rendering::GridRenderer::InvalidateMenuLayout();
+		}
+	};
+
+	class CommandTabsPositionMode : public CommandSlider
+	{
+		static constexpr const char* kLabels[4] = {"Left", "Right", "Top", "Bottom"};
+
+	public:
+		explicit CommandTabsPositionMode(CommandList* const parent)
+			: CommandSlider(parent, LIT("Position"), CMDNAMES("tabsposition"), NOLABEL, 0, 3, 0, 1)
+		{
+		}
+
+		std::string getValueText() const override
+		{
+			return kLabels[std::clamp(value, 0, 3)];
+		}
+
+		void onChange(Click& click, int prev_value) override
+		{
+			using P = Rendering::Theme::TabsPosition;
+			switch (value)
+			{
+			case 1: Rendering::Theme::kTabsPosition = P::Right; break;
+			case 2: Rendering::Theme::kTabsPosition = P::Top; break;
+			case 3: Rendering::Theme::kTabsPosition = P::Bottom; break;
+			default: Rendering::Theme::kTabsPosition = P::Left; break;
+			}
+			Rendering::GridRenderer::InvalidateMenuLayout();
+		}
+	};
+
 	class CommandTabsWidth : public CommandSlider
 	{
 	public:
@@ -201,6 +248,8 @@ namespace Stand
 	class CommandTabTabs : public CommandList
 	{
 	public:
+		CommandTabsVisible* const visible;
+		CommandTabsPositionMode* const positionMode;
 		CommandTabsWidth* const width;
 		CommandTabsHeight* const height;
 		CommandTabsTextList* const text;
@@ -212,6 +261,8 @@ namespace Stand
 
 		explicit CommandTabTabs()
 			: CommandList(nullptr, LIT("Tabs"), CMDNAMES())
+			, visible(createChild<CommandTabsVisible>())
+			, positionMode(createChild<CommandTabsPositionMode>())
 			, width(createChild<CommandTabsWidth>())
 			, height(createChild<CommandTabsHeight>())
 			, text(createChild<CommandTabsTextList>())

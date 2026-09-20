@@ -1,8 +1,11 @@
 #pragma once
+#include "Commands/CommandColourCustom.hpp"
+#include "Commands/Commands.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Rendering/Theme.hpp"
+#include "Util/Joaat.hpp"
 #include "Util/get_current_time_millis.hpp"
 
 #include <DirectXMath.h>
@@ -204,6 +207,19 @@ namespace Stand
 	class CommandTabColours : public CommandList
 	{
 	public:
+		// Colour pickers (legacy CommandColourCustom, looked up by cmdname)
+		CommandColourCustom* const primary;
+		CommandColourCustom* const focusText;
+		CommandColourCustom* const focusRightText;
+		CommandColourCustom* const focusTexture;
+		CommandColourCustom* const background;
+		CommandColourCustom* const unfocusedText;
+		CommandColourCustom* const unfocusedRightText;
+		CommandColourCustom* const unfocusedTexture;
+		CommandColourCustom* const hud;
+		CommandColourCustom* const ar;
+		CommandColourCustom* const minigame;
+		// New-tree rainbow/copy commands
 		CommandRainbowMode* const rainbow;
 		CommandCopyFocusTextToRightText* const copyFocusTextToRightText;
 		CommandCopyFocusTextToTexture* const copyFocusTextToTexture;
@@ -218,6 +234,17 @@ namespace Stand
 
 		explicit CommandTabColours()
 			: CommandList(nullptr, LIT("Colours"))
+			, primary(Commands::GetCommand<CommandColourCustom>("primary"_J))
+			, focusText(Commands::GetCommand<CommandColourCustom>("focustext"_J))
+			, focusRightText(Commands::GetCommand<CommandColourCustom>("focusrighttext"_J))
+			, focusTexture(Commands::GetCommand<CommandColourCustom>("focustexture"_J))
+			, background(Commands::GetCommand<CommandColourCustom>("background"_J))
+			, unfocusedText(Commands::GetCommand<CommandColourCustom>("unfocusedtext"_J))
+			, unfocusedRightText(Commands::GetCommand<CommandColourCustom>("unfocusedrighttext"_J))
+			, unfocusedTexture(Commands::GetCommand<CommandColourCustom>("unfocusedtexture"_J))
+			, hud(Commands::GetCommand<CommandColourCustom>("hud"_J))
+			, ar(Commands::GetCommand<CommandColourCustom>("ar"_J))
+			, minigame(Commands::GetCommand<CommandColourCustom>("minigame"_J))
 			, rainbow(createChild<CommandRainbowMode>())
 			, copyFocusTextToRightText(createChild<CommandCopyFocusTextToRightText>())
 			, copyFocusTextToTexture(createChild<CommandCopyFocusTextToTexture>())

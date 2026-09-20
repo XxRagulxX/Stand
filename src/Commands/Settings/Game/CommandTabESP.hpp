@@ -1,6 +1,9 @@
 #pragma once
+#include "Commands/CommandColourCustom.hpp"
+#include "Commands/Commands.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
+#include "Util/Joaat.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand
@@ -26,6 +29,13 @@ namespace Stand
 		CommandToggle* const netInfoObjects;
 		CommandToggle* const scriptInfoObjects;
 		CommandToggle* const distanceObjects;
+
+		// ESP colour commands (legacy CommandColourCustom, looked up by cmdname)
+		CommandColourCustom* const nameColorPlayers;
+		CommandColourCustom* const skeletonColorPlayers;
+		CommandColourCustom* const hashColorPeds;
+		CommandColourCustom* const skeletonColorPeds;
+		CommandColourCustom* const hashColorObjects;
 
 		explicit CommandTabESP()
 			: CommandList(nullptr, LIT("ESP"), CMDNAMES("esp")),
@@ -60,7 +70,12 @@ namespace Stand
 			  scriptInfoObjects(createChild<CommandToggle>(
 			      LIT("Object Script Info"), CMDNAMES("espscriptinfoobjects"), NOLABEL)),
 			  distanceObjects(createChild<CommandToggle>(
-			      LIT("Object Distance"), CMDNAMES("espdistanceobjects"), NOLABEL))
+			      LIT("Object Distance"), CMDNAMES("espdistanceobjects"), NOLABEL)),
+			  nameColorPlayers(Commands::GetCommand<CommandColourCustom>("namecolorplayers"_J)),
+			  skeletonColorPlayers(Commands::GetCommand<CommandColourCustom>("skeletoncolorplayers"_J)),
+			  hashColorPeds(Commands::GetCommand<CommandColourCustom>("hashcolorpeds"_J)),
+			  skeletonColorPeds(Commands::GetCommand<CommandColourCustom>("skeletoncolorpeds"_J)),
+			  hashColorObjects(Commands::GetCommand<CommandColourCustom>("hashcolorobjects"_J))
 		{}
 	};
 }

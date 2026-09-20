@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabInput.hpp"
+#include "Commands/Settings/Input/CommandTabInput.hpp"
 
 namespace Stand::Features
 {

@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabCursor.hpp"
+#include "Commands/Settings/Appearance/CommandTabCursor.hpp"
 
 namespace Stand::Features
 {

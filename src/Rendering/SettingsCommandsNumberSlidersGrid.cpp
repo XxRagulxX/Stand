@@ -1,6 +1,6 @@
 #include "Rendering/SettingsCommandsNumberSlidersGrid.hpp"
 
-#include "Commands/Settings/CommandTabCommands.hpp"
+#include "Commands/Settings/Appearance/CommandTabCommands.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

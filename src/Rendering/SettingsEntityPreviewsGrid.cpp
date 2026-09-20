@@ -1,6 +1,6 @@
 #include "Rendering/SettingsEntityPreviewsGrid.hpp"
 
-#include "Commands/Settings/CommandTabEntityPreviews.hpp"
+#include "Commands/Settings/Appearance/CommandTabEntityPreviews.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

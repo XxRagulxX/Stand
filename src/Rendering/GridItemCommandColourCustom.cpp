@@ -698,4 +698,64 @@ namespace Stand::Rendering
 		if (grid.watchCondition(condition))
 			AddColorCommandRows(items_draft, width, id, std::move(labelOverride));
 	}
+
+	// Pointer-keyed ColorEditGrid — same R/G/B/A/HSV/Hex sub-page as the
+	// joaat variant, but resolves the command directly from the pointer
+	// so no Joaat hash is needed at the call site.
+	class ColorEditGridByPtr : public Grid
+	{
+	public:
+		explicit ColorEditGridByPtr(CommandColourCustom* cmd) :
+		    Grid(Theme::GetContentOrigin(), 0),
+		    m_Cmd(cmd)
+		{
+		}
+
+	protected:
+		void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+		{
+			items_draft.push_back(std::make_unique<GridItemColorChannel>(Theme::kContentWidth, Theme::kContentItemHeight, CHANNEL_R, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorChannel>(Theme::kContentWidth, Theme::kContentItemHeight, CHANNEL_G, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorChannel>(Theme::kContentWidth, Theme::kContentItemHeight, CHANNEL_B, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorChannel>(Theme::kContentWidth, Theme::kContentItemHeight, CHANNEL_A, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorHsvChannel>(Theme::kContentWidth, Theme::kContentItemHeight, HSV_H, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorHsvChannel>(Theme::kContentWidth, Theme::kContentItemHeight, HSV_S, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorHsvChannel>(Theme::kContentWidth, Theme::kContentItemHeight, HSV_V, m_Cmd));
+			items_draft.push_back(std::make_unique<GridItemColorHex>(Theme::kContentWidth, Theme::kContentItemHeight, m_Cmd));
+		}
+
+	private:
+		CommandColourCustom* m_Cmd;
+	};
+
+	ColorEditGridByPtr& GetColorEditGridByPtr(CommandColourCustom* command)
+	{
+		static std::unordered_map<CommandColourCustom*, ColorEditGridByPtr> grids;
+		return grids.try_emplace(command, command).first->second;
+	}
+
+	void AddColorCommandRows(std::vector<std::unique_ptr<GridItem>>& items_draft,
+	    int16_t width,
+	    CommandColourCustom* command,
+	    std::optional<std::string> labelOverride)
+	{
+		std::string label = "Unknown!";
+		if (labelOverride.has_value())
+			label = *labelOverride;
+		else if (command)
+			label = command->GetLabel();
+
+		items_draft.push_back(std::make_unique<GridItemColorFolder>(width, Theme::kContentItemHeight, std::move(label), &GetColorEditGridByPtr(command), command));
+	}
+
+	void AddConditionalColorCommandRows(Grid& grid,
+	    std::vector<std::unique_ptr<GridItem>>& items_draft,
+	    int16_t width,
+	    CommandColourCustom* command,
+	    std::function<bool()> condition,
+	    std::optional<std::string> labelOverride)
+	{
+		if (grid.watchCondition(condition))
+			AddColorCommandRows(items_draft, width, command, std::move(labelOverride));
+	}
 }

@@ -1,10 +1,14 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 
 #include <climits>
+#include <filesystem>
+#include <shellapi.h>
+#include <windows.h>
 
 namespace Stand
 {
@@ -113,6 +117,22 @@ namespace Stand
 		}
 	};
 
+	class CommandOpenThemeFolder : public CommandPhysical
+	{
+	public:
+		explicit CommandOpenThemeFolder(CommandList* const parent)
+			: CommandPhysical(COMMAND_ACTION, parent, LIT("Open Theme Folder"), CMDNAMES("openthemefolder"), NOLABEL)
+		{
+		}
+
+		void onClick(Click& click) override
+		{
+			const auto path = std::filesystem::path(std::getenv("appdata")) / "StandEnhanced" / "Themes";
+			std::filesystem::create_directories(path);
+			ShellExecuteA(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
+		}
+	};
+
 	class CommandTabAppearanceDirect : public CommandList
 	{
 	public:
@@ -123,6 +143,7 @@ namespace Stand
 		CommandSpacerSize* const spacersize;
 		CommandSmoothScroll* const smoothscroll;
 		CommandBlur* const blur;
+		CommandOpenThemeFolder* const openThemeFolder;
 
 		explicit CommandTabAppearanceDirect()
 			: CommandList(nullptr, LIT("Appearance"), CMDNAMES())
@@ -133,6 +154,7 @@ namespace Stand
 			, spacersize(createChild<CommandSpacerSize>())
 			, smoothscroll(createChild<CommandSmoothScroll>())
 			, blur(createChild<CommandBlur>())
+			, openThemeFolder(createChild<CommandOpenThemeFolder>())
 		{
 		}
 	};

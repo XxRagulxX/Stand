@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabAddressBar.hpp"
+#include "Commands/Settings/Appearance/CommandTabAddressBar.hpp"
 
 namespace Stand::Features
 {

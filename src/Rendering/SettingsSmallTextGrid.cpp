@@ -1,6 +1,6 @@
 #include "Rendering/SettingsSmallTextGrid.hpp"
 
-#include "Commands/Settings/CommandTabFontText.hpp"
+#include "Commands/Settings/Appearance/CommandTabFontText.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

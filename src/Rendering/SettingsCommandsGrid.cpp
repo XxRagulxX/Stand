@@ -1,6 +1,6 @@
 #include "Rendering/SettingsCommandsGrid.hpp"
 
-#include "Commands/Settings/CommandTabCommands.hpp"
+#include "Commands/Settings/Appearance/CommandTabCommands.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/SettingsCommandsColourCommandsGrid.hpp"

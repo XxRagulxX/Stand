@@ -3,13 +3,16 @@
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
+#include "Core/FileMgr.hpp"
 #include "Core/Pointers.hpp"
 #include "Menu/Click.hpp"
+#include "Rendering/HeaderBanner.hpp"
 #include "Rendering/Theme.hpp"
 
 #include <algorithm>
 #include <climits>
 #include <cstdint>
+#include <string>
 #include <windows.h>
 
 namespace Stand
@@ -118,18 +121,44 @@ namespace Stand
 		}
 	};
 
+	class CommandHeaderMode : public CommandSlider
+	{
+		static constexpr const char* kLabels[2] = {"Hide", "Custom"};
+
+	public:
+		explicit CommandHeaderMode(CommandList* const parent)
+			: CommandSlider(parent, LIT("Header"), CMDNAMES("header"), NOLABEL, 0, 1, 0, 1)
+		{
+		}
+
+		std::string getValueText() const override
+		{
+			return kLabels[std::clamp(value, 0, 1)];
+		}
+
+		void onChange(Click& click, int prev_value) override
+		{
+			if (value == 1)
+				Rendering::HeaderBanner::LoadFromFolder(FileMgr::GetProjectFolder("Headers").Path());
+			else
+				Rendering::HeaderBanner::Clear();
+		}
+	};
+
 	class CommandTabPosition : public CommandList
 	{
 	public:
 		CommandMenuX* const x;
 		CommandMenuY* const y;
 		CommandMenuMouseMove* const mouseMove;
+		CommandHeaderMode* const header;
 
 		explicit CommandTabPosition()
 			: CommandList(nullptr, LIT("Position"), CMDNAMES("menupos"))
 			, x(createChild<CommandMenuX>())
 			, y(createChild<CommandMenuY>())
 			, mouseMove(createChild<CommandMenuMouseMove>(x, y))
+			, header(createChild<CommandHeaderMode>())
 		{
 		}
 	};

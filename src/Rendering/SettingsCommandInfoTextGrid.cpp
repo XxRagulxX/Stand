@@ -1,6 +1,6 @@
 #include "Rendering/SettingsCommandInfoTextGrid.hpp"
 
-#include "Commands/Settings/CommandTabCommandInfoText.hpp"
+#include "Commands/Settings/Appearance/CommandTabCommandInfoText.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

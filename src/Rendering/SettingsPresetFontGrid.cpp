@@ -1,8 +1,8 @@
 #include "Rendering/SettingsPresetFontGrid.hpp"
 
-#include "Rendering/GridItemCommandButton.hpp"
+#include "Commands/Settings/Appearance/CommandTabPresetFont.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -18,8 +18,9 @@ namespace Stand::Rendering
 
 	void SettingsPresetFontGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "presetfontyahei"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "presetfontnanumgothic"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "presetfontbevietnamprolight"_J));
+		auto& tab = Features::GetCommandTabPresetFont();
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.yahei));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.nanumGothic));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.beVietnamProLight));
 	}
 }

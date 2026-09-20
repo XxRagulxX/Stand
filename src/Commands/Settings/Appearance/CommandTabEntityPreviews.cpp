@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabEntityPreviews.hpp"
+#include "Commands/Settings/Appearance/CommandTabEntityPreviews.hpp"
 
 namespace Stand::Features
 {

@@ -1,13 +1,13 @@
 #include "Rendering/SettingsProfilesGrid.hpp"
 
+#include "Commands/Settings/Profiles/CommandTabProfiles.hpp"
 #include "Config/ProfileManager.hpp"
 #include "Rendering/GridItemButton.hpp"
-#include "Rendering/GridItemCommandButton.hpp"
-#include "Rendering/GridItemCommandInput.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/GridItemText.hpp"
+#include "Rendering/GridItemTextInput.hpp"
 #include "Rendering/Notifications.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -28,8 +28,11 @@ namespace Stand::Rendering
 			return ProfileManager::GetGeneration() == capturedGen;
 		});
 
-		items_draft.push_back(std::make_unique<GridItemCommandInput>(Theme::kContentWidth, kItemH, "newprofile"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "openprofilesfolder"_J));
+		items_draft.push_back(std::make_unique<GridItemTextInput>(Theme::kContentWidth, kItemH, "New Profile Name", "", [](const std::string& name) {
+			if (!name.empty())
+				ProfileManager::SaveProfile(name);
+		}));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, Features::GetCommandTabProfiles().openProfilesFolder));
 
 		const auto profiles = ProfileManager::ListProfiles();
 		if (!profiles.empty())

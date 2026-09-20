@@ -1,11 +1,15 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 
 #include <climits>
+#include <commdlg.h>
+#include <string>
+#include <windows.h>
 
 namespace Stand
 {
@@ -146,15 +150,58 @@ namespace Stand
 		}
 	};
 
+	class CommandSetFont : public CommandPhysical
+	{
+	public:
+		explicit CommandSetFont(CommandList* const parent)
+			: CommandPhysical(COMMAND_ACTION, parent, LIT("Set Font"), CMDNAMES("setfont"), NOLABEL)
+		{
+		}
+
+		void onClick(Click& click) override
+		{
+			char filePath[MAX_PATH] = {};
+			OPENFILENAMEA ofn{};
+			ofn.lStructSize = sizeof(ofn);
+			ofn.lpstrFilter = "SpriteFont Files\0*.spritefont\0All Files\0*.*\0";
+			ofn.lpstrFile = filePath;
+			ofn.nMaxFile = MAX_PATH;
+			ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+			if (GetOpenFileNameA(&ofn))
+			{
+				Rendering::Theme::kFontPath = filePath;
+				Rendering::Theme::kFontReloadPending = true;
+			}
+		}
+	};
+
+	class CommandReloadFont : public CommandPhysical
+	{
+	public:
+		explicit CommandReloadFont(CommandList* const parent)
+			: CommandPhysical(COMMAND_ACTION, parent, LIT("Reload Font"), CMDNAMES("reloadfont"), NOLABEL)
+		{
+		}
+
+		void onClick(Click& click) override
+		{
+			Rendering::Theme::kFontReloadPending = true;
+		}
+	};
+
 	class CommandTabFontText : public CommandList
 	{
 	public:
+		CommandSetFont* const setFont;
+		CommandReloadFont* const reloadFont;
 		CommandCommandBoxInput* const commandBoxInput;
 		CommandSmallText* const smallText;
 		CommandShowTextBoundingBoxes* const showTextBoundingBoxes;
 
 		explicit CommandTabFontText()
 			: CommandList(nullptr, LIT("Font & Text"), CMDNAMES())
+			, setFont(createChild<CommandSetFont>())
+			, reloadFont(createChild<CommandReloadFont>())
 			, commandBoxInput(createChild<CommandCommandBoxInput>())
 			, smallText(createChild<CommandSmallText>())
 			, showTextBoundingBoxes(createChild<CommandShowTextBoundingBoxes>())

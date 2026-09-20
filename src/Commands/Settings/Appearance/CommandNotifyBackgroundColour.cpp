@@ -3,13 +3,6 @@
 
 namespace Stand::Features
 {
-	// Ported from real Stand's own CommandNotifyBgColour (Commands/
-	// Online/CommandListNotifySettings.cpp on origin/stand-reference) -
-	// defaults to a copy of Settings > Appearance > Background Colour's
-	// own default ((0, 0, 0, 77/255)) - see CommandNotifyBorderColour.cpp's
-	// own comment for why there's no literal copy-from-Background-Colour
-	// BUTTON widget, only the matching default value. No Rainbow Mode -
-	// real Stand's own tree doesn't list one for this colour either.
 	class CommandNotifyBackgroundColour : public CommandColourCustom
 	{
 	public:

@@ -1,4 +1,4 @@
-#include "Commands/Settings/CommandTabFontText.hpp"
+#include "Commands/Settings/Appearance/CommandTabFontText.hpp"
 
 namespace Stand::Features
 {

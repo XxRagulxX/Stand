@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+namespace Stand { class CommandColourCustom; }
+
 namespace Stand::Rendering
 {
 	class Grid;
@@ -36,23 +38,18 @@ namespace Stand::Rendering
 	// Stand's own actual behaviour more closely, and is one row instead
 	// of five.
 	void AddColorCommandRows(std::vector<std::unique_ptr<GridItem>>& items_draft, int16_t width, joaat_t id, std::optional<std::string> labelOverride = std::nullopt);
+	void AddColorCommandRows(std::vector<std::unique_ptr<GridItem>>& items_draft, int16_t width, Stand::CommandColourCustom* command, std::optional<std::string> labelOverride = std::nullopt);
 
-	// AddColorCommandRows() above with no gating parameter of its own -
-	// unlike a single-GridItem widget, there's nothing to hand a
-	// condition directly. Registers condition with grid.watchCondition()
-	// (see its own doc comment in Grid.hpp) and only builds/pushes the
-	// one row when it's true, rather than always building it and
-	// wrapping it in GridItemConditional - so a hidden row doesn't
-	// reserve its own layout space, and the caller's own Grid (not this
-	// free function) is what needs repopulating live when condition
-	// changes. Needed wherever a CommandColourCustom swatch is itself behind a
-	// ConditionalItem in the original ImGui menu (Weapons > Custom
-	// Weapons' paintguncolor, Settings > Game's ESP name/skeleton/hash
-	// colour swatches, ...).
 	void AddConditionalColorCommandRows(Grid& grid,
 	    std::vector<std::unique_ptr<GridItem>>& items_draft,
 	    int16_t width,
 	    joaat_t id,
+	    std::function<bool()> condition,
+	    std::optional<std::string> labelOverride = std::nullopt);
+	void AddConditionalColorCommandRows(Grid& grid,
+	    std::vector<std::unique_ptr<GridItem>>& items_draft,
+	    int16_t width,
+	    Stand::CommandColourCustom* command,
 	    std::function<bool()> condition,
 	    std::optional<std::string> labelOverride = std::nullopt);
 }

@@ -1,9 +1,8 @@
 #include "Rendering/SettingsNotifyPositionGrid.hpp"
 
-#include "Rendering/GridItemCommandSlider.hpp"
-#include "Rendering/GridItemCommandToggle.hpp"
+#include "Commands/Settings/Appearance/CommandTabNotifyPosition.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
-#include "Util/Joaat.hpp"
 
 namespace Stand::Rendering
 {
@@ -12,8 +11,6 @@ namespace Stand::Rendering
 		constexpr float kItemH = Theme::kContentItemHeight;
 	}
 
-	// Origin/spacer match every other content Grid's - see Self.cpp's
-	// identical comment.
 	SettingsNotifyPositionGrid::SettingsNotifyPositionGrid() :
 	    Grid(Theme::GetContentOrigin(), 0)
 	{
@@ -21,8 +18,9 @@ namespace Stand::Rendering
 
 	void SettingsNotifyPositionGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		items_draft.push_back(std::make_unique<GridItemCommandSlider>(Theme::kContentWidth, kItemH, "notifyx"_J, "X", 10));
-		items_draft.push_back(std::make_unique<GridItemCommandSlider>(Theme::kContentWidth, kItemH, "notifyy"_J, "Y", 10));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "notifymousemove"_J, "Move With Mouse"));
+		auto& tab = Features::GetCommandTabNotifyPosition();
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.x));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.y));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.mouseMove));
 	}
 }
