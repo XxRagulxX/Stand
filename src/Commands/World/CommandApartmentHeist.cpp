@@ -2,7 +2,7 @@
 #include "Commands/CommandLegacy.hpp"
 #include "World/Stats.hpp"
 #include "Network/Players.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Scripting/ScriptLocal.hpp"
 #include "Scripting/ScriptMgr.hpp"
 #include "Network/GlobalPlayerBD.hpp"
@@ -23,21 +23,21 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				auto base1 = ScriptGlobal(1936406).At(1);
-				auto base2 = ScriptGlobal(1938374).At(3008);
+				auto base1 = Globals::HEIST_PRISON_BREAK.at(1);
+				auto base2 = Globals::HEIST_HUMANE_LABS.at(3008);
 
-				*base1.At(0, 1).As<int*>() = 100 - (_ApartmentHeistCut1.GetState() + _ApartmentHeistCut2.GetState() + _ApartmentHeistCut3.GetState() + _ApartmentHeistCut4.GetState());
-				*base1.At(1, 1).As<int*>() = _ApartmentHeistCut2.GetState();
-				*base1.At(2, 1).As<int*>() = _ApartmentHeistCut3.GetState();
-				*base1.At(3, 1).As<int*>() = _ApartmentHeistCut4.GetState();
+				*base1.at(0, 1).as<int*>() = 100 - (_ApartmentHeistCut1.GetState() + _ApartmentHeistCut2.GetState() + _ApartmentHeistCut3.GetState() + _ApartmentHeistCut4.GetState());
+				*base1.at(1, 1).as<int*>() = _ApartmentHeistCut2.GetState();
+				*base1.at(2, 1).as<int*>() = _ApartmentHeistCut3.GetState();
+				*base1.at(3, 1).as<int*>() = _ApartmentHeistCut4.GetState();
 
 				Script::current()->yield(500);
 
-				*base2.At(0, 1).As<int*>() = -1 * (*base1.At(0, 1).As<int*>() + *base1.At(1, 1).As<int*>() + *base1.At(2, 1).As<int*>() + *base1.At(3, 1).As<int*>() - 100);
+				*base2.at(0, 1).as<int*>() = -1 * (*base1.at(0, 1).as<int*>() + *base1.at(1, 1).as<int*>() + *base1.at(2, 1).as<int*>() + *base1.at(3, 1).as<int*>() - 100);
 				
 				for (int i = 1; i <= 3; i++)
 				{
-					*base2.At(i, 1).As<int*>() = *base1.At(i, 1).As<int*>();
+					*base2.at(i, 1).as<int*>() = *base1.at(i, 1).as<int*>();
 				}
 			}
 		};
@@ -76,8 +76,8 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
 				{
-					*ScriptLocal(thread, 12239).At(24).As<int*>() = 7;
-					*ScriptLocal(thread, 10233).As<int*>() = *ScriptLocal(thread, 10233).As<int*>() | (1 << 9);
+					*ScriptLocal(thread, 12239).at(24).as<int*>() = 7;
+					*ScriptLocal(thread, 10233).as<int*>() = *ScriptLocal(thread, 10233).as<int*>() | (1 << 9);
 				}
 			}
 		};
@@ -90,7 +90,7 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
 				{
-					*ScriptLocal(thread, 10527).At(11).As<float*>() = 100.0f;
+					*ScriptLocal(thread, 10527).at(11).as<float*>() = 100.0f;
 				}
 			}
 		};
@@ -103,8 +103,8 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
 				{
-					*ScriptLocal(thread, 32785).At(Self::GetPlayer().GetId(), 294).At(143).As<int*>() = 8;
-					*ScriptLocal(thread, 64655).As<int*>() = 5;
+					*ScriptLocal(thread, 32785).at(Self::GetPlayer().GetId(), 294).at(143).as<int*>() = 8;
+					*ScriptLocal(thread, 64655).as<int*>() = 5;
 				}
 			}
 		};
@@ -120,10 +120,10 @@ namespace Stand::Features
 					Scripts::ForceScriptHost(thread);
 					Script::current()->yield(500);
 
-					*ScriptLocal(thread, 20412).At(1725).At(0, 1).As<int*>() = 80;
-					*ScriptLocal(thread, 20412).As<int*>() = 12;
-					*ScriptLocal(thread, 29326).At(0, 1).As<int*>() = 99999;
-					*ScriptLocal(thread, 32785).At(0, 294).At(68).As<int*>() = 99999;
+					*ScriptLocal(thread, 20412).at(1725).at(0, 1).as<int*>() = 80;
+					*ScriptLocal(thread, 20412).as<int*>() = 12;
+					*ScriptLocal(thread, 29326).at(0, 1).as<int*>() = 99999;
+					*ScriptLocal(thread, 32785).at(0, 294).at(68).as<int*>() = 99999;
 				}
 				// TODO: find a way of getting current heist info so that InstantFinishPacific can be implemented here conditionally.
 			}
@@ -140,11 +140,11 @@ namespace Stand::Features
 					Scripts::ForceScriptHost(thread);
 					Script::current()->yield(500);
 
-					*ScriptLocal(thread, 20412).At(2686).As<int*>() = 1875000;
-					*ScriptLocal(thread, 20412).At(1062).As<int*>() = 5;
-					*ScriptLocal(thread, 20412).As<int*>() = 12;
-					*ScriptLocal(thread, 29326).At(0, 1).As<int*>() = 99999;
-					*ScriptLocal(thread, 32785).At(0, 294).At(68).As<int*>() = 99999;
+					*ScriptLocal(thread, 20412).at(2686).as<int*>() = 1875000;
+					*ScriptLocal(thread, 20412).at(1062).as<int*>() = 5;
+					*ScriptLocal(thread, 20412).as<int*>() = 12;
+					*ScriptLocal(thread, 29326).at(0, 1).as<int*>() = 99999;
+					*ScriptLocal(thread, 32785).at(0, 294).at(68).as<int*>() = 99999;
 				}
 			}
 		};

@@ -29,7 +29,7 @@ namespace Stand::Features
 				{
 					Scripts::ForceScriptHost(Scripts::FindScriptThread("casino_slots"_J));
 				}
-				int* spin_state = ScriptLocal("casino_slots"_J, spin_state_var).As<int*>();
+				int* spin_state = ScriptLocal("casino_slots"_J, spin_state_var).as<int*>();
 
 
 				bool needs_run = false;
@@ -37,7 +37,7 @@ namespace Stand::Features
 				{
 					if (!slots_blacklist.contains(slots_iter))
 					{
-						if (*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).As<int*>() != 6)
+						if (*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).as<int*>() != 6)
 						{
 							needs_run = true;
 							break;
@@ -51,7 +51,7 @@ namespace Stand::Features
 						if (!slots_blacklist.contains(slots_iter) && spin_state_whitelist.contains(*spin_state))
 						{
 							int slot_result = 6;
-							*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).As<int*>() = slot_result;
+							*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).as<int*>() = slot_result;
 						}
 					}
 				}
@@ -70,12 +70,12 @@ virtual void OnDisable() override
 					Scripts::ForceScriptHost(Scripts::FindScriptThread("casino_slots"_J));
 				}
 
-				int* spin_state = ScriptLocal("casino_slots"_J, spin_state_var).As<int*>();
+				int* spin_state = ScriptLocal("casino_slots"_J, spin_state_var).as<int*>();
 				// waiting for reset until next time using
 				while (!spin_state_whitelist.contains(*spin_state))
 				{
 					Script::current()->yield();
-					spin_state = ScriptLocal("casino_slots"_J, spin_state_var).As<int*>();
+					spin_state = ScriptLocal("casino_slots"_J, spin_state_var).as<int*>();
 					if (spin_state == nullptr){
 						return;
 					}
@@ -88,7 +88,7 @@ virtual void OnDisable() override
 						int slot_result = 6;
 						std::srand(static_cast<unsigned int>(std::time(0)) + slots_iter);
 						slot_result = 3 + std ::rand() % 7; // Generates a pseudo random number [3,9] 
-						*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).As<int*>() = slot_result;
+						*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).as<int*>() = slot_result;
 					}
 				}
 			}

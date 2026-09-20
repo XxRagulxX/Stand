@@ -5,12 +5,12 @@
 #include "Scripting/Natives.hpp"
 #include "Scripting/ScriptFunction.hpp"
 #include "Scripting/ScriptLocal.hpp"
-#include "Scripting/ScriptGlobal.hpp"
-#include "World/Stats.hpp"
 #include "Network/GPBD_FM.hpp"
 #include "Network/MPSV.hpp"
 #include "Network/FreemodeGeneral.hpp"
 #include "Network/g_SavedMPGlobals.hpp"
+#include "Scripting/Globals.hpp"
+#include "World/Stats.hpp"
 
 #define MAX_GARAGE_NUM 36
 
@@ -304,13 +304,13 @@ namespace Stand
 				auto garageOffset = GetPropertyGarageOffset(propertyIterator);
 				for (int garageSlotIterator = 1; garageSlotIterator <= garageSize; garageSlotIterator++)
 				{
-					auto itemInSlot = *ScriptGlobal(1945138).At(garageOffset).At(garageSlotIterator).As<int*>() - 1;
+					auto itemInSlot = *Globals::GARAGE_SLOT_LOOKUP.at(garageOffset).at(garageSlotIterator).as<int*>() - 1;
 					if (itemInSlot == m_Id)
 					{
 						auto staticPropertyString = GetStaticPropertyName(propertyIterator, garageSlotIterator);
 						if (staticPropertyString.empty())
 						{
-							m_Garage = HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION(ScriptGlobal(1312440).At(propertyStatState, 1951).At(16).As<const char*>());
+							m_Garage = HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION(Globals::PROPERTY_NAME_TABLE.at(propertyStatState, 1951).at(16).as<const char*>());
 						}
 						else
 						{
@@ -378,7 +378,7 @@ namespace Stand
 
 			Script::current()->yield(100);
 
-			*ScriptLocal("freemode"_J, 19672).At(176).As<int*>() = 0;
+			*ScriptLocal("freemode"_J, 19672).at(176).as<int*>() = 0;
 
 			if (bring)
 			{

@@ -1,7 +1,7 @@
 #include "Commands/LoopedCommand.hpp"
 #include "World/Self.hpp"
 #include "Scripting/Scripts.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Core/Pointers.hpp"
 #include "Network/GlobalPlayerBD.hpp"
 
@@ -15,7 +15,7 @@ namespace Stand::Features
 		{
 			if (auto gpbd = GlobalPlayerBD::Get(); gpbd && Scripts::SafeToModifyFreemodeBroadcastGlobals())
 			{
-				*ScriptGlobal(2673276).At(58).As<int*>() = *Pointers.NetworkTime;
+				*Globals::PLAYERSTATUS2_OTR_TIMESTAMP.as<int*>() = *Pointers.NetworkTime;
 				gpbd->Entries[Self::GetPlayer().GetId()].OffRadarActive = true;
 			}
 		}

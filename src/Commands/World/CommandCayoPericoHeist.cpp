@@ -8,6 +8,7 @@
 #include "World/Self.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Stats.hpp"
+#include "Scripting/Globals.hpp"
 #include "Scripting/ScriptGlobal.hpp"
 #include "Scripting/ScriptLocal.hpp"
 #include "Scripting/ScriptMgr.hpp"
@@ -45,12 +46,12 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				auto base = ScriptGlobal(1980570).At(831).At(56);
+				auto base = Globals::HEIST_DOOMSDAY_ACT2.at(831).at(56);
 
-				*base.At(0, 1).As<int*>() = _CayoPericoHeistCut1.GetState();
-				*base.At(1, 1).As<int*>() = _CayoPericoHeistCut2.GetState();
-				*base.At(2, 1).As<int*>() = _CayoPericoHeistCut3.GetState();
-				*base.At(3, 1).As<int*>() = _CayoPericoHeistCut4.GetState();
+				*base.at(0, 1).as<int*>() = _CayoPericoHeistCut1.GetState();
+				*base.at(1, 1).as<int*>() = _CayoPericoHeistCut2.GetState();
+				*base.at(2, 1).as<int*>() = _CayoPericoHeistCut3.GetState();
+				*base.at(3, 1).as<int*>() = _CayoPericoHeistCut4.GetState();
 				Notifications::ShowInGame("Cayo Perico", "Apply Cut - Successfull", "CHAR_PAVEL", "Green");
 			}
 		};
@@ -61,11 +62,11 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				auto base = ScriptGlobal(1973762);
+				auto base = Globals::HEIST_CASINO;
 
 				for (int i = 0; i <= 3; i++)
 				{
-					*base.At(i, 27).At(7).At(i, 1).As<int*>() = 1;
+					*base.at(i, 27).at(7).at(i, 1).as<int*>() = 1;
 				}
 				Notifications::ShowInGame("Cayo Perico", "Force Ready Set - Successfull", "CHAR_PAVEL", "Green");
 			}
@@ -163,7 +164,7 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				*ScriptGlobal(2733326).At(613).As<int*>() = 1;
+				*Globals::FREEMODE_GENERAL.at(613).as<int*>() = 1;
 			}
 		};
 
@@ -216,7 +217,7 @@ namespace Stand::Features
 				Script::current()->yield(500);
 
 				if (auto thread = Scripts::FindScriptThread("heist_island_planning"_J))
-					*ScriptLocal(thread, 1580).As<int*>() = 2;
+					*ScriptLocal(thread, 1580).as<int*>() = 2;
 
 				Notifications::ShowInGame("Cayo Perico", "Cayo Perio Heist Setup Completed", "CHAR_PAVEL", "Green");
 			}
@@ -290,7 +291,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_2020"_J))
-					*ScriptLocal(thread, 59986).At(1376).At(53).As<int*>() = _CayoPericoHeistSecondaryTakeValue.GetState();
+					*ScriptLocal(thread, 59986).at(1376).at(53).as<int*>() = _CayoPericoHeistSecondaryTakeValue.GetState();
 			}
 		};
 
@@ -377,7 +378,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_2020"_J))
-					*ScriptLocal(thread, 26619).As<int*>() = 5;
+					*ScriptLocal(thread, 26619).as<int*>() = 5;
 			}
 		};
 
@@ -388,7 +389,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_2020"_J))
-					*ScriptLocal(thread, 31511).As<int*>() = 6;
+					*ScriptLocal(thread, 31511).as<int*>() = 6;
 				Hash drainagePipeHash = "prop_chem_grill_bit"_J;
 				Stand::DeleteObjectsByHash(drainagePipeHash);
 				Notifications::ShowInGame("Cayo Perico", "Cut Sewer Grill - Successfull", "CHAR_LESTER", "Black");
@@ -402,7 +403,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_2020"_J))
-					*ScriptLocal(thread, 32751).At(3).As<float*>() = 100.0f;
+					*ScriptLocal(thread, 32751).at(3).as<float*>() = 100.0f;
 			}
 		};
 
@@ -432,12 +433,12 @@ namespace Stand::Features
 						case 1:
 						case 3:
 						case 5:
-							*ScriptLocal(thread, 32750).As<int*>() = 5;
-							*ScriptLocal(thread, 32751).As<int*>() = 3;
+							*ScriptLocal(thread, 32750).as<int*>() = 5;
+							*ScriptLocal(thread, 32751).as<int*>() = 3;
 							break;
 						case 2:
 						case 4:
-							*ScriptLocal(thread, 32725).As<int*>() = 7;
+							*ScriptLocal(thread, 32725).as<int*>() = 7;
 							break;
 						default: break;
 						}
@@ -459,7 +460,7 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_2020"_J))
 				{
-					*ScriptLocal(thread, 32751).At(4).As<float*>() = 0.0f; //DLC_H4_anims_glass_cutter_Sounds
+					*ScriptLocal(thread, 32751).at(4).as<float*>() = 0.0f; //DLC_H4_anims_glass_cutter_Sounds
 				}
 			}
 		};
@@ -475,8 +476,8 @@ namespace Stand::Features
 					Scripts::ForceScriptHost(thread);
 					Script::current()->yield(500);
 
-					*ScriptLocal(thread, 56504).As<int*>() = 9;
-					*ScriptLocal(thread, 56504).At(1776).At(0, 1).As<int*>() = 50;
+					*ScriptLocal(thread, 56504).as<int*>() = 9;
+					*ScriptLocal(thread, 56504).at(1776).at(0, 1).as<int*>() = 50;
 				}
 			}
 		};

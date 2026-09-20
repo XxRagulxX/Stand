@@ -1,5 +1,5 @@
 #include "Commands/LoopedCommand.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Core/Pointers.hpp"
 
 namespace Stand::Features
@@ -10,18 +10,15 @@ namespace Stand::Features
 
 		virtual void OnTick() override
 		{
-			constexpr auto is_incoming_call = ScriptGlobal(23050);
-			constexpr auto is_phone_call_in_progress = ScriptGlobal(23046);
-			constexpr auto phone_call_state = ScriptGlobal(23040);
-			constexpr auto calling_character = ScriptGlobal(8818);
+			using namespace Globals;
 
 			if (*Pointers.IsSessionStarted)
 			{
-				if (*phone_call_state.As<int*>() != 0 && *phone_call_state.As<int*>() != 5 && *phone_call_state.As<int*>() != 6
-				    && *is_phone_call_in_progress.As<bool*>() && *is_incoming_call.As<bool*>())
+				if (*PHONE_CALL_STATE.as<int*>() != 0 && *PHONE_CALL_STATE.as<int*>() != 5 && *PHONE_CALL_STATE.as<int*>() != 6
+				    && *PHONE_CALL_IN_PROGRESS.as<bool*>() && *PHONE_INCOMING_CALL.as<bool*>())
 				{
-					LOGF(VERBOSE, "SilencePhoneCalls::OnTick(): Skipped phone call from character {}", *calling_character.As<int*>());
-					*phone_call_state.As<int*>() = 6;
+					LOGF(VERBOSE, "SilencePhoneCalls::OnTick(): Skipped phone call from character {}", *PHONE_CALLING_CHARACTER.as<int*>());
+					*PHONE_CALL_STATE.as<int*>() = 6;
 				}
 			}
 		}

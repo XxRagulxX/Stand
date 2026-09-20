@@ -46,6 +46,9 @@ namespace Stand
 			return {m_StackPtr, m_Index + 1 + offset * size};
 		}
 
+		constexpr ScriptLocal at(std::ptrdiff_t offset) const { return At(offset); }
+		constexpr ScriptLocal at(std::ptrdiff_t offset, std::size_t size) const { return At(offset, size); }
+
 		constexpr ScriptLocal Set(void* stackPtr)
 		{
 			return {stackPtr, m_Index};
@@ -68,6 +71,9 @@ namespace Stand
 		{
 			return *static_cast<std::add_pointer_t<std::remove_reference_t<T>>>(Get());
 		}
+
+		template<typename T>
+		auto as() { return As<T>(); }
 
 		bool CanAccess() const;
 

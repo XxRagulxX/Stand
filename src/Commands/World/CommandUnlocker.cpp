@@ -2,7 +2,7 @@
 #include "World/Stats.hpp"
 #include "Scripting/Natives.hpp"
 #include "Commands/CommandSliderLegacy.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Commands/LoopedCommand.hpp"
 #include "Rendering/Notifications.hpp"
 #include "Scripting/FiberPool.hpp"
@@ -254,7 +254,7 @@ namespace Stand::Features
 		virtual void OnCall() override
 		{
 			Notifications::Show("Clothing", "Unlocking Clothing InProgress. Please wait until Completion", NotificationType::Info);
-			*ScriptGlobal(262145).At(23812).As<int*>() = 1;
+			*Globals::FREEMODE_UNLOCK_CONTENT.as<int*>() = 1;
 			int ids[] = {
 			    3593,
 			    3608,
@@ -3595,8 +3595,7 @@ namespace Stand::Features
 			for (int i = 0; i <= 20; ++i)
 				Stats::SetInt("MPPLY_XMASLIVERIES" + std::to_string(i), -1);
 
-			// Tunable unlock
-			*ScriptGlobal(262145).At(33811).As<int*>() = 1;
+			*Globals::FREEMODE_UNLOCK_CONTENT2.as<int*>() = 1;
 
 			// ---- Packed unlocks ----
 			static const int packedUnlocks[] = {
@@ -4010,11 +4009,11 @@ namespace Stand::Features
 
 		virtual void OnCall() override
 		{
-			auto base = ScriptGlobal(262145);
+			auto base = Globals::FREEMODE_GLOBAL;
 			for (int i = 34625; i <= 34643; ++i)
-				*base.At(i).As<int*>() = 1;
+				*base.at(i).as<int*>() = 1;
 
-			*ScriptGlobal(262145).At(12027).As<int*>() = 1;
+			*Globals::FREEMODE_UNLOCK_SLOT.as<int*>() = 1;
 
 			static const int unlocks[] = {
 			    51222,
@@ -4278,11 +4277,11 @@ namespace Stand::Features
 				};
 
 				auto get_tunable = [](int idx) -> int {
-					return *ScriptGlobal(262145 + idx).As<int*>();
+					return *ScriptGlobal(262145 + idx).as<int*>();
 				};
 
 				auto set_tunable = [](int idx, int value) {
-					*ScriptGlobal(262145 + idx).As<int*>() = value;
+					*ScriptGlobal(262145 + idx).as<int*>() = value;
 				};
 
 				bool enabled = get_tunable(-648209009) == 1;
@@ -4326,11 +4325,11 @@ namespace Stand::Features
 				};
 
 				auto get = [](int idx) -> int {
-					return *ScriptGlobal(262145 + idx).As<int*>();
+					return *ScriptGlobal(262145 + idx).as<int*>();
 				};
 
 				auto set = [](int idx, int value) {
-					*ScriptGlobal(262145 + idx).As<int*>() = value;
+					*ScriptGlobal(262145 + idx).as<int*>() = value;
 				};
 
 				bool enabled = get(12113) == 1;
@@ -4380,11 +4379,11 @@ namespace Stand::Features
 				};
 
 				auto get = [](int idx) -> int {
-					return *ScriptGlobal(262145 + idx).As<int*>();
+					return *ScriptGlobal(262145 + idx).as<int*>();
 				};
 
 				auto set = [](int idx, int value) {
-					*ScriptGlobal(262145 + idx).As<int*>() = value;
+					*ScriptGlobal(262145 + idx).as<int*>() = value;
 				};
 
 				bool enabled = get(4424) == 1;

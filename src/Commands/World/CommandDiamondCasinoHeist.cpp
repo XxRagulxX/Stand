@@ -6,7 +6,7 @@
 #include "Game/Pools.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/DeleteObjectsByHash.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Scripting/ScriptLocal.hpp"
 #include "Scripting/ScriptMgr.hpp"
 #include "Network/Tunables.hpp"
@@ -38,12 +38,12 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				auto base = ScriptGlobal(1973762).At(1497).At(736).At(92);
+				auto base = Globals::HEIST_CASINO.at(1497).at(736).at(92);
 
-				*base.At(0, 1).As<int*>() = _DiamondCasinoHeistCut1.GetState();
-				*base.At(1, 1).As<int*>() = _DiamondCasinoHeistCut2.GetState();
-				*base.At(2, 1).As<int*>() = _DiamondCasinoHeistCut3.GetState();
-				*base.At(3, 1).As<int*>() = _DiamondCasinoHeistCut4.GetState();
+				*base.at(0, 1).as<int*>() = _DiamondCasinoHeistCut1.GetState();
+				*base.at(1, 1).as<int*>() = _DiamondCasinoHeistCut2.GetState();
+				*base.at(2, 1).as<int*>() = _DiamondCasinoHeistCut3.GetState();
+				*base.at(3, 1).as<int*>() = _DiamondCasinoHeistCut4.GetState();
 			}
 		};
 
@@ -95,11 +95,11 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				auto base = ScriptGlobal(1978125);
+				auto base = Globals::HEIST_CAYO_PERICO;
 
 				for (int i = 0; i <= 3; i++)
 				{
-					*base.At(i, 68).At(7).At(i, 1).As<int*>() = 1;
+					*base.at(i, 68).at(7).at(i, 1).as<int*>() = 1;
 				}
 			}
 		};
@@ -342,7 +342,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
-					*ScriptLocal(thread, 20412).At(2686).As<int*>() = _DiamondCasinoHeistActualTake.GetState();
+					*ScriptLocal(thread, 20412).at(2686).as<int*>() = _DiamondCasinoHeistActualTake.GetState();
 			}
 		};
 
@@ -483,8 +483,8 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
 				{
-					*ScriptLocal(thread, 55028).As<int*>() = 5;
-					*ScriptLocal(thread, 56098).As<int*>() = 5;
+					*ScriptLocal(thread, 55028).as<int*>() = 5;
+					*ScriptLocal(thread, 56098).as<int*>() = 5;
 				}
 			}
 		};
@@ -496,7 +496,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
-					*ScriptLocal(thread, 10567).At(7).As<int*>() = *ScriptLocal(thread, 10567).At(37).As<int*>();
+					*ScriptLocal(thread, 10567).at(7).as<int*>() = *ScriptLocal(thread, 10567).at(37).as<int*>();
 			}
 		};
 
@@ -508,8 +508,8 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
 				{
-					*ScriptLocal(thread, 32785).At(Self::GetPlayer().GetId(), 294).At(143).As<int*>() = 8;
-					*ScriptLocal(thread, 64655).As<int*>() = 5;
+					*ScriptLocal(thread, 32785).at(Self::GetPlayer().GetId(), 294).at(143).as<int*>() = 8;
+					*ScriptLocal(thread, 64655).as<int*>() = 5;
 				}
 			}
 		};
@@ -525,12 +525,12 @@ namespace Stand::Features
 					Scripts::ForceScriptHost(thread);
 					Script::current()->yield(500);
 
-					*ScriptLocal(thread, 20412).At(1740).At(0, 1).As<int*>() = 80;
-					*ScriptLocal(thread, 20412).At(2686).As<int*>() = 4443220;
-					*ScriptLocal(thread, 20412).At(1062).As<int*>() = 5;
-					*ScriptLocal(thread, 20412).As<int*>() = 12;
-					*ScriptLocal(thread, 29326).At(0, 1).As<int*>() = 99999;
-					*ScriptLocal(thread, 32785).At(0, 294).At(68).As<int*>() = 99999;
+					*ScriptLocal(thread, 20412).at(1740).at(0, 1).as<int*>() = 80;
+					*ScriptLocal(thread, 20412).at(2686).as<int*>() = 4443220;
+					*ScriptLocal(thread, 20412).at(1062).as<int*>() = 5;
+					*ScriptLocal(thread, 20412).as<int*>() = 12;
+					*ScriptLocal(thread, 29326).at(0, 1).as<int*>() = 99999;
+					*ScriptLocal(thread, 32785).at(0, 294).at(68).as<int*>() = 99999;
 				}
 			}
 		};

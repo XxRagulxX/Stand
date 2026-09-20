@@ -13,11 +13,11 @@ namespace Stand::Features
             if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
             {
                 auto local = ScriptLocal(thread, 10713);
-                auto lootState = local.As<int*>();
+                auto lootState = local.as<int*>();
                 if (lootState && *lootState == 3)
                 {
                     *lootState = 4;
-                    *local.At(14).As<float*>() = 2.0f;
+                    *local.at(14).as<float*>() = 2.0f;
                 }
             }
         }

@@ -5,7 +5,7 @@
 #include "Rendering/Notifications.hpp"
 #include "Scripting/ScriptMgr.hpp"
 #include "Scripting/FiberPool.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 
 namespace Stand::Features
 {
@@ -25,14 +25,14 @@ namespace Stand::Features
 
 		virtual void OnTick() override
 		{
-			*ScriptGlobal(262145).At(18857).As<int*>() = 0; // BIKER_PURCHASE_SUPPLIES_DELAY
-			*ScriptGlobal(262145).At(21367).As<int*>() = 0; // GR_PURCHASE_SUPPLIES_DELAY
+			*Globals::FREEMODE_BIKER_SUPPLIES_DELAY.as<int*>() = 0;
+			*Globals::FREEMODE_GR_SUPPLIES_DELAY.as<int*>() = 0;
 		}
 
 		virtual void OnDisable() override
 		{
-			*ScriptGlobal(262145).At(18857).As<int*>() = 600; // BIKER_PURCHASE_SUPPLIES_DELAY
-			*ScriptGlobal(262145).At(21367).As<int*>() = 600; // GR_PURCHASE_SUPPLIES_DELAY
+			*Globals::FREEMODE_BIKER_SUPPLIES_DELAY.as<int*>() = 600;
+			*Globals::FREEMODE_GR_SUPPLIES_DELAY.as<int*>() = 600;
 		}
 	};
 
@@ -41,13 +41,13 @@ namespace Stand::Features
 		using CommandLegacy::CommandLegacy;
 		virtual void OnCall() override
 		{
-			*ScriptGlobal(1673820).At(1).At(0).As<int*>() = 1; // Cash
-			*ScriptGlobal(1673820).At(1).At(1).As<int*>() = 1; // Document Forge
-			*ScriptGlobal(1673820).At(1).At(2).As<int*>() = 1; // Weed Farm
-			*ScriptGlobal(1673820).At(1).At(3).As<int*>() = 1; // Meth Lab
-			*ScriptGlobal(1673820).At(1).At(4).As<int*>() = 1; // Cocaine Lockup
-			*ScriptGlobal(1673820).At(1).At(5).As<int*>() = 1; // Bunker
-			*ScriptGlobal(1673820).At(1).At(6).As<int*>() = 1; // Acid Lab
+			*Globals::HEIST_FLEECA.at(1).at(0).as<int*>() = 1;
+			*Globals::HEIST_FLEECA.at(1).at(1).as<int*>() = 1;
+			*Globals::HEIST_FLEECA.at(1).at(2).as<int*>() = 1;
+			*Globals::HEIST_FLEECA.at(1).at(3).as<int*>() = 1;
+			*Globals::HEIST_FLEECA.at(1).at(4).as<int*>() = 1;
+			*Globals::HEIST_FLEECA.at(1).at(5).as<int*>() = 1;
+			*Globals::HEIST_FLEECA.at(1).at(6).as<int*>() = 1;
 		}
 	};
 
@@ -64,7 +64,7 @@ namespace Stand::Features
 			// epctLocal_731.f_957 -> mission / vehicle selector
 			constexpr int kMissionTypeLocal = 738 + 957;
 
-			auto missionType = ScriptLocal(thread, kMissionTypeLocal).As<int*>();
+			auto missionType = ScriptLocal(thread, kMissionTypeLocal).as<int*>();
 			if (!missionType)
 				return;
 
@@ -83,7 +83,7 @@ namespace Stand::Features
 		virtual void OnCall() override
 		{
 			FiberPool::queueJob([] {
-				if (*ScriptGlobal(2655288).As<int*>() == -1)
+				if (*Globals::GUN_VAN_VEHICLE.as<int*>() == -1)
 				{
 					Notifications::Show("Hangar Resupply", "Session not ready. Try again in a moment.", NotificationType::Error);
 					return;
@@ -91,7 +91,7 @@ namespace Stand::Features
 				Notifications::Show("Hangar Resupply", "Hangar resupply started.");
 				while (true)
 				{
-					int currentStock = *ScriptGlobal(1845347 + 1 + 260 + 304 + 3).As<int*>();
+					int currentStock = *Globals::GPBD_FM_HANGAR_CRATES.as<int*>();
 
 					if (currentStock >= 50)
 					{
@@ -113,7 +113,7 @@ namespace Stand::Features
 		virtual void OnCall() override
 		{
 			FiberPool::queueJob([] {
-				if (*ScriptGlobal(2655288).As<int*>() == -1)
+				if (*Globals::GUN_VAN_VEHICLE.as<int*>() == -1)
 				{
 					Notifications::Show("Warehouse Resupply", "Session not ready. Try again in a moment.", NotificationType::Error);
 					return;
@@ -121,7 +121,7 @@ namespace Stand::Features
 				Notifications::Show("Warehouse Resupply", "Warehouse resupply started.");
 				while (true)
 				{
-					int currentStock = *ScriptGlobal(1845347 + 1 + 260 + 128 + 1).At(0, 3).As<int*>();
+					int currentStock = *Globals::GPBD_FM_WAREHOUSE_STOCK.at(0, 3).as<int*>();
 
 					if (currentStock >= 111)
 					{

@@ -192,7 +192,7 @@ namespace Stand::Features
 
 	static int GetHangarStock()
 	{
-		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 304 + 3).As<int*>())
+		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 304 + 3).as<int*>())
 			return *p;
 
 		return 0;
@@ -201,7 +201,7 @@ namespace Stand::Features
 
 	static int GetWarehouseCrates(int slot)
 	{
-		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 128 + 1).At(slot, 3).As<int*>())
+		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 128 + 1).at(slot, 3).as<int*>())
 			return *p;
 		return 0;
 	}
@@ -209,21 +209,21 @@ namespace Stand::Features
 	static int GetWarehousePropertyFromSlot(int slot)
 	{
 		int base = 1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 128 + 1;
-		if (auto p = ScriptGlobal(base + (slot * 3)).As<int*>())
+		if (auto p = ScriptGlobal(base + (slot * 3)).as<int*>())
 			return *p;
 		return 0;
 	}
 
 	static int GetOwnedNightclubID()
 	{
-		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 364).As<int*>())
+		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 364).as<int*>())
 			return *p;
 		return 0;
 	}
 
 	static int GetNightclubStock(int slot)
 	{
-		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 320 + 9 + slot).As<int*>())
+		if (auto p = ScriptGlobal(1845347 + 1 + (GetLocalPlayerIndex() * 880) + 260 + 320 + 9 + slot).as<int*>())
 			return *p;
 		return 0;
 	}

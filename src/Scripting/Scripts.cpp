@@ -348,8 +348,8 @@ namespace Stand::Scripts
 		rand_int_2 ^= (random_int ^ 917391583);
 
 		auto bypass_global = ScriptGlobal(1991386); // this global will bypass the new checks added this update
-		auto old_val = *bypass_global.As<int*>();
-		*bypass_global.As<int*>() = rand_int_2 ^ rand() ^ time(0);
+		auto old_val = *bypass_global.as<int*>();
+		*bypass_global.as<int*>() = rand_int_2 ^ rand() ^ time(0);
 
 		event.SetPlayerBits(bits);
 		event.Send();
@@ -365,6 +365,6 @@ namespace Stand::Scripts
 		}
 
 		// restore global just in case
-		*bypass_global.As<int*>() = old_val;
+		*bypass_global.as<int*>() = old_val;
 	}
 }

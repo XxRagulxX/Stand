@@ -45,11 +45,11 @@ namespace Stand::Features
 			}
 
 			static ScriptFunction runGunLockerMenu("AM_MP_AUTO_SHOP"_J, ScriptPointer("RunGunLockerMenu", "2D 06 08 00 00 38 03 5D ? ? ? 57 03 00"));
-			auto gunLockerData = ScriptLocal(m_Thread, 301).At(568);
+			auto gunLockerData = ScriptLocal(m_Thread, 301).at(568);
 
 			int unused;
-			runGunLockerMenu.Call<void>(gunLockerData.As<void*>(), &unused, eSimpleInteriorIndex::SIMPLE_INTERIOR_AUTO_SHOP_MISSION_ROW, Self::GetPlayer().GetId(), false, true);
-			if (*gunLockerData.At(20).As<int*>() == 0)
+			runGunLockerMenu.Call<void>(gunLockerData.as<void*>(), &unused, eSimpleInteriorIndex::SIMPLE_INTERIOR_AUTO_SHOP_MISSION_ROW, Self::GetPlayer().GetId(), false, true);
+			if (*gunLockerData.at(20).as<int*>() == 0)
 			{
 				skipGunLockerMenuChecksPatch->Disable();
 				m_Thread->Kill();

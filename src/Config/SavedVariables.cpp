@@ -48,10 +48,10 @@ namespace Stand
 	{
 		auto global = ScriptGlobal(CalculateOffset());
 
-		if (!global.CanAccess())
+		if (!global.isAvailable())
 			return nullptr;
 
-		return global.As<void*>();
+		return global.as<void*>();
 	}
 
 	void SavedVariables::InitImpl()

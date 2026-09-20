@@ -1,9 +1,9 @@
 #include "Commands/CommandListSelect.hpp"
-#include "World/Self.hpp"
-#include "Scripting/ScriptGlobal.hpp"
-#include "Core/Pointers.hpp"
 #include "Network/GPBD_FM.hpp"
 #include "Network/GPBD_FM_2.hpp"
+#include "World/Self.hpp"
+#include "Scripting/Globals.hpp"
+#include "Core/Pointers.hpp"
 
 namespace Stand::Features
 {
@@ -43,43 +43,43 @@ namespace Stand::Features
 			case eAppVinewoodMenuSafe::NIGHTCLUB:
 			{
 				if (GPBD_FM::Get()->Entries[Self::GetPlayer().GetId()].PropertyData.NightclubData.SafeCashValue > 0)
-					*ScriptGlobal(2708943).As<BOOL*>() = TRUE;
+					*Globals::SAFE_NIGHTCLUB.as<BOOL*>() = TRUE;
 				break;
 			}
 			case eAppVinewoodMenuSafe::ARCADE:
 			{
 				if (GPBD_FM::Get()->Entries[Self::GetPlayer().GetId()].PropertyData.ArcadeData.SafeCashValue > 0)
-					*ScriptGlobal(2708952).As<BOOL*>() = TRUE;
+					*Globals::SAFE_ARCADE.as<BOOL*>() = TRUE;
 				break;
 			}
 			case eAppVinewoodMenuSafe::AGENCY:
 			{
 				if (GPBD_FM::Get()->Entries[Self::GetPlayer().GetId()].PropertyData.FixerHQData.SafeCashValue > 0)
-					*ScriptGlobal(2708961).As<BOOL*>() = TRUE;
+					*Globals::SAFE_AGENCY.as<BOOL*>() = TRUE;
 				break;
 			}
 			case eAppVinewoodMenuSafe::SALVAGE_YARD:
 			{
 				if (GPBD_FM::Get()->Entries[Self::GetPlayer().GetId()].PropertyData.SalvageYardData.TotalEarnings > 0)
-					*ScriptGlobal(2708970).As<BOOL*>() = TRUE;
+					*Globals::SAFE_SALVAGE_YARD.as<BOOL*>() = TRUE;
 				break;
 			}
 			case eAppVinewoodMenuSafe::BAIL_OFFICE:
 			{
 				if (GPBD_FM::Get()->Entries[Self::GetPlayer().GetId()].PropertyData.BailShopData.SafeCashValue > 0)
-					*ScriptGlobal(2708979).As<BOOL*>() = TRUE;
+					*Globals::SAFE_BAIL_OFFICE.as<BOOL*>() = TRUE;
 				break;
 			}
 			case eAppVinewoodMenuSafe::GARMENT_FACTORY:
 			{
 				if (GPBD_FM::Get()->Entries[Self::GetPlayer().GetId()].PropertyData.HackerDenData.SafeCashValue > 0)
-					*ScriptGlobal(2708994).As<BOOL*>() = TRUE;
+					*Globals::SAFE_GARMENT_FACTORY.as<BOOL*>() = TRUE;
 				break;
 			}
 			case eAppVinewoodMenuSafe::HANDS_ON_CAR_WASH:
 			{
 				if (GPBD_FM_2::Get()->Entries[Self::GetPlayer().GetId()].SYVehSaleData.HOWCData.SafeCashValue > 0)
-					*ScriptGlobal(2709001).As<BOOL*>() = TRUE;
+					*Globals::SAFE_CAR_WASH.as<BOOL*>() = TRUE;
 				break;
 			}
 			}

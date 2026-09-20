@@ -12,14 +12,14 @@
 #include "World/Stats.hpp"
 #include "Scripting/ScriptFunction.hpp"
 #include "Scripting/ScriptLocal.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Network/GPBD_Flow.hpp"
+#include "Network/g_SavedMPGlobals.hpp"
+#include "World/DailyObjectivesState.hpp"
+#include "Scripting/Globals.hpp"
 #include "Core/Pointers.hpp"
 #include "Game/BlipSprite.hpp"
 #include "Network/ScriptEvent.hpp"
 #include "Network/MPScriptData.hpp"
-#include "Network/GPBD_Flow.hpp"
-#include "Network/g_SavedMPGlobals.hpp"
-#include "World/DailyObjectivesState.hpp"
 #include "World/WeeklyChallenge.hpp"
 #include "Network/GSBD_RandomEvents.hpp"
 #include "Network/FreemodeGeneral.hpp"
@@ -168,10 +168,10 @@ namespace Stand::Features
 		constexpr ScriptGlobal order(1950873);
 		for (int i = 1; i <= 10; i++)
 		{
-			auto offset = *order.At(i).As<int*>();
+			auto offset = *order.at(i).as<int*>();
 			if (!GPBD_Flow::Get()->Entries[Self::GetPlayer().GetId()].TunerCBVDeliveredFlags.IsSet(offset))
 			{
-				auto hash = *ScriptGlobal(1950862 + (offset + 1)).As<joaat_t*>();
+				auto hash = *ScriptGlobal(1950862 + (offset + 1)).as<joaat_t*>();
 				return hash;
 			}
 		}
@@ -204,7 +204,7 @@ namespace Stand::Features
 				}
 			}
 
-			auto streetDealerData = ScriptLocal(m_Thread, 265).At(12);
+			auto streetDealerData = ScriptLocal(m_Thread, 265).at(12);
 
 			if (!initialized)
 			{
@@ -215,14 +215,14 @@ namespace Stand::Features
 
 				static ScriptFunction initStreetDealerData("fm_street_dealer"_J, ScriptPointer("InitStreetDealerData", "2D 00 07 00 00 61"));
 				initStreetDealerData.Call<void>();
-				streetDealerData.At(5).As<SCR_BITSET<uint64_t>*>()->Set(0);
+				streetDealerData.at(5).as<SCR_BITSET<uint64_t>*>()->Set(0);
 				initialized = true;
 			}
 
 			static ScriptFunction runStreetDealerMenu("fm_street_dealer"_J, ScriptPointer("RunStreetDealerMenu", "2D 01 03 00 00 5D ? ? ? 2A"));
-			runStreetDealerMenu.Call<void>(streetDealerData.As<int*>());
+			runStreetDealerMenu.Call<void>(streetDealerData.as<int*>());
 
-			if (streetDealerData.At(5).As<SCR_BITSET<uint64_t>*>()->IsSet(2) || !*Pointers.IsSessionStarted)
+			if (streetDealerData.at(5).as<SCR_BITSET<uint64_t>*>()->IsSet(2) || !*Pointers.IsSessionStarted)
 			{
 				// if we don't reset these, freemode won't start the script legitimately
 				FreemodeGeneral::Get()->StreetDealers.ClosestDealerLocation = -1;
@@ -527,13 +527,13 @@ namespace Stand::Features
 			bool partime = Stats::GetPackedInt(34838 + (index * 4)) == location;
 			bool landing = Stats::GetPackedInt(34839 + (index * 4)) == location;
 
-			*ScriptGlobal(1980496).As<int*>() = 1;
-			*ScriptGlobal(1980496).At(1).As<int*>() = 1;
-			*ScriptGlobal(1980496).At(3).As<int*>() = 5;
-			*ScriptGlobal(1980496).At(4).As<int*>() = location + 1;
-			*ScriptGlobal(1980496).At(8).At(1).As<int*>() = checkpointReward.Get<int>() / (1 + (checkpoints * 9));
-			*ScriptGlobal(1980496).At(8).At(2).As<int*>() = parTimeReward.Get<int>() / (1 + (partime * 9));
-			*ScriptGlobal(1980496).At(8).At(3).As<int*>() = landingReward.Get<int>() / (1 + (landing * 9));
+			*Globals::HEIST_APARTMENT.as<int*>() = 1;
+			*Globals::HEIST_APARTMENT.at(1).as<int*>() = 1;
+			*Globals::HEIST_APARTMENT.at(3).as<int*>() = 5;
+			*Globals::HEIST_APARTMENT.at(4).as<int*>() = location + 1;
+			*Globals::HEIST_APARTMENT.at(8).at(1).as<int*>() = checkpointReward.Get<int>() / (1 + (checkpoints * 9));
+			*Globals::HEIST_APARTMENT.at(8).at(2).as<int*>() = parTimeReward.Get<int>() / (1 + (partime * 9));
+			*Globals::HEIST_APARTMENT.at(8).at(3).as<int*>() = landingReward.Get<int>() / (1 + (landing * 9));
 
 			SET_SKYDIVE_COMPLETED data;
 			data.SkydiveIndex = index;
@@ -543,7 +543,7 @@ namespace Stand::Features
 			data.AccurateLanding = TRUE;
 			data.Send();
 
-			ScriptGlobal(1984467).At(4).As<SCR_BITSET<uint64_t>*>()->Clear(3);
+			Globals::HEIST_DOOMSDAY_ACT3.at(4).as<SCR_BITSET<uint64_t>*>()->Clear(3);
 		}
 	};
 
@@ -655,8 +655,8 @@ namespace Stand::Features
 			{
 				thread->m_Context.m_State = rage::scrThread::State::PAUSED;
 
-				*ScriptLocal(thread, 3135).At(131).At(1).As<int*>() = FreemodeGeneral::Get()->DailyReset.Seed % 14; // if we don't init this, the par time duration function will return 0 and the COMPLETED stat will be set to 0, which is bad
-				*ScriptLocal(thread, 153).At(4).As<int*>() = 0;
+				*ScriptLocal(thread, 3135).at(131).at(1).as<int*>() = FreemodeGeneral::Get()->DailyReset.Seed % 14; // if we don't init this, the par time duration function will return 0 and the COMPLETED stat will be set to 0, which is bad
+				*ScriptLocal(thread, 153).at(4).as<int*>() = 0;
 				static ScriptFunction onBTTEnd("fm_content_bicycle_time_trial"_J,
 				    ScriptPointer("OnBTTEnd", "64 ? ? ? 5D ? ? ? 75 77").Add(1).Rip());
 				onBTTEnd.Call<void>();
@@ -795,8 +795,8 @@ namespace Stand::Features
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					int combination = *ScriptLocal(thread, 153).At(22).At(i, 2).At(1).As<int*>();
-					*ScriptLocal(thread, 153).At(22).At(i, 2).As<float*>() = combination;
+					int combination = *ScriptLocal(thread, 153).at(22).at(i, 2).at(1).as<int*>();
+					*ScriptLocal(thread, 153).at(22).at(i, 2).as<float*>() = combination;
 				}
 			}
 		}
@@ -914,7 +914,7 @@ namespace Stand::Features
 
 			if (auto thread = Scripts::FindScriptThread("fm_content_daily_bounty"_J))
 			{
-				if (auto coords = *ScriptLocal(thread, 250).At(434).At(1).At(0, 4).As<Vector3*>())
+				if (auto coords = *ScriptLocal(thread, 250).at(434).at(1).at(0, 4).as<Vector3*>())
 				{
 					Self::GetPed().TeleportTo(coords);
 				}
@@ -961,9 +961,9 @@ namespace Stand::Features
 				if (index < 0 || index >= wildlifePhotographyAnimalHashes.size())
 					return;
 
-				ScriptGlobal(2709520).At(545).As<SCR_BITSET<uint64_t>*>()->Set(6);
-				*ScriptGlobal(2709520).At(549).As<joaat_t*>() = wildlifePhotographyAnimalHashes[index];
-				*ScriptGlobal(2709520).At(550).As<int*>() = *Pointers.GameTimer - 1; // bypass 2 sec delay
+				Globals::GLOBAL_2709520.at(545).as<SCR_BITSET<uint64_t>*>()->Set(6);
+				*Globals::GLOBAL_2709520.at(549).as<joaat_t*>() = wildlifePhotographyAnimalHashes[index];
+				*Globals::GLOBAL_2709520.at(550).as<int*>() = *Pointers.GameTimer - 1;
 			}
 			else
 			{

@@ -1,6 +1,6 @@
 #include "Commands/LoopedCommand.hpp"
 #include "Core/Pointers.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 
 namespace Stand::Features
 {
@@ -18,15 +18,15 @@ namespace Stand::Features
 		virtual void OnTick() override
 		{
 			*Pointers.HasGTAPlus = true;
-			*ScriptGlobal(1970586).As<bool*>() = true;
-			*ScriptGlobal(1970586).At(3).As<int*>() = (1 << 3) | (1 << 1);
+			*Globals::HEIST_DOOMSDAY_ACT1.as<bool*>() = true;
+			*Globals::HEIST_DOOMSDAY_ACT1.at(3).as<int*>() = (1 << 3) | (1 << 1);
 		}
 
 		virtual void OnDisable() override
 		{
 			*Pointers.HasGTAPlus = m_OldGTAPlus;
-			*ScriptGlobal(1970058).As<bool*>() = false;
-			*ScriptGlobal(1970058).At(3).As<int*>() = 2;
+			*Globals::HEIST_PACIFIC_STANDARD.as<bool*>() = false;
+			*Globals::HEIST_PACIFIC_STANDARD.at(3).as<int*>() = 2;
 		}
 	};
 

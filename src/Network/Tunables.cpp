@@ -114,7 +114,7 @@ namespace Stand
 					}
 
 					m_TunablesBackup = std::make_unique<std::uint64_t[]>(m_NumTunables);
-					std::memcpy(m_TunablesBackup.get(), ScriptGlobal(TUNABLE_BASE_ADDRESS).As<void*>(), m_NumTunables * 8);
+					std::memcpy(m_TunablesBackup.get(), ScriptGlobal(TUNABLE_BASE_ADDRESS).as<void*>(), m_NumTunables * 8);
 
 					SCRIPT::SET_SCRIPT_WITH_NAME_HASH_AS_NO_LONGER_NEEDED("tuneables_processing"_J);
 					SCRIPT::SET_SCRIPT_WITH_NAME_HASH_AS_NO_LONGER_NEEDED("tunables_registration"_J);
@@ -127,14 +127,14 @@ namespace Stand
 				{
 					for (int i = 0; i < m_NumTunables; i++)
 					{
-						auto value = *ScriptGlobal(TUNABLE_BASE_ADDRESS).At(i).As<int*>();
+						auto value = *ScriptGlobal(TUNABLE_BASE_ADDRESS).at(i).as<int*>();
 						if (auto it = m_JunkValues.find(value); it != m_JunkValues.end())
 						{
 							m_Tunables.emplace(it->second, TUNABLE_BASE_ADDRESS + i);
 						}
 					}
 
-					std::memcpy(ScriptGlobal(TUNABLE_BASE_ADDRESS).As<void*>(), m_TunablesBackup.get(), m_NumTunables * 8);
+					std::memcpy(ScriptGlobal(TUNABLE_BASE_ADDRESS).as<void*>(), m_TunablesBackup.get(), m_NumTunables * 8);
 
 					if (m_Tunables.size() == 0)
 					{

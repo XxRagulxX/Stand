@@ -8,7 +8,7 @@
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "Scripting/Script.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Util/Joaat.hpp"
 #include "Util/Label.hpp"
 #include "Weapons/Weapon.hpp"
@@ -66,7 +66,7 @@ namespace Stand
 			const int slot = m_slot->value;
 
 			FiberPool::queueJob([idx, slot] {
-				if (*ScriptGlobal(2655288).As<int*>() == -1)
+				if (*Globals::GUN_VAN_VEHICLE.as<int*>() == -1)
 				{
 					Notifications::Show("Gun Van", "Join a freemode session and try again.", NotificationType::Error);
 					return;

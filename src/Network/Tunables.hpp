@@ -74,7 +74,7 @@ namespace Stand
 		{
 			if (auto it = GetInstance().m_Tunables.find(hash); it != GetInstance().m_Tunables.end())
 			{
-				if (ScriptGlobal(it->second).CanAccess())
+				if (ScriptGlobal(it->second).isAvailable())
 					return ScriptGlobal(it->second);
 			}
 
@@ -100,14 +100,14 @@ namespace Stand
 		template<typename T>
 		T Get()
 		{
-			return *m_Global->As<T*>();
+			return *m_Global->as<T*>();
 		}
 
 		// make sure to call IsReady before accessing tunables
 		template<typename T>
 		void Set(T new_value)
 		{
-			*m_Global->As<T*>() = new_value;
+			*m_Global->as<T*>() = new_value;
 		}
 	};
 }

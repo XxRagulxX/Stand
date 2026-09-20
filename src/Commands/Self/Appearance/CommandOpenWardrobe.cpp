@@ -104,7 +104,7 @@ namespace Stand::Features
 		{
 			if (auto thread = Scripts::FindScriptThread("wardrobe_mp"_J))
 			{
-				if (*ScriptLocal(thread, 198).At(46).At(9).As<int*>() == 4)
+				if (*ScriptLocal(thread, 198).at(46).at(9).as<int*>() == 4)
 				{
 					shouldCleanupWardrobePatch->Disable();
 					isWardrobeOpenedPatch->Disable();

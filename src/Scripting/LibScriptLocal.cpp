@@ -33,9 +33,9 @@ namespace Stand::Lua
 
 			auto size = num_args > 1 ? luaL_checkinteger(state, 3) : 0;
 			if (size != 0)
-				CopyObject<Stand::ScriptLocal>(state, local.At(luaL_checkinteger(state, 2), size));
+				CopyObject<Stand::ScriptLocal>(state, local.at(luaL_checkinteger(state, 2), size));
 			else
-				CopyObject<Stand::ScriptLocal>(state, local.At(luaL_checkinteger(state, 2)));
+				CopyObject<Stand::ScriptLocal>(state, local.at(luaL_checkinteger(state, 2)));
 
 			return 1;
 		}
@@ -43,7 +43,7 @@ namespace Stand::Lua
 		static int GetInt(lua_State* state)
 		{
 			auto& local = GetObject<Stand::ScriptLocal>(state, 1);
-			int value = *local.As<int*>();
+			int value = *local.as<int*>();
 			lua_pushinteger(state, value);
 			return 1;
 		}
@@ -51,7 +51,7 @@ namespace Stand::Lua
 		static int GetFloat(lua_State* state)
 		{
 			auto& local = GetObject<Stand::ScriptLocal>(state, 1);
-			float value = *local.As<float*>();
+			float value = *local.as<float*>();
 			lua_pushnumber(state, value);
 			return 1;
 		}
@@ -60,7 +60,7 @@ namespace Stand::Lua
 		{
 			auto& local = GetObject<Stand::ScriptLocal>(state, 1);
 			rage::scrVector value{};
-			value = *local.As<rage::scrVector*>();
+			value = *local.as<rage::scrVector*>();
 			CreateObject<rage::fvector3>(state, value);
 			return 1;
 		}
@@ -68,14 +68,14 @@ namespace Stand::Lua
 		static int SetInt(lua_State* state)
 		{
 			auto& local = GetObject<Stand::ScriptLocal>(state, 1);
-			*local.As<int*>() = luaL_checkinteger(state, 2);
+			*local.as<int*>() = luaL_checkinteger(state, 2);
 			return 0;
 		}
 
 		static int SetFloat(lua_State* state)
 		{
 			auto& local = GetObject<Stand::ScriptLocal>(state, 1);
-			*local.As<float*>() = static_cast<float>(luaL_checknumber(state, 2));
+			*local.as<float*>() = static_cast<float>(luaL_checknumber(state, 2));
 			return 0;
 		}
 
@@ -84,7 +84,7 @@ namespace Stand::Lua
 			auto& local = GetObject<Stand::ScriptLocal>(state, 1);
 			auto& vec = GetObject<rage::fvector3>(state, 2);
 			auto script_vec = rage::scrVector(vec);
-			*local.As<rage::scrVector*>() = script_vec;
+			*local.as<rage::scrVector*>() = script_vec;
 			return 0;
 		}
 

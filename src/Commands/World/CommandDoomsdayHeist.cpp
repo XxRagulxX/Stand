@@ -1,11 +1,11 @@
 #include "Commands/CommandLegacy.hpp"
 #include "Commands/CommandSliderLegacy.hpp"
 #include "Commands/CommandListSelect.hpp"
+#include "Network/GPBD_FM_2.hpp"
 #include "World/Stats.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Scripting/ScriptLocal.hpp"
 #include "Scripting/ScriptMgr.hpp"
-#include "Network/GPBD_FM_2.hpp"
 #include "World/TeleportUtils.hpp"
 #include "Rendering/Notifications.hpp"
 
@@ -32,12 +32,12 @@ namespace Stand::Features
 
 			virtual void OnCall() override
 			{
-				auto base = ScriptGlobal(1969071).At(812).At(50);
+				auto base = Globals::HEIST_SERIES_A.at(812).at(50);
 
-				*base.At(0, 1).As<int*>() = _DoomsdayHeistCut1.GetState();
-				*base.At(1, 1).As<int*>() = _DoomsdayHeistCut2.GetState();
-				*base.At(2, 1).As<int*>() = _DoomsdayHeistCut3.GetState();
-				*base.At(3, 1).As<int*>() = _DoomsdayHeistCut4.GetState();
+				*base.at(0, 1).as<int*>() = _DoomsdayHeistCut1.GetState();
+				*base.at(1, 1).as<int*>() = _DoomsdayHeistCut2.GetState();
+				*base.at(2, 1).as<int*>() = _DoomsdayHeistCut3.GetState();
+				*base.at(3, 1).as<int*>() = _DoomsdayHeistCut4.GetState();
 			}
 		};
 		static std::vector<TeleportLocation> DoomsDayHeistTeleportPoints = {
@@ -110,7 +110,7 @@ namespace Stand::Features
 				Script::current()->yield(500);
 
 				if (auto thread = Scripts::FindScriptThread("gb_gang_ops_planning"_J))
-					*ScriptLocal(thread, 218).As<int*>() = 6;
+					*ScriptLocal(thread, 218).as<int*>() = 6;
 			    
 				Notifications::ShowInGame("Doomsday Heist", "Doomsday Heist Setup - Completed", "CHAR_LESTER", "Green");
 			}
@@ -129,7 +129,7 @@ namespace Stand::Features
 				if (players < 1 || players > 4)
 					players = 1;
 
-				int difficulty = *ScriptGlobal(4718592).At(3538).As<int*>();
+				int difficulty = *Globals::HEIST_DOOMSDAY.at(3538).as<int*>();
 				if (difficulty != 2)
 					difficulty = 1;
 
@@ -197,9 +197,9 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller"_J))
 				{
-					*ScriptLocal(thread, 1588).As<int*>() = 2;
-					*ScriptLocal(thread, 1557).As<int*>() = 3;
-					*ScriptLocal(thread, 1314).At(135).As<int*>() = 3;
+					*ScriptLocal(thread, 1588).as<int*>() = 2;
+					*ScriptLocal(thread, 1557).as<int*>() = 3;
+					*ScriptLocal(thread, 1314).at(135).as<int*>() = 3;
 				}
 			}
 		};
@@ -215,10 +215,10 @@ namespace Stand::Features
 					Scripts::ForceScriptHost(thread);
 					Script::current()->yield(500);
 
-					*ScriptLocal(thread, 20412).At(1725).At(0, 1).As<int*>() = 80;
-					*ScriptLocal(thread, 20412).As<int*>() = 12;
-					*ScriptLocal(thread, 29326).At(0, 1).As<int*>() = 99999;
-					*ScriptLocal(thread, 32785).At(0, 294).At(68).As<int*>() = 99999;
+					*ScriptLocal(thread, 20412).at(1725).at(0, 1).as<int*>() = 80;
+					*ScriptLocal(thread, 20412).as<int*>() = 12;
+					*ScriptLocal(thread, 29326).at(0, 1).as<int*>() = 99999;
+					*ScriptLocal(thread, 32785).at(0, 294).at(68).as<int*>() = 99999;
 				}
 				// TODO: find a way of getting current heist info so that InstantFinishAct3 can be implemented here conditionally.
 			}
@@ -235,11 +235,11 @@ namespace Stand::Features
 					Scripts::ForceScriptHost(thread);
 					Script::current()->yield(500);
 
-					*ScriptLocal(thread, 20412).As<int*>() = 12;
-					*ScriptLocal(thread, 20412).At(1740).At(0, 1).As<int*>() = 150;
-					*ScriptLocal(thread, 20412).At(1062).As<int*>() = 5;
-					*ScriptLocal(thread, 29326).At(0, 1).As<int*>() = 99999;
-					*ScriptLocal(thread, 32785).At(0, 294).At(68).As<int*>() = 99999;
+					*ScriptLocal(thread, 20412).as<int*>() = 12;
+					*ScriptLocal(thread, 20412).at(1740).at(0, 1).as<int*>() = 150;
+					*ScriptLocal(thread, 20412).at(1062).as<int*>() = 5;
+					*ScriptLocal(thread, 29326).at(0, 1).as<int*>() = 99999;
+					*ScriptLocal(thread, 32785).at(0, 294).at(68).as<int*>() = 99999;
 				}
 			}
 		};

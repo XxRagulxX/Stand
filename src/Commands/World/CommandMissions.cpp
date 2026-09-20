@@ -286,7 +286,7 @@ namespace Stand::Features
 				Stats::SetInt("MPX_TUNER_GEN_BS", -1);
 
 				if (auto thread = Scripts::FindScriptThread("tuner_planning"_J))
-					*ScriptLocal(thread, 408).As<int*>() = 2;
+					*ScriptLocal(thread, 408).as<int*>() = 2;
 			}
 		};
 
@@ -299,7 +299,7 @@ namespace Stand::Features
 				Stats::SetInt("MPX_TUNER_GEN_BS", 12467);
 
 				if (auto thread = Scripts::FindScriptThread("tuner_planning"_J))
-					*ScriptLocal(thread, 408).As<int*>() = 2;
+					*ScriptLocal(thread, 408).as<int*>() = 2;
 			}
 		};
 
@@ -310,7 +310,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("tuner_planning"_J))
-					*ScriptLocal(thread, 408).As<int*>() = 2;
+					*ScriptLocal(thread, 408).as<int*>() = 2;
 			}
 		};
 
@@ -331,7 +331,7 @@ namespace Stand::Features
 					Stats::SetInt("MPX_TUNER_GEN_BS", 12543);
 
 				if (auto thread = Scripts::FindScriptThread("tuner_planning"_J))
-					*ScriptLocal(thread, 408).As<int*>() = 2;
+					*ScriptLocal(thread, 408).as<int*>() = 2;
 
 				Notifications::Show("LS Tuners Robbery", "Preps Applied & Completed");
 			}
@@ -413,7 +413,7 @@ namespace Stand::Features
 				Stats::SetBool("MPX_SALV23_CAN_KEEP", true);
 
 				if (auto thread = Scripts::FindScriptThread("vehrob_planning"_J))
-					*ScriptLocal(thread, 537).As<int*>() = 2;
+					*ScriptLocal(thread, 537).as<int*>() = 2;
 
 				Notifications::Show("Savage Yard Robbery", "Mission Setup Completed");
 			}

@@ -11,9 +11,9 @@
 	str* str::Get(rage::scrThread* thread)              \
 	{                                                   \
 		auto lcl = Stand::ScriptLocal(thread, local); \
-		if (!lcl.CanAccess())                           \
+		if (!lcl.CanAccess())                             \
 			return nullptr;                             \
-		return lcl.As<str*>();                          \
+		return lcl.as<str*>();                          \
 	}
 
 DEFINE_LOCAL_ACCESSOR(VEHICLE_REWARD_DATA, 148);

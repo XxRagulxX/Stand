@@ -2,7 +2,7 @@
 #include "Commands/CommandToggleLegacy.hpp"
 #include "Commands/CommandListSelect.hpp"
 #include "World/Stats.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Scripting/ScriptLocal.hpp"
 #include "Scripting/Scripts.hpp"
 #include "Scripting/ScriptMgr.hpp"
@@ -124,7 +124,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
-					*ScriptLocal(thread, 26866).As<int*>() = 5;
+					*ScriptLocal(thread, 26866).as<int*>() = 5;
 			}
 		};
 
@@ -135,7 +135,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
-					*ScriptLocal(thread, 27914).As<int*>() = 5;
+					*ScriptLocal(thread, 27914).as<int*>() = 5;
 			}
 		};
 
@@ -148,7 +148,7 @@ namespace Stand::Features
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
 				{
 					for (int i = 0; i <= 7; i++)
-						*ScriptLocal(thread, 1388).At(i, 4).As<int*>() = 1;
+						*ScriptLocal(thread, 1388).at(i, 4).as<int*>() = 1;
 				}
 			}
 		};
@@ -160,7 +160,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
-					*ScriptLocal(thread, 32855).At(4, 13).At(3).As<float*>() = 100.0f;
+					*ScriptLocal(thread, 32855).at(4, 13).at(3).as<float*>() = 100.0f;
 			}
 		};
 
@@ -172,8 +172,8 @@ namespace Stand::Features
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
 				{
-					*ScriptLocal(thread, 70416).As<int*>() = 4294784;
-					*ScriptGlobal(1935711).As<int*>() |= 1;
+					*ScriptLocal(thread, 70416).as<int*>() = 4294784;
+					*Globals::HEIST_KORTZ_CENTER.as<int*>() |= 1;
 				}
 			}
 		};
@@ -185,7 +185,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
-					*ScriptLocal(thread, 29355).At(11).As<int*>() = 10;
+					*ScriptLocal(thread, 29355).at(11).as<int*>() = 10;
 			}
 		};
 
@@ -196,7 +196,7 @@ namespace Stand::Features
 			virtual void OnCall() override
 			{
 				if (auto thread = Scripts::FindScriptThread("fm_mission_controller_v3"_J))
-					*ScriptLocal(thread, 29355).At(11).As<int*>() = 3;
+					*ScriptLocal(thread, 29355).at(11).as<int*>() = 3;
 			}
 		};
 
@@ -210,7 +210,7 @@ namespace Stand::Features
 				{
 					for (int i = 0; i <= 2; i++)
 					{
-						*ScriptLocal(thread, 32818).At(1).At(i, 2).At(1).As<int*>() = 0;
+						*ScriptLocal(thread, 32818).at(1).at(i, 2).at(1).as<int*>() = 0;
 						Script::current()->yield(100);
 						PAD::SET_CONTROL_VALUE_NEXT_FRAME(0, 237, 1.0);
 					}

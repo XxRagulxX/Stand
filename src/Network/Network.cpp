@@ -20,7 +20,7 @@ namespace Stand::Network
 		static ScriptGlobal join_type_global(1575048);
 
 		sendToClouds.Call<void>();
-		*join_type_global.As<JoinType*>() = to_launch;
+		*join_type_global.as<JoinType*>() = to_launch;
 	}
 
 	void JoinSessionInfo(rage::rlSessionInfo* info)

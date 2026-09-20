@@ -17,7 +17,7 @@
 #include "Scripting/GtaThread.hpp"
 #include "Scripting/Script.hpp"
 #include "Scripting/ScriptFunction.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Scripting/Scripts.hpp"
 #include "Util/Joaat.hpp"
 #include "World/FMRandomEvents.hpp"
@@ -106,17 +106,17 @@ namespace Stand::Rendering
 	{
 		if (event == kArmouredTruckIndex)
 		{
-			m_SetCooldown = *ScriptGlobal(262145).At(33808).As<int*>();
-			m_SetAvailability = *ScriptGlobal(262145).At(33809).As<int*>();
+			m_SetCooldown = *Globals::FREEMODE_RANDOM_EVENT_COOLDOWN.as<int*>();
+			m_SetAvailability = *Globals::FREEMODE_RANDOM_EVENT_AVAILABILITY.as<int*>();
 		}
 		else
 		{
 			// Phantom Car's cooldown is actually 2147483647ms if
 			// STANDARDTARGETTINGTIME is not enabled.
 			if (auto tunable = Tunables::GetTunable(randomEventCooldowns[event]))
-				m_SetCooldown = *tunable->As<int*>();
+				m_SetCooldown = *tunable->as<int*>();
 			if (auto tunable = Tunables::GetTunable(randomEventAvailabilities[event]))
-				m_SetAvailability = *tunable->As<int*>();
+				m_SetAvailability = *tunable->as<int*>();
 		}
 	}
 

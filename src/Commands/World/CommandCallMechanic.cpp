@@ -3,7 +3,7 @@
 #include "World/Self.hpp"
 #include "Scripting/Scripts.hpp"
 #include "Scripting/ScriptLocal.hpp"
-#include "Scripting/ScriptGlobal.hpp"
+#include "Scripting/Globals.hpp"
 #include "Core/Pointers.hpp"
 #include "Util/Timer.hpp"
 
@@ -24,18 +24,18 @@ namespace Stand::Features
 			if (auto freemode = Scripts::FindScriptThread("freemode"_J))
 			{
 				auto data = ScriptLocal(freemode, 8854);
-				*data.At(3).As<int*>() = 235;
-				*data.At(3).At(16).As<int*>() = Self::GetPlayer().GetId();
-				*data.At(3).At(1).As<int*>() = 89;
-				*data.At(2).As<int*>() = "AM_CONTACT_REQUESTS"_J;
+				*data.at(3).as<int*>() = 235;
+				*data.at(3).at(16).as<int*>() = Self::GetPlayer().GetId();
+				*data.at(3).at(1).as<int*>() = 89;
+				*data.at(2).as<int*>() = "AM_CONTACT_REQUESTS"_J;
 
-				auto args = data.At(3).As<void*>();
+				auto args = data.at(3).as<void*>();
 				if (auto id = Scripts::StartScript("AM_CONTACT_REQUESTS"_J, eStackSizes::SCRIPT_XML, args, 21))
 				{
 					if (auto thread = Scripts::FindScriptThreadByID(id))
 					{
-						*ScriptLocal(thread, 535).As<int*>() = 1;
-						ScriptGlobal(2686124).At(4373).At(260).At(7, 2).As<TIMER*>()->Destroy();
+						*ScriptLocal(thread, 535).as<int*>() = 1;
+						Globals::CEO_GLOBAL.at(4373).at(260).at(7, 2).as<TIMER*>()->Destroy();
 					}
 				}
 				else

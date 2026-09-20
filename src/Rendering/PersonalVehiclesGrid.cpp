@@ -1,6 +1,7 @@
 #include "Rendering/PersonalVehiclesGrid.hpp"
 
 #include "Commands/Vehicle/PersonalVehicles/CommandPersonalVehicles.hpp"
+#include "Commands/Vehicle/PersonalVehicles/CommandCurrentPV.hpp"
 #include "Network/MPSV.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemCommandButton.hpp"
@@ -23,6 +24,24 @@ namespace Stand::Rendering
 {
     namespace
     {
+        class CurrentPVGrid : public Grid
+        {
+        public:
+            CurrentPVGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "callpersonalvehicle"_J));
+                items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "enterpersonalvehicle"_J));
+                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, h, "Imani Tech Remote Control",
+                    [] { FiberPool::queueJob([] { Features::ImaniTechRemoteControl(); }); }
+                ));
+                items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "returnpv"_J));
+            }
+        };
+        static CurrentPVGrid g_CurrentPVContent{};
+
         class PVSortGrid : public Grid
         {
         public:
@@ -161,8 +180,9 @@ namespace Stand::Rendering
     {
         constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
 
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, h, "Current Personal Vehicle", &g_CurrentPVContent));
         items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "findpv"_J));
-        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, h, "Sort By",            &g_SortContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, h, "Sort By",                   &g_SortContent));
         items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "saveallpvs"_J));
 
         for (std::size_t i = 0; i < m_FilteredNames.size() && i < m_EntryGrids.size(); ++i)

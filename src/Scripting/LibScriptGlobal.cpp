@@ -23,16 +23,16 @@ namespace Stand::Lua
 
 			auto size = num_args > 1 ? luaL_checkinteger(state, 3) : 0;
 			if (size != 0)
-				CopyObject<Stand::ScriptGlobal>(state, global.At(luaL_checkinteger(state, 2), size));
+				CopyObject<Stand::ScriptGlobal>(state, global.at(luaL_checkinteger(state, 2), size));
 			else
-				CopyObject<Stand::ScriptGlobal>(state, global.At(luaL_checkinteger(state, 2)));
+				CopyObject<Stand::ScriptGlobal>(state, global.at(luaL_checkinteger(state, 2)));
 	
 			return 1;
 		}
 
 		static int CanAccess(lua_State* state)
 		{
-			lua_pushboolean(state, GetObject<Stand::ScriptGlobal>(state, 1).CanAccess());
+			lua_pushboolean(state, GetObject<Stand::ScriptGlobal>(state, 1).isAvailable());
 			return 1;
 		}
 
@@ -40,8 +40,8 @@ namespace Stand::Lua
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
 			int value = 0;
-			if (global.CanAccess())
-				value = *global.As<int*>();
+			if (global.isAvailable())
+				value = *global.as<int*>();
 			lua_pushinteger(state, value);
 			return 1;
 		}
@@ -50,8 +50,8 @@ namespace Stand::Lua
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
 			float value = 0;
-			if (global.CanAccess())
-				value = *global.As<float*>();
+			if (global.isAvailable())
+				value = *global.as<float*>();
 			lua_pushnumber(state, value);
 			return 1;
 		}
@@ -59,8 +59,8 @@ namespace Stand::Lua
 		static int GetString(lua_State* state)
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
-			if (global.CanAccess())
-				lua_pushstring(state, global.As<char*>());
+			if (global.isAvailable())
+				lua_pushstring(state, global.as<char*>());
 			else
 				lua_pushnil(state);
 			return 1;
@@ -70,8 +70,8 @@ namespace Stand::Lua
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
 			rage::scrVector value{};
-			if (global.CanAccess())
-				value = *global.As<rage::scrVector*>();
+			if (global.isAvailable())
+				value = *global.as<rage::scrVector*>();
 			CreateObject<rage::fvector3>(state, value);
 			return 1;
 		}
@@ -79,23 +79,23 @@ namespace Stand::Lua
 		static int SetInt(lua_State* state)
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
-			if (global.CanAccess())
-				*global.As<int*>() = luaL_checkinteger(state, 2);
+			if (global.isAvailable())
+				*global.as<int*>() = luaL_checkinteger(state, 2);
 			return 0;
 		}
 
 		static int SetFloat(lua_State* state)
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
-			if (global.CanAccess())
-				*global.As<float*>() = static_cast<float>(luaL_checknumber(state, 2));
+			if (global.isAvailable())
+				*global.as<float*>() = static_cast<float>(luaL_checknumber(state, 2));
 			return 0;
 		}
 
 		static int SetString(lua_State* state)
 		{
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
-			if (!global.CanAccess())
+			if (!global.isAvailable())
 				return 0;
 
 			std::size_t len = 0;
@@ -104,7 +104,7 @@ namespace Stand::Lua
 			if (cap == 0)
 				return 0;
 
-			auto dst        = global.As<char*>();
+			auto dst        = global.as<char*>();
 			std::size_t n   = std::min(len, cap - 1);
 			std::memcpy(dst, str, n);
 			dst[n] = '\0';
@@ -116,8 +116,8 @@ namespace Stand::Lua
 			auto& global = GetObject<Stand::ScriptGlobal>(state, 1);
 			auto& vec = GetObject<rage::fvector3>(state, 2);
 			auto script_vec = rage::scrVector(vec);
-			if (global.CanAccess())
-				*global.As<rage::scrVector*>() = script_vec;
+			if (global.isAvailable())
+				*global.as<rage::scrVector*>() = script_vec;
 			return 0;
 		}
 
