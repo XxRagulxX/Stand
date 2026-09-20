@@ -4,6 +4,7 @@
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
 #include "Rendering/GarageGrid.hpp"
+#include "Rendering/PersonalVehiclesGrid.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemCommandButton.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
@@ -288,8 +289,9 @@ namespace Stand::Rendering
 
         // ── Instances ─────────────────────────────────────────────────────────
 
-        VehicleSpawnGrid g_SpawnContent{};
-        GarageGrid       g_GarageContent{};
+        VehicleSpawnGrid       g_SpawnContent{};
+        GarageGrid             g_GarageContent{};
+        PersonalVehiclesGrid   g_PersonalVehiclesContent{};
     }
 
     Vehicle::Vehicle() :
@@ -300,7 +302,8 @@ namespace Stand::Rendering
     void Vehicle::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
     {
         constexpr int16_t kItemH = static_cast<int16_t>(Theme::kContentItemHeight);
-        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Spawn",   &g_SpawnContent));
-        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Garage", &g_GarageContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Spawn",             &g_SpawnContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Garage",            &g_GarageContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Personal Vehicles", &g_PersonalVehiclesContent));
     }
 }

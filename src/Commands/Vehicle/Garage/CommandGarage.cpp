@@ -28,6 +28,20 @@ namespace Stand::Features
             {
                 ++GarageVehicleMgr::s_Version;
             }
+
+            void OnCall() override
+            {
+                Rendering::MenuCommandBox::Open(
+                    "findsaved",
+                    "Search Garage",
+                    "Filter saved vehicles by name.",
+                    m_StringValue,
+                    [this](const std::string& text) -> bool {
+                        SetStringValue(text);
+                        return true;
+                    }
+                );
+            }
         };
         static CommandFindSaved s_FindSaved;
 
@@ -54,6 +68,22 @@ namespace Stand::Features
                     GarageVehicleMgr::Save(name, vehH);
                     Notifications::Show("Garage", "Vehicle saved: " + name);
                 });
+            }
+
+            void OnCall() override
+            {
+                Rendering::MenuCommandBox::Open(
+                    "savevehicle",
+                    "Save Vehicle",
+                    "Enter a name for your current vehicle.",
+                    "",
+                    [this](const std::string& text) -> bool {
+                        if (text.empty())
+                            return false;
+                        SetStringValue(text);
+                        return true;
+                    }
+                );
             }
         };
         static CommandSaveVehicle s_SaveVehicle;

@@ -2,7 +2,9 @@
 
 #include "Commands/Vehicle/Garage/CommandGarage.hpp"
 #include "Rendering/GridItemButton.hpp"
+#include "Rendering/GridItemCommandButton.hpp"
 #include "Rendering/GridItemFolder.hpp"
+#include "Util/Joaat.hpp"
 #include "Rendering/MenuPopup.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
@@ -85,9 +87,9 @@ namespace Stand::Rendering
     {
         constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
 
-        items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, h, "Search",       Features::OpenGarageSearch));
-        items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, h, "Save Vehicle", Features::OpenSaveVehicle));
-        items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, h, "Open Folder",  Features::OpenGarageFolder));
+        items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "findsaved"_J));
+        items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "savevehicle"_J));
+        items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, h, "opengaragefolder"_J));
 
         const auto filtered = GarageVehicleMgr::Filter(m_LastFilter);
         for (std::size_t i = 0; i < filtered.size() && i < m_EntryGrids.size(); ++i)

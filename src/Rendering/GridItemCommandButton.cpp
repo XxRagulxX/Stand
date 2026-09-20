@@ -18,7 +18,18 @@ namespace Stand::Rendering
 
 	std::string GridItemCommandButton::GetDescription() const
 	{
-		return m_Command ? m_Command->GetDescription() : std::string{};
+		if (!m_Command)
+			return {};
+
+		std::string result = m_Command->GetDescription();
+		const auto& name = m_Command->GetName();
+		if (!name.empty())
+		{
+			if (!result.empty())
+				result += '\n';
+			result += "Command: " + name;
+		}
+		return result;
 	}
 
 	const std::string& GridItemCommandButton::Label() const

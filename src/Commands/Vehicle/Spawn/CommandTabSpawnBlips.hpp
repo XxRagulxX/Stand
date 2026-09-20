@@ -19,7 +19,7 @@ namespace Stand
               enabled(createChild<CommandToggle>(LIT("Blips On Spawned Vehicles"), CMDNAMES("blipsonspawnedvehicles"), NOLABEL, false)),
               colour(createChild<CommandSlider>(LIT("Colour"), CMDNAMES("spawnedvehiclesblipcolour"), NOLABEL, 0, 85, 3)),
               scale(createChild<CommandSliderFloat>(LIT("Scale"), CMDNAMES("spawnedvehiclesblipscale"), NOLABEL, 20, 200, 100)),
-              latestOnly(createChild<CommandToggle>(LIT("Only For Latest Vehicle"), std::vector<CommandName>{}, NOLABEL, false))
+              latestOnly(createChild<CommandToggle>(LIT("Only For Latest Vehicle"), CMDNAMES("spawnedvehiclesbliponly"), NOLABEL, false))
         {
         }
     };
