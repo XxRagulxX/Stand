@@ -13,7 +13,7 @@ namespace Stand::Features
 	{
 		using LoopedCommand::LoopedCommand;
 
-		int slots_random_results_table = 1357; // Static_1381.f_1[][]
+		int slots_random_results_table = 1357;
 		std::set<int> slots_blacklist = {9, 21, 22, 87, 152};
 		int spin_state_var = 1675;
 		std::set<int> spin_state_whitelist = {8, 14};
@@ -22,22 +22,22 @@ namespace Stand::Features
 		{
 			if (Scripts::SafeToModifyFreemodeBroadcastGlobals() && SCRIPT::GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH("casino_slots"_J))
 			{
+				auto* thread = Scripts::FindScriptThread("casino_slots"_J);
 				Player casinoSlotsScriptHostPlayer = NETWORK::NETWORK_GET_HOST_OF_SCRIPT("casino_slots", -1, 0);
 				auto casinoSlotsScriptHostPlayerId = casinoSlotsScriptHostPlayer.GetId();
 				auto selfPlayerId = Self::GetPlayer().GetId();
 				if (casinoSlotsScriptHostPlayerId != selfPlayerId)
 				{
-					Scripts::ForceScriptHost(Scripts::FindScriptThread("casino_slots"_J));
+					Scripts::ForceScriptHost(thread);
 				}
-				int* spin_state = ScriptLocal("casino_slots"_J, spin_state_var).as<int*>();
-
+				int* spin_state = ScriptLocal(thread, spin_state_var).as<int*>();
 
 				bool needs_run = false;
 				for (int slots_iter = 3; slots_iter <= 196; ++slots_iter)
 				{
 					if (!slots_blacklist.contains(slots_iter))
 					{
-						if (*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).as<int*>() != 6)
+						if (*ScriptLocal(thread, slots_random_results_table + slots_iter).as<int*>() != 6)
 						{
 							needs_run = true;
 							break;
@@ -50,45 +50,42 @@ namespace Stand::Features
 					{
 						if (!slots_blacklist.contains(slots_iter) && spin_state_whitelist.contains(*spin_state))
 						{
-							int slot_result = 6;
-							*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).as<int*>() = slot_result;
+							*ScriptLocal(thread, slots_random_results_table + slots_iter).as<int*>() = 6;
 						}
 					}
 				}
 			}
 		}
 
-virtual void OnDisable() override
+		virtual void OnDisable() override
 		{
 			if (Scripts::SafeToModifyFreemodeBroadcastGlobals() && SCRIPT::GET_NUMBER_OF_THREADS_RUNNING_THE_SCRIPT_WITH_THIS_HASH("casino_slots"_J))
 			{
+				auto* thread = Scripts::FindScriptThread("casino_slots"_J);
 				Player casinoSlotsScriptHostPlayer = NETWORK::NETWORK_GET_HOST_OF_SCRIPT("casino_slots", -1, 0);
 				auto casinoSlotsScriptHostPlayerId = casinoSlotsScriptHostPlayer.GetId();
 				auto selfPlayerId = Self::GetPlayer().GetId();
 				if (casinoSlotsScriptHostPlayerId != selfPlayerId)
 				{
-					Scripts::ForceScriptHost(Scripts::FindScriptThread("casino_slots"_J));
+					Scripts::ForceScriptHost(thread);
 				}
 
-				int* spin_state = ScriptLocal("casino_slots"_J, spin_state_var).as<int*>();
-				// waiting for reset until next time using
+				int* spin_state = ScriptLocal(thread, spin_state_var).as<int*>();
 				while (!spin_state_whitelist.contains(*spin_state))
 				{
 					Script::current()->yield();
-					spin_state = ScriptLocal("casino_slots"_J, spin_state_var).as<int*>();
-					if (spin_state == nullptr){
+					thread = Scripts::FindScriptThread("casino_slots"_J);
+					spin_state = ScriptLocal(thread, spin_state_var).as<int*>();
+					if (spin_state == nullptr)
 						return;
-					}
 				}
 
 				for (int slots_iter = 3; slots_iter <= 196; ++slots_iter)
 				{
 					if (!slots_blacklist.contains(slots_iter))
 					{
-						int slot_result = 6;
 						std::srand(static_cast<unsigned int>(std::time(0)) + slots_iter);
-						slot_result = 3 + std ::rand() % 7; // Generates a pseudo random number [3,9] 
-						*ScriptLocal("casino_slots"_J, slots_random_results_table + slots_iter).as<int*>() = slot_result;
+						*ScriptLocal(thread, slots_random_results_table + slots_iter).as<int*>() = 3 + std::rand() % 7;
 					}
 				}
 			}
