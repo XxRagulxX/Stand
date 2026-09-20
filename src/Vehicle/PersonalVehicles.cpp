@@ -1,10 +1,11 @@
 #include "Vehicle/PersonalVehicles.hpp"
 #include "Scripting/FiberPool.hpp"
-#include "Scripting/ScriptMgr.hpp"
+#include "Scripting/Script.hpp"
 #include "World/Self.hpp"
 #include "Scripting/Natives.hpp"
 #include "Scripting/ScriptFunction.hpp"
 #include "Scripting/ScriptLocal.hpp"
+#include "Scripting/Scripts.hpp"
 #include "Network/GPBD_FM.hpp"
 #include "Network/MPSV.hpp"
 #include "Network/FreemodeGeneral.hpp"
@@ -378,7 +379,8 @@ namespace Stand
 
 			Script::current()->yield(100);
 
-			*ScriptLocal("freemode"_J, 19672).at(176).as<int*>() = 0;
+			if (auto* thread = Scripts::FindScriptThread("freemode"_J))
+				*ScriptLocal(thread, 19672).at(176).as<int*>() = 0;
 
 			if (bring)
 			{

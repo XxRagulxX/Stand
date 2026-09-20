@@ -6,6 +6,7 @@
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "Scripting/ScriptLocal.hpp"
+#include "Scripting/Scripts.hpp"
 #include "Util/Joaat.hpp"
 #include "Vehicle/PersonalVehicles.hpp"
 #include "World/Self.hpp"
@@ -136,6 +137,7 @@ namespace Stand::Features
             return;
         }
 
-        *ScriptLocal("freemode"_J, 19672).at(179).as<int*>() = 1;
+        if (auto* thread = Scripts::FindScriptThread("freemode"_J))
+            *ScriptLocal(thread, 19672).at(179).as<int*>() = 1;
     }
 }
