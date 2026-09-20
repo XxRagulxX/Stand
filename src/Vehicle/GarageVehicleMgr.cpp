@@ -8,11 +8,11 @@
 #include "Vehicle/VehicleData.hpp"
 #include "World/Self.hpp"
 
-#include <nlohmann/json.hpp>
 #include <algorithm>
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <map>
 #include <string>
 
 namespace Stand
@@ -55,6 +55,46 @@ namespace Stand
                     return g_VehicleData[i].hash_name;
             return std::to_string(hash);
         }
+
+        using DataMap = std::map<std::string, std::string>;
+
+        DataMap ParseFile(std::ifstream& file)
+        {
+            DataMap data;
+            std::string line;
+            while (std::getline(file, line))
+            {
+                auto pos = line.find(": ");
+                if (pos == std::string::npos)
+                    continue;
+                data[line.substr(0, pos)] = line.substr(pos + 2);
+            }
+            return data;
+        }
+
+        int   GetInt(const DataMap& d, const std::string& k, int def = 0)
+        {
+            auto it = d.find(k);
+            if (it == d.end()) return def;
+            try { return std::stoi(it->second); }
+            catch (...) { return def; }
+        }
+
+        bool  GetBool(const DataMap& d, const std::string& k, bool def = false)
+        {
+            auto it = d.find(k);
+            if (it == d.end()) return def;
+            return it->second == "Yes";
+        }
+
+        std::string GetStr(const DataMap& d, const std::string& k, const std::string& def = "")
+        {
+            auto it = d.find(k);
+            if (it == d.end()) return def;
+            return it->second;
+        }
+
+        const char* YN(bool v) { return v ? "Yes" : "No"; }
     }
 
     void GarageVehicleMgr::LoadList()
@@ -68,10 +108,8 @@ namespace Stand
         try
         {
             for (const auto& entry : std::filesystem::directory_iterator(folder))
-            {
                 if (entry.path().extension() == ".txt")
                     s_Names.push_back(entry.path().stem().generic_string());
-            }
             std::sort(s_Names.begin(), s_Names.end());
         }
         catch (...) {}
@@ -79,10 +117,8 @@ namespace Stand
         ++s_Version;
     }
 
-    void GarageVehicleMgr::Save(const std::string& name, int vehicleHandle)
+    void GarageVehicleMgr::Save(const std::string& name, int veh)
     {
-        const int veh = vehicleHandle;
-
         const joaat_t modelHash = static_cast<joaat_t>(ENTITY::GET_ENTITY_MODEL(veh));
 
         int primaryColour = 0, secondaryColour = 0;
@@ -101,90 +137,73 @@ namespace Stand
         VEHICLE::GET_VEHICLE_EXTRA_COLOUR_5(veh, &interiorColour);
         VEHICLE::GET_VEHICLE_EXTRA_COLOUR_6(veh, &dashColour);
 
-        nlohmann::json j;
-        j["Model"]              = GetModelName(modelHash);
-        j["Plate Style"]        = VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(veh);
-        j["Plate Text"]         = std::string(VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT(veh));
-        j["Primary Colour"]     = primaryColour;
-        j["Secondary Colour"]   = secondaryColour;
-        j["Pearl Colour"]       = pearlColour;
-        j["Wheel Colour"]       = wheelColour;
-        j["Wheel Type"]         = VEHICLE::GET_VEHICLE_WHEEL_TYPE(veh);
-
-        j["Spoiler"]      = VEHICLE::GET_VEHICLE_MOD(veh, 0);
-        j["Front Bumper"] = VEHICLE::GET_VEHICLE_MOD(veh, 1);
-        j["Rear Bumper"]  = VEHICLE::GET_VEHICLE_MOD(veh, 2);
-        j["Sideskirt"]    = VEHICLE::GET_VEHICLE_MOD(veh, 3);
-        j["Exhaust"]      = VEHICLE::GET_VEHICLE_MOD(veh, 4);
-        j["Grille"]       = VEHICLE::GET_VEHICLE_MOD(veh, 6);
-        j["Hood"]         = VEHICLE::GET_VEHICLE_MOD(veh, 7);
-        j["Fender"]       = VEHICLE::GET_VEHICLE_MOD(veh, 8);
-        j["Roof"]         = VEHICLE::GET_VEHICLE_MOD(veh, 10);
-        j["Engine"]       = VEHICLE::GET_VEHICLE_MOD(veh, 11);
-        j["Brakes"]       = VEHICLE::GET_VEHICLE_MOD(veh, 12);
-        j["Transmission"] = VEHICLE::GET_VEHICLE_MOD(veh, 13);
-        j["Horns"]        = VEHICLE::GET_VEHICLE_MOD(veh, 14);
-        j["Suspension"]   = VEHICLE::GET_VEHICLE_MOD(veh, 15);
-        j["Armor"]        = VEHICLE::GET_VEHICLE_MOD(veh, 16);
-
-        j["Nitrous"]   = static_cast<bool>(VEHICLE::IS_TOGGLE_MOD_ON(veh, 17));
-        j["Turbo"]     = static_cast<bool>(VEHICLE::IS_TOGGLE_MOD_ON(veh, 18));
-        j["Subwoofer"] = static_cast<bool>(VEHICLE::IS_TOGGLE_MOD_ON(veh, 19));
-        j["Tiresmoke"] = static_cast<bool>(VEHICLE::IS_TOGGLE_MOD_ON(veh, 20));
-        j["Unk21"]     = static_cast<bool>(VEHICLE::IS_TOGGLE_MOD_ON(veh, 21));
-
-        j["Headlights"]   = VEHICLE::GET_VEHICLE_MOD(veh, 22);
-        j["Front Wheels"] = VEHICLE::GET_VEHICLE_MOD(veh, 23);
-        j["Livery"]       = VEHICLE::GET_VEHICLE_LIVERY(veh);
-
-        j["Tyre Smoke Colour"] = RgbToHex(smokR, smokG, smokB);
-        j["Window Tint"]       = VEHICLE::GET_VEHICLE_WINDOW_TINT(veh);
-
+        std::string customPrimary, customSecondary;
         if (VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh))
         {
             int r = 0, g = 0, b = 0;
             VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-            j["Custom Primary Colour"] = RgbToHex(r, g, b);
+            customPrimary = RgbToHex(r, g, b);
         }
-        else
-        {
-            j["Custom Primary Colour"] = "";
-        }
-
         if (VEHICLE::GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(veh))
         {
             int r = 0, g = 0, b = 0;
             VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-            j["Custom Secondary Colour"] = RgbToHex(r, g, b);
+            customSecondary = RgbToHex(r, g, b);
         }
-        else
-        {
-            j["Custom Secondary Colour"] = "";
-        }
-
-        j["Neon Colour"] = RgbToHex(neonR, neonG, neonB);
-        j["Neon Front"]  = static_cast<bool>(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 0));
-        j["Neon Back"]   = static_cast<bool>(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 1));
-        j["Neon Left"]   = static_cast<bool>(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 2));
-        j["Neon Right"]  = static_cast<bool>(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 3));
-
-        j["Interior Colour"]  = interiorColour;
-        j["Dashboard Colour"] = dashColour;
-        j["Tyres Mode"]       = static_cast<int>(VEHICLE::GET_VEHICLE_TYRES_CAN_BURST(veh));
-
-        nlohmann::json extras = nlohmann::json::object();
-        for (int id = 1; id <= 12; ++id)
-            if (VEHICLE::DOES_EXTRA_EXIST(veh, id))
-                extras[std::to_string(id)] = static_cast<bool>(VEHICLE::IS_VEHICLE_EXTRA_TURNED_ON(veh, id));
-        j["Extras"] = extras;
 
         try
         {
-            const auto folder = GetVehiclesFolder();
-            std::filesystem::create_directories(folder);
-            std::ofstream file(GetVehiclePath(name), std::ofstream::trunc | std::ofstream::binary);
-            if (file.is_open())
-                file << j.dump(4);
+            std::filesystem::create_directories(GetVehiclesFolder());
+            std::ofstream f(GetVehiclePath(name), std::ofstream::trunc);
+            if (!f.is_open()) return;
+
+            f << "Model: "              << GetModelName(modelHash)                             << "\n";
+            f << "Plate Style: "        << VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(veh)   << "\n";
+            f << "Plate Text: "         << VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT(veh)         << "\n";
+            f << "Primary Colour: "     << primaryColour                                       << "\n";
+            f << "Secondary Colour: "   << secondaryColour                                     << "\n";
+            f << "Pearl Colour: "       << pearlColour                                         << "\n";
+            f << "Wheel Colour: "       << wheelColour                                         << "\n";
+            f << "Wheel Type: "         << VEHICLE::GET_VEHICLE_WHEEL_TYPE(veh)                << "\n";
+            f << "Spoiler: "            << VEHICLE::GET_VEHICLE_MOD(veh, 0)                    << "\n";
+            f << "Front Bumper: "       << VEHICLE::GET_VEHICLE_MOD(veh, 1)                    << "\n";
+            f << "Rear Bumper: "        << VEHICLE::GET_VEHICLE_MOD(veh, 2)                    << "\n";
+            f << "Sideskirt: "          << VEHICLE::GET_VEHICLE_MOD(veh, 3)                    << "\n";
+            f << "Exhaust: "            << VEHICLE::GET_VEHICLE_MOD(veh, 4)                    << "\n";
+            f << "Grille: "             << VEHICLE::GET_VEHICLE_MOD(veh, 6)                    << "\n";
+            f << "Hood: "               << VEHICLE::GET_VEHICLE_MOD(veh, 7)                    << "\n";
+            f << "Fender: "             << VEHICLE::GET_VEHICLE_MOD(veh, 8)                    << "\n";
+            f << "Roof: "               << VEHICLE::GET_VEHICLE_MOD(veh, 10)                   << "\n";
+            f << "Engine: "             << VEHICLE::GET_VEHICLE_MOD(veh, 11)                   << "\n";
+            f << "Brakes: "             << VEHICLE::GET_VEHICLE_MOD(veh, 12)                   << "\n";
+            f << "Transmission: "       << VEHICLE::GET_VEHICLE_MOD(veh, 13)                   << "\n";
+            f << "Horns: "              << VEHICLE::GET_VEHICLE_MOD(veh, 14)                   << "\n";
+            f << "Suspension: "         << VEHICLE::GET_VEHICLE_MOD(veh, 15)                   << "\n";
+            f << "Armor: "              << VEHICLE::GET_VEHICLE_MOD(veh, 16)                   << "\n";
+            f << "Nitrous: "            << YN(VEHICLE::IS_TOGGLE_MOD_ON(veh, 17))             << "\n";
+            f << "Turbo: "              << YN(VEHICLE::IS_TOGGLE_MOD_ON(veh, 18))             << "\n";
+            f << "Subwoofer: "          << YN(VEHICLE::IS_TOGGLE_MOD_ON(veh, 19))             << "\n";
+            f << "Tiresmoke: "          << YN(VEHICLE::IS_TOGGLE_MOD_ON(veh, 20))             << "\n";
+            f << "Unk21: "              << YN(VEHICLE::IS_TOGGLE_MOD_ON(veh, 21))             << "\n";
+            f << "Headlights: "         << VEHICLE::GET_VEHICLE_MOD(veh, 22)                   << "\n";
+            f << "Front Wheels: "       << VEHICLE::GET_VEHICLE_MOD(veh, 23)                   << "\n";
+            f << "Livery: "             << VEHICLE::GET_VEHICLE_LIVERY(veh)                    << "\n";
+            f << "Tyre Smoke Colour: "  << RgbToHex(smokR, smokG, smokB)                       << "\n";
+            f << "Window Tint: "        << VEHICLE::GET_VEHICLE_WINDOW_TINT(veh)               << "\n";
+            f << "Custom Primary Colour: "   << customPrimary                                  << "\n";
+            f << "Custom Secondary Colour: " << customSecondary                                << "\n";
+            f << "Neon Colour: "        << RgbToHex(neonR, neonG, neonB)                       << "\n";
+            f << "Neon Front: "         << YN(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 0))      << "\n";
+            f << "Neon Back: "          << YN(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 1))      << "\n";
+            f << "Neon Left: "          << YN(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 2))      << "\n";
+            f << "Neon Right: "         << YN(VEHICLE::GET_VEHICLE_NEON_ENABLED(veh, 3))      << "\n";
+            f << "Interior Colour: "    << interiorColour                                      << "\n";
+            f << "Dashboard Colour: "   << dashColour                                          << "\n";
+            f << "Tyres Mode: "         << static_cast<int>(VEHICLE::GET_VEHICLE_TYRES_CAN_BURST(veh)) << "\n";
+
+            for (int id = 1; id <= 12; ++id)
+                if (VEHICLE::DOES_EXTRA_EXIST(veh, id))
+                    f << "Extra " << id << ": " << YN(VEHICLE::IS_VEHICLE_EXTRA_TURNED_ON(veh, id)) << "\n";
         }
         catch (...) {}
 
@@ -202,16 +221,16 @@ namespace Stand
         if (!std::filesystem::exists(path))
             return;
 
-        nlohmann::json j;
+        DataMap data;
         try
         {
-            std::ifstream file(path, std::ios::binary);
+            std::ifstream file(path);
             if (!file.is_open()) return;
-            file >> j;
+            data = ParseFile(file);
         }
         catch (...) { return; }
 
-        const std::string modelName = j.value("Model", "");
+        const std::string modelName = GetStr(data, "Model");
         if (modelName.empty()) return;
 
         const joaat_t hash = Joaat(modelName.c_str());
@@ -228,89 +247,64 @@ namespace Stand
 
         VEHICLE::SET_VEHICLE_MOD_KIT(h, 0);
 
-        VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(h, j.value("Plate Text", "").c_str());
-        VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(h, j.value("Plate Style", 0));
+        VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(h, GetStr(data, "Plate Text").c_str());
+        VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(h, GetInt(data, "Plate Style"));
 
-        const int primary   = j.value("Primary Colour",   0);
-        const int secondary = j.value("Secondary Colour", 0);
-        VEHICLE::SET_VEHICLE_COLOURS(h, primary, secondary);
-        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(h, j.value("Pearl Colour", 0), j.value("Wheel Colour", 0));
-        VEHICLE::SET_VEHICLE_WHEEL_TYPE(h, j.value("Wheel Type", 0));
-        VEHICLE::SET_VEHICLE_WINDOW_TINT(h, j.value("Window Tint", 0));
+        VEHICLE::SET_VEHICLE_COLOURS(h, GetInt(data, "Primary Colour"), GetInt(data, "Secondary Colour"));
+        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(h, GetInt(data, "Pearl Colour"), GetInt(data, "Wheel Colour"));
+        VEHICLE::SET_VEHICLE_WHEEL_TYPE(h, GetInt(data, "Wheel Type"));
+        VEHICLE::SET_VEHICLE_WINDOW_TINT(h, GetInt(data, "Window Tint"));
 
-        const std::string cpc = j.value("Custom Primary Colour", "");
-        if (!cpc.empty())
+        const std::string cpc = GetStr(data, "Custom Primary Colour");
+        if (!cpc.empty()) { int r=0,g=0,b=0; if (HexToRgb(cpc,r,g,b)) VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(h,r,g,b); }
+        const std::string csc = GetStr(data, "Custom Secondary Colour");
+        if (!csc.empty()) { int r=0,g=0,b=0; if (HexToRgb(csc,r,g,b)) VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(h,r,g,b); }
+
+        VEHICLE::SET_VEHICLE_MOD(h,  0, GetInt(data, "Spoiler",       -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  1, GetInt(data, "Front Bumper",  -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  2, GetInt(data, "Rear Bumper",   -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  3, GetInt(data, "Sideskirt",     -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  4, GetInt(data, "Exhaust",       -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  6, GetInt(data, "Grille",        -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  7, GetInt(data, "Hood",          -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h,  8, GetInt(data, "Fender",        -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 10, GetInt(data, "Roof",          -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 11, GetInt(data, "Engine",        -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 12, GetInt(data, "Brakes",        -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 13, GetInt(data, "Transmission",  -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 14, GetInt(data, "Horns",         -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 15, GetInt(data, "Suspension",    -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 16, GetInt(data, "Armor",         -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 22, GetInt(data, "Headlights",    -1), FALSE);
+        VEHICLE::SET_VEHICLE_MOD(h, 23, GetInt(data, "Front Wheels",  -1), FALSE);
+
+        VEHICLE::TOGGLE_VEHICLE_MOD(h, 17, GetBool(data, "Nitrous")   ? TRUE : FALSE);
+        VEHICLE::TOGGLE_VEHICLE_MOD(h, 18, GetBool(data, "Turbo")     ? TRUE : FALSE);
+        VEHICLE::TOGGLE_VEHICLE_MOD(h, 19, GetBool(data, "Subwoofer") ? TRUE : FALSE);
+        VEHICLE::TOGGLE_VEHICLE_MOD(h, 20, GetBool(data, "Tiresmoke") ? TRUE : FALSE);
+        VEHICLE::TOGGLE_VEHICLE_MOD(h, 21, GetBool(data, "Unk21")     ? TRUE : FALSE);
+
+        VEHICLE::SET_VEHICLE_LIVERY(h, GetInt(data, "Livery", -1));
+
+        { int r=255,g=255,b=255; HexToRgb(GetStr(data,"Tyre Smoke Colour","#ffffff"),r,g,b); VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(h,r,g,b); }
+        { int r=0,g=0,b=0;       HexToRgb(GetStr(data,"Neon Colour","#000000"),r,g,b);       VEHICLE::SET_VEHICLE_NEON_COLOUR(h,r,g,b); }
+
+        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 0, GetBool(data, "Neon Front") ? TRUE : FALSE);
+        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 1, GetBool(data, "Neon Back")  ? TRUE : FALSE);
+        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 2, GetBool(data, "Neon Left")  ? TRUE : FALSE);
+        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 3, GetBool(data, "Neon Right") ? TRUE : FALSE);
+
+        VEHICLE::SET_VEHICLE_EXTRA_COLOUR_5(h, GetInt(data, "Interior Colour"));
+        VEHICLE::SET_VEHICLE_EXTRA_COLOUR_6(h, GetInt(data, "Dashboard Colour"));
+        VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(h, GetInt(data, "Tyres Mode", 1) != 0 ? TRUE : FALSE);
+
+        for (int id = 1; id <= 12; ++id)
         {
-            int r = 0, g = 0, b = 0;
-            if (HexToRgb(cpc, r, g, b))
-                VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(h, r, g, b);
-        }
-        const std::string csc = j.value("Custom Secondary Colour", "");
-        if (!csc.empty())
-        {
-            int r = 0, g = 0, b = 0;
-            if (HexToRgb(csc, r, g, b))
-                VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(h, r, g, b);
-        }
-
-        VEHICLE::SET_VEHICLE_MOD(h, 0,  j.value("Spoiler",      -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 1,  j.value("Front Bumper", -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 2,  j.value("Rear Bumper",  -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 3,  j.value("Sideskirt",    -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 4,  j.value("Exhaust",      -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 6,  j.value("Grille",       -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 7,  j.value("Hood",         -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 8,  j.value("Fender",       -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 10, j.value("Roof",         -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 11, j.value("Engine",       -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 12, j.value("Brakes",       -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 13, j.value("Transmission", -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 14, j.value("Horns",        -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 15, j.value("Suspension",   -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 16, j.value("Armor",        -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 22, j.value("Headlights",   -1), FALSE);
-        VEHICLE::SET_VEHICLE_MOD(h, 23, j.value("Front Wheels", -1), FALSE);
-
-        VEHICLE::TOGGLE_VEHICLE_MOD(h, 17, j.value("Nitrous",   false) ? TRUE : FALSE);
-        VEHICLE::TOGGLE_VEHICLE_MOD(h, 18, j.value("Turbo",     false) ? TRUE : FALSE);
-        VEHICLE::TOGGLE_VEHICLE_MOD(h, 19, j.value("Subwoofer", false) ? TRUE : FALSE);
-        VEHICLE::TOGGLE_VEHICLE_MOD(h, 20, j.value("Tiresmoke", false) ? TRUE : FALSE);
-        VEHICLE::TOGGLE_VEHICLE_MOD(h, 21, j.value("Unk21",     false) ? TRUE : FALSE);
-
-        VEHICLE::SET_VEHICLE_LIVERY(h, j.value("Livery", -1));
-
-        {
-            int r = 255, g = 255, b = 255;
-            HexToRgb(j.value("Tyre Smoke Colour", "#ffffff"), r, g, b);
-            VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(h, r, g, b);
-        }
-        {
-            int r = 0, g = 0, b = 0;
-            HexToRgb(j.value("Neon Colour", "#000000"), r, g, b);
-            VEHICLE::SET_VEHICLE_NEON_COLOUR(h, r, g, b);
-        }
-        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 0, j.value("Neon Front", false) ? TRUE : FALSE);
-        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 1, j.value("Neon Back",  false) ? TRUE : FALSE);
-        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 2, j.value("Neon Left",  false) ? TRUE : FALSE);
-        VEHICLE::SET_VEHICLE_NEON_ENABLED(h, 3, j.value("Neon Right", false) ? TRUE : FALSE);
-
-        VEHICLE::SET_VEHICLE_EXTRA_COLOUR_5(h, j.value("Interior Colour",  0));
-        VEHICLE::SET_VEHICLE_EXTRA_COLOUR_6(h, j.value("Dashboard Colour", 0));
-        VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(h, j.value("Tyres Mode", 1) != 0 ? TRUE : FALSE);
-
-        if (j.contains("Extras") && j["Extras"].is_object())
-        {
-            for (auto& [key, val] : j["Extras"].items())
-            {
-                try
-                {
-                    const int id = std::stoi(key);
-                    const bool on = val.get<bool>();
-                    if (VEHICLE::DOES_EXTRA_EXIST(h, id))
-                        VEHICLE::SET_VEHICLE_EXTRA(h, id, on ? FALSE : TRUE);
-                }
-                catch (...) {}
-            }
+            const std::string key = "Extra " + std::to_string(id);
+            auto it = data.find(key);
+            if (it == data.end()) continue;
+            if (VEHICLE::DOES_EXTRA_EXIST(h, id))
+                VEHICLE::SET_VEHICLE_EXTRA(h, id, it->second == "Yes" ? FALSE : TRUE);
         }
     }
 
@@ -338,9 +332,9 @@ namespace Stand
         std::vector<std::string> result;
         for (const auto& n : s_Names)
         {
-            std::string nameLower = n;
-            std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
-            if (nameLower.find(lower) != std::string::npos)
+            std::string nl = n;
+            std::transform(nl.begin(), nl.end(), nl.begin(), ::tolower);
+            if (nl.find(lower) != std::string::npos)
                 result.push_back(n);
         }
         return result;
