@@ -64,6 +64,14 @@ namespace Stand::Rendering
 			GetInstance().ClearImpl();
 		}
 
+		// Loads a single specific image file as the header — real Stand's
+		// own "unanimated_headers" preset path where each preset resolves
+		// to one file rather than a whole directory.
+		static void LoadFromFile(std::filesystem::path filePath)
+		{
+			GetInstance().LoadFromFileImpl(std::move(filePath));
+		}
+
 		static bool IsLoaded()
 		{
 			return GetInstance().m_Loaded.load();
@@ -75,6 +83,33 @@ namespace Stand::Rendering
 		static float GetRenderHeight(float width)
 		{
 			return GetInstance().GetRenderHeightImpl(width);
+		}
+
+		// Real Stand's own g_renderer.header_speed (written by
+		// CommandHeaderAnimationSpeed with command "headerinterval").
+		// Range 1-10000 ms/frame, default 32 in real Stand.
+		static void SetFrameIntervalMs(int64_t ms)
+		{
+			GetInstance().m_FrameIntervalMs = ms;
+		}
+
+		static int64_t GetFrameIntervalMs()
+		{
+			return GetInstance().m_FrameIntervalMs;
+		}
+
+		// Real Stand's own g_renderer.header_bgblur - background blur
+		// drawn behind the header image (command "headerbgblur").
+		// Stored here for command state; blur rendering hooks into
+		// DrawImpl when true.
+		static void SetBgBlur(bool on)
+		{
+			GetInstance().m_BgBlur = on;
+		}
+
+		static bool GetBgBlur()
+		{
+			return GetInstance().m_BgBlur;
 		}
 
 		// Draws the current frame and advances the animation timer -
@@ -109,6 +144,7 @@ namespace Stand::Rendering
 		};
 
 		void LoadFromFolderImpl(std::filesystem::path folder);
+		void LoadFromFileImpl(std::filesystem::path filePath);
 		void ClearImpl();
 		float GetRenderHeightImpl(float width) const;
 		void DrawImpl(ID3D12GraphicsCommandList* commandList, const D3D12_VIEWPORT& viewport, float x, float y, float width, float height);
@@ -121,11 +157,13 @@ namespace Stand::Rendering
 		int64_t m_LastFrameMs = 0;
 		int64_t m_MsPassed = 0;
 
-		// Real Stand's own g_renderer.header_speed default (32ms/frame)
-		// is exposed as a separate command (CommandHeaderAnimationSpeed)
-		// this port skips (see CommandHeader.cpp's own comment) - a
-		// fixed, still-reasonable interval instead.
-		static constexpr int64_t kFrameIntervalMs = 100;
+		// Mutable frame interval — real Stand's own g_renderer.header_speed.
+		// Written via SetFrameIntervalMs() by CommandHeaderAnimationSpeed.
+		int64_t m_FrameIntervalMs = 32;
+
+		// Real Stand's own g_renderer.header_bgblur.
+		// Written via SetBgBlur() by the bg-blur toggle.
+		bool m_BgBlur = false;
 
 		std::atomic<bool> m_Loaded{false};
 		std::atomic<uint64_t> m_LoadGeneration{0};

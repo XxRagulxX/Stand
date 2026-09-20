@@ -121,6 +121,79 @@ namespace Stand::Rendering
 		}).detach();
 	}
 
+	void HeaderBanner::LoadFromFileImpl(std::filesystem::path filePath)
+	{
+		const auto generation = ++m_LoadGeneration;
+
+		std::thread([this, filePath = std::move(filePath), generation]() {
+			if (!std::filesystem::is_regular_file(filePath))
+				return;
+
+			auto* device = Renderer::GetDevice();
+			if (!device)
+			{
+				LOG(WARNING) << "[HeaderBanner] No D3D12 device yet, dropping header load";
+				return;
+			}
+
+			D3D12_DESCRIPTOR_HEAP_DESC heapDesc{
+			    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1,
+			    D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
+
+			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap;
+			if (const auto result = device->CreateDescriptorHeap(&heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)heap.ReleaseAndGetAddressOf());
+			    result < 0)
+			{
+				LOGF(WARNING, "[HeaderBanner] Failed to create descriptor heap with result: [{}]", result);
+				return;
+			}
+
+			std::vector<Frame> frames;
+			try
+			{
+				DirectX::ResourceUploadBatch upload(device);
+				upload.Begin();
+
+				Frame frame;
+				if (SUCCEEDED(DirectX::CreateWICTextureFromFile(device, upload, filePath.c_str(), frame.Texture.ReleaseAndGetAddressOf())))
+				{
+					const auto desc = frame.Texture->GetDesc();
+					frame.Width = static_cast<UINT>(desc.Width);
+					frame.Height = desc.Height;
+					frame.CpuHandle = heap->GetCPUDescriptorHandleForHeapStart();
+					frame.GpuHandle = heap->GetGPUDescriptorHandleForHeapStart();
+					device->CreateShaderResourceView(frame.Texture.Get(), nullptr, frame.CpuHandle);
+					frames.push_back(std::move(frame));
+				}
+				else
+				{
+					LOGF(WARNING, "[HeaderBanner] Failed to load header image: {}", filePath.string());
+				}
+
+				upload.End(Renderer::GetCommandQueue()).wait();
+			}
+			catch (const std::exception& e)
+			{
+				LOGF(WARNING, "[HeaderBanner] Failed to load header image: {}", e.what());
+				return;
+			}
+
+			if (frames.empty())
+				return;
+
+			std::lock_guard lock(m_Mutex);
+			if (generation != m_LoadGeneration.load())
+				return;
+
+			m_Frames = std::move(frames);
+			m_DescriptorHeap = heap;
+			m_CurrentFrame = 0;
+			m_LastFrameMs = 0;
+			m_MsPassed = 0;
+			m_Loaded = true;
+		}).detach();
+	}
+
 	void HeaderBanner::ClearImpl()
 	{
 		++m_LoadGeneration;
@@ -209,9 +282,9 @@ namespace Stand::Rendering
 			m_MsPassed += now - m_LastFrameMs;
 		m_LastFrameMs = now;
 
-		while (m_MsPassed >= kFrameIntervalMs)
+		while (m_MsPassed >= m_FrameIntervalMs)
 		{
-			m_MsPassed -= kFrameIntervalMs;
+			m_MsPassed -= m_FrameIntervalMs;
 			m_CurrentFrame = (m_CurrentFrame + 1) % m_Frames.size();
 		}
 	}

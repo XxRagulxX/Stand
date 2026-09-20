@@ -2,6 +2,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Settings/Appearance/CommandStreamproof.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 
@@ -144,6 +145,7 @@ namespace Stand
 		CommandSmoothScroll* const smoothscroll;
 		CommandBlur* const blur;
 		CommandOpenThemeFolder* const openThemeFolder;
+		CommandStreamproof* const streamproof;
 
 		explicit CommandTabAppearanceDirect()
 			: CommandList(nullptr, LIT("Appearance"), CMDNAMES())
@@ -155,6 +157,7 @@ namespace Stand
 			, smoothscroll(createChild<CommandSmoothScroll>())
 			, blur(createChild<CommandBlur>())
 			, openThemeFolder(createChild<CommandOpenThemeFolder>())
+			, streamproof(createChild<CommandStreamproof>())
 		{
 		}
 	};

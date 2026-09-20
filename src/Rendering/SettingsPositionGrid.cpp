@@ -26,6 +26,5 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, pos.mouseMove));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tabs.visible));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tabs.positionMode));
-		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, pos.header));
 	}
 }

@@ -11,6 +11,7 @@
 #include "Rendering/SettingsCursorGrid.hpp"
 #include "Rendering/SettingsEntityPreviewsGrid.hpp"
 #include "Rendering/SettingsFontTextGrid.hpp"
+#include "Rendering/SettingsHeaderGrid.hpp"
 #include "Rendering/SettingsNotificationsGrid.hpp"
 #include "Rendering/SettingsPositionGrid.hpp"
 #include "Rendering/SettingsScrollbarGrid.hpp"
@@ -32,6 +33,7 @@ namespace Stand::Rendering
 		SettingsCursorGrid g_CursorContent{};
 		SettingsEntityPreviewsGrid g_EntityPreviewsContent{};
 		SettingsFontTextGrid g_FontTextContent{};
+		SettingsHeaderGrid g_HeaderContent{};
 		SettingsPositionGrid g_PositionContent{};
 		SettingsScrollbarGrid g_ScrollbarContent{};
 		SettingsTabsGrid g_TabsContent{};
@@ -55,7 +57,9 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.smoothscroll));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.blur));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.openThemeFolder));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.streamproof));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Colours", &g_ColoursContent));
+		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Header", &g_HeaderContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Position", &g_PositionContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Address Bar", &g_AddressBarContent));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Cursor", &g_CursorContent));
