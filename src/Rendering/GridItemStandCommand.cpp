@@ -227,25 +227,42 @@ namespace Stand::Rendering
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
 			const auto valueStr = slider->getValueText();
-			const auto layout = ComputeSliderLayout(valueStr);
 
-			const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
-			GridRenderer::DrawText(layout.valueX + std::max(0.f, (layout.valueWidth - valueSize.x) * 0.5f),
-			    y + std::max(0.f, (height - valueSize.y) * 0.5f),
-			    valueStr.c_str(),
-			    rightColour);
+			if (focused)
+			{
+				// Focused: show full < value > layout — matches Stand's own
+				// GridItemList behaviour where arrows are only drawn for the
+				// focused row.
+				const auto layout = ComputeSliderLayout(valueStr);
 
-			const auto minusSize = GridRenderer::MeasureText("<");
-			GridRenderer::DrawText(layout.minusX + std::max(0.f, (layout.buttonSize - minusSize.x) * 0.5f),
-			    y + std::max(0.f, (height - minusSize.y) * 0.5f),
-			    "<",
-			    rightColour);
+				const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
+				GridRenderer::DrawText(layout.valueX + std::max(0.f, (layout.valueWidth - valueSize.x) * 0.5f),
+				    y + std::max(0.f, (height - valueSize.y) * 0.5f),
+				    valueStr.c_str(),
+				    rightColour);
 
-			const auto plusSize = GridRenderer::MeasureText(">");
-			GridRenderer::DrawText(layout.plusX + std::max(0.f, (layout.buttonSize - plusSize.x) * 0.5f),
-			    y + std::max(0.f, (height - plusSize.y) * 0.5f),
-			    ">",
-			    rightColour);
+				const auto minusSize = GridRenderer::MeasureText("<");
+				GridRenderer::DrawText(layout.minusX + std::max(0.f, (layout.buttonSize - minusSize.x) * 0.5f),
+				    y + std::max(0.f, (height - minusSize.y) * 0.5f),
+				    "<",
+				    rightColour);
+
+				const auto plusSize = GridRenderer::MeasureText(">");
+				GridRenderer::DrawText(layout.plusX + std::max(0.f, (layout.buttonSize - plusSize.x) * 0.5f),
+				    y + std::max(0.f, (height - plusSize.y) * 0.5f),
+				    ">",
+				    rightColour);
+			}
+			else
+			{
+				// Unfocused: just show the value right-aligned, no arrows.
+				const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
+				GridRenderer::DrawText(
+				    static_cast<float>(x + width) - valueSize.x - kArrowGap,
+				    y + std::max(0.f, (height - valueSize.y) * 0.5f),
+				    valueStr.c_str(),
+				    rightColour);
+			}
 		}
 	}
 
