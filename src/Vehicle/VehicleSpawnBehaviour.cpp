@@ -1,5 +1,4 @@
 #include "Vehicle/VehicleSpawnBehaviour.hpp"
-
 #include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
@@ -234,5 +233,76 @@ namespace Stand
             SpawnVehicleInVehicle(hash, name);
         else
             SpawnVehicleOnFoot(hash, name);
+    }
+
+    void SpawnVehicleAndDrive(joaat_t hash, const std::string& name)
+    {
+        auto& foot = Features::GetCommandTabSpawnOnFoot();
+        auto& cfg  = Features::GetCommandTabSpawnSettings();
+
+        if (foot.deleteprevious->m_on && g_FootPreviousHandle != 0)
+        {
+            Vehicle prev(g_FootPreviousHandle);
+            if (prev.IsValid())
+            {
+                const auto model = prev.GetModel();
+                prev.Delete();
+                STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+                SpawnedVehicleMgr::Remove(g_FootPreviousHandle);
+            }
+            g_FootPreviousHandle = 0;
+        }
+
+        auto ped = Self::GetPed();
+        float heading = ped.GetHeading();
+        rage::fvector3 spawnPos{};
+
+        if (foot.likepv->m_on)
+        {
+            const auto pedPos = ped.GetPosition();
+            Vector3 nodePos{0.f, 0.f, 0.f};
+            float nodeHeading = 0.f;
+            PATH::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(
+                pedPos.x, pedPos.y, pedPos.z,
+                &nodePos, &nodeHeading,
+                1, 3.f, 0.f);
+            spawnPos = { nodePos.x, nodePos.y, nodePos.z };
+            heading = nodeHeading;
+        }
+        else if (foot.spawnfront->m_on)
+        {
+            auto loc = Vehicle::GetSpawnLocRelToPed(ped.GetHandle(), hash);
+            spawnPos = { loc.x, loc.y, loc.z };
+        }
+        else
+        {
+            spawnPos = ped.GetPosition();
+        }
+
+        if (foot.spawnair->m_on &&
+            (VEHICLE::IS_THIS_MODEL_A_HELI(hash) || VEHICLE::IS_THIS_MODEL_A_PLANE(hash)))
+        {
+            spawnPos.z += 30.f;
+        }
+
+        auto veh = Vehicle::Create(hash, spawnPos, heading);
+        if (!veh.IsValid())
+            return;
+
+        if (cfg.spawngod->m_on)
+            ApplyGodMode(veh);
+        ApplyTune(veh, cfg.spawntune->value);
+        ApplyColour(veh);
+
+        const auto plateText = Features::GetSpawnPlateText();
+        if (!plateText.empty())
+            veh.SetPlateText(plateText);
+
+        SpawnedVehicleMgr::Add(veh.GetHandle(), name);
+        Features::AddSpawnedVehicleBlip(veh.GetHandle());
+        g_FootPreviousHandle = veh.GetHandle();
+
+        Script::current()->yield(200);
+        Self::GetPed().SetInVehicle(veh);
     }
 }

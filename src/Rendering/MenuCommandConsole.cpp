@@ -1,7 +1,5 @@
 #include "Rendering/MenuCommandConsole.hpp"
-
-#include "Commands/CommandLegacy.hpp"
-#include "Commands/Commands.hpp"
+#include "Commands/Extra/CommandFindVehicle.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandRegistry.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
@@ -19,90 +17,26 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		// x/y/width match MenuCommandBox's own (real Stand's own
-		// CommandboxGrid: Grid((HUD_WIDTH / 2) - (width / 2), 100,
-		// spacer_size)) - the two are never open at once (see this
-		// class's own header comment), so there's no visual clash.
 		constexpr float kWidth = 547.f;
 		constexpr float kY = 100.f;
 		constexpr float kTitleHeight = 24.f;
 		constexpr float kInputHeight = 32.f;
 		constexpr float kRowHeight = 22.f;
 		constexpr float kPaddingX = 6.f;
-
-		// Real Stand's own max_shown_matching_commands - caps the list
-		// so a short, broad prefix (e.g. a single letter) doesn't fill
-		// the whole screen with rows; a trailing "+N more" row (see
-		// DrawText()) accounts for the rest, same as real Stand's own
-		// "MORE"/"MANYMORE" rows.
 		constexpr size_t kMaxShown = 8;
 
-		// One command not yet turned into a Match - built for every
-		// registered command up front (both registries), then narrowed
-		// down against the typed prefix. names holds every alias (real
-		// Stand's own command_names - a legacy Stand::Command only
-		// ever has the one), display is what a match's own hint line
-		// shows regardless of which alias matched (real Stand's own
-		// getCompletionHint() always uses command_names.at(0), never the
-		// alias that actually matched - mirrored here). label is the
-		// plain menu name shown when args-mode matching is active (buffer
-		// contains a space - see UpdateMatches).
 		struct Candidate
 		{
 			std::vector<std::string> names;
 			std::string label;   // plain label, e.g. "Set Wanted Level"
 			std::string display; // "name - label" for prefix-match rows
 			std::function<void()> activate;
-			// Non-null for CommandSlider-derived Stand-tree commands:
-			// called with the args string (everything after the space) when
-			// the buffer is "cmdname args" - routes to setState() which
-			// handles both numeric ("wanted 2") and named ("paralock off").
 			std::function<void(const std::string&)> activate_with_args;
 		};
 
 		std::vector<Candidate> CollectCandidates()
 		{
 			std::vector<Candidate> candidates;
-
-			for (auto& [hash, command] : Commands::GetCommands())
-			{
-				if (command->GetName().empty())
-					continue;
-
-				const std::string name = command->GetName();
-				const std::string lbl = command->GetLabel();
-				candidates.push_back({
-				    {name},
-				    lbl,
-				    name + " - " + lbl,
-				    // Queued onto a script thread rather than called
-				    // inline - Command::Call() (a toggle's OnEnable()/
-				    // OnDisable(), a one-shot's OnCall()) commonly
-				    // touches game state/natives, which must never run
-				    // directly on this WndProc callback thread. Same
-				    // "queue it, don't call it inline" convention
-				    // GridItemCommandButton.cpp's own onClick() already
-				    // uses for this exact same Command::Call() - a
-				    // previous pass here called it inline by mistake.
-				    [command] {
-					    FiberPool::queueJob([command] {
-						    command->Call();
-					    });
-				    },
-				    nullptr,
-				});
-			}
-
-			// Stand::CommandRegistry registers a command once PER ALIAS
-			// (see that class's own comment - "every ... command_names
-			// ... into this flat map"), all pointing at the same
-			// instance - a command with more than one alias (e.g.
-			// CommandGod's own "godmode"/"immortality") therefore shows
-			// up more than once in this map's own iteration. Deduped by
-			// pointer here so it becomes exactly one candidate (with
-			// every one of its own aliases still searched via
-			// candidate.names below), rather than one candidate per
-			// alias.
 			std::unordered_set<Stand::CommandPhysical*> seenStandCommands;
 			for (auto& [hash, command] : Stand::CommandRegistry::GetCommands())
 			{
@@ -116,23 +50,12 @@ namespace Stand::Rendering
 				const std::string lbl = physical->getMenuName().getLocalisedUtf8();
 				const std::string disp = physical->command_names.front() + " - " + lbl;
 
-				// CommandSlider: expose an activate_with_args so the user
-				// can type "wanted 2" or "paralock off" in the console and
-				// have it call setState() with the args portion - matching
-				// real Stand's own parseCommand split behaviour (the buffer
-				// up to the first space is the command name; everything
-				// after is the value token passed to setState).
 				if (auto* slider = dynamic_cast<Stand::CommandSlider*>(physical))
 				{
 					candidates.push_back({
 					    physical->command_names,
 					    lbl,
 					    disp,
-					    // onClick() is a no-op for sliders (no args = no
-					    // meaningful state change) - keep it for the
-					    // toggle-path so exact-match "paralock" without a
-					    // space still shows the row, even if Enter does
-					    // nothing useful without an args token.
 					    [physical] {
 						    FiberPool::queueJob([physical] {
 							    Stand::Click click(Stand::CLICK_COMMAND, Stand::TC_SCRIPT_YIELDABLE);
@@ -153,41 +76,31 @@ namespace Stand::Rendering
 					continue;
 				}
 
+				if (auto* fv = dynamic_cast<Stand::CommandFindVehicle*>(physical))
+				{
+					candidates.push_back({
+					    physical->command_names,
+					    lbl,
+					    disp,
+					    [physical] {
+						    FiberPool::queueJob([physical] {
+							    Stand::Click click(Stand::CLICK_COMMAND, Stand::TC_SCRIPT_YIELDABLE);
+							    physical->onClick(click);
+							    click.ensureResponse();
+							    click.respond();
+						    });
+					    },
+					    fv->getArgsActivator(),
+					});
+					continue;
+				}
+
 				candidates.push_back({
 				    physical->command_names,
 				    lbl,
 				    disp,
-				    // CommandPhysical::onClick() (not the empty-stub
-				    // onCommand() a much earlier pass here mistakenly
-				    // gated this whole registry on) is the real generic
-				    // "activate as if clicked" entry point - already
-				    // proven working by CommandHotkeyDispatch and
-				    // GridItemStandCommand, both of which dispatch
-				    // through it the same way. Meaningful today for
-				    // CommandToggleNoCorrelation-derived commands (flips
-				    // + calls onEnable()/onDisable()); CommandPhysical's
-				    // own default onClick() is a no-op, so a match that's
-				    // e.g. a bare CommandSlider is a real, disclosed
-				    // no-op on Enter here - same limitation
-				    // CommandHotkeyDispatch's own doc comment already
-				    // discloses for a hotkey bound to one.
 				    [physical] {
 					    FiberPool::queueJob([physical] {
-						    // CLICK_COMMAND (real Stand's own click type for
-						    // exactly this - typed into its command box),
-						    // not CLICK_MENU - GridItemStandCommand.cpp's own
-						    // menu-click paths deliberately don't fire a
-						    // toast at all any more (the row's own checkbox
-						    // already shows the new state - see that file's
-						    // own comment), but this path has no such visible
-						    // feedback of its own, so it still calls
-						    // ensureResponse()+respond() to fire the "<name>
-						    // is now enabled/disabled" toast
-						    // (CommandToggleNoCorrelation::updateState()'s
-						    // own generic response) - same as
-						    // CommandHotkeyDispatch.cpp already does for the
-						    // same reason (a hotkey can fire with the menu
-						    // closed entirely).
 						    Stand::Click click(Stand::CLICK_COMMAND, Stand::TC_SCRIPT_YIELDABLE);
 						    physical->onClick(click);
 						    click.ensureResponse();
@@ -206,14 +119,30 @@ namespace Stand::Rendering
 	std::string MenuCommandConsole::s_Buffer;
 	std::vector<MenuCommandConsole::Match> MenuCommandConsole::s_Matches;
 	int MenuCommandConsole::s_SelectedIndex = -1;
+	std::function<void(const std::string&)> MenuCommandConsole::s_DirectCallback;
+	std::string MenuCommandConsole::s_DirectHint;
 
 	void MenuCommandConsole::Open()
 	{
 		s_Buffer.clear();
+		s_DirectCallback = nullptr;
+		s_DirectHint.clear();
 		s_Matches.clear();
 		s_SelectedIndex = -1;
 		s_Open = true;
 		InputCapture::SetTextInputActive(true);
+	}
+
+	void MenuCommandConsole::Open(std::string prefill, std::function<void(const std::string&)> callback, std::string hint)
+	{
+		s_Buffer = std::move(prefill);
+		s_DirectCallback = std::move(callback);
+		s_DirectHint = hint.empty() ? s_Buffer : std::move(hint);
+		s_Matches.clear();
+		s_SelectedIndex = -1;
+		s_Open = true;
+		InputCapture::SetTextInputActive(true);
+		UpdateMatches();
 	}
 
 	bool MenuCommandConsole::IsOpen()
@@ -227,6 +156,8 @@ namespace Stand::Rendering
 		s_Buffer.clear();
 		s_Matches.clear();
 		s_SelectedIndex = -1;
+		s_DirectCallback = nullptr;
+		s_DirectHint.clear();
 		InputCapture::SetTextInputActive(false);
 	}
 
@@ -235,18 +166,28 @@ namespace Stand::Rendering
 		s_Matches.clear();
 		s_SelectedIndex = -1;
 
+		if (s_DirectCallback)
+		{
+			const auto spacePos = s_Buffer.find(' ');
+			if (spacePos != std::string::npos)
+			{
+				const auto argsPart = s_Buffer.substr(spacePos + 1);
+
+				if (!argsPart.empty())
+				{
+					auto cb = s_DirectCallback;
+					s_Matches = {{s_DirectHint, [cb, argsPart] { cb(argsPart); }, {}}};
+					s_SelectedIndex = 0;
+				}
+			}
+			return;
+		}
+
 		if (s_Buffer.empty())
 			return;
 
 		auto candidates = CollectCandidates();
 
-		// If the buffer contains a space, the portion before it is the
-		// command name and the portion after is the args string - find the
-		// command by exact name match and route the args to setState().
-		// This matches real Stand's own parseCommand split: "wanted 2" sets
-		// the wanted slider to 2; "paralock off" sets paralock to Off.
-		// When args-mode fires, the hint row shows just the label (not the
-		// full "name - label" format), mirroring the screenshots.
 		const auto spacePos = s_Buffer.find(' ');
 		if (spacePos != std::string::npos)
 		{
@@ -267,32 +208,23 @@ namespace Stand::Rendering
 			return;
 		}
 
-		// No space in buffer: normal exact/grazed matching on the full
-		// buffer text, same as real Stand's own checkCommandNameMatch
-		// NMT_HIT (exact) and NMT_GRAZED (prefix-longer) paths.
-
-		// Exact match (on ANY of a candidate's own aliases) short-
-		// circuits to the one result, the same as real Stand's own
-		// checkCommandNameMatch NMT_HIT.
 		for (auto& candidate : candidates)
 		{
 			if (std::ranges::find(candidate.names, s_Buffer) != candidate.names.end())
 			{
-				s_Matches = {{std::move(candidate.display), std::move(candidate.activate)}};
+				s_Matches = {{std::move(candidate.display), std::move(candidate.activate), candidate.names.front()}};
 				s_SelectedIndex = 0;
 				return;
 			}
 		}
 
-		// Otherwise every candidate with an alias starting with (and
-		// longer than) the typed text - real Stand's own NMT_GRAZED.
 		for (auto& candidate : candidates)
 		{
 			bool grazed = std::ranges::any_of(candidate.names, [](const std::string& name) {
 				return name.size() > s_Buffer.size() && name.compare(0, s_Buffer.size(), s_Buffer) == 0;
 			});
 			if (grazed)
-				s_Matches.push_back({std::move(candidate.display), std::move(candidate.activate)});
+				s_Matches.push_back({std::move(candidate.display), std::move(candidate.activate), candidate.names.front()});
 		}
 
 		if (s_Matches.empty())
@@ -333,11 +265,6 @@ namespace Stand::Rendering
 		GridRenderer::DrawRect(layout.x, layout.titleY, layout.width, layout.titleHeight, Theme::kAccent);
 		GridRenderer::DrawRect(layout.x, layout.inputY, layout.width, layout.inputHeight, Theme::kPanelBackground);
 
-		// One row per shown match (capped at kMaxShown, same as
-		// DrawText() below) plus one more for the trailing "+N more"
-		// row, if there are more matches than that - the currently
-		// selected match's own row gets the accent fill, everything
-		// else the same muted panel background as the input row.
 		const auto shown = (std::min)(s_Matches.size(), kMaxShown);
 		for (size_t i = 0; i != shown; ++i)
 		{
@@ -353,7 +280,7 @@ namespace Stand::Rendering
 
 		const auto layout = ComputeLayout();
 
-		const char* title = "CommandLegacy Console";
+		const char* title = "Command Console";
 		const auto titleSize = GridRenderer::MeasureText(title, Theme::kSmallTextScale);
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.titleY + std::max(0.f, (layout.titleHeight - titleSize.y) * 0.5f),
@@ -380,11 +307,6 @@ namespace Stand::Rendering
 			return;
 		}
 
-		// "<name> - <label>", exactly CommandIssuable::getCompletionHint()'s
-		// own format on real Stand (confirmed against origin/stand-
-		// reference) - e.g. "godmode - Immortality". In args mode (buffer
-		// has a space), the hint is just the plain label to match real
-		// Stand's own console - see UpdateMatches.
 		const auto shown = (std::min)(s_Matches.size(), kMaxShown);
 		for (size_t i = 0; i != shown; ++i)
 		{
@@ -450,6 +372,18 @@ namespace Stand::Rendering
 				++s_SelectedIndex;
 			break;
 
+		case VK_TAB:
+			if (s_SelectedIndex >= 0 && static_cast<size_t>(s_SelectedIndex) < s_Matches.size())
+			{
+				const auto& name = s_Matches[s_SelectedIndex].name;
+				if (!name.empty())
+				{
+					s_Buffer = name + " ";
+					UpdateMatches();
+				}
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -460,26 +394,9 @@ namespace Stand::Rendering
 		if (!s_Open)
 			return;
 
-		// Reported bug: the 'U' keypress that opens this (see the
-		// ungated AddWindowProcedureCallback in GridRenderer::Init())
-		// generates its own WM_CHAR right after the WM_KEYDOWN that
-		// opened it - same physical keystroke, so without this, every
-		// open typed a leading "u" straight into the buffer. Real
-		// Stand's own Commandbox has the identical problem for its own
-		// (user-configurable) open hotkey and solves it the same way
-		// (see origin/stand-reference's own Renderer.cpp WM_CHAR
-		// handler, which checks the typed char against Input::scheme.
-		// key_command_box) - narrowed here to this project's own single
-		// fixed 'U' key: while the physical U key is still being held
-		// down from the keystroke that opened this, its own char is
-		// swallowed rather than typed. GetKeyState() (not GetAsyncKeyState())
-		// matches MenuGrid.cpp's own existing convention for a
-		// physical-key-still-down check from within a WndProc callback.
 		if ((c == u'u' || c == u'U') && (GetKeyState('U') & 0x8000) != 0)
 			return;
 
-		// Printable ASCII only, same restriction MenuCommandBox::HandleChar()
-		// applies (see that file's own comment).
 		if (c >= 0x20 && c < 0x7f && s_Buffer.size() < 64)
 		{
 			s_Buffer.push_back(static_cast<char>(c));

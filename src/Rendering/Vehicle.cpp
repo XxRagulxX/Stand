@@ -1,5 +1,4 @@
 #include "Rendering/Vehicle.hpp"
-
 #include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
@@ -12,14 +11,20 @@
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 #include "Vehicle/VehicleEntityPreview.hpp"
-#include "Vehicle/VehicleCommandBox.hpp"
 #include "Vehicle/SpawnedVehicleListGrid.hpp"
+#include "Vehicle/VehicleSpawnBehaviour.hpp"
+#include "Commands/Extra/CommandFindVehicle.hpp"
+#include "Menu/GUI.hpp"
+#include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
+#include "Rendering/MenuCommandConsole.hpp"
+#include "Rendering/MenuNavigation.hpp"
 #include "Util/Joaat.hpp"
 #include "Vehicle/VehicleData.hpp"
 #include "Commands/Vehicle/Spawn/CommandSpawnPlate.hpp"
 
 #include <array>
+#include <cctype>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -251,6 +256,97 @@ namespace Stand::Rendering
             }
         };
 
+        // ── U-key console "findvehicle" command ──────────────────────────────
+        // Registers "findvehicle" in the legacy Commands registry so the
+        // U-key console can find it by name (prefix-match → Tab → args-mode).
+        // getArgsActivator() returns the same partial-name search callback
+        // used by the "Search" menu button so both paths behave identically.
+
+        class CmdFindVehicle : public Stand::CommandFindVehicle
+        {
+        public:
+            CmdFindVehicle()
+                : Stand::CommandFindVehicle(
+                      Stand::COMMAND_ACTION, nullptr,
+                      LIT("Find Vehicle"),
+                      CMDNAMES("findvehicle"),
+                      LIT("Search and spawn a vehicle by name."))
+            {}
+            std::function<void(const std::string&)> getArgsActivator() const override;
+        };
+
+        // Defined below, after VehicleSearchResultGrid so g_SearchResults is in scope.
+        CmdFindVehicle g_CmdFindVehicle{};
+
+        // ── Search Results Grid ───────────────────────────────────────────────
+        // Populated by the "Search" console callback; reused across searches.
+
+        class VehicleSearchResultGrid : public Grid
+        {
+            std::vector<joaat_t> m_Hashes;
+        public:
+            VehicleSearchResultGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+
+            void SetResults(std::vector<joaat_t> hashes)
+            {
+                m_Hashes = std::move(hashes);
+                invalidate();
+            }
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                for (auto hash : m_Hashes)
+                    items_draft.push_back(std::make_unique<VehicleEntityPreview>(Theme::kContentWidth, h, hash));
+            }
+        };
+
+        VehicleSearchResultGrid g_SearchResults{};
+
+        // getArgsActivator() defined here — after g_SearchResults — so the
+        // returned lambda can capture it by reference (it's a static).
+        std::function<void(const std::string&)> CmdFindVehicle::getArgsActivator() const
+        {
+            return [](const std::string& term) {
+                if (term.empty())
+                    return;
+
+                if (GUI::IsOpen())
+                {
+                    // Menu is open: show results as a preview grid the player
+                    // can browse and select from (same as the "Search" button).
+                    std::string lower = term;
+                    for (auto& c : lower)
+                        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+                    std::vector<joaat_t> results;
+                    for (size_t i = 0; i < g_VehicleCount && results.size() < 30; ++i)
+                    {
+                        std::string name(g_VehicleData[i].hash_name);
+                        for (auto& c : name)
+                            c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+                        if (name.find(lower) != std::string::npos)
+                            results.push_back(Stand::Joaat(g_VehicleData[i].hash_name));
+                    }
+                    if (results.empty())
+                        return;
+                    g_SearchResults.SetResults(std::move(results));
+                    MenuNavigation::Push("Search: " + term, &g_SearchResults);
+                }
+                else
+                {
+                    // Menu is closed (U-key only): treat the term as an exact
+                    // model name, spawn immediately, and always warp the player
+                    // into the driver seat.
+                    const joaat_t hash = Stand::Joaat(term.c_str());
+                    if (!STREAMING::IS_MODEL_IN_CDIMAGE(hash))
+                        return;
+                    FiberPool::queueJob([hash, term] {
+                        Stand::SpawnVehicleAndDrive(hash, term);
+                    });
+                }
+            };
+        }
+
         // ── Spawn Grid ────────────────────────────────────────────────────────
 
         VehicleSpawnDlcGrid       g_DlcContent{};
@@ -277,8 +373,48 @@ namespace Stand::Rendering
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Spawned Vehicles License Plate", Stand::Features::OpenSpawnPlate));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Colour Spawned Vehicles",         &g_ColourContent));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Blips On Spawned Vehicles",        &g_BlipsContent));
-                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Search", Stand::OpenVehicleSearch));
-                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Input Model Name", Stand::OpenInputModelName));
+                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Search",
+                    [] {
+                        MenuCommandConsole::Open(
+                            "findvehicle ",
+                            [](const std::string& term) {
+                                if (term.empty())
+                                    return;
+                                std::string lower = term;
+                                for (auto& c : lower)
+                                    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+                                std::vector<joaat_t> results;
+                                for (size_t i = 0; i < g_VehicleCount && results.size() < 30; ++i)
+                                {
+                                    std::string name(g_VehicleData[i].hash_name);
+                                    for (auto& c : name)
+                                        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+                                    if (name.find(lower) != std::string::npos)
+                                        results.push_back(Stand::Joaat(g_VehicleData[i].hash_name));
+                                }
+                                if (results.empty())
+                                    return;
+                                g_SearchResults.SetResults(std::move(results));
+                                MenuNavigation::Push("Search: " + term, &g_SearchResults);
+                            },
+                            "Search for a vehicle to spawn"
+                        );
+                    }));
+                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Input Model Name",
+                    [] {
+                        MenuCommandConsole::Open(
+                            "spawn ",
+                            [](const std::string& term) {
+                                if (term.empty())
+                                    return;
+                                const joaat_t hash = Stand::Joaat(term.c_str());
+                                if (!STREAMING::IS_MODEL_IN_CDIMAGE(hash))
+                                    return;
+                                FiberPool::queueJob([hash, term] { Stand::SpawnVehicle(hash, term); });
+                            },
+                            "Input Model Name"
+                        );
+                    }));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Classes",                  &g_ClassContent));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "DLCs",                     &g_DlcContent));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "On Foot Behaviour",        &g_OnFootContent));
