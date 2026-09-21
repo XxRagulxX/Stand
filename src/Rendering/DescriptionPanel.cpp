@@ -14,9 +14,11 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kPadding = 8.f;
-		constexpr float kLineGap = 2.f;
-		constexpr float kGroupGap = 12.f;
+		constexpr float kPadding   = 8.f;
+		constexpr float kLineGap   = 2.f;
+		// Gap between separate info boxes — mirrors Stand's own spacer_x
+		// (3) between chrome pieces (Grid(default_origin, 3)).
+		constexpr float kBoxGap    = 3.f;
 
 		GridItem* FocusedItem()
 		{
@@ -27,46 +29,32 @@ namespace Stand::Rendering
 			return MenuFocus::GetFocusedItem(current);
 		}
 
-		struct ContentGroups
+		// Split description on '\n' and word-wrap each section separately.
+		// Each element of the returned vector is one info box's worth of
+		// lines — mirrors Stand's own populateCorner() which pushes each
+		// piece as a SEPARATE corner vector entry (each → its own
+		// GridItemText box). An empty section (two consecutive '\n', or
+		// a leading/trailing one) is silently skipped.
+		std::vector<std::vector<std::string>> GetSections(
+		    const std::string& description, float maxWidth, float scale)
 		{
-			std::vector<std::string> descLines;
-			std::vector<std::string> syntaxLines;
-		};
-
-		ContentGroups GetContent()
-		{
-			auto* item = FocusedItem();
-			if (!item)
-				return {};
-
-			const auto description = item->GetDescription();
-			if (description.empty())
-				return {};
-
-			const float maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
-
-			ContentGroups groups;
-			const auto split = description.find('\n');
-
-			auto wrapInto = [&](const std::string& text, std::vector<std::string>& target) {
-				for (auto& line : WrapText(text, maxWidth, Theme::kSmallTextScaleMutable))
-					target.push_back(std::move(line));
-			};
-
-			if (split == std::string::npos)
+			std::vector<std::vector<std::string>> sections;
+			size_t pos = 0;
+			while (pos <= description.size())
 			{
-				if (Theme::kShowHelpText)
-					wrapInto(description, groups.descLines);
+				const auto next = description.find('\n', pos);
+				const auto end  = (next == std::string::npos) ? description.size() : next;
+				if (end > pos)
+				{
+					auto lines = WrapText(description.substr(pos, end - pos), maxWidth, scale);
+					if (!lines.empty())
+						sections.push_back(std::move(lines));
+				}
+				if (next == std::string::npos)
+					break;
+				pos = next + 1;
 			}
-			else
-			{
-				if (Theme::kShowHelpText)
-					wrapInto(description.substr(0, split), groups.descLines);
-				if (Theme::kShowSyntax)
-					wrapInto(description.substr(split + 1), groups.syntaxLines);
-			}
-
-			return groups;
+			return sections;
 		}
 
 		struct PanelOrigin
@@ -79,7 +67,7 @@ namespace Stand::Rendering
 		PanelOrigin ComputeOrigin(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 		{
 			const float pad = static_cast<float>(Theme::kInfoPadding);
-			const float w = static_cast<float>(Theme::kInfoWidth);
+			const float w   = static_cast<float>(Theme::kInfoWidth);
 
 			switch (Theme::kInfoTextPosition)
 			{
@@ -95,60 +83,74 @@ namespace Stand::Rendering
 			}
 		}
 
-		float TotalHeight(const ContentGroups& groups, float lineHeight)
+		float BoxHeight(const std::vector<std::string>& lines, float lineHeight)
 		{
-			const auto descCount = static_cast<int>(groups.descLines.size());
-			const auto syntaxCount = static_cast<int>(groups.syntaxLines.size());
-			const auto totalLines = descCount + syntaxCount;
-			if (totalLines == 0)
+			if (lines.empty())
 				return 0.f;
-
-			float h = kPadding * 2.f
-			    + static_cast<float>(totalLines) * lineHeight
-			    + static_cast<float>(totalLines - 1) * kLineGap;
-
-			if (descCount > 0 && syntaxCount > 0)
-				h += kGroupGap;
-
-			return h;
+			return kPadding * 2.f
+			    + static_cast<float>(lines.size()) * lineHeight
+			    + static_cast<float>(lines.size() - 1) * kLineGap;
 		}
 	}
 
 	void DescriptionPanel::Draw(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 	{
-		const auto groups = GetContent();
-		if (groups.descLines.empty() && groups.syntaxLines.empty())
+		auto* item = FocusedItem();
+		if (!item)
 			return;
 
-		const auto origin = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
-		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScaleMutable).y;
-		GridRenderer::DrawRect(origin.x, origin.y, origin.width, TotalHeight(groups, lineHeight), Theme::kPanelBackground);
+		const auto description = item->GetDescription();
+		if (description.empty())
+			return;
+
+		const float scale    = Theme::kSmallTextScaleMutable;
+		const float maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
+		const auto sections  = GetSections(description, maxWidth, scale);
+		if (sections.empty())
+			return;
+
+		const auto origin     = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
+		const auto lineHeight = GridRenderer::MeasureText("Ag", scale).y;
+
+		float y = origin.y;
+		for (const auto& lines : sections)
+		{
+			const float boxH = BoxHeight(lines, lineHeight);
+			GridRenderer::DrawRect(origin.x, y, origin.width, boxH, Theme::kPanelBackground);
+			y += boxH + kBoxGap;
+		}
 	}
 
 	void DescriptionPanel::DrawText(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 	{
-		const auto groups = GetContent();
-		if (groups.descLines.empty() && groups.syntaxLines.empty())
+		auto* item = FocusedItem();
+		if (!item)
 			return;
 
-		const auto origin = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
-		const auto lineHeight = GridRenderer::MeasureText("Ag", Theme::kSmallTextScaleMutable).y;
-		const float x = origin.x + kPadding + Theme::kSmallTextXOffset;
-		float y = origin.y + kPadding + Theme::kSmallTextYOffset;
+		const auto description = item->GetDescription();
+		if (description.empty())
+			return;
 
-		for (const auto& line : groups.descLines)
+		const float scale    = Theme::kSmallTextScaleMutable;
+		const float maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
+		const auto sections  = GetSections(description, maxWidth, scale);
+		if (sections.empty())
+			return;
+
+		const auto origin     = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
+		const auto lineHeight = GridRenderer::MeasureText("Ag", scale).y;
+		const float textXBase = origin.x + kPadding + Theme::kSmallTextXOffset;
+
+		float y = origin.y;
+		for (const auto& lines : sections)
 		{
-			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScaleMutable);
-			y += lineHeight + kLineGap;
-		}
-
-		if (!groups.descLines.empty() && !groups.syntaxLines.empty())
-			y += kGroupGap;
-
-		for (const auto& line : groups.syntaxLines)
-		{
-			GridRenderer::DrawText(x, y, line.c_str(), Theme::kText, Theme::kSmallTextScaleMutable);
-			y += lineHeight + kLineGap;
+			float textY = y + kPadding + Theme::kSmallTextYOffset;
+			for (const auto& line : lines)
+			{
+				GridRenderer::DrawText(textXBase, textY, line.c_str(), Theme::kText, scale);
+				textY += lineHeight + kLineGap;
+			}
+			y += BoxHeight(lines, lineHeight) + kBoxGap;
 		}
 	}
 }

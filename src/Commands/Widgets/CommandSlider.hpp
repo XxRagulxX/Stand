@@ -57,6 +57,20 @@ namespace Stand
 			return std::to_string(value);
 		}
 
+		// Range displayed in the command syntax box ("min to max").
+		// CommandSliderFloat overrides this to format with decimal precision.
+		[[nodiscard]] virtual std::string getRangeString() const
+		{
+			return std::to_string(min_value) + " to " + std::to_string(max_value);
+		}
+
+		[[nodiscard]] std::string getCommandSyntax() const override
+		{
+			if (command_names.empty())
+				return {};
+			return "Command: " + command_names.front() + " [" + getRangeString() + "]";
+		}
+
 		[[nodiscard]] virtual std::vector<std::pair<int, std::string>> getNamedValues() const
 		{
 			return {};

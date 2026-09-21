@@ -1,6 +1,9 @@
 #pragma once
 #include "Commands/Widgets/CommandSlider.hpp"
 
+#include <iomanip>
+#include <sstream>
+
 namespace Stand
 {
 	class CommandSliderFloat : public CommandSlider
@@ -27,6 +30,17 @@ namespace Stand
 		}
 
 		[[nodiscard]] std::string getValueText() const override;
+
+		[[nodiscard]] std::string getRangeString() const override
+		{
+			const auto scalar = static_cast<float>(getPrecisionScalar());
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(precision)
+			    << (static_cast<float>(min_value) / scalar)
+			    << " to "
+			    << (static_cast<float>(max_value) / scalar);
+			return oss.str();
+		}
 
 		void setValue(float value, Click& click);
 	};

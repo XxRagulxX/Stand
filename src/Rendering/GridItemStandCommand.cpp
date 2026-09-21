@@ -63,19 +63,30 @@ namespace Stand::Rendering
 		if (!physical)
 			return {};
 
-		// help_text, then "Command: <name> [on/off]" (for a toggle) on
-		// its own line below - matches real Stand's own populateCorner()
-		// (CommandPhysical.cpp on origin/stand-reference), which shows
-		// help_text and getCommandSyntax() as separate stacked lines, not
-		// run together into one paragraph. '\n' here is a hard line
-		// break, not just whitespace - see DescriptionPanel::WrappedLines()'s
-		// own comment for why it's split out before word-wrapping.
+		// Each '\n'-separated section maps to a SEPARATE panel box in
+		// DescriptionPanel — mirrors Stand's own populateCorner() which
+		// pushes each piece into a separate corner vector entry (each
+		// entry becomes its own GridItemText box). The order is:
+		//   [0] help_text  (description box)
+		//   [1] command syntax incl. range, e.g. "Command: name [min to max]"
+		//   [2] slider behaviour: "Click to input a value." (if applicable)
 		std::string result = physical->help_text.getLocalisedUtf8();
+
 		if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
 		{
 			if (!result.empty())
 				result += '\n';
 			result += syntax;
+		}
+
+		if (m_Command->isSlider() && Theme::kShowSliderBehaviour)
+		{
+			auto* slider = m_Command->as<Stand::CommandSlider>();
+			if (!slider->command_names.empty())
+			{
+				result += '\n';
+				result += "Click to input a value.";
+			}
 		}
 
 		return result;
