@@ -1,5 +1,6 @@
 #include "Rendering/GridItemStandCommand.hpp"
 
+#include "Commands/CommandInput.hpp"
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
@@ -9,6 +10,7 @@
 #include "Rendering/GridStandCommandList.hpp"
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/Theme.hpp"
+#include "Rendering/ThemeIcons.hpp"
 #include "Scripting/FiberPool.hpp"
 
 #include <algorithm>
@@ -113,9 +115,24 @@ namespace Stand::Rendering
 			if (drawAll || (drawToggle && isToggle))
 			{
 				const auto& texColour = isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture;
+				// Pick left-texture icon: toggles use Enabled/Disabled, all
+				// others use Enabled/List — mirrors Stand's own GridItemList
+				// leftbound_textures logic (origin/dev GridItemList.cpp).
+				const IconSlot iconSlot = isToggle
+				    ? (m_Command->as<Stand::CommandToggleNoCorrelation>()->m_on ? IconSlot::Enabled : IconSlot::Disabled)
+				    : IconSlot::List;
+
 				if (compact)
 				{
+					// Compact mode: always a geometry bar (no icon for the 4px strip).
 					GridRenderer::DrawRect(x, y, 4.f, height, texColour);
+				}
+				else if (ThemeIcons::IsLoaded(iconSlot))
+				{
+					// Stand draws the left icon at (command_height - texture_width, draw_y)
+					// with size (texture_width, command_height). For a square PNG that
+					// is (0, y) with size (height, height) — full row height, no inset.
+					ThemeIcons::QueueDraw(iconSlot, static_cast<float>(x), static_cast<float>(y), static_cast<float>(height), texColour);
 				}
 				else
 				{
@@ -126,22 +143,54 @@ namespace Stand::Rendering
 			}
 		}
 
-		if (!m_Command || !m_Command->isToggle())
+		if (!m_Command)
 			return;
 
-		// Same checkbox visual as this project's own GridItemCommandToggle.cpp -
-		// deliberately kept identical so a Stand-backed row and a
-		// StandEnhanced-backed one look indistinguishable while both exist side
-		// by side during the migration.
-		auto* toggle = m_Command->as<Stand::CommandToggleNoCorrelation>();
-		const float indicatorX = x + width - kIndicatorSize;
-		const float indicatorY = y + std::max(0.f, (height - kIndicatorSize) * 0.5f);
-		GridRenderer::DrawRect(indicatorX, indicatorY, kIndicatorSize, kIndicatorSize, isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture);
-		GridRenderer::DrawRect(indicatorX + kIndicatorBorderWidth,
-		    indicatorY + kIndicatorBorderWidth,
-		    kIndicatorSize - kIndicatorBorderWidth * 2.f,
-		    kIndicatorSize - kIndicatorBorderWidth * 2.f,
-		    toggle->m_on ? Theme::kAccent : Theme::kPanelBackground);
+		// Right-side icon — mirrors Stand's drawSpriteCommandRight() dispatch:
+		// toggle → ToggleOn/Off, list → List, link → Link, input → Edit.
+		// Position/size: x = (x+width-height), y = y, w = h = height.
+		const float iconSize   = static_cast<float>(height);
+		const float iconX      = static_cast<float>(x + width) - iconSize;
+		const float iconY      = static_cast<float>(y);
+		const auto& spriteTint = isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture;
+
+		if (m_Command->isToggle())
+		{
+			auto* toggle = m_Command->as<Stand::CommandToggleNoCorrelation>();
+			const IconSlot toggleSlot = toggle->m_on ? IconSlot::ToggleOn : IconSlot::ToggleOff;
+			if (ThemeIcons::IsLoaded(toggleSlot))
+			{
+				ThemeIcons::QueueDraw(toggleSlot, iconX, iconY, iconSize, spriteTint);
+			}
+			else
+			{
+				GridRenderer::DrawRect(iconX, iconY, kIndicatorSize, kIndicatorSize, spriteTint);
+				GridRenderer::DrawRect(iconX + kIndicatorBorderWidth,
+				    iconY + kIndicatorBorderWidth,
+				    kIndicatorSize - kIndicatorBorderWidth * 2.f,
+				    kIndicatorSize - kIndicatorBorderWidth * 2.f,
+				    toggle->m_on ? Theme::kAccent : Theme::kPanelBackground);
+			}
+		}
+		else if (m_Command->isList())
+		{
+			// Stand: textureList (or ToggleOffList/ToggleOnList for indicator variants).
+			// We don't port indicator_type, so always use List.
+			if (ThemeIcons::IsLoaded(IconSlot::List))
+				ThemeIcons::QueueDraw(IconSlot::List, iconX, iconY, iconSize, spriteTint);
+			// Geometry ">" fallback is handled in drawText() below.
+		}
+		else if (m_Command->isLink())
+		{
+			if (ThemeIcons::IsLoaded(IconSlot::Link))
+				ThemeIcons::QueueDraw(IconSlot::Link, iconX, iconY, iconSize, spriteTint);
+		}
+		else if (dynamic_cast<Stand::CommandInput*>(m_Command))
+		{
+			// Stand: CommandInput → textureEdit.
+			if (ThemeIcons::IsLoaded(IconSlot::Edit))
+				ThemeIcons::QueueDraw(IconSlot::Edit, iconX, iconY, iconSize, spriteTint);
+		}
 	}
 
 	void GridItemStandCommand::drawText()
@@ -165,8 +214,12 @@ namespace Stand::Rendering
 
 		if (m_Command->isList())
 		{
-			const auto arrowSize = GridRenderer::MeasureText(">");
-			GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, y + std::max(0.f, (height - arrowSize.y) * 0.5f), ">", rightColour);
+			// Skip ">" text when the List icon is loaded — sprite in draw() replaces it.
+			if (!ThemeIcons::IsLoaded(IconSlot::List))
+			{
+				const auto arrowSize = GridRenderer::MeasureText(">");
+				GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, y + std::max(0.f, (height - arrowSize.y) * 0.5f), ">", rightColour);
+			}
 			return;
 		}
 

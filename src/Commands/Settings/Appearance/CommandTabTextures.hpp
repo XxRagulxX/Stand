@@ -3,6 +3,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Rendering/Theme.hpp"
+#include "Rendering/ThemeIcons.hpp"
 #include "Menu/Click.hpp"
 
 #include <string>
@@ -55,7 +56,7 @@ namespace Stand
 
 		void onClick(Click& click) override
 		{
-			// Placeholder - texture reload not yet implemented.
+			Rendering::ThemeIcons::Reload();
 		}
 	};
 

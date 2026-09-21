@@ -74,7 +74,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPreviewColourInTexture(CommandList* const parent)
-			: CommandToggle(parent, LIT("Preview Colour In Texture"), CMDNAMES(),
+			: CommandToggle(parent, LIT("Preview Colour In Texture"), {},
 				NOLABEL, true)
 		{
 		}
@@ -89,7 +89,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPreviewColourInList(CommandList* const parent)
-			: CommandToggle(parent, LIT("Preview Colour In List"), CMDNAMES(),
+			: CommandToggle(parent, LIT("Preview Colour In List"), {},
 				NOLABEL, true)
 		{
 		}
@@ -118,7 +118,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPrefillSliders(CommandList* const parent)
-			: CommandToggle(parent, LIT("Sliders"), CMDNAMES(),
+			: CommandToggle(parent, LIT("Sliders"), {},
 				NOLABEL, true)
 		{
 		}
@@ -133,7 +133,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandPrefillTextInputs(CommandList* const parent)
-			: CommandToggle(parent, LIT("Text Inputs"), CMDNAMES(),
+			: CommandToggle(parent, LIT("Text Inputs"), {},
 				NOLABEL, true)
 		{
 		}

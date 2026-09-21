@@ -63,7 +63,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandMouseCursorOnNav(CommandList* const parent)
-			: CommandToggle(parent, LIT("Set Cursor Position On Non-Mouse Navigation"), CMDNAMES(), NOLABEL, true)
+			: CommandToggle(parent, LIT("Set Cursor Position On Non-Mouse Navigation"), {}, NOLABEL, true)
 		{
 		}
 
@@ -105,7 +105,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerOpenClose1(CommandList* const parent)
-			: CommandSlider(parent, LIT("Open/Close Menu 1"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Open/Close Menu 1"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -128,7 +128,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerOpenClose2(CommandList* const parent)
-			: CommandSlider(parent, LIT("Open/Close Menu 2"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Open/Close Menu 2"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -151,7 +151,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerPrevTab(CommandList* const parent)
-			: CommandSlider(parent, LIT("Previous Tab"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Previous Tab"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -174,7 +174,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerNextTab(CommandList* const parent)
-			: CommandSlider(parent, LIT("Next Tab"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Next Tab"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -197,7 +197,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerUp(CommandList* const parent)
-			: CommandSlider(parent, LIT("Up"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Up"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -220,7 +220,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerDown(CommandList* const parent)
-			: CommandSlider(parent, LIT("Down"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Down"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -243,7 +243,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerLeft(CommandList* const parent)
-			: CommandSlider(parent, LIT("Left"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Left"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -266,7 +266,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerRight(CommandList* const parent)
-			: CommandSlider(parent, LIT("Right"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Right"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -289,7 +289,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerClick(CommandList* const parent)
-			: CommandSlider(parent, LIT("Click"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Click"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -312,7 +312,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerBack(CommandList* const parent)
-			: CommandSlider(parent, LIT("Back"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Back"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -335,7 +335,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerContextMenu(CommandList* const parent)
-			: CommandSlider(parent, LIT("Context Menu"), CMDNAMES(), NOLABEL, 0, 15, 0, 1)
+			: CommandSlider(parent, LIT("Context Menu"), {}, NOLABEL, 0, 15, 0, 1)
 		{
 		}
 
@@ -358,7 +358,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandControllerCommandBox(CommandList* const parent)
-			: CommandSlider(parent, LIT("Command Box"), CMDNAMES(), NOLABEL, 0, 16, 0, 1)
+			: CommandSlider(parent, LIT("Command Box"), {}, NOLABEL, 0, 16, 0, 1)
 		{
 		}
 
@@ -447,7 +447,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandInterruptHoldWrap(CommandList* const parent)
-			: CommandToggle(parent, LIT("Interrupt Holding On Wrap-Around"), CMDNAMES(), NOLABEL, true)
+			: CommandToggle(parent, LIT("Interrupt Holding On Wrap-Around"), {}, NOLABEL, true)
 		{
 		}
 
@@ -493,7 +493,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandListsKeepCursorReducedHuge(CommandList* const parent)
-			: CommandToggle(parent, LIT("Lists: Reduced Effect For Huge Lists"), CMDNAMES(), NOLABEL, true)
+			: CommandToggle(parent, LIT("Lists: Reduced Effect For Huge Lists"), {}, NOLABEL, true)
 		{
 		}
 
@@ -584,7 +584,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandModifierKeyMatching(CommandList* const parent)
-			: CommandSlider(parent, LIT("Modifier Key Matching"), CMDNAMES(),
+			: CommandSlider(parent, LIT("Modifier Key Matching"), {},
 				LIT("How ctrl, shift, & alt are handled."), 0, 2, 1, 1)
 		{
 		}

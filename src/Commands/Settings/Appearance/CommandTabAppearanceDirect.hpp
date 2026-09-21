@@ -3,6 +3,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Settings/Appearance/CommandStreamproof.hpp"
+#include "Core/FileMgr.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 
@@ -128,9 +129,13 @@ namespace Stand
 
 		void onClick(Click& click) override
 		{
-			const auto path = std::filesystem::path(std::getenv("appdata")) / "StandEnhanced" / "Themes";
-			std::filesystem::create_directories(path);
-			ShellExecuteA(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
+			// Matches the folder ThemeIcons::LoadImpl() reads from.
+			// Stand's own getThemePath() uses %APPDATA%\Stand\Theme\ —
+			// we mirror that with %APPDATA%\StandEnhanced\Theme\.
+			const auto folder = FileMgr::GetProjectFolder("Theme");
+			std::filesystem::create_directories(folder.Path());
+			const auto pathStr = folder.Path().string();
+			ShellExecuteA(nullptr, "explore", pathStr.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
 		}
 	};
 

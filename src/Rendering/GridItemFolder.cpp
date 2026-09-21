@@ -3,6 +3,7 @@
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/Theme.hpp"
+#include "Rendering/ThemeIcons.hpp"
 
 #include <algorithm>
 
@@ -28,6 +29,17 @@ namespace Stand::Rendering
 		// rendering ever does.
 		if (isKeyboardFocused())
 			GridRenderer::DrawRect(x, y, width, height, Theme::kAccent);
+
+		// Right-side icon — same List.png dispatch as GridItemStandCommand::draw()
+		// for isList() items. Geometry ">" fallback is in drawText() below.
+		if (ThemeIcons::IsLoaded(IconSlot::List))
+		{
+			const float iconSize = static_cast<float>(height);
+			const float iconX    = static_cast<float>(x + width) - iconSize;
+			const float iconY    = static_cast<float>(y);
+			const auto& tint     = isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture;
+			ThemeIcons::QueueDraw(IconSlot::List, iconX, iconY, iconSize, tint);
+		}
 	}
 
 	void GridItemFolder::drawText()
@@ -36,9 +48,13 @@ namespace Stand::Rendering
 		const float labelY = y + std::max(0.f, (height - labelSize.y) * 0.5f);
 		GridRenderer::DrawText(x + 5.f, labelY, m_Label.c_str(), Theme::kText);
 
-		const auto arrowSize = GridRenderer::MeasureText(">");
-		const float arrowY = y + std::max(0.f, (height - arrowSize.y) * 0.5f);
-		GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, arrowY, ">", Theme::kText);
+		// Skip ">" when List.png is drawn as sprite in draw() above.
+		if (!ThemeIcons::IsLoaded(IconSlot::List))
+		{
+			const auto arrowSize = GridRenderer::MeasureText(">");
+			const float arrowY = y + std::max(0.f, (height - arrowSize.y) * 0.5f);
+			GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, arrowY, ">", Theme::kText);
+		}
 	}
 
 	void GridItemFolder::onClick(int16_t, int16_t)

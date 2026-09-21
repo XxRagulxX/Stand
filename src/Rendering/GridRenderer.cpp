@@ -6,6 +6,7 @@
 #include "Rendering/DescriptionPanel.hpp"
 #include "Rendering/ESP.hpp"
 #include "Rendering/HeaderBanner.hpp"
+#include "Rendering/ThemeIcons.hpp"
 #include "Rendering/Onboarding.hpp"
 #include "Rendering/MenuCommandBox.hpp"
 #include "Rendering/MenuCommandConsole.hpp"
@@ -140,6 +141,11 @@ namespace Stand::Rendering
 		m_Batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>(device);
 
 		LOG(INFO) << "[GridRenderer] DirectXTK12 rect pipeline ready";
+
+		// Load theme icons from %APPDATA%\StandEnhanced\Theme\ on a
+		// background thread — same timing as Stand's own reloadTextures()
+		// call, which fires on the first successful renderer init.
+		ThemeIcons::Load();
 
 		// Text: embedded "Be Vietnam Pro" spritefont (see
 		// font_bevietnamprolight.hpp). Failure here (e.g. a malformed blob)
@@ -351,6 +357,11 @@ namespace Stand::Rendering
 
 			m_Batch->End();
 		}
+
+		// Icon sprites queued by GridItems during the geometry pass above.
+		// Each slot has its own D3D12 descriptor heap (same pattern as
+		// HeaderBanner), so FlushQueue handles heap binds internally.
+		ThemeIcons::FlushQueue(commandList, viewport);
 
 		// Separate pass/batch type from the rects above: SpriteBatch manages
 		// its own root signature + PSO (set in Begin()) and needs the font's
