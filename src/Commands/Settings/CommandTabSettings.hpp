@@ -20,7 +20,7 @@ namespace Stand
 		CommandUnload* const unload;
 
 		explicit CommandTabSettings() :
-		    CommandList(nullptr, LIT("Settings")),
+		    CommandList(nullptr, LIT("Settings"), CMDNAMES("settings")),
 		    console(createChild<CommandConsole>()),
 		    openStandFolder(createChild<CommandOpenStandFolder>()),
 		    clearNotifications(createChild<CommandClearNotifications>()),

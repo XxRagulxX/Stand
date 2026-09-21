@@ -25,8 +25,8 @@ namespace Stand
 
 	public:
 		explicit CommandStreamproof(CommandList* const parent)
-			: CommandToggle(parent, LIT("Stream-Proof Rendering"), CMDNAMES("streamproof", "stream"),
-				LIT("Excludes the game window from screen capture tools (OBS, etc.) using SetWindowDisplayAffinity."),
+			: CommandToggle(parent, LIT("Stream-Proof Rendering"), CMDNAMES("streamproof"),
+				LIT("Prevents Stand being visible to streaming software, if it uses DirectX/game capture."),
 				false)
 		{
 		}

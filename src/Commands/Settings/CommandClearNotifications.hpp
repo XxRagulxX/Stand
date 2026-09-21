@@ -9,7 +9,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandClearNotifications(CommandList* parent) :
-		    CommandPhysical(COMMAND_ACTION, parent, LIT("Clear Notifications"), CMDNAMES("clearstandnotifys"), LIT("Clears Stand's notification system."))
+		    CommandPhysical(COMMAND_ACTION, parent, LIT("Clear Notifications"), CMDNAMES("clearnotifs"), LIT("Clears Stand's notification system."))
 		{
 		}
 

@@ -61,9 +61,9 @@ namespace Stand
 			: CommandListSelect(
 				"header",
 				"Header",
-				"Show a header image above the menu. Preset files are looked up in the Headers folder (same path the real Stand menu uses).",
+				"",
 				{
-					{   0, "Hide"                                              },
+					{   0, "Be Gone"                                           },
 					{   1, "Stand And Fight by TGP"                           },
 					{   2, "A Tribute by Super Saiyan Ginger"                 },
 					{   3, "Logo Concept 5 by Hollywood Collins"              },
@@ -151,8 +151,7 @@ namespace Stand
 	public:
 		explicit CommandHeaderAnimationSpeed(CommandList* const parent)
 			: CommandSlider(parent, LIT("Frame Interval"), CMDNAMES("headerinterval"),
-				LIT("Animation speed for multi-frame headers (animated preset or Custom), in milliseconds per frame."),
-				1, 10000, 32, 1)
+				NOLABEL, 1, 10000, 32, 1)
 		{
 		}
 
@@ -170,7 +169,7 @@ namespace Stand
 	public:
 		explicit CommandHeaderBgBlur(CommandList* const parent)
 			: CommandToggle(parent, LIT("Background Blur"), CMDNAMES("headerbgblur"),
-				LIT("Draws a background blur effect behind the header image."),
+				LIT("Should only be enabled for headers with transparency because it would be a waste of resources to produce a visual effect that would be entirely hidden."),
 				false)
 		{
 		}
