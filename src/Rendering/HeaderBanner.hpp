@@ -12,22 +12,6 @@
 
 namespace Stand::Rendering
 {
-	// Ported from real Stand's own "Custom Header" feature (Commands/
-	// Widgets/CommandHeader.hpp/.cpp on origin/stand-reference) - a
-	// local-image-folder banner drawn above the menu's own addressbar,
-	// minus everything that requires stand.sh network access (the ~26
-	// curated named headers and their animated-download variants) -
-	// see CommandHeader.cpp for that scope decision.
-	//
-	// Stand's own TextureArray (Rendering/TextureBase.hpp/.cpp there)
-	// is a D3D11 concept; this is this project's own D3D12-native
-	// equivalent, built on the same DirectXTK12 primitives GridRenderer
-	// already uses for its own SpriteFont text (EnsureDeviceResources/
-	// DrawImpl there) - a separate descriptor heap and SpriteBatch of
-	// its own rather than sharing GridRenderer's font heap, since that
-	// heap is sized for exactly one descriptor (the font) and grows
-	// only with the number of header frames actually loaded, which
-	// isn't known until a folder is scanned.
 	class HeaderBanner final
 	{
 	private:
@@ -41,32 +25,16 @@ namespace Stand::Rendering
 		HeaderBanner& operator=(const HeaderBanner&) = delete;
 		HeaderBanner& operator=(HeaderBanner&&) noexcept = delete;
 
-		// Scans folder for regular files (alphanumeric-sorted if more
-		// than one, same as real Stand's own alphanum_less-sorted
-		// loadHeader(files) call) and loads each as a frame, off the
-		// render thread - same "don't block a frame on disk I/O" reason
-		// real Stand's own loadHeader() runs via
-		// Exceptional::createManagedExceptionalThread. Safe to call
-		// again with a different folder; a load already in flight is
-		// left to finish (its result is simply discarded once the newer
-		// one lands - see the .cpp for why silently dropping this edge
-		// case is an acceptable trade-off here).
 		static void LoadFromFolder(std::filesystem::path folder)
 		{
 			GetInstance().LoadFromFolderImpl(std::move(folder));
 		}
 
-		// Stops drawing and releases every loaded frame - real Stand's
-		// own g_renderer.header_state = HIDE (CommandHeader.cpp's own
-		// value == 0 branch).
 		static void Clear()
 		{
 			GetInstance().ClearImpl();
 		}
 
-		// Loads a single specific image file as the header — real Stand's
-		// own "unanimated_headers" preset path where each preset resolves
-		// to one file rather than a whole directory.
 		static void LoadFromFile(std::filesystem::path filePath)
 		{
 			GetInstance().LoadFromFileImpl(std::move(filePath));
@@ -77,17 +45,11 @@ namespace Stand::Rendering
 			return GetInstance().m_Loaded.load();
 		}
 
-		// Height (H-space) for a banner drawn at H-space width, aspect-
-		// locked to the current frame's own texture - real Stand's own
-		// TextureBase::getRenderHeight(). Returns 0 if nothing is loaded.
 		static float GetRenderHeight(float width)
 		{
 			return GetInstance().GetRenderHeightImpl(width);
 		}
 
-		// Real Stand's own g_renderer.header_speed (written by
-		// CommandHeaderAnimationSpeed with command "headerinterval").
-		// Range 1-10000 ms/frame, default 32 in real Stand.
 		static void SetFrameIntervalMs(int64_t ms)
 		{
 			GetInstance().m_FrameIntervalMs = ms;
@@ -98,10 +60,6 @@ namespace Stand::Rendering
 			return GetInstance().m_FrameIntervalMs;
 		}
 
-		// Real Stand's own g_renderer.header_bgblur - background blur
-		// drawn behind the header image (command "headerbgblur").
-		// Stored here for command state; blur rendering hooks into
-		// DrawImpl when true.
 		static void SetBgBlur(bool on)
 		{
 			GetInstance().m_BgBlur = on;
@@ -112,16 +70,6 @@ namespace Stand::Rendering
 			return GetInstance().m_BgBlur;
 		}
 
-		// Draws the current frame and advances the animation timer -
-		// same "advance as part of drawing" shape real Stand's own
-		// GridItemHeaderAnimation::draw() has. x/y/width/height are
-		// real client pixels (already H2C-converted by the caller -
-		// see GridRenderer::DrawImpl), not H-space. Only valid to call
-		// once per frame, from the same command list GridRenderer's own
-		// font SpriteBatch pass uses - opens/closes its own SpriteBatch
-		// scope with its own descriptor heap bound, so it can be called
-		// right alongside that pass without either one disturbing the
-		// other's bound heap.
 		static void Draw(ID3D12GraphicsCommandList* commandList, const D3D12_VIEWPORT& viewport, float x, float y, float width, float height)
 		{
 			GetInstance().DrawImpl(commandList, viewport, x, y, width, height);
@@ -149,6 +97,8 @@ namespace Stand::Rendering
 		float GetRenderHeightImpl(float width) const;
 		void DrawImpl(ID3D12GraphicsCommandList* commandList, const D3D12_VIEWPORT& viewport, float x, float y, float width, float height);
 		void EnsureSpriteBatch(ID3D12Device* device);
+		bool LoadFrameIntoCurrent(size_t idx, const std::filesystem::path& path, uint64_t generation);
+		void LoadFrameIntoPending(size_t idx, const std::filesystem::path& path, uint64_t generation);
 
 		mutable std::mutex m_Mutex;
 		std::vector<Frame> m_Frames;
@@ -157,12 +107,7 @@ namespace Stand::Rendering
 		int64_t m_LastFrameMs = 0;
 		int64_t m_MsPassed = 0;
 
-		// Mutable frame interval — real Stand's own g_renderer.header_speed.
-		// Written via SetFrameIntervalMs() by CommandHeaderAnimationSpeed.
 		int64_t m_FrameIntervalMs = 32;
-
-		// Real Stand's own g_renderer.header_bgblur.
-		// Written via SetBgBlur() by the bg-blur toggle.
 		bool m_BgBlur = false;
 
 		std::atomic<bool> m_Loaded{false};
@@ -170,5 +115,21 @@ namespace Stand::Rendering
 
 		ID3D12Device* m_SpriteBatchDevice = nullptr;
 		std::unique_ptr<DirectX::SpriteBatch> m_SpriteBatch;
+
+		std::vector<std::filesystem::path>           m_FramePaths;
+		size_t                                       m_StreamIdx    = 0;
+		size_t                                       m_PendingIdx   = 0;
+		bool                                         m_Streaming    = false;
+
+		mutable std::mutex                           m_PendingMutex;
+		Frame                                        m_PendingFrame;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_PendingHeap;
+		std::atomic<bool>                            m_PendingReady  {false};
+		std::atomic<bool>                            m_PendingLoading{false};
+
+		static constexpr int kStaleSlots = 3;
+		Frame                                        m_StaleFrames[kStaleSlots];
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_StaleHeaps [kStaleSlots];
+		int                                          m_StaleRingIdx = 0;
 	};
 }
