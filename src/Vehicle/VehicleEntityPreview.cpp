@@ -90,7 +90,7 @@ namespace Stand::Rendering
         const float dimMax = std::max({ m_ModelMax.x - m_ModelMin.x,
                                         m_ModelMax.y - m_ModelMin.y,
                                         m_ModelMax.z - m_ModelMin.z });
-        return dimMax + Theme::kPreviewVehDist - 1.f;
+        return dimMax + Theme::kPreviewVehDist + 1.0f;
     }
 
     void VehicleEntityPreview::OnPreviewTick(Entity& entity)
@@ -102,6 +102,10 @@ namespace Stand::Rendering
         const int bb = static_cast<int>(Theme::kAccent.z * 255.f);
         const int ba = static_cast<int>(Theme::kAccent.w * 200.f);
         DrawBoundingBox(h, m_ModelMin, m_ModelMax, br, bg, bb, ba);
+        VEHICLE::SET_VEHICLE_PROVIDES_COVER(h, false);
+        VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(h, false);
+        ENTITY::SET_ENTITY_INVINCIBLE(h, true, false);
+        VEHICLE::SET_VEHICLE_FIXED(h);
     }
 
     void VehicleEntityPreview::draw()

@@ -12,18 +12,21 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		// Real Stand's own CommandEntityPreviews::getAdditionalOffset()
-		// (a per-model configurable extra distance) has no equivalent
-		// settings page here - see this class's own header comment.
-		constexpr float kForwardOffset = 3.f;
-		// Real Stand's own speed_perc formula (CommandWithEntityPreview.hpp):
-		// "200 - speed_perc * 150", speed_perc = min(playerSpeed/80, 1) -
-		// ported verbatim, just against the player ped's own speed always
-		// rather than only while driving (see this class's own header
-		// comment).
 		constexpr float kMaxAlpha = 200.f;
 		constexpr float kAlphaFadeRange = 150.f;
-		constexpr float kSpeedForFullFade = 80.f;
+
+		// Camera rotation (x=pitch, z=yaw, degrees) → world-space forward
+		// direction vector, matching Stand's own v3::toDir().
+		rage::fvector3 CamRotToDir(const Vector3& rot)
+		{
+			const float pitchRad = rot.x * (3.14159265f / 180.f);
+			const float yawRad   = rot.z * (3.14159265f / 180.f);
+			return {
+			    -std::sin(yawRad) * std::cos(pitchRad),
+			     std::cos(yawRad) * std::cos(pitchRad),
+			     std::sin(pitchRad),
+			};
+		}
 	}
 
 	GridItemEntityPreview::GridItemEntityPreview(int16_t width, int16_t height) :
@@ -113,15 +116,15 @@ namespace Stand::Rendering
 				return;
 			}
 
+			m_TotalOffset = GetAdditionalOffset();
+
 			const auto camPos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 			const auto camRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
-			const float yawRad = camRot.z * (3.14159265f / 180.f);
-			m_TotalOffset = kForwardOffset + GetAdditionalOffset();
-
-			rage::fvector3 spawnPos{
-			    camPos.x - std::sin(yawRad) * m_TotalOffset,
-			    camPos.y + std::cos(yawRad) * m_TotalOffset,
-			    camPos.z,
+			const auto fwd = CamRotToDir(camRot);
+			const rage::fvector3 spawnPos{
+			    camPos.x + fwd.x * m_TotalOffset,
+			    camPos.y + fwd.y * m_TotalOffset,
+			    camPos.z + fwd.z * m_TotalOffset,
 			};
 
 			auto entity = CreateEntity(spawnPos);
@@ -129,7 +132,7 @@ namespace Stand::Rendering
 				return;
 
 			m_Preview = entity;
-			m_RotationDegrees = camRot.z;
+			m_RotationDegrees = camRot.z + GetInitialRotationOffset();
 			rage::fvector3 rot{};
 			rot.z = m_RotationDegrees;
 			m_Preview->SetRotation(rot);
@@ -146,17 +149,18 @@ namespace Stand::Rendering
 
 			const auto curCamPos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 			const auto curCamRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
-			const float curYawRad = curCamRot.z * (3.14159265f / 180.f);
+			const auto fwd = CamRotToDir(curCamRot);
 			m_Preview->SetPosition({
-			    curCamPos.x - std::sin(curYawRad) * m_TotalOffset,
-			    curCamPos.y + std::cos(curYawRad) * m_TotalOffset,
-			    curCamPos.z,
+			    curCamPos.x + fwd.x * m_TotalOffset,
+			    curCamPos.y + fwd.y * m_TotalOffset,
+			    curCamPos.z + fwd.z * m_TotalOffset,
 			});
 		}
 
 		const int h = m_Preview->GetHandle();
-		ENTITY::SET_ENTITY_HAS_GRAVITY(h, FALSE);
-		ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(h, TRUE, FALSE);
+		ENTITY::SET_ENTITY_HAS_GRAVITY(h, false);
+		ENTITY::SET_ENTITY_COMPLETELY_DISABLE_COLLISION(h, false, false);
+		ENTITY::SET_CAN_CLIMB_ON_ENTITY(h, false);
 		OnPreviewTick(*m_Preview);
 
 		int alpha;
@@ -166,8 +170,15 @@ namespace Stand::Rendering
 		}
 		else
 		{
-			const float speedPerc = std::min(Self::GetPed().GetSpeed() / kSpeedForFullFade, 1.f);
-			alpha = static_cast<int>(kMaxAlpha - speedPerc * kAlphaFadeRange);
+			float speed_perc = 0.0f;
+			auto playerVeh = Self::GetVehicle();
+			if (playerVeh.IsValid())
+			{
+				const int driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(playerVeh.GetHandle(), -1, false);
+				if (driver == Self::GetPed().GetHandle())
+					speed_perc = std::min(ENTITY::GET_ENTITY_SPEED(Self::GetPed().GetHandle()) / 80.0f, 1.0f);
+			}
+			alpha = static_cast<int>(kMaxAlpha - speed_perc * kAlphaFadeRange);
 		}
 		m_Preview->SetAlpha(alpha);
 	}

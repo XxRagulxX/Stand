@@ -21,6 +21,7 @@ namespace Stand::Rendering
         [[nodiscard]] std::uint32_t GetModelHash() const override;
         [[nodiscard]] Entity CreateEntity(const rage::fvector3& pos) const override;
         [[nodiscard]] float GetAdditionalOffset() const override;
+        [[nodiscard]] float GetInitialRotationOffset() const override { return 90.0f; }
         void OnPreviewTick(Entity& entity) override;
 
     private:
