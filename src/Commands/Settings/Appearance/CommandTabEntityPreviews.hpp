@@ -131,7 +131,7 @@ namespace Stand
 		CommandPreviewVehDist* const vehDist;
 
 		explicit CommandTabEntityPreviews()
-			: CommandList(nullptr, LIT("Entity Previews"), CMDNAMES())
+			: CommandList(nullptr, LIT("Entity Previews"))
 			, disable(createChild<CommandDisableEntityPreviews>())
 			, opaque(createChild<CommandPreviewOpaque>())
 			, rotationSpeed(createChild<CommandPreviewRotationSpeed>())

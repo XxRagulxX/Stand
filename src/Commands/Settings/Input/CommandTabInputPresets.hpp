@@ -56,7 +56,7 @@ namespace Stand
 		CommandInputPresetFull* const full;
 
 		explicit CommandTabInputPresets()
-			: CommandList(nullptr, LIT("Input Presets"), CMDNAMES())
+			: CommandList(nullptr, LIT("Input Presets"))
 			, flexible(createChild<CommandInputPresetFlexible>())
 			, tkl(createChild<CommandInputPresetTkl>())
 			, full(createChild<CommandInputPresetFull>())

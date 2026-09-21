@@ -113,7 +113,7 @@ namespace Stand
 		CommandNotifyMouseMove* const mouseMove;
 
 		explicit CommandTabNotifyPosition()
-			: CommandList(nullptr, LIT("Notify Position"), CMDNAMES())
+			: CommandList(nullptr, LIT("Notify Position"))
 			, x(createChild<CommandNotifyX>())
 			, y(createChild<CommandNotifyY>())
 			, mouseMove(createChild<CommandNotifyMouseMove>(x, y))

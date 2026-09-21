@@ -212,7 +212,7 @@ namespace Stand
 		CommandHeaderOpenFolder* const openFolder;
 
 		explicit CommandTabHeader()
-			: CommandList(nullptr, LIT("Header"), CMDNAMES())
+			: CommandList(nullptr, LIT("Header"))
 			, animationSpeed(createChild<CommandHeaderAnimationSpeed>())
 			, bgBlur(createChild<CommandHeaderBgBlur>())
 			, openFolder(createChild<CommandHeaderOpenFolder>())

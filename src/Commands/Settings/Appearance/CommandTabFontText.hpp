@@ -199,7 +199,7 @@ namespace Stand
 		CommandShowTextBoundingBoxes* const showTextBoundingBoxes;
 
 		explicit CommandTabFontText()
-			: CommandList(nullptr, LIT("Font & Text"), CMDNAMES())
+			: CommandList(nullptr, LIT("Font & Text"))
 			, setFont(createChild<CommandSetFont>())
 			, reloadFont(createChild<CommandReloadFont>())
 			, commandBoxInput(createChild<CommandCommandBoxInput>())

@@ -148,7 +148,7 @@ namespace Stand
 		CommandStreamproof* const streamproof;
 
 		explicit CommandTabAppearanceDirect()
-			: CommandList(nullptr, LIT("Appearance"), CMDNAMES())
+			: CommandList(nullptr, LIT("Appearance"))
 			, columns(createChild<CommandColumns>())
 			, menuheight(createChild<CommandMenuHeight>())
 			, listwidth(createChild<CommandListWidth>())

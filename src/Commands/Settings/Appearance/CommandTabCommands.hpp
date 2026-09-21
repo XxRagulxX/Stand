@@ -107,7 +107,7 @@ namespace Stand
 		CommandPreviewColourInList* const previewList;
 
 		explicit CommandColourCommands(CommandList* const parent)
-			: CommandList(parent, LIT("Colour Commands"), CMDNAMES())
+			: CommandList(parent, LIT("Colour Commands"))
 			, previewTexture(createChild<CommandPreviewColourInTexture>())
 			, previewList(createChild<CommandPreviewColourInList>())
 		{
@@ -151,7 +151,7 @@ namespace Stand
 		CommandPrefillTextInputs* const textInputs;
 
 		explicit CommandPrefillCommandBox(CommandList* const parent)
-			: CommandList(parent, LIT("Prefill Current Value For Command Box"), CMDNAMES())
+			: CommandList(parent, LIT("Prefill Current Value For Command Box"))
 			, sliders(createChild<CommandPrefillSliders>())
 			, textInputs(createChild<CommandPrefillTextInputs>())
 		{
@@ -195,7 +195,7 @@ namespace Stand
 		CommandSlidersRightbound* const rightbound;
 
 		explicit CommandNumberSliders(CommandList* const parent)
-			: CommandList(parent, LIT("Number Sliders"), CMDNAMES())
+			: CommandList(parent, LIT("Number Sliders"))
 			, selectableNA(createChild<CommandSelectableNASliders>())
 			, rightbound(createChild<CommandSlidersRightbound>())
 		{
@@ -227,7 +227,7 @@ namespace Stand
 		CommandSelectableDividers* const selectableDividers;
 
 		explicit CommandTabCommands()
-			: CommandList(nullptr, LIT("Commands"), CMDNAMES())
+			: CommandList(nullptr, LIT("Commands"))
 			, text(createChild<CommandCommandText>())
 			, colourCommands(createChild<CommandColourCommands>())
 			, prefillCommandBox(createChild<CommandPrefillCommandBox>())

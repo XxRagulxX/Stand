@@ -55,8 +55,9 @@ namespace Stand
 	{                                                                   \
 		CMDNAME(a1), CMDNAME(a2), CMDNAME(a3), CMDNAME(a4), CMDNAME(a5) \
 	}
-#define CMDNAMES_PICK(_1, _2, _3, _4, _5, NAME, ...) NAME
-#define CMDNAMES(...) CMDNAMES_PICK(__VA_ARGS__, CMDNAMES_5, CMDNAMES_4, CMDNAMES_3, CMDNAMES_2, CMDNAMES_1)(__VA_ARGS__)
+#define CMDNAMES_0() std::vector<CommandName>{}
+#define CMDNAMES_PICK(_0, _1, _2, _3, _4, _5, NAME, ...) NAME
+#define CMDNAMES(...) CMDNAMES_PICK(dummy, ##__VA_ARGS__, CMDNAMES_5, CMDNAMES_4, CMDNAMES_3, CMDNAMES_2, CMDNAMES_1, CMDNAMES_0)(__VA_ARGS__)
 
 #define CMDNAME_OBF(x) utf8ToCmdName(x)
 #define CMDNAMES_OBF_1(a1)   \

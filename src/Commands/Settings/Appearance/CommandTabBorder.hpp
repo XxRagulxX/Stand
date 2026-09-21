@@ -62,7 +62,7 @@ namespace Stand
 		CommandBorderRainbow* const rainbow;
 
 		explicit CommandTabBorder()
-			: CommandList(nullptr, LIT("Border"), CMDNAMES())
+			: CommandList(nullptr, LIT("Border"))
 			, width(createChild<CommandBorderWidth>())
 			, rounded(createChild<CommandBorderRounded>())
 			, colour(Commands::GetCommand<CommandColourCustom>("border"_J))

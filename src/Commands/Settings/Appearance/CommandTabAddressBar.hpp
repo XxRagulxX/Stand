@@ -44,8 +44,9 @@ namespace Stand
 
 	public:
 		explicit CommandAddressSeparator(CommandList* const parent)
-			: CommandSlider(parent, LIT("Address Separator"), CMDNAMES(),
-				NOLABEL, 0, 7, 0, 1)
+			: CommandSlider(parent, LIT("Address Separator"), CMDNAMES("addressseparator"),
+				LIT("The character or symbol placed between each path segment in the address bar."),
+				0, 7, 0, 1)
 		{
 		}
 
@@ -64,8 +65,9 @@ namespace Stand
 	{
 	public:
 		explicit CommandAddressCurrentListOnly(CommandList* const parent)
-			: CommandToggle(parent, LIT("Show Current List Only"), CMDNAMES(),
-				NOLABEL, false)
+			: CommandToggle(parent, LIT("Show Current List Only"), CMDNAMES("addresscurrentlist"),
+				LIT("When on, the address bar shows only the name of the current list instead of the full navigation path."),
+				false)
 		{
 		}
 
@@ -79,8 +81,9 @@ namespace Stand
 	{
 	public:
 		explicit CommandAddressbarWidthAffectedByScrollbar(CommandList* const parent)
-			: CommandToggle(parent, LIT("Width Affected By Scrollbar"), CMDNAMES(),
-				NOLABEL, false)
+			: CommandToggle(parent, LIT("Width Affected By Scrollbar"), CMDNAMES("addressbarscrollbar"),
+				LIT("When on, the address bar's width shrinks to avoid overlapping the scrollbar."),
+				false)
 		{
 		}
 
@@ -95,8 +98,9 @@ namespace Stand
 	{
 	public:
 		explicit CommandAddressbarWidthAffectedByColumns(CommandList* const parent)
-			: CommandToggle(parent, LIT("Width Affected By Columns"), CMDNAMES(),
-				NOLABEL, false)
+			: CommandToggle(parent, LIT("Width Affected By Columns"), CMDNAMES("addressbarcolumns"),
+				LIT("When on, the address bar's width spans only the first column instead of the full menu width."),
+				false)
 		{
 		}
 
@@ -204,8 +208,9 @@ namespace Stand
 	{
 	public:
 		explicit CommandCursorPosIncludesDividers(CommandList* const parent)
-			: CommandToggle(parent, LIT("Cursor Position Includes Dividers"), CMDNAMES(),
-				NOLABEL, false)
+			: CommandToggle(parent, LIT("Cursor Position Includes Dividers"), CMDNAMES("cursorposdividers"),
+				LIT("When on, divider rows are counted in the cursor position number shown in the address bar."),
+				false)
 		{
 		}
 
@@ -229,7 +234,7 @@ namespace Stand
 		CommandCursorPosIncludesDividers* const cursorPosDividers;
 
 		explicit CommandTabAddressBar()
-			: CommandList(nullptr, LIT("Address Bar"), CMDNAMES())
+			: CommandList(nullptr, LIT("Address Bar"))
 			, show(createChild<CommandShowAddressbar>())
 			, separator(createChild<CommandAddressSeparator>())
 			, currentListOnly(createChild<CommandAddressCurrentListOnly>())

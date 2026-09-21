@@ -164,7 +164,7 @@ namespace Stand
 		CommandShowOwners* const showOwners;
 
 		explicit CommandTabCommandInfoText()
-			: CommandList(nullptr, LIT("Command Info Text"), CMDNAMES())
+			: CommandList(nullptr, LIT("Command Info Text"))
 			, position(createChild<CommandInfoTextPosition>())
 			, width(createChild<CommandInfoWidth>())
 			, padding(createChild<CommandInfoPadding>())

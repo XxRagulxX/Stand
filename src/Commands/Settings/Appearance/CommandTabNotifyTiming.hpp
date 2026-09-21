@@ -75,7 +75,7 @@ namespace Stand
 		CommandNotifyMaxDuration* const maxDuration;
 
 		explicit CommandTabNotifyTiming()
-			: CommandList(nullptr, LIT("Notify Timing"), CMDNAMES())
+			: CommandList(nullptr, LIT("Notify Timing"))
 			, readSpeed(createChild<CommandNotifyReadSpeed>())
 			, readStartDelay(createChild<CommandNotifyReadStartDelay>())
 			, minDuration(createChild<CommandNotifyMinDuration>())

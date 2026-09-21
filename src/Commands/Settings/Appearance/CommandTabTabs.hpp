@@ -234,7 +234,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandTabsIconsTextColour(CommandList* const parent)
-			: CommandToggle(parent, LIT("Icons Use Text Colour"), CMDNAMES(),
+			: CommandToggle(parent, LIT("Icons Use Text Colour"), CMDNAMES("tabsiconsusetext"),
 				NOLABEL, false)
 		{
 		}
@@ -260,7 +260,7 @@ namespace Stand
 		CommandTabsIconsTextColour* const iconsTextColour;
 
 		explicit CommandTabTabs()
-			: CommandList(nullptr, LIT("Tabs"), CMDNAMES())
+			: CommandList(nullptr, LIT("Tabs"))
 			, visible(createChild<CommandTabsVisible>())
 			, positionMode(createChild<CommandTabsPositionMode>())
 			, width(createChild<CommandTabsWidth>())

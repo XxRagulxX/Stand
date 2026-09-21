@@ -65,7 +65,7 @@ namespace Stand
 		CommandScrollbarWidth* const width;
 
 		explicit CommandTabScrollbar()
-			: CommandList(nullptr, LIT("Scrollbar"), CMDNAMES())
+			: CommandList(nullptr, LIT("Scrollbar"))
 			, mode(createChild<CommandScrollbarMode>())
 			, width(createChild<CommandScrollbarWidth>())
 		{

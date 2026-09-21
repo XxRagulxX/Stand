@@ -155,7 +155,7 @@ namespace Stand
 		CommandNotifyFlashNow* const flashNow;
 
 		explicit CommandTabNotifications()
-			: CommandList(nullptr, LIT("Notifications"), CMDNAMES())
+			: CommandList(nullptr, LIT("Notifications"))
 			, type(createChild<CommandNotifyType>())
 			, invertFlow(createChild<CommandNotifyInvertFlow>())
 			, width(createChild<CommandNotifyWidth>())

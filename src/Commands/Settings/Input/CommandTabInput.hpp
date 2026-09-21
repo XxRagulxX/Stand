@@ -80,7 +80,7 @@ namespace Stand
 		CommandMouseCursorOnNav* const cursorOnNav;
 
 		explicit CommandMouseSupportList(CommandList* const parent)
-			: CommandList(parent, LIT("Mouse Support"), CMDNAMES())
+			: CommandList(parent, LIT("Mouse Support"))
 			, mouse(createChild<CommandMouse>())
 			, cursorOnNav(createChild<CommandMouseCursorOnNav>())
 		{
@@ -394,7 +394,7 @@ namespace Stand
 		CommandControllerCommandBox* const commandBox;
 
 		explicit CommandControllerScheme(CommandList* const parent)
-			: CommandList(parent, LIT("Controller Input Scheme"), CMDNAMES())
+			: CommandList(parent, LIT("Controller Input Scheme"))
 			, openClose1(createChild<CommandControllerOpenClose1>())
 			, openClose2(createChild<CommandControllerOpenClose2>())
 			, prevTab(createChild<CommandControllerPrevTab>())
@@ -511,7 +511,7 @@ namespace Stand
 		CommandListsKeepCursorReducedHuge* const reducedHuge;
 
 		explicit CommandKeepCursorWhenRevisiting(CommandList* const parent)
-			: CommandList(parent, LIT("Keep Cursor When Revisiting"), CMDNAMES())
+			: CommandList(parent, LIT("Keep Cursor When Revisiting"))
 			, tabs(createChild<CommandTabsKeepCursor>())
 			, lists(createChild<CommandListsKeepCursor>())
 			, reducedHuge(createChild<CommandListsKeepCursorReducedHuge>())
@@ -627,7 +627,7 @@ namespace Stand
 		CommandModifierKeyMatching* const modifierKeyMatching;
 
 		explicit CommandTabInput()
-			: CommandList(nullptr, LIT("Input"), CMDNAMES())
+			: CommandList(nullptr, LIT("Input"))
 			, inputScheme(createChild<CommandInputScheme>())
 			, mouseSupport(createChild<CommandMouseSupportList>())
 			, controllerSupport(createChild<CommandControllerSupport>())

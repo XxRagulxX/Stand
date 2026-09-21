@@ -32,7 +32,7 @@ namespace Stand
 		CommandOpenProfilesFolder* const openProfilesFolder;
 
 		explicit CommandTabProfiles()
-			: CommandList(nullptr, LIT("Profiles"), CMDNAMES())
+			: CommandList(nullptr, LIT("Profiles"))
 			, openProfilesFolder(createChild<CommandOpenProfilesFolder>())
 		{
 		}
