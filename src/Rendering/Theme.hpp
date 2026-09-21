@@ -295,7 +295,7 @@ namespace Stand::Rendering::Theme
 	inline bool kFontReloadPending = false;
 
 	inline int8_t kColumns = 1;
-	inline uint8_t kMenuHeight = 20;
+	inline uint8_t kMenuHeight = 11; // Stand's own command_rows default
 	inline int16_t kListWidth = 0;
 	inline int16_t kListHeight = 0;
 	inline int16_t kSpacerSize = 0;

@@ -253,7 +253,7 @@ namespace Stand::Rendering
 	// origin.y - screen position and "how much has scrolled past the
 	// top edge" are independent concerns.
 	template<typename Fn>
-	static void forEachVisibleItem(std::vector<std::unique_ptr<GridItem>>& items, const Position2d& origin, int16_t scrollOffset, Fn&& fn)
+	static void forEachVisibleItem(std::vector<std::unique_ptr<GridItem>>& items, const Position2d& origin, int16_t scrollOffset, int16_t clipMaxY, Fn&& fn)
 	{
 		const auto offsetX = static_cast<int16_t>(Theme::kMenuOriginX - Theme::kDefaultMenuOriginX);
 		const auto offsetY = static_cast<int16_t>(Theme::kMenuOriginY - Theme::kDefaultMenuOriginY);
@@ -261,7 +261,7 @@ namespace Stand::Rendering
 		for (auto& item : items)
 		{
 			const auto shiftedY = static_cast<int16_t>(item->y - scrollOffset);
-			if (shiftedY < origin.y)
+			if (shiftedY < origin.y || shiftedY >= clipMaxY)
 				continue;
 
 			const auto originalX = item->x;
@@ -279,7 +279,7 @@ namespace Stand::Rendering
 		checkWatchedConditions();
 		ensurePopulated();
 
-		forEachVisibleItem(*items, origin, m_ScrollOffset, [](GridItem& item) {
+		forEachVisibleItem(*items, origin, m_ScrollOffset, m_ClipMaxY, [](GridItem& item) {
 			item.draw();
 		});
 	}
@@ -289,7 +289,7 @@ namespace Stand::Rendering
 		checkWatchedConditions();
 		ensurePopulated();
 
-		forEachVisibleItem(*items, origin, m_ScrollOffset, [](GridItem& item) {
+		forEachVisibleItem(*items, origin, m_ScrollOffset, m_ClipMaxY, [](GridItem& item) {
 			item.drawText();
 		});
 	}
@@ -299,11 +299,11 @@ namespace Stand::Rendering
 		checkWatchedConditions();
 		ensurePopulated();
 
-		if (m_ScrollOffset == 0)
+		if (m_ScrollOffset == 0 && m_ClipMaxY == INT16_MAX)
 			return getOccupant(*items, cursor_x, cursor_y);
 
 		GridItem* found = nullptr;
-		forEachVisibleItem(*items, origin, m_ScrollOffset, [&](GridItem& item) {
+		forEachVisibleItem(*items, origin, m_ScrollOffset, m_ClipMaxY, [&](GridItem& item) {
 			if (!found && item.occupies(cursor_x, cursor_y))
 				found = &item;
 		});

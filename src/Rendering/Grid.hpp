@@ -204,6 +204,13 @@ namespace Stand::Rendering
 			return m_ScrollOffset;
 		}
 
+		// Limits draw/hit-test to items whose top Y (post-scroll, pre-menu-
+		// offset) is below maxY. MenuGrid sets this to origin.y + visibleHeight
+		// before drawing the content Grid so rows past the kMenuHeight cap
+		// aren't rendered outside the panel background.
+		void SetClipMaxY(int16_t maxY) noexcept { m_ClipMaxY = maxY; }
+		void ClearClipMaxY() noexcept { m_ClipMaxY = INT16_MAX; }
+
 	protected:
 		// Same soup::SharedPtr<std::vector<std::unique_ptr<GridItem>>>
 		// Stand's own Grid uses (see the class comment above for why this
@@ -229,6 +236,10 @@ namespace Stand::Rendering
 		void checkWatchedConditions();
 
 		int16_t m_ScrollOffset = 0;
+		// H-space Y beyond which items are not drawn/hit-tested. Matches
+		// Stand's own command_rows limit (content->origin.y + visibleHeight).
+		// INT16_MAX = no clip (default).
+		int16_t m_ClipMaxY = INT16_MAX;
 
 		// Rebuilt from scratch every time populate() runs (cleared in
 		// ensurePopulated() right before calling it) - see

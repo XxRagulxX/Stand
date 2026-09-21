@@ -81,6 +81,19 @@ namespace Stand::Rendering
 		constexpr size_t kSettingsIndex = 7;
 		constexpr size_t kDebugIndex = 8;
 
+		// Computes the capped visible height for a content Grid — same
+		// kMenuHeight/kListHeight caps draw() applies, so scroll and
+		// hit-test always agree on how tall the visible window is.
+		[[nodiscard]] int16_t ContentVisibleHeight(const Grid* content)
+		{
+			auto h = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
+			if (Theme::kListHeight > 0)
+				h = std::min(h, Theme::kListHeight);
+			if (Theme::kMenuHeight > 0)
+				h = std::min(h, static_cast<int16_t>(Theme::kMenuHeight * Theme::kContentItemHeight));
+			return h;
+		}
+
 		// The only real content grids this system has so far. Live here
 		// (not in GridRenderer.cpp) since MenuGrid is the only thing that
 		// decides when any of them is actually shown.
@@ -325,19 +338,11 @@ namespace Stand::Rendering
 			// before content->draw(), so every row's own focused-only
 			// highlight still layers on top of it exactly like Stand's
 			// own focusRectColour rect does over its own bgRectColour.
-			auto visibleHeight = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
-			if (Theme::kListHeight > 0)
-				visibleHeight = std::min(visibleHeight, Theme::kListHeight);
+			const auto visibleHeight = ContentVisibleHeight(content);
 
 			int16_t cx, cy, cw, ch;
 			content->getDimensions(cx, cy, cw, ch);
-			auto panelHeight = (ch > 0 && ch < visibleHeight) ? ch : visibleHeight;
-			if (Theme::kMenuHeight > 0)
-			{
-				const auto maxH = static_cast<int16_t>(Theme::kMenuHeight * Theme::kContentItemHeight);
-				panelHeight = std::min(panelHeight, maxH);
-				visibleHeight = std::min(visibleHeight, maxH);
-			}
+			const auto panelHeight = (ch > 0 && ch < visibleHeight) ? ch : visibleHeight;
 
 			// Same runtime menu-position offset Grid::forEachVisibleItem()
 			// applies to every regular item - needed here too since this
@@ -350,6 +355,11 @@ namespace Stand::Rendering
 
 			GridRenderer::DrawRect(static_cast<int16_t>(content->origin.x + offsetX), static_cast<int16_t>(content->origin.y + offsetY), Theme::kContentWidth, panelHeight, Theme::kPanelBackground);
 
+			// Clip content items to the panel height — mirrors Stand's own
+			// GridItemList capping its visible area to command_rows. Without
+			// this, items past the kMenuHeight cap would render below the
+			// panel background rect over the bare game world.
+			content->SetClipMaxY(static_cast<int16_t>(content->origin.y + visibleHeight));
 			content->draw();
 
 			m_ContentScrollbar.SetView(content);
@@ -370,7 +380,10 @@ namespace Stand::Rendering
 		Grid::drawText();
 
 		if (auto* content = MenuNavigation::Current())
+		{
+			// Clip is already set on this Grid by draw() — reuse it here.
 			content->drawText();
+		}
 	}
 
 	GridItem* MenuGrid::findItemAt(int16_t cursorX, int16_t cursorY)
@@ -502,7 +515,7 @@ namespace Stand::Rendering
 		// all). See Grid::ScrollToShow()'s own doc comment in Grid.hpp.
 		if (auto* content = MenuNavigation::Current())
 		{
-			const auto visibleHeight = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
+			const auto visibleHeight = ContentVisibleHeight(content);
 			content->ScrollToShow(MenuFocus::GetFocusedItem(content), visibleHeight);
 		}
 	}
@@ -555,8 +568,7 @@ namespace Stand::Rendering
 			// Same "keep focus in view" reasoning as HandleKey()'s own
 			// tail - a click can change what content shows (a
 			// GridItemFolder push) or scroll position indirectly.
-			const auto visibleHeight = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
-			content->ScrollToShow(MenuFocus::GetFocusedItem(content), visibleHeight);
+			content->ScrollToShow(MenuFocus::GetFocusedItem(content), ContentVisibleHeight(content));
 		}
 	}
 
@@ -573,11 +585,9 @@ namespace Stand::Rendering
 		if (hx < content->origin.x || hx > content->origin.x + Theme::kContentWidth || hy < content->origin.y)
 			return;
 
-		const auto visibleHeight = static_cast<int16_t>(Theme::kHudHeight - content->origin.y - Theme::kContentBottomMargin);
-
 		// Wheel-up (positive delta) reveals earlier content, same as
 		// every other scrollable view - the opposite sign from
 		// ScrollBy's own "positive = later items" convention.
-		content->ScrollBy(static_cast<int16_t>(-delta * Theme::kContentItemHeight), visibleHeight);
+		content->ScrollBy(static_cast<int16_t>(-delta * Theme::kContentItemHeight), ContentVisibleHeight(content));
 	}
 }
