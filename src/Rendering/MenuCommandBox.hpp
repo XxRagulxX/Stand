@@ -12,7 +12,8 @@ namespace Stand::Rendering
 		    std::string rangeText,
 		    std::string initialValue,
 		    std::function<bool(const std::string&)> onSubmit,
-		    std::function<std::string(const std::string&)> onType = nullptr);
+		    std::function<std::string(const std::string&)> onType = nullptr,
+		    std::function<std::string(const std::string&)> onTypeLabel = nullptr);
 
 		static bool IsOpen();
 		static void Close();
@@ -35,11 +36,13 @@ namespace Stand::Rendering
 
 		static bool s_Open;
 		static std::string s_CommandName;
-		static std::string s_Label;
+		static std::string s_Title;    // snapshot of label at Open() — used for the accent bar
+		static std::string s_Label;    // updated live by onTypeLabel
 		static std::string s_RangeText;
 		static std::string s_Buffer;
 		static std::function<bool(const std::string&)> s_OnSubmit;
 		static std::function<std::string(const std::string&)> s_OnType;
+		static std::function<std::string(const std::string&)> s_OnTypeLabel;
 
 		static bool s_ShowError;
 		static unsigned long long s_ErrorShownAtMs;

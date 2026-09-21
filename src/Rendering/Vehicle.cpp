@@ -370,7 +370,12 @@ namespace Stand::Rendering
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.manufacturerNames));
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawngod));
                 items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, settings.spawntune));
-                items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Spawned Vehicles License Plate", Stand::Features::OpenSpawnPlate));
+                items_draft.push_back(std::make_unique<GridItemButton>(
+                    Theme::kContentWidth, kItemH,
+                    "Spawned Vehicles License Plate",
+                    Stand::Features::OpenSpawnPlate,
+                    [] { return Stand::Features::GetSpawnPlateText(); },
+                    IconSlot::Edit));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Colour Spawned Vehicles",         &g_ColourContent));
                 items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Blips On Spawned Vehicles",        &g_BlipsContent));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Search",
@@ -399,7 +404,7 @@ namespace Stand::Rendering
                             },
                             "Search for a vehicle to spawn"
                         );
-                    }));
+                    }, nullptr, IconSlot::Search));
                 items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Input Model Name",
                     [] {
                         MenuCommandConsole::Open(

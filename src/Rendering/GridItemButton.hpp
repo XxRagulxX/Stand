@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/GridItem.hpp"
+#include "Rendering/ThemeIcons.hpp"
 
 #include <functional>
 #include <string>
@@ -13,10 +14,15 @@ namespace Stand::Rendering
 	class GridItemButton : public GridItem
 	{
 	public:
-		GridItemButton(int16_t width, int16_t height, std::string label, std::function<void()> action = nullptr) :
+		GridItemButton(int16_t width, int16_t height, std::string label,
+		    std::function<void()> action = nullptr,
+		    std::function<std::string()> valueGetter = nullptr,
+		    IconSlot iconSlot = IconSlot::Count) :
 		    GridItem(GRIDITEM_INDIFFERENT, width, height),
 		    m_Label(std::move(label)),
-		    m_Action(std::move(action))
+		    m_Action(std::move(action)),
+		    m_ValueGetter(std::move(valueGetter)),
+		    m_IconSlot(iconSlot)
 		{
 		}
 
@@ -34,5 +40,7 @@ namespace Stand::Rendering
 	private:
 		std::string m_Label;
 		std::function<void()> m_Action;
+		std::function<std::string()> m_ValueGetter;
+		IconSlot m_IconSlot = IconSlot::Count;
 	};
 }

@@ -23,11 +23,13 @@ namespace Stand::Rendering
 
 	bool MenuCommandBox::s_Open = false;
 	std::string MenuCommandBox::s_CommandName;
+	std::string MenuCommandBox::s_Title;
 	std::string MenuCommandBox::s_Label;
 	std::string MenuCommandBox::s_RangeText;
 	std::string MenuCommandBox::s_Buffer;
 	std::function<bool(const std::string&)> MenuCommandBox::s_OnSubmit;
 	std::function<std::string(const std::string&)> MenuCommandBox::s_OnType;
+	std::function<std::string(const std::string&)> MenuCommandBox::s_OnTypeLabel;
 	bool MenuCommandBox::s_ShowError = false;
 	unsigned long long MenuCommandBox::s_ErrorShownAtMs = 0;
 
@@ -39,14 +41,16 @@ namespace Stand::Rendering
 		return (firstNonSpace == std::string::npos) ? std::string() : val.substr(firstNonSpace);
 	}
 
-	void MenuCommandBox::Open(std::string commandName, std::string label, std::string rangeText, std::string initialValue, std::function<bool(const std::string&)> onSubmit, std::function<std::string(const std::string&)> onType)
+	void MenuCommandBox::Open(std::string commandName, std::string label, std::string rangeText, std::string initialValue, std::function<bool(const std::string&)> onSubmit, std::function<std::string(const std::string&)> onType, std::function<std::string(const std::string&)> onTypeLabel)
 	{
 		s_CommandName = std::move(commandName);
-		s_Label = std::move(label);
-		s_RangeText = std::move(rangeText);
-		s_Buffer = s_CommandName + " " + initialValue;
+		s_Title = label;   // snapshot for the accent bar — never updated after open
 		s_OnSubmit = std::move(onSubmit);
 		s_OnType = std::move(onType);
+		s_OnTypeLabel = std::move(onTypeLabel);
+		s_Buffer = s_CommandName + " " + initialValue;
+		s_RangeText = s_OnType ? s_OnType(initialValue) : std::move(rangeText);
+		s_Label = s_OnTypeLabel ? s_OnTypeLabel(initialValue) : std::move(label);
 		s_ShowError = false;
 		s_Open = true;
 		InputCapture::SetTextInputActive(true);
@@ -63,6 +67,7 @@ namespace Stand::Rendering
 		s_ShowError = false;
 		s_OnSubmit = nullptr;
 		s_OnType = nullptr;
+		s_OnTypeLabel = nullptr;
 		InputCapture::SetTextInputActive(false);
 	}
 
@@ -103,6 +108,10 @@ namespace Stand::Rendering
 
 		GridRenderer::DrawRect(layout.x, layout.titleY, layout.width, layout.titleHeight, Theme::kAccent);
 		GridRenderer::DrawRect(layout.x, layout.inputY, layout.width, layout.inputHeight, Theme::kPanelBackground);
+		GridRenderer::DrawRect(layout.x, layout.labelY, layout.width, layout.labelHeight, Theme::kPanelBackground);
+		if (layout.rangeHeight > 0.f)
+			GridRenderer::DrawRect(layout.x, layout.rangeY, layout.width, layout.rangeHeight, Theme::kPanelBackground);
+
 	}
 
 	void MenuCommandBox::DrawText()
@@ -112,11 +121,11 @@ namespace Stand::Rendering
 
 		const auto layout = ComputeLayout();
 
-		const char* title = "Stand CommandLegacy Box";
-		const auto titleSize = GridRenderer::MeasureText(title, Theme::kSmallTextScaleMutable);
+		const auto& title = s_Title;
+		const auto titleSize = GridRenderer::MeasureText(title.c_str(), Theme::kSmallTextScaleMutable);
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.titleY + std::max(0.f, (layout.titleHeight - titleSize.y) * 0.5f),
-		    title,
+		    title.c_str(),
 		    Theme::kText,
 		    Theme::kSmallTextScaleMutable);
 
@@ -128,7 +137,7 @@ namespace Stand::Rendering
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.labelY + std::max(0.f, (layout.labelHeight - labelSize.y) * 0.5f),
 		    s_Label.c_str(),
-		    Theme::kPlaceholderText,
+		    Theme::kText,
 		    Theme::kSmallTextScaleMutable);
 
 		if (!s_RangeText.empty())
@@ -137,7 +146,7 @@ namespace Stand::Rendering
 			GridRenderer::DrawText(layout.x + kPaddingX,
 			    layout.rangeY + std::max(0.f, (layout.rangeHeight - rangeSize.y) * 0.5f),
 			    s_RangeText.c_str(),
-			    Theme::kPlaceholderText,
+			    Theme::kText,
 			    Theme::kSmallTextScaleMutable);
 		}
 
@@ -190,6 +199,8 @@ namespace Stand::Rendering
 				s_Buffer.pop_back();
 			if (s_OnType)
 				s_RangeText = s_OnType(GetValueToken());
+			if (s_OnTypeLabel)
+				s_Label = s_OnTypeLabel(GetValueToken());
 			break;
 
 		default:
@@ -207,6 +218,8 @@ namespace Stand::Rendering
 			s_Buffer.push_back(static_cast<char>(c));
 			if (s_OnType)
 				s_RangeText = s_OnType(GetValueToken());
+			if (s_OnTypeLabel)
+				s_Label = s_OnTypeLabel(GetValueToken());
 		}
 	}
 }
