@@ -276,13 +276,20 @@ namespace Stand::Rendering
 		const auto activeIndex = SidebarActiveIndex();
 		if (activeIndex != m_LastSidebarIndex)
 		{
+			// Save focus index and full stack for the departing tab.
+			MenuFocus::SaveFor(MenuNavigation::Current());
+			if (m_LastSidebarIndex != static_cast<size_t>(-1))
+				MenuNavigation::SaveStackFor(m_LastSidebarIndex);
+
 			m_LastSidebarIndex = activeIndex;
 
 			for (auto& root : m_Roots)
 			{
 				if (root.SidebarIndex == activeIndex)
 				{
-					MenuNavigation::Reset(root.Label, root.Content);
+					if (!MenuNavigation::RestoreStackFor(activeIndex))
+						MenuNavigation::Reset(root.Label, root.Content);
+					MenuFocus::RestoreFor(MenuNavigation::Current());
 					break;
 				}
 			}

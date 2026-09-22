@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace Stand::Rendering
@@ -56,7 +57,13 @@ namespace Stand::Rendering
 		// itself.
 		static std::string BreadcrumbPath();
 
+		// Saves/restores the full nav stack keyed by sidebar index,
+		// so switching tabs and back remembers where you were in each tab.
+		static void SaveStackFor(size_t sidebarIndex);
+		static bool RestoreStackFor(size_t sidebarIndex);
+
 	private:
 		static std::vector<Level> s_Stack;
+		static std::unordered_map<size_t, std::vector<Level>> s_SavedStacks;
 	};
 }

@@ -8,6 +8,7 @@ namespace Stand::Rendering
 	MenuFocus::Region MenuFocus::s_Region = MenuFocus::Region::Sidebar;
 	Grid* MenuFocus::s_LastContent = nullptr;
 	size_t MenuFocus::s_ContentIndex = 0;
+	std::unordered_map<Grid*, size_t> MenuFocus::s_SavedIndices{};
 
 	MenuFocus::Region MenuFocus::GetRegion()
 	{
@@ -24,15 +25,13 @@ namespace Stand::Rendering
 		if (!currentContent)
 			return nullptr;
 
-		// The current content Grid changed since we last looked (a
-		// sidebar switch, or a GridItemFolder Push()/Backspace Pop()) -
-		// see the class comment in MenuFocus.hpp for why this is
-		// detected here instead of every call site that can change
-		// MenuNavigation's current Grid remembering to reset this too.
 		if (currentContent != s_LastContent)
 		{
+			if (s_LastContent)
+				s_SavedIndices[s_LastContent] = s_ContentIndex;
 			s_LastContent = currentContent;
-			s_ContentIndex = 0;
+			const auto it = s_SavedIndices.find(currentContent);
+			s_ContentIndex = (it != s_SavedIndices.end()) ? it->second : 0;
 		}
 
 		const auto focusable = currentContent->getFocusableItems();
@@ -50,9 +49,6 @@ namespace Stand::Rendering
 		if (!currentContent)
 			return;
 
-		// Runs the same "did the content Grid change" check as
-		// GetFocusedItem() before we trust s_ContentIndex below - its
-		// return value isn't needed here, just the side effect.
 		GetFocusedItem(currentContent);
 
 		const auto focusable = currentContent->getFocusableItems();
@@ -82,5 +78,20 @@ namespace Stand::Rendering
 				return;
 			}
 		}
+	}
+
+	void MenuFocus::SaveFor(Grid* grid)
+	{
+		if (grid)
+			s_SavedIndices[grid] = s_ContentIndex;
+	}
+
+	void MenuFocus::RestoreFor(Grid* grid)
+	{
+		if (!grid)
+			return;
+		const auto it = s_SavedIndices.find(grid);
+		s_ContentIndex = (it != s_SavedIndices.end()) ? it->second : 0;
+		s_LastContent = grid;
 	}
 }
