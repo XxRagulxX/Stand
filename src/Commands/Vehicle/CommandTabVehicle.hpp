@@ -5,6 +5,7 @@
 #include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"
+#include "Commands/Vehicle/LSC/CommandListLosSantosCustoms.hpp"
 
 namespace Stand
 {
@@ -16,6 +17,7 @@ namespace Stand
         CommandTabSpawnInVehicle* const spawnInVehicle;
         CommandListCurrentPV* const currentPV;
         CommandListLastVehicle* const lastVehicle;
+        CommandListLosSantosCustoms* const lsc;
 
         explicit CommandTabVehicle()
             : CommandList(nullptr, LIT("Vehicle")),
@@ -23,7 +25,8 @@ namespace Stand
               spawnOnFoot(createChild<CommandTabSpawnOnFoot>()),
               spawnInVehicle(createChild<CommandTabSpawnInVehicle>()),
               currentPV(createChild<CommandListCurrentPV>()),
-              lastVehicle(createChild<CommandListLastVehicle>())
+              lastVehicle(createChild<CommandListLastVehicle>()),
+              lsc(createChild<CommandListLosSantosCustoms>())
         {
         }
     };

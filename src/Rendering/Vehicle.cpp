@@ -6,6 +6,7 @@
 #include "Rendering/PersonalVehiclesGrid.hpp"
 #include "Rendering/CurrentPVGrid.hpp"
 #include "Rendering/LastVehicleGrid.hpp"
+#include "Commands/Vehicle/CommandTabVehicle.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemCommandButton.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
@@ -430,13 +431,26 @@ namespace Stand::Rendering
             }
         };
 
-        // ── Instances ─────────────────────────────────────────────────────────
+        class LscGrid : public Grid
+        {
+        public:
+            LscGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.lsc->children)
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+            }
+        };
 
         VehicleSpawnGrid       g_SpawnContent{};
         GarageGrid             g_GarageContent{};
         PersonalVehiclesGrid   g_PersonalVehiclesContent{};
         CurrentPVGrid          g_CurrentPVContent{};
         LastVehicleGrid        g_LastVehicleContent{};
+        LscGrid                g_LscContent{};
     }
 
     Vehicle::Vehicle() :
@@ -452,5 +466,6 @@ namespace Stand::Rendering
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Personal Vehicles",        &g_PersonalVehiclesContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Current Personal Vehicle", &g_CurrentPVContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Last Vehicle",             &g_LastVehicleContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Los Santos Customs",       &g_LscContent));
     }
 }
