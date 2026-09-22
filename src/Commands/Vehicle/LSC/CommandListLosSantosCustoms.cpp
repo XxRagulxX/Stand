@@ -1055,7 +1055,7 @@ namespace Stand
         {
         public:
             explicit CommandTune(CommandList* parent)
-                : CommandPhysical(COMMAND_ACTION, parent, LIT("Upgrade"), CMDNAMES("tune", "upgrade", "fullupgrade"), NOLABEL) {}
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Upgrade"), CMDNAMES("tune", "upgrade", "fullupgrade"), LIT("Fully upgrades your current or last vehicle.")) {}
 
             void onClick(Click& click) override {
                 click.ensureScriptThread([] {
@@ -1077,7 +1077,7 @@ namespace Stand
         {
         public:
             explicit CommandPerf(CommandList* parent)
-                : CommandPhysical(COMMAND_ACTION, parent, LIT("Performance Upgrade"), CMDNAMES("performance", "perf"), NOLABEL) {}
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Performance Upgrade"), CMDNAMES("performance", "perf"), LIT("Upgrades your current or last vehicle's EMS, Brakes, Transmission, Armour and Turbo.")) {}
 
             void onClick(Click& click) override {
                 click.ensureScriptThread([] {
@@ -1099,7 +1099,7 @@ namespace Stand
         {
         public:
             explicit CommandPerfWithSpoiler(CommandList* parent)
-                : CommandPhysical(COMMAND_ACTION, parent, LIT("Performance + Spoiler"), CMDNAMES("perfwithspoiler"), NOLABEL) {}
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Performance + Spoiler"), CMDNAMES("perfwithspoiler"), LIT("Upgrades your current or last vehicle's EMS, Brakes, Transmission, Armour, Turbo and best Spoiler.")) {}
 
             void onClick(Click& click) override {
                 click.ensureScriptThread([] {
@@ -1122,7 +1122,7 @@ namespace Stand
         {
         public:
             explicit CommandRandomTune(CommandList* parent)
-                : CommandPhysical(COMMAND_ACTION, parent, LIT("Random Upgrade"), CMDNAMES("randomtune"), NOLABEL) {}
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Random Upgrade"), CMDNAMES("randomtune"), LIT("Applies random mods to your current or last vehicle.")) {}
 
             void onClick(Click& click) override {
                 click.ensureScriptThread([] {
@@ -1145,7 +1145,7 @@ namespace Stand
         {
         public:
             explicit CommandUntune(CommandList* parent)
-                : CommandPhysical(COMMAND_ACTION, parent, LIT("Downgrade"), CMDNAMES("untune", "downgrade"), NOLABEL) {}
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Downgrade"), CMDNAMES("untune", "downgrade"), LIT("Resets your current or last vehicle to stock tuning.")) {}
 
             void onClick(Click& click) override {
                 click.ensureScriptThread([] {
