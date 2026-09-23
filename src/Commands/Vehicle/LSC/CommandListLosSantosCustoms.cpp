@@ -5,11 +5,13 @@
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
+#include "Rendering/Theme.hpp"
 #include "Scripting/Natives.hpp"
 #include "Util/get_current_time_millis.hpp"
 #include "Util/Label.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
@@ -21,6 +23,34 @@ namespace Stand
 {
     namespace
     {
+        static std::atomic<bool> s_lsc_in_veh{false};
+
+        #define C(r,g,b) ((uint32_t)(r) | ((uint32_t)(g) << 8) | ((uint32_t)(b) << 16))
+        static constexpr uint32_t kVehColourPalette[161] = {
+            C(  0,  0,  0), C( 35, 33, 28), C( 40, 40, 40), C( 75, 75, 75), C(194,194,190), C(188,193,196), C(140,135,128), C(110,110,108),
+            C(165,163,149), C(120,120,115), C( 97,104,109), C( 13, 17, 22), C(  6,  6,  6), C( 78, 78, 78), C(193,194,195), C( 19, 23, 20),
+            C( 17, 30, 44), C( 83, 89, 83), C(165,168,163), C( 55, 55, 57), C( 83, 84, 87), C( 25, 26, 23), C( 57, 51, 44), C(121,115,106),
+            C(175,172,167), C(170,172,173), C(140,135,128), C(188, 24,  8), C(206,  0,  2), C(239,  0,  0), C(232, 42, 11), C(185, 40, 26),
+            C(151, 28, 14), C(213, 56, 26), C(100, 28,  0), C(255,  0,  0), C(255,119,  0), C(177,148,  0), C(255,130,  0), C(210,  0,  0),
+            C(144,  0,  0), C(222,100,  0), C(243,215,  0), C(202, 10,  0), C(255, 25,  0), C(161, 28,  0), C(190, 30,  0), C(198, 55,  0),
+            C(135, 10,  0), C(  0, 50,  0), C(  0, 89,  3), C(  0,111, 58), C( 70, 78, 10), C(  0,222,  0), C(  0,156, 74), C(155,196,  0),
+            C(  0, 50,  0), C(  0,103,  0), C(  0, 54,  0), C(  0, 84,  0), C(  0, 87, 68), C( 35, 50,100), C(  0, 27, 87), C(104,127,167),
+            C(  0,119,187), C(  0, 79,124), C(  0, 48, 68), C(135,161,190), C(  0,142,155), C(  0, 94,134), C(  9, 17,138), C( 82,  0,102),
+            C(102,  0,152), C(  0, 86,163), C(156,196,211), C(  0, 45, 84), C(  0,  0, 50), C(  0, 79,158), C(  0, 93,133), C(  0,200,255),
+            C(  0,164,224), C(  0,164,255), C(  0, 29, 56), C(  0, 80,175), C(  0,  0, 42), C(  0, 36, 64), C(  0, 53,107), C(127,170,185),
+            C(255,233,  0), C(255,206,  0), C(100, 53,  0), C(155,181,  0), C(168,207,  0), C(205,192,145), C(106, 72, 36), C(106, 85, 64),
+            C( 15,  9,  2), C(122, 81, 33), C(152,103, 56), C(185,169,123), C( 97,101, 40), C( 68, 50, 32), C(159,135, 92), C(147,112, 73),
+            C(153,101, 55), C(162,128, 90), C(173,148,119), C(235,224,181), C(117, 84, 49), C(148,107, 60), C(179,137, 76), C(227,232,232),
+            C(235,240,240), C(185,166,134), C(100, 72, 52), C( 51, 32, 17), C(190,175,129), C(114,118,122), C( 45, 47, 48), C(142,147,153),
+            C(255,255,255), C(204,197,182), C(224,218,200), C(160, 88,  0), C(192,112,  0), C( 17, 38,  0), C(216,190,  0), C(  0,  0,128),
+            C(  0,126,  0), C( 79, 52, 14), C(207,151, 93), C(225,230,230), C(215,218,210), C( 93, 96, 35), C(244,242,240), C(255,102,153),
+            C(252,147,140), C(252,186,217), C(255,148,  0), C(  0,190,  0), C(  0,180,255), C(  0,  0, 45), C( 48,  0, 78), C( 86, 14,  8),
+            C(  0, 65,  0), C(152,  0,255), C(  0,  0, 25), C( 14, 14, 14), C( 47,  0, 72), C( 27,  0, 47), C(148,  0,  0), C(  0, 48,  0),
+            C( 57, 68,  0), C( 60, 43, 13), C(153,136, 81), C( 44, 78,  0), C(148,155,161), C(142,183,210), C(185,149,  0), C(158,139,  0),
+            C(158,147,  0),
+        };
+        #undef C
+
         int LscGetVehicle()
         {
             int ped = PLAYER::GET_PLAYER_PED(-1);
@@ -243,6 +273,41 @@ namespace Stand
             void onTick() override
             {
                 int veh = LscGetVehicle();
+                s_lsc_in_veh.store(veh != 0, std::memory_order_relaxed);
+
+                if (m_mod == Mod::Armour)
+                {
+                    uint32_t packed = 0u;
+                    if (veh)
+                    {
+                        int r = 0, g = 0, b = 0;
+                        bool ok = true;
+                        if (VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh))
+                        {
+                            VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
+                        }
+                        else
+                        {
+                            int pri, sec;
+                            VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
+                            if (pri >= 0 && pri <= 160)
+                            {
+                                uint32_t p = kVehColourPalette[pri];
+                                r = int(p & 0xFF);
+                                g = int((p >> 8) & 0xFF);
+                                b = int((p >> 16) & 0xFF);
+                            }
+                            else
+                            {
+                                ok = false;
+                            }
+                        }
+                        if (ok)
+                            packed = 0x01000000u | uint32_t(r) | (uint32_t(g) << 8) | (uint32_t(b) << 16);
+                    }
+                    Rendering::Theme::kNavBarColour.store(packed, std::memory_order_relaxed);
+                }
+
                 if (!veh) { setMaxValue(min_value); return; }
                 int mx = VEHICLE::GET_NUM_VEHICLE_MODS(veh, m_mod) - 1;
                 setMaxValue(mx);
@@ -438,12 +503,112 @@ namespace Stand
             }
         };
 
+        class CommandColourSectionHeader : public CommandSlider
+        {
+            const char* m_label;
+        public:
+            CommandColourSectionHeader(CommandList* parent, const char* label)
+                : CommandSlider(parent, LIT(""), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1)
+                , m_label(label) {}
+            std::string getValueText() const override { return m_label; }
+        };
+
+        class CommandHsvChannelPrimary : public CommandSlider
+        {
+            int m_ch;
+        public:
+            CommandHsvChannelPrimary(CommandList* parent, Label name, int max_val, int ch)
+                : CommandSlider(parent, std::move(name), CMDNAMES_0(), NOLABEL, 0, max_val, 0)
+                , m_ch(ch) {}
+
+            void onChange(Click& click, int) override {
+                if (click.isAuto()) return;
+                int v = value; int ch = m_ch;
+                click.ensureScriptThread([v, ch] {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    int r, g, b;
+                    if (VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh)) {
+                        VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
+                    } else {
+                        int pri, sec; VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
+                        uint32_t p = (pri >= 0 && pri <= 160) ? kVehColourPalette[pri] : 0u;
+                        r = int(p & 0xFF); g = int((p >> 8) & 0xFF); b = int((p >> 16) & 0xFF);
+                    }
+                    HSV hsv = RgbToHsv({r, g, b});
+                    if      (ch == 0) hsv.h = float(v);
+                    else if (ch == 1) hsv.s = v / 100.f;
+                    else              hsv.v = v / 100.f;
+                    RGB rgb = HsvToRgb(hsv);
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
+                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                });
+            }
+        };
+
+        class CommandCurrentPrimaryHex : public CommandSlider
+        {
+            std::atomic<uint32_t> m_packed{0};
+        public:
+            explicit CommandCurrentPrimaryHex(CommandList* parent)
+                : CommandSlider(parent, LIT("Current Colour (Hex)"), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1)
+            { CommandTickDispatch::AddCommand(this); }
+            ~CommandCurrentPrimaryHex() override { CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                int veh = LscGetVehicle();
+                uint32_t p = 0;
+                if (veh && VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh)) {
+                    int r, g, b;
+                    VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
+                    p = (uint32_t(r) << 16) | (uint32_t(g) << 8) | uint32_t(b);
+                    p |= 0x80000000u;
+                }
+                m_packed.store(p, std::memory_order_relaxed);
+            }
+
+            std::string getValueText() const override {
+                uint32_t p = m_packed.load(std::memory_order_relaxed);
+                if (!(p & 0x80000000u)) return "--------";
+                char buf[9];
+                snprintf(buf, sizeof(buf), "%06X00", p & 0x00FFFFFFu);
+                return buf;
+            }
+        };
+
         class CommandVehcolourPrimary : public CommandList
         {
         public:
             explicit CommandVehcolourPrimary(CommandList* parent)
                 : CommandList(parent, LIT("Primary Colour"), CMDNAMES("vehprimary", "vehicleprimary"))
             {
+                createChild<CommandVehRainbow>(CMDNAMES("vehprimaryrainbow"), [](RGB rgb) {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
+                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                });
+                createChild<CommandVehfinish>(CMDNAMES("vehprimaryfinish"), [](int finish) {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    VEHICLE::SET_VEHICLE_MOD_KIT(veh, 0);
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    if (finish == 5) {
+                        int p, s; VEHICLE::GET_VEHICLE_COLOURS(veh, &p, &s);
+                        VEHICLE::SET_VEHICLE_COLOURS(veh, 120, s);
+                    } else {
+                        VEHICLE::SET_VEHICLE_MOD_COLOR_1(veh, finish, 0, 0);
+                    }
+                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                });
+                auto* lsc = createChild<CommandList>(LIT("LSC Colours"), CMDNAMES("vehprimarylsc"));
+                AddStdColours(lsc, ColourTarget::Primary);
+
+                createChild<CommandColourSectionHeader>("HSV Representation");
+                createChild<CommandHsvChannelPrimary>(LIT("Hue"),        360, 0);
+                createChild<CommandHsvChannelPrimary>(LIT("Saturation"), 100, 1);
+                createChild<CommandHsvChannelPrimary>(LIT("Value"),      100, 2);
+
+                createChild<CommandColourSectionHeader>("RGB Representation");
                 createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
                     int veh = LscGetVehicle(); if (!veh) return;
                     int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
@@ -465,26 +630,72 @@ namespace Stand
                     VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, r, g, v);
                     VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
                 });
-                createChild<CommandVehRainbow>(CMDNAMES("vehprimaryrainbow"), [](RGB rgb) {
+
+                createChild<CommandColourSectionHeader>("Other");
+                createChild<CommandCurrentPrimaryHex>();
+            }
+        };
+
+        class CommandHsvChannelSecondary : public CommandSlider
+        {
+            int m_ch;
+        public:
+            CommandHsvChannelSecondary(CommandList* parent, Label name, int max_val, int ch)
+                : CommandSlider(parent, std::move(name), CMDNAMES_0(), NOLABEL, 0, max_val, 0)
+                , m_ch(ch) {}
+
+            void onChange(Click& click, int) override {
+                if (click.isAuto()) return;
+                int v = value; int ch = m_ch;
+                click.ensureScriptThread([v, ch] {
                     int veh = LscGetVehicle(); if (!veh) return;
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandVehfinish>(CMDNAMES("vehprimaryfinish"), [](int finish) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    VEHICLE::SET_VEHICLE_MOD_KIT(veh, 0);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    if (finish == 5) {
-                        int p, s; VEHICLE::GET_VEHICLE_COLOURS(veh, &p, &s);
-                        VEHICLE::SET_VEHICLE_COLOURS(veh, 120, s);
+                    int r, g, b;
+                    if (VEHICLE::GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(veh)) {
+                        VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
                     } else {
-                        VEHICLE::SET_VEHICLE_MOD_COLOR_1(veh, finish, 0, 0);
+                        int pri, sec; VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
+                        uint32_t p = (sec >= 0 && sec <= 160) ? kVehColourPalette[sec] : 0u;
+                        r = int(p & 0xFF); g = int((p >> 8) & 0xFF); b = int((p >> 16) & 0xFF);
                     }
+                    HSV hsv = RgbToHsv({r, g, b});
+                    if      (ch == 0) hsv.h = float(v);
+                    else if (ch == 1) hsv.s = v / 100.f;
+                    else              hsv.v = v / 100.f;
+                    RGB rgb = HsvToRgb(hsv);
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
                     VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
                 });
-                auto* lsc = createChild<CommandList>(LIT("LSC Colours"), CMDNAMES("vehprimarylsc"));
-                AddStdColours(lsc, ColourTarget::Primary);
+            }
+        };
+
+        class CommandCurrentSecondaryHex : public CommandSlider
+        {
+            std::atomic<uint32_t> m_packed{0};
+        public:
+            explicit CommandCurrentSecondaryHex(CommandList* parent)
+                : CommandSlider(parent, LIT("Current Colour (Hex)"), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1)
+            { CommandTickDispatch::AddCommand(this); }
+            ~CommandCurrentSecondaryHex() override { CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                int veh = LscGetVehicle();
+                uint32_t p = 0;
+                if (veh && VEHICLE::GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(veh)) {
+                    int r, g, b;
+                    VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
+                    p = (uint32_t(r) << 16) | (uint32_t(g) << 8) | uint32_t(b);
+                    p |= 0x80000000u;
+                }
+                m_packed.store(p, std::memory_order_relaxed);
+            }
+
+            std::string getValueText() const override {
+                uint32_t p = m_packed.load(std::memory_order_relaxed);
+                if (!(p & 0x80000000u)) return "--------";
+                char buf[9];
+                snprintf(buf, sizeof(buf), "%06X00", p & 0x00FFFFFFu);
+                return buf;
             }
         };
 
@@ -494,27 +705,6 @@ namespace Stand
             explicit CommandVehcolourSecondary(CommandList* parent)
                 : CommandList(parent, LIT("Secondary Colour"), CMDNAMES("vehsecondary", "vehiclesecondary"))
             {
-                createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, v, g, b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandColourChannelSlider>(LIT("Green"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, r, v, b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandColourChannelSlider>(LIT("Blue"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, r, g, v);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
                 createChild<CommandVehRainbow>(CMDNAMES("vehsecondaryrainbow"), [](RGB rgb) {
                     int veh = LscGetVehicle(); if (!veh) return;
                     int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
@@ -536,6 +726,37 @@ namespace Stand
                 auto* lsc = createChild<CommandList>(LIT("LSC Colours"), CMDNAMES("vehsecondarylsc"));
                 AddStdColours(lsc, ColourTarget::Secondary);
                 createChild<CommandCopyPrimaryToSecondary>();
+
+                createChild<CommandColourSectionHeader>("HSV Representation");
+                createChild<CommandHsvChannelSecondary>(LIT("Hue"),        360, 0);
+                createChild<CommandHsvChannelSecondary>(LIT("Saturation"), 100, 1);
+                createChild<CommandHsvChannelSecondary>(LIT("Value"),      100, 2);
+
+                createChild<CommandColourSectionHeader>("RGB Representation");
+                createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, v, g, b);
+                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                });
+                createChild<CommandColourChannelSlider>(LIT("Green"), [](int v) {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, r, v, b);
+                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                });
+                createChild<CommandColourChannelSlider>(LIT("Blue"), [](int v) {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
+                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, r, g, v);
+                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                });
+
+                createChild<CommandColourSectionHeader>("Other");
+                createChild<CommandCurrentSecondaryHex>();
             }
         };
 
@@ -1051,6 +1272,36 @@ namespace Stand
             }
         };
 
+        class CommandListLscPerformance : public CommandList
+        {
+        public:
+            explicit CommandListLscPerformance(CommandList* parent)
+                : CommandList(parent, LIT("Performance"), CMDNAMES_0())
+            {
+                createChild<CommandVehmodInt>(Mod::Armour);
+                createChild<CommandVehmodInt>(Mod::Brakes);
+                createChild<CommandVehmodInt>(Mod::Engine);
+                createChild<CommandVehmodInt>(Mod::Spoilers);
+                createChild<CommandVehmodInt>(Mod::Trans);
+                createChild<CommandVehmodBool>(Mod::Turbo, CMDNAMES("turbo"));
+            }
+
+            bool requiresVehicle() const override { return true; }
+            const char* vehicleRequiredMessage() const override
+            {
+                return s_lsc_in_veh.load(std::memory_order_relaxed) ? nullptr : "Get your ass in a vehicle :/";
+            }
+        };
+
+        class CommandLscPresetTunings : public CommandSlider
+        {
+        public:
+            explicit CommandLscPresetTunings(CommandList* parent)
+                : CommandSlider(parent, LIT(""), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1) {}
+
+            std::string getValueText() const override { return "Preset Tunings"; }
+        };
+
         class CommandTune : public CommandPhysical
         {
         public:
@@ -1099,7 +1350,7 @@ namespace Stand
         {
         public:
             explicit CommandPerfWithSpoiler(CommandList* parent)
-                : CommandPhysical(COMMAND_ACTION, parent, LIT("Performance + Spoiler"), CMDNAMES("perfwithspoiler"), LIT("Upgrades your current or last vehicle's EMS, Brakes, Transmission, Armour, Turbo and best Spoiler.")) {}
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Performance Upgrade, Including Spoiler"), CMDNAMES("perfwithspoiler"), LIT("Upgrades your current or last vehicle's EMS, Brakes, Transmission, Armour, Turbo and best Spoiler.")) {}
 
             void onClick(Click& click) override {
                 click.ensureScriptThread([] {
@@ -1164,24 +1415,15 @@ namespace Stand
     CommandListLosSantosCustoms::CommandListLosSantosCustoms(CommandList* parent)
         : CommandList(parent, LIT("Los Santos Customs"), CMDNAMES("lsc", "customs", "lossantoscustoms"))
     {
-        auto* perf = createChild<CommandList>(LIT("Performance"), CMDNAMES_0());
-        perf->createChild<CommandVehmodInt>(Mod::Armour);
-        perf->createChild<CommandVehmodInt>(Mod::Brakes);
-        perf->createChild<CommandVehmodInt>(Mod::Engine);
-        perf->createChild<CommandVehmodInt>(Mod::Spoilers);
-        perf->createChild<CommandVehmodInt>(Mod::Trans);
-        perf->createChild<CommandVehmodBool>(Mod::Turbo, CMDNAMES("turbo"));
+        createChild<CommandListLscPerformance>();
 
         auto* appear = createChild<CommandList>(LIT("Appearance"), CMDNAMES_0());
 
         appear->createChild<CommandVehcolourPrimary>();
         appear->createChild<CommandVehcolourSecondary>();
 
-        auto* pearl = appear->createChild<CommandList>(LIT("Pearlescent"), CMDNAMES("vehpearlescent"));
+        auto* pearl = appear->createChild<CommandList>(LIT("Pearlescent Colour"), CMDNAMES("vehpearlescent"));
         AddStdColours(pearl, ColourTarget::Pearlescent);
-
-        auto* interior = appear->createChild<CommandList>(LIT("Interior Colour"), CMDNAMES("vehinteriorcolour"));
-        AddStdColours(interior, ColourTarget::Interior);
 
         auto* neons = appear->createChild<CommandList>(LIT("Neon Lights"), CMDNAMES("neoncolour"));
         {
@@ -1206,10 +1448,10 @@ namespace Stand
                 VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, rgb.r, rgb.g, rgb.b);
             });
             neons->createChild<CommandNeonAll>();
-            neons->createChild<CommandNeonLight>(LIT("Front"),       CMDNAMES("vehneonfront"), 2);
-            neons->createChild<CommandNeonLight>(LIT("Back"),        CMDNAMES("vehneonback"),  3);
-            neons->createChild<CommandNeonLight>(LIT("Left"),        CMDNAMES("vehneonleft"),  0);
-            neons->createChild<CommandNeonLight>(LIT("Right"),       CMDNAMES("vehneonright"), 1);
+            neons->createChild<CommandNeonLight>(LIT("Front"),  CMDNAMES("vehneonfront"), 2);
+            neons->createChild<CommandNeonLight>(LIT("Back"),   CMDNAMES("vehneonback"),  3);
+            neons->createChild<CommandNeonLight>(LIT("Left"),   CMDNAMES("vehneonleft"),  0);
+            neons->createChild<CommandNeonLight>(LIT("Right"),  CMDNAMES("vehneonright"), 1);
         }
 
         auto* wheels = appear->createChild<CommandList>(LIT("Wheels"), CMDNAMES_0());
@@ -1256,12 +1498,19 @@ namespace Stand
             plate->createChild<CommandLockPlate>();
         }
 
+        appear->createChild<CommandList>(LIT("Parachute"), CMDNAMES_0());
+
         auto* extras = appear->createChild<CommandList>(LIT("Extras"), CMDNAMES_0());
         for (int i = 0; i < 15; ++i)
             extras->createChild<CommandVehicleExtra>(i);
 
         appear->createChild<CommandScorched>();
         appear->createChild<CommandTonk>();
+        appear->createChild<CommandToggle>(LIT("Show Non-Applicable"), CMDNAMES("lscshownonapplicable"), NOLABEL);
+
+        auto* interior = appear->createChild<CommandList>(LIT("Interior Colour"), CMDNAMES("vehinteriorcolour"));
+        AddStdColours(interior, ColourTarget::Interior);
+
         appear->createChild<CommandHeadlights>();
         appear->createChild<CommandVehmodBool>(22, CMDNAMES("xenonlights"));
         appear->createChild<CommandWindowTint>();
@@ -1270,6 +1519,7 @@ namespace Stand
         for (int t : Mod::visual)
             appear->createChild<CommandVehmodInt>(t);
 
+        createChild<CommandLscPresetTunings>();
         createChild<CommandTune>();
         createChild<CommandPerf>();
         createChild<CommandPerfWithSpoiler>();

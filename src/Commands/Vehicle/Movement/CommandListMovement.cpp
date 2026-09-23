@@ -78,11 +78,23 @@ namespace Stand
             return nullptr;
         }
 
+        static int ButtonFromSlider(int idx)
+        {
+            switch (idx)
+            {
+            case 1: return (int)ControllerInputs::INPUT_VEH_BRAKE;
+            case 2: return (int)ControllerInputs::INPUT_VEH_HORN;
+            case 3: return (int)ControllerInputs::INPUT_VEH_HANDBRAKE;
+            default: return (int)ControllerInputs::INPUT_VEH_ACCELERATE;
+            }
+        }
+
         class CommandSuperDriveToggle : public CommandToggle
         {
         public:
             CommandToggle*      m_cam   = nullptr;
             CommandSliderFloat* m_speed = nullptr;
+            CommandSlider*      m_btn   = nullptr;
 
             explicit CommandSuperDriveToggle(CommandList* parent)
                 : CommandToggle(parent, LIT("Super Drive"), CMDNAMES("superdrive")) {}
@@ -94,7 +106,8 @@ namespace Stand
                     if (!m_on) return false;
                     int veh = MovVehicle();
                     if (!veh) return true;
-                    float normal = PAD::GET_CONTROL_NORMAL(0, (int)ControllerInputs::INPUT_VEH_ACCELERATE);
+                    int input = m_btn ? ButtonFromSlider(m_btn->value) : (int)ControllerInputs::INPUT_VEH_ACCELERATE;
+                    float normal = PAD::GET_CONTROL_NORMAL(0, input);
                     if (normal == 0.f) return true;
                     Vector3 vec;
                     if (m_cam && m_cam->m_on)
@@ -142,6 +155,25 @@ namespace Stand
             }
         };
 
+        class CommandSuperDriveButton : public CommandSlider
+        {
+        public:
+            explicit CommandSuperDriveButton(CommandList* parent)
+                : CommandSlider(parent, LIT("Controller Button"), CMDNAMES("superdrivebutton"),
+                    NOLABEL, 0, 3, 0, 1) {}
+
+            std::string getValueText() const override
+            {
+                switch (value)
+                {
+                case 1: return "Left Trigger";
+                case 2: return "Horn";
+                case 3: return "Handbrake";
+                default: return "Right Trigger";
+                }
+            }
+        };
+
         class CommandListSuperDrive : public CommandList
         {
         public:
@@ -155,8 +187,10 @@ namespace Stand
                     LIT("Changes the definition of \"forward\" for Super Drive to be where you're looking instead of where your vehicle is going."));
                 auto* spd  = createChild<CommandSliderFloat>(
                     LIT("Speed"), CMDNAMES("superdrivespeed"), NOLABEL, -1000000, 1000000, 0, 1000);
+                auto* btn  = createChild<CommandSuperDriveButton>();
                 tog->m_cam   = cam;
                 tog->m_speed = spd;
+                tog->m_btn   = btn;
                 presetsHolder->createChild<CommandSuperDrivePreset>(LIT("Super Drive"), tog, cam, spd, false);
                 presetsHolder->createChild<CommandSuperDrivePreset>(LIT("Horn Boost"),  tog, cam, spd, true);
             }
@@ -413,7 +447,7 @@ namespace Stand
 
         public:
             explicit CommandHeliAutoStabilisation(CommandList* parent)
-                : CommandToggle(parent, LIT("Heli Auto-Stabilisation"), CMDNAMES("heliautostabilisation", "disableheliautostabilisation")) {}
+                : CommandToggle(parent, LIT("Disable Heli Auto-Stabilisation"), CMDNAMES("disableheliautostabilisation", "heliautostabilisation")) {}
 
             void onChange(Click& click) override
             {
@@ -784,272 +818,361 @@ namespace Stand
             }
         };
 
-        class CommandCustomWingsToggle : public CommandToggle
+        template<size_t Offset>
+        class CommandHEField : public CommandSliderFloat
         {
-            bool m_extending = false;
-            float m_off = -0.15f;
-            CommandSlider* m_min = nullptr;
-            CommandSlider* m_max = nullptr;
+        public:
+            CommandHEField(CommandList* parent, Label name, std::vector<CommandName> cmdnames,
+                int min, int max, int def, int step)
+                : CommandSliderFloat(parent, std::move(name), std::move(cmdnames), NOLABEL, min, max, def, step) {}
+
+            void onChange(Click& click, int) override
+            {
+                if (click.isAuto()) return;
+                float fval = getFloatValue();
+                click.ensureScriptThread([fval] {
+                    int veh = MovVehicle();
+                    if (!veh) return;
+                    void* cveh = GetVehPtr(veh);
+                    if (!cveh) return;
+                    void* hdata = GetHandlingData(cveh);
+                    if (!hdata) return;
+                    FieldAt<float>(hdata, Offset) = fval;
+                });
+            }
+        };
+
+        class CommandListHEBase : public CommandList
+        {
+        public:
+            explicit CommandListHEBase(CommandList* parent)
+                : CommandList(parent, LIT("Base"), CMDNAMES_0())
+            {
+                createChild<CommandHEField<0x044>>(LIT("Drive Bias Front"),    CMDNAMES("hedrivebias"),    0,    200,   50,   1);
+                createChild<CommandHEField<0x048>>(LIT("Drive Force"),          CMDNAMES("hedriveforce"),   0,    200,   30,   1);
+                createChild<CommandHEField<0x04C>>(LIT("Drive Inertia"),        CMDNAMES("hedriveinertia"), 0,    500,  100,   1);
+                createChild<CommandHEField<0x058>>(LIT("Clutch Rate Up Shift"), CMDNAMES("heclutchup"),     0,   2000,  100,  10);
+                createChild<CommandHEField<0x05C>>(LIT("Clutch Rate Dn Shift"), CMDNAMES("heclutchdown"),   0,   2000,  100,  10);
+                createChild<CommandHEField<0x060>>(LIT("Brake Bias Front"),     CMDNAMES("hebrakebias"),    0,    100,   65,   1);
+                createChild<CommandHEField<0x064>>(LIT("Steering Lock"),        CMDNAMES("hesteeringlock"), 100, 8000, 3500, 100);
+                createChild<CommandHEField<0x09C>>(LIT("Suspension Force"),     CMDNAMES("hesuspforce"),    0,   2000,  200,  10);
+                createChild<CommandHEField<0x0A0>>(LIT("Susp Comp Damp"),       CMDNAMES("hesuspcomp"),     0,    500,  100,   5);
+                createChild<CommandHEField<0x0A4>>(LIT("Susp Rebound Damp"),    CMDNAMES("hesusprebound"),  0,   2000,  300,  10);
+                createChild<CommandHEField<0x0A8>>(LIT("Traction Loss Mult"),   CMDNAMES("hetractionloss"), 0,    300,  100,   1);
+                createChild<CommandHEField<0x0B8>>(LIT("Anti Roll Bar Force"),  CMDNAMES("herollbar"),      0,   1000,  100,  10);
+            }
+        };
+
+        template<size_t Offset>
+        class CommandHECarField : public CommandSliderFloat
+        {
+        public:
+            CommandHECarField(CommandList* parent, Label name, std::vector<CommandName> cmdnames,
+                int min, int max, int def, int step)
+                : CommandSliderFloat(parent, std::move(name), std::move(cmdnames), NOLABEL, min, max, def, step) {}
+
+            void onChange(Click& click, int) override
+            {
+                if (click.isAuto()) return;
+                float fval = getFloatValue();
+                click.ensureScriptThread([fval] {
+                    int veh = MovVehicle();
+                    if (!veh) return;
+                    void* cveh = GetVehPtr(veh);
+                    if (!cveh) return;
+                    void* hdata = GetHandlingData(cveh);
+                    void* car = FindSubHandling(hdata, 6);
+                    if (!car) return;
+                    FieldAt<float>(car, Offset) = fval;
+                });
+            }
+        };
+
+        class CommandListHECar : public CommandList
+        {
+        public:
+            explicit CommandListHECar(CommandList* parent)
+                : CommandList(parent, LIT("Car"), CMDNAMES_0())
+            {
+                createChild<CommandHECarField<0x08>>(LIT("Max Steer Angle"),     CMDNAMES("hecarsteer"),     0,   9000, 3500, 100);
+                createChild<CommandHECarField<0x0C>>(LIT("Max Steer Angle Rear"),CMDNAMES("hecarsteerrear"), 0,   9000,    0, 100);
+                createChild<CommandHECarField<0x10>>(LIT("Max Handbrake Torque"),CMDNAMES("hecarhbktorque"),  0,  50000, 5000, 100);
+                createChild<CommandHECarField<0x14>>(LIT("Max Braking Decel"),   CMDNAMES("hecarbrakdecel"),  0,  10000, 1000, 100);
+                createChild<CommandHECarField<0x18>>(LIT("Max Lat Decel"),       CMDNAMES("hecarlat"),        0,  10000, 1500, 100);
+            }
+        };
+
+        class CommandShowNonApplicable : public CommandToggle
+        {
+        public:
+            explicit CommandShowNonApplicable(CommandList* parent)
+                : CommandToggle(parent, LIT("Show Non-Applicable"), CMDNAMES("heshownonapplicable")) {}
+
+            void onChange(Click&) override {}
+        };
+
+        class CommandHECurrentPreset : public CommandSlider
+        {
+        public:
+            explicit CommandHECurrentPreset(CommandList* parent)
+                : CommandSlider(parent, LIT(""), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1) {}
+
+            std::string getValueText() const override { return "Presets"; }
+        };
+
+        class CommandListHEPresets : public CommandList
+        {
+        public:
+            explicit CommandListHEPresets(CommandList* parent)
+                : CommandList(parent, LIT("Presets"), CMDNAMES_0()) {}
+        };
+
+        class CommandListHandlingEditor : public CommandList
+        {
+        public:
+            explicit CommandListHandlingEditor(CommandList* parent)
+                : CommandList(parent, LIT("Handling Editor"), CMDNAMES_0())
+            {
+                createChild<CommandListHEBase>();
+                createChild<CommandListHECar>();
+                createChild<CommandShowNonApplicable>();
+                createChild<CommandHECurrentPreset>();
+                createChild<CommandListHEPresets>();
+            }
+        };
+
+        class CommandCustomWingsBehaviour : public CommandToggle
+        {
+            float m_pos = 0.f;
+            bool  m_dir = true;
+        public:
+            CommandSlider* m_min   = nullptr;
+            CommandSlider* m_max   = nullptr;
             CommandSlider* m_speed = nullptr;
 
-            float RealMin() const { return (float(m_min ? m_min->value : 0) / 100.f) - 0.15f; }
-            float RealMax() const { return (float(m_max ? m_max->value : 15) / 100.f) - 0.15f; }
-            float Step() const    { return float(m_speed ? m_speed->value : 5) / 1000.f; }
-
-        public:
-            explicit CommandCustomWingsToggle(CommandList* parent)
+            explicit CommandCustomWingsBehaviour(CommandList* parent)
                 : CommandToggle(parent, LIT("Custom Wings Behaviour"), CMDNAMES("wingsmod"),
-                    LIT("Lets you manually control the wing deployment of glider vehicles.")) {}
-
-            void SetSliders(CommandSlider* mn, CommandSlider* mx, CommandSlider* spd)
-            {
-                m_min = mn; m_max = mx; m_speed = spd;
-            }
+                    LIT("Allows you to customise the behaviour of the wings on the original oppressor.")) {}
 
             void onChange(Click& click) override
             {
-                if (!m_on)
-                {
-                    m_extending = false;
-                    m_off = RealMin();
-                    return;
-                }
-                m_off = RealMin();
+                if (!m_on) return;
+                m_pos = m_min ? (float)m_min->value / 15.f : 0.f;
+                m_dir = true;
                 onChangeToggleScriptTickEventHandler(click, [this] {
                     if (!m_on) return false;
                     int veh = MovVehicle();
                     if (!veh) return true;
-                    void* cveh = GetVehPtr(veh);
-                    if (!cveh)
+                    float mn  = m_min  ? (float)m_min->value  / 15.f : 0.f;
+                    float mx  = m_max  ? (float)m_max->value  / 15.f : 1.f;
+                    float spd = m_speed ? (float)m_speed->value / 300.f : 0.017f;
+                    if (mx < mn) mx = mn;
+                    if (m_dir)
                     {
-                        m_extending = false;
-                        m_off = RealMin();
-                        return true;
-                    }
-
-                    int control = (ENTITY::GET_ENTITY_MODEL(veh) == Stand::Joaat("oppressor2"))
-                        ? (int)ControllerInputs::INPUT_VEH_ROCKET_BOOST
-                        : (int)ControllerInputs::INPUT_VEH_BIKE_WINGS;
-
-                    if (PAD::IS_CONTROL_JUST_PRESSED(0, control))
-                        m_extending = !m_extending;
-
-                    const float real_min = RealMin();
-                    const float real_max = RealMax();
-                    const float step = Step();
-
-                    if (m_extending)
-                    {
-                        if (m_off >= real_max)
-                        {
-                            FieldAt<int>(cveh, 0x0340)   = 2;
-                            FieldAt<float>(cveh, 0x0344) = real_max;
-                        }
-                        else
-                        {
-                            m_off += step;
-                            if (m_off > real_max) m_off = real_max;
-                            FieldAt<int>(cveh, 0x0340)   = 1;
-                            FieldAt<float>(cveh, 0x0344) = m_off;
-                        }
+                        m_pos += spd;
+                        if (m_pos >= mx) { m_pos = mx; m_dir = false; }
                     }
                     else
                     {
-                        if (m_off <= real_min)
-                        {
-                            FieldAt<int>(cveh, 0x0340)   = 0;
-                            FieldAt<float>(cveh, 0x0344) = real_min;
-                        }
-                        else
-                        {
-                            m_off -= step;
-                            if (m_off < real_min) m_off = real_min;
-                            FieldAt<int>(cveh, 0x0340)   = 1;
-                            FieldAt<float>(cveh, 0x0344) = m_off;
-                        }
+                        m_pos -= spd;
+                        if (m_pos <= mn) { m_pos = mn; m_dir = true; }
                     }
+                    VEHICLE::SET_VEHICLE_FLIGHT_NOZZLE_POSITION(veh, m_pos);
                     return true;
                 });
             }
         };
 
-        class CommandWingsSetSpeed : public CommandPhysical
+        class CommandWingsSetSpeedFromMax : public CommandPhysical
         {
             CommandSlider* m_max;
             CommandSlider* m_speed;
         public:
-            CommandWingsSetSpeed(CommandList* parent, CommandSlider* mx, CommandSlider* spd)
+            CommandWingsSetSpeedFromMax(CommandList* parent, CommandSlider* max_s, CommandSlider* spd_s)
                 : CommandPhysical(COMMAND_ACTION, parent, LIT("Set Speed Based On Max Position"), CMDNAMES_0(), NOLABEL)
-                , m_max(mx), m_speed(spd) {}
+                , m_max(max_s), m_speed(spd_s) {}
 
             void onClick(Click& click) override
             {
                 auto* mx = m_max; auto* spd = m_speed;
                 click.ensureScriptThread([mx, spd] {
-                    Click ac(CLICK_AUTO, TC_SCRIPT_NOYIELD);
-                    spd->setValue(ac, mx->value / 3);
+                    if (!mx || !spd) return;
+                    int new_val = mx->value / 3;
+                    if (spd->value != new_val)
+                    {
+                        int prev = spd->value;
+                        spd->value = new_val;
+                        Click ac(CLICK_AUTO, TC_SCRIPT_NOYIELD);
+                        spd->onChange(ac, prev);
+                    }
                 });
             }
         };
 
-        class CommandListCustomWings : public CommandList
+        class CommandListCustomWingsBehaviour : public CommandList
         {
         public:
-            explicit CommandListCustomWings(CommandList* parent)
+            explicit CommandListCustomWingsBehaviour(CommandList* parent)
                 : CommandList(parent, LIT("Custom Wings Behaviour"), CMDNAMES_0())
             {
-                auto* tog = createChild<CommandCustomWingsToggle>();
-                auto* mn  = createChild<CommandSlider>(LIT("Min Position"), CMDNAMES("wingsmin"), NOLABEL, -100000, 100000, 0, 5);
-                auto* mx  = createChild<CommandSlider>(LIT("Max Position"), CMDNAMES("wingsmax"), NOLABEL, -100000, 100000, 15, 5);
-                auto* spd = createChild<CommandSlider>(LIT("Speed"), CMDNAMES("wingsspeed"), NOLABEL, 0, 1000000, 5, 1);
-                tog->SetSliders(mn, mx, spd);
-                createChild<CommandWingsSetSpeed>(mx, spd);
+                auto* tog = createChild<CommandCustomWingsBehaviour>();
+                auto* mn  = createChild<CommandSlider>(LIT("Min Position"), CMDNAMES("wingsminpos"), NOLABEL, 0, 15,  0, 1);
+                auto* mx  = createChild<CommandSlider>(LIT("Max Position"), CMDNAMES("wingsmaxpos"), NOLABEL, 0, 15, 15, 1);
+                auto* spd = createChild<CommandSlider>(LIT("Speed"),        CMDNAMES("wingsspeed"),  NOLABEL, 0, 15,  5, 1);
+                createChild<CommandWingsSetSpeedFromMax>(mx, spd);
+                tog->m_min   = mn;
+                tog->m_max   = mx;
+                tog->m_speed = spd;
             }
         };
 
-        class CommandJumpEnabled : public CommandToggle
+        class CommandSpecialFlight : public CommandSlider
         {
-            CommandToggle* m_other = nullptr;
+            bool m_ticking = false;
         public:
-            explicit CommandJumpEnabled(CommandList* parent)
-                : CommandToggle(parent, LIT("Enabled"), CMDNAMES("vehjumpon")) {}
+            explicit CommandSpecialFlight(CommandList* parent)
+                : CommandSlider(parent, LIT("Special Flight"), CMDNAMES("specialflight"),
+                    NOLABEL, 0, 2, 0, 1) {}
 
-            void SetOther(CommandToggle* t) { m_other = t; }
-
-            void onChange(Click& click) override
+            ~CommandSpecialFlight() override
             {
-                if (m_on && m_other && m_other->m_on)
+                if (m_ticking) CommandTickDispatch::RemoveCommand(this);
+            }
+
+            std::string getValueText() const override
+            {
+                switch (value)
                 {
-                    Click ac(CLICK_AUTO, TC_SCRIPT_NOYIELD);
-                    m_other->setStateBool(ac, false);
+                case 1: return "Enabled";
+                case 2: return "Disabled";
+                default: return "Don't Override";
                 }
-                onChangeToggleScriptTickEventHandler(click, [this] {
-                    if (!m_on) return false;
-                    int veh = MovVehicle();
-                    if (!veh) return true;
-                    void* cveh = GetVehPtr(veh);
-                    if (!cveh) return true;
-                    void* model = FieldAt<void*>(cveh, 0x20);
-                    if (!model) return true;
+            }
+
+            void onTick() override
+            {
+                int veh = MovVehicle();
+                if (!veh) return;
+                void* cveh = GetVehPtr(veh);
+                if (!cveh) return;
+                void* model = FieldAt<void*>(cveh, 0x20);
+                if (!model) return;
+                if (value == 1)
+                    FieldAt<uint8_t>(model, 0x57C + 19) |= static_cast<uint8_t>(1u << 0);
+                else
+                    FieldAt<uint8_t>(model, 0x57C + 19) &= static_cast<uint8_t>(~(1u << 0));
+            }
+
+            void onChange(Click& click, int) override
+            {
+                if (value == 0)
+                {
+                    if (m_ticking) { CommandTickDispatch::RemoveCommand(this); m_ticking = false; }
+                }
+                else
+                {
+                    if (!m_ticking) { CommandTickDispatch::AddCommand(this); m_ticking = true; }
+                }
+            }
+        };
+
+        class CommandJumpAbility : public CommandSlider
+        {
+            bool m_ticking = false;
+        public:
+            explicit CommandJumpAbility(CommandList* parent)
+                : CommandSlider(parent, LIT("Jump Ability"), CMDNAMES("vehjump"),
+                    NOLABEL, 0, 2, 0, 1) {}
+
+            ~CommandJumpAbility() override
+            {
+                if (m_ticking) CommandTickDispatch::RemoveCommand(this);
+            }
+
+            std::string getValueText() const override
+            {
+                switch (value)
+                {
+                case 1: return "Enabled";
+                case 2: return "Disabled";
+                default: return "Don't Override";
+                }
+            }
+
+            void onTick() override
+            {
+                int veh = MovVehicle();
+                if (!veh) return;
+                void* cveh = GetVehPtr(veh);
+                if (!cveh) return;
+                void* model = FieldAt<void*>(cveh, 0x20);
+                if (!model) return;
+                if (value == 1)
                     FieldAt<uint8_t>(model, 0x57C + 15) |= static_cast<uint8_t>(1u << 5);
-                    return true;
-                });
-            }
-        };
-
-        class CommandJumpDisabled : public CommandToggle
-        {
-            CommandToggle* m_other = nullptr;
-        public:
-            explicit CommandJumpDisabled(CommandList* parent)
-                : CommandToggle(parent, LIT("Disabled"), CMDNAMES("vehjumpoff")) {}
-
-            void SetOther(CommandToggle* t) { m_other = t; }
-
-            void onChange(Click& click) override
-            {
-                if (m_on && m_other && m_other->m_on)
-                {
-                    Click ac(CLICK_AUTO, TC_SCRIPT_NOYIELD);
-                    m_other->setStateBool(ac, false);
-                }
-                onChangeToggleScriptTickEventHandler(click, [this] {
-                    if (!m_on) return false;
-                    int veh = MovVehicle();
-                    if (!veh) return true;
-                    void* cveh = GetVehPtr(veh);
-                    if (!cveh) return true;
-                    void* model = FieldAt<void*>(cveh, 0x20);
-                    if (!model) return true;
+                else
                     FieldAt<uint8_t>(model, 0x57C + 15) &= static_cast<uint8_t>(~(1u << 5));
-                    return true;
-                });
             }
-        };
 
-        class CommandListJumpAbility : public CommandList
-        {
-        public:
-            explicit CommandListJumpAbility(CommandList* parent)
-                : CommandList(parent, LIT("Jump Ability"), CMDNAMES_0())
+            void onChange(Click& click, int) override
             {
-                auto* en  = createChild<CommandJumpEnabled>();
-                auto* dis = createChild<CommandJumpDisabled>();
-                en->SetOther(dis);
-                dis->SetOther(en);
-            }
-        };
-
-        class CommandGlideEnabled : public CommandToggle
-        {
-            CommandToggle* m_other = nullptr;
-        public:
-            explicit CommandGlideEnabled(CommandList* parent)
-                : CommandToggle(parent, LIT("Enabled"), CMDNAMES("vehglideon")) {}
-
-            void SetOther(CommandToggle* t) { m_other = t; }
-
-            void onChange(Click& click) override
-            {
-                if (m_on && m_other && m_other->m_on)
+                if (value == 0)
                 {
-                    Click ac(CLICK_AUTO, TC_SCRIPT_NOYIELD);
-                    m_other->setStateBool(ac, false);
+                    if (m_ticking) { CommandTickDispatch::RemoveCommand(this); m_ticking = false; }
                 }
-                onChangeToggleScriptTickEventHandler(click, [this] {
-                    if (!m_on) return false;
-                    int veh = MovVehicle();
-                    if (!veh) return true;
-                    void* cveh = GetVehPtr(veh);
-                    if (!cveh) return true;
-                    void* model = FieldAt<void*>(cveh, 0x20);
-                    if (!model) return true;
+                else
+                {
+                    if (!m_ticking) { CommandTickDispatch::AddCommand(this); m_ticking = true; }
+                }
+            }
+        };
+
+        class CommandGlideAbility : public CommandSlider
+        {
+            bool m_ticking = false;
+        public:
+            explicit CommandGlideAbility(CommandList* parent)
+                : CommandSlider(parent, LIT("Glide Ability"), CMDNAMES("vehglide"),
+                    NOLABEL, 0, 2, 0, 1) {}
+
+            ~CommandGlideAbility() override
+            {
+                if (m_ticking) CommandTickDispatch::RemoveCommand(this);
+            }
+
+            std::string getValueText() const override
+            {
+                switch (value)
+                {
+                case 1: return "Enabled";
+                case 2: return "Disabled";
+                default: return "Don't Override";
+                }
+            }
+
+            void onTick() override
+            {
+                int veh = MovVehicle();
+                if (!veh) return;
+                void* cveh = GetVehPtr(veh);
+                if (!cveh) return;
+                void* model = FieldAt<void*>(cveh, 0x20);
+                if (!model) return;
+                if (value == 1)
                     FieldAt<uint8_t>(model, 0x57C + 17) |= static_cast<uint8_t>(1u << 1);
-                    return true;
-                });
-            }
-        };
-
-        class CommandGlideDisabled : public CommandToggle
-        {
-            CommandToggle* m_other = nullptr;
-        public:
-            explicit CommandGlideDisabled(CommandList* parent)
-                : CommandToggle(parent, LIT("Disabled"), CMDNAMES("vehglideoff")) {}
-
-            void SetOther(CommandToggle* t) { m_other = t; }
-
-            void onChange(Click& click) override
-            {
-                if (m_on && m_other && m_other->m_on)
-                {
-                    Click ac(CLICK_AUTO, TC_SCRIPT_NOYIELD);
-                    m_other->setStateBool(ac, false);
-                }
-                onChangeToggleScriptTickEventHandler(click, [this] {
-                    if (!m_on) return false;
-                    int veh = MovVehicle();
-                    if (!veh) return true;
-                    void* cveh = GetVehPtr(veh);
-                    if (!cveh) return true;
-                    void* model = FieldAt<void*>(cveh, 0x20);
-                    if (!model) return true;
+                else
                     FieldAt<uint8_t>(model, 0x57C + 17) &= static_cast<uint8_t>(~(1u << 1));
-                    return true;
-                });
             }
-        };
 
-        class CommandListGlideAbility : public CommandList
-        {
-        public:
-            explicit CommandListGlideAbility(CommandList* parent)
-                : CommandList(parent, LIT("Glide Ability"), CMDNAMES_0())
+            void onChange(Click& click, int) override
             {
-                auto* en  = createChild<CommandGlideEnabled>();
-                auto* dis = createChild<CommandGlideDisabled>();
-                en->SetOther(dis);
-                dis->SetOther(en);
+                if (value == 0)
+                {
+                    if (m_ticking) { CommandTickDispatch::RemoveCommand(this); m_ticking = false; }
+                }
+                else
+                {
+                    if (!m_ticking) { CommandTickDispatch::AddCommand(this); m_ticking = true; }
+                }
             }
         };
 
@@ -1063,16 +1186,18 @@ namespace Stand
         createChild<CommandDriveOnWater>();
         createChild<CommandDriveUnderwater>();
         createChild<CommandSpeedLimit>();
+        createChild<CommandListHandlingEditor>();
+        createChild<CommandSpecialFlight>();
+        createChild<CommandJumpAbility>();
+        createChild<CommandGlideAbility>();
         createChild<CommandNoTurbulence>();
         createChild<CommandHeliAutoStabilisation>();
         createChild<CommandListGravityMult>();
         createChild<CommandEnginePowerMult>();
+        createChild<CommandListCustomWingsBehaviour>();
         createChild<CommandLessenTyreBurnouts>();
         createChild<CommandSmoothCoasting>();
         createChild<CommandDriftMode>();
-        createChild<CommandListCustomWings>();
-        createChild<CommandListJumpAbility>();
-        createChild<CommandListGlideAbility>();
     }
 
 }

@@ -3,6 +3,7 @@
 
 #include <DirectXMath.h>
 
+#include <atomic>
 #include <cstdint>
 #include <string>
 
@@ -37,6 +38,10 @@ namespace Stand::Rendering::Theme
 	// these six; nothing else in this file is user-editable (layout/
 	// scale constants stay `constexpr`).
 	inline DirectX::XMFLOAT4 kAccent{1.f, 0.f, 1.f, 1.f};
+
+	// Vehicle primary colour sync — written on script tick, read on render thread.
+	// 0 = use kAccent; bit 24 set = valid RGB in bits 0-23 (R | G<<8 | B<<16).
+	inline std::atomic<uint32_t> kNavBarColour{0u};
 
 	// The translucent panel background every non-active row uses -
 	// toggle/folder rows, inactive sidebar/tab entries, a stepper/list's

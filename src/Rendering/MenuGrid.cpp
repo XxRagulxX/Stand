@@ -1,6 +1,9 @@
 #include "Rendering/MenuGrid.hpp"
 
+#include "Rendering/CommandContextGrid.hpp"
+#include "Commands/Widgets/CommandPhysical.hpp"
 #include "Rendering/GridItemAddressbar.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/GridItemTabsHorizontal.hpp"
 #include "Rendering/GridItemTabsVertical.hpp"
 #include "Rendering/GridRenderer.hpp"
@@ -509,6 +512,35 @@ namespace Stand::Rendering
 					focused->activate();
 			}
 			break;
+
+		case 0x4F: // O — open command options for the focused item
+		{
+			if (MenuFocus::GetRegion() == MenuFocus::Region::Content)
+			{
+				if (auto* content = MenuNavigation::Current())
+				{
+					if (auto* focused = MenuFocus::GetFocusedItem(content))
+					{
+						auto* scItem = dynamic_cast<GridItemStandCommand*>(focused);
+						if (scItem)
+						{
+							auto* cmd = scItem->GetCommand();
+							if (cmd)
+							{
+								auto* phys = cmd->getPhysical();
+								if (phys)
+								{
+									MenuNavigation::Push(
+										phys->getMenuName().getLocalisedUtf8(),
+										&CommandContextGrid::GetOrCreate(cmd));
+								}
+							}
+						}
+					}
+				}
+			}
+			break;
+		}
 
 		default:
 			break;

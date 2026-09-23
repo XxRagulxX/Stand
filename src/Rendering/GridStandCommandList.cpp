@@ -1,6 +1,7 @@
 #include "Rendering/GridStandCommandList.hpp"
 
 #include "Rendering/GridItemStandCommand.hpp"
+#include "Rendering/GridItemText.hpp"
 #include "Rendering/Theme.hpp"
 
 namespace Stand::Rendering
@@ -27,6 +28,19 @@ namespace Stand::Rendering
 	{
 		if (!m_List)
 			return;
+
+		if (m_List->requiresVehicle())
+		{
+			auto* list = m_List;
+			bool in_veh = watchCondition([list] { return list->vehicleRequiredMessage() == nullptr; });
+			if (!in_veh)
+			{
+				items_draft.push_back(std::make_unique<GridItemText>(
+					Theme::kContentWidth, Theme::kContentItemHeight,
+					list->vehicleRequiredMessage(), Theme::kText));
+				return;
+			}
+		}
 
 		for (auto& child : m_List->children)
 		{

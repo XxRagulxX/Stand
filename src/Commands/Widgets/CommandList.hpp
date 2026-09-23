@@ -26,6 +26,9 @@ namespace Stand
 		{
 		}
 
+		virtual bool requiresVehicle() const { return false; }
+		virtual const char* vehicleRequiredMessage() const { return "Get your ass in a vehicle :/"; }
+
 		[[nodiscard]] bool isRoot() const noexcept
 		{
 			return parent == nullptr;

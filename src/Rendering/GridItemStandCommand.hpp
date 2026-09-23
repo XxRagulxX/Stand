@@ -57,6 +57,8 @@ namespace Stand::Rendering
 
 		[[nodiscard]] std::string GetDescription() const override;
 
+		Stand::Command* GetCommand() const { return m_Command; }
+
 	private:
 		void ToggleClicked();
 		void SliderStep(int direction);
