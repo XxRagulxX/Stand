@@ -127,7 +127,18 @@ namespace Stand::Rendering
 				GridRenderer::DrawRect(x - bw, y, bw, height, Theme::kCursorBorderColour);
 				GridRenderer::DrawRect(x + width, y, bw, height, Theme::kCursorBorderColour);
 			}
-			GridRenderer::DrawRect(x, y, width, height, Theme::kAccent);
+			uint32_t nav = Theme::kNavBarColour.load(std::memory_order_relaxed);
+			if (nav & 0x01000000u)
+			{
+				float r = float(nav & 0xFF) / 255.f;
+				float g = float((nav >> 8) & 0xFF) / 255.f;
+				float b = float((nav >> 16) & 0xFF) / 255.f;
+				GridRenderer::DrawRect(x, y, width, height, {r, g, b, 1.f});
+			}
+			else
+			{
+				GridRenderer::DrawRect(x, y, width, height, Theme::kAccent);
+			}
 		}
 
 		{

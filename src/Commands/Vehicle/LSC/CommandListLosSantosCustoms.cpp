@@ -5,6 +5,8 @@
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
+#include "Rendering/GridStandCommandList.hpp"
+#include "Rendering/MenuNavigation.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/Natives.hpp"
 #include "Util/get_current_time_millis.hpp"
@@ -59,6 +61,7 @@ namespace Stand
             veh = PED::GET_VEHICLE_PED_IS_IN(ped, true);
             return (veh && ENTITY::DOES_ENTITY_EXIST(veh)) ? veh : 0;
         }
+
 
         namespace Mod
         {
@@ -257,6 +260,25 @@ namespace Stand
             return { int(r * 255.f + .5f), int(g * 255.f + .5f), int(b * 255.f + .5f) };
         }
 
+        static RGB GetVehicleColourRgb(int veh, bool primary)
+        {
+            int r = 0, g = 0, b = 0;
+            bool custom = primary
+                ? VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh)
+                : VEHICLE::GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(veh);
+            if (custom) {
+                if (primary) VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
+                else         VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
+            } else {
+                int pri, sec;
+                VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
+                int idx = primary ? pri : sec;
+                uint32_t p = (idx >= 0 && idx <= 160) ? kVehColourPalette[idx] : 0u;
+                r = int(p & 0xFF); g = int((p >> 8) & 0xFF); b = int((p >> 16) & 0xFF);
+            }
+            return {r, g, b};
+        }
+
         class CommandVehmodInt : public CommandSlider
         {
             const int m_mod;
@@ -274,39 +296,6 @@ namespace Stand
             {
                 int veh = LscGetVehicle();
                 s_lsc_in_veh.store(veh != 0, std::memory_order_relaxed);
-
-                if (m_mod == Mod::Armour)
-                {
-                    uint32_t packed = 0u;
-                    if (veh)
-                    {
-                        int r = 0, g = 0, b = 0;
-                        bool ok = true;
-                        if (VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh))
-                        {
-                            VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-                        }
-                        else
-                        {
-                            int pri, sec;
-                            VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
-                            if (pri >= 0 && pri <= 160)
-                            {
-                                uint32_t p = kVehColourPalette[pri];
-                                r = int(p & 0xFF);
-                                g = int((p >> 8) & 0xFF);
-                                b = int((p >> 16) & 0xFF);
-                            }
-                            else
-                            {
-                                ok = false;
-                            }
-                        }
-                        if (ok)
-                            packed = 0x01000000u | uint32_t(r) | (uint32_t(g) << 8) | (uint32_t(b) << 16);
-                    }
-                    Rendering::Theme::kNavBarColour.store(packed, std::memory_order_relaxed);
-                }
 
                 if (!veh) { setMaxValue(min_value); return; }
                 int mx = VEHICLE::GET_NUM_VEHICLE_MODS(veh, m_mod) - 1;
@@ -436,12 +425,25 @@ namespace Stand
         class CommandColourChannelSlider : public CommandSlider
         {
             std::function<void(int)> m_apply;
+            std::function<int()>     m_read;
         public:
-            CommandColourChannelSlider(CommandList* parent, Label name, std::function<void(int)> apply)
+            CommandColourChannelSlider(CommandList* parent, Label name,
+                                       std::function<void(int)> apply,
+                                       std::function<int()> read = nullptr)
                 : CommandSlider(parent, std::move(name), CMDNAMES_0(), NOLABEL, 0, 255, 0)
-                , m_apply(std::move(apply)) {}
+                , m_apply(std::move(apply))
+                , m_read(std::move(read))
+            { if (m_read) CommandTickDispatch::AddCommand(this); }
+            ~CommandColourChannelSlider() override { if (m_read) CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                int v = m_read();
+                Click click(CLICK_AUTO, TC_SCRIPT_YIELDABLE);
+                setValueIndicator(click, v);
+            }
 
             void onChange(Click& click, int) override {
+                if (click.isAuto()) return;
                 int v = value; auto fn = m_apply;
                 click.ensureScriptThread([v, fn] { fn(v); });
             }
@@ -516,22 +518,27 @@ namespace Stand
         public:
             CommandHsvChannelPrimary(CommandList* parent, Label name, int max_val, int ch)
                 : CommandSlider(parent, std::move(name), CMDNAMES_0(), NOLABEL, 0, max_val, 0)
-                , m_ch(ch) {}
+                , m_ch(ch)
+            { CommandTickDispatch::AddCommand(this); }
+            ~CommandHsvChannelPrimary() override { CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                int veh = LscGetVehicle(); if (!veh) return;
+                HSV hsv = RgbToHsv(GetVehicleColourRgb(veh, true));
+                int newVal;
+                if      (m_ch == 0) newVal = int(std::round(hsv.h));
+                else if (m_ch == 1) newVal = int(std::round(hsv.s * 100.f));
+                else                newVal = int(std::round(hsv.v * 100.f));
+                Click click(CLICK_AUTO, TC_SCRIPT_YIELDABLE);
+                setValueIndicator(click, newVal);
+            }
 
             void onChange(Click& click, int) override {
                 if (click.isAuto()) return;
                 int v = value; int ch = m_ch;
                 click.ensureScriptThread([v, ch] {
                     int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b;
-                    if (VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh)) {
-                        VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-                    } else {
-                        int pri, sec; VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
-                        uint32_t p = (pri >= 0 && pri <= 160) ? kVehColourPalette[pri] : 0u;
-                        r = int(p & 0xFF); g = int((p >> 8) & 0xFF); b = int((p >> 16) & 0xFF);
-                    }
-                    HSV hsv = RgbToHsv({r, g, b});
+                    HSV hsv = RgbToHsv(GetVehicleColourRgb(veh, true));
                     if      (ch == 0) hsv.h = float(v);
                     else if (ch == 1) hsv.s = v / 100.f;
                     else              hsv.v = v / 100.f;
@@ -555,10 +562,9 @@ namespace Stand
             void onTick() override {
                 int veh = LscGetVehicle();
                 uint32_t p = 0;
-                if (veh && VEHICLE::GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(veh)) {
-                    int r, g, b;
-                    VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-                    p = (uint32_t(r) << 16) | (uint32_t(g) << 8) | uint32_t(b);
+                if (veh) {
+                    RGB rgb = GetVehicleColourRgb(veh, true);
+                    p = (uint32_t(rgb.r) << 16) | (uint32_t(rgb.g) << 8) | uint32_t(rgb.b);
                     p |= 0x80000000u;
                 }
                 m_packed.store(p, std::memory_order_relaxed);
@@ -573,12 +579,35 @@ namespace Stand
             }
         };
 
+        class CommandPrimaryNavBarSync : public CommandPhysical
+        {
+        public:
+            explicit CommandPrimaryNavBarSync(CommandList* parent)
+                : CommandPhysical(COMMAND_ACTION, parent, LIT(""), {}, NOLABEL, CMDFLAG_CONCEALED)
+            { CommandTickDispatch::AddCommand(this); }
+            ~CommandPrimaryNavBarSync() override { CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                uint32_t packed = 0u;
+                auto* myGrid = &Rendering::GridStandCommandList::GetOrCreate(this->parent);
+                if (Rendering::MenuNavigation::Current() == myGrid) {
+                    int veh = LscGetVehicle();
+                    if (veh) {
+                        RGB rgb = GetVehicleColourRgb(veh, true);
+                        packed = 0x01000000u | uint32_t(rgb.r) | (uint32_t(rgb.g) << 8) | (uint32_t(rgb.b) << 16);
+                    }
+                }
+                Rendering::Theme::kNavBarColour.store(packed, std::memory_order_relaxed);
+            }
+        };
+
         class CommandVehcolourPrimary : public CommandList
         {
         public:
             explicit CommandVehcolourPrimary(CommandList* parent)
                 : CommandList(parent, LIT("Primary Colour"), CMDNAMES("vehprimary", "vehicleprimary"))
             {
+                createChild<CommandPrimaryNavBarSync>();
                 createChild<CommandVehRainbow>(CMDNAMES("vehprimaryrainbow"), [](RGB rgb) {
                     int veh = LscGetVehicle(); if (!veh) return;
                     int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
@@ -606,27 +635,36 @@ namespace Stand
                 createChild<CommandHsvChannelPrimary>(LIT("Value"),      100, 2);
 
                 createChild<CommandColourSectionHeader>("RGB Representation");
-                createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, v, g, b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandColourChannelSlider>(LIT("Green"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, r, v, b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandColourChannelSlider>(LIT("Blue"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, r, g, v);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
+                createChild<CommandColourChannelSlider>(LIT("Red"),
+                    [](int v) {
+                        int veh = LscGetVehicle(); if (!veh) return;
+                        RGB cur = GetVehicleColourRgb(veh, true);
+                        int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                        VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, v, cur.g, cur.b);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    },
+                    []() { int veh = LscGetVehicle(); if (!veh) return 0; return GetVehicleColourRgb(veh, true).r; }
+                );
+                createChild<CommandColourChannelSlider>(LIT("Green"),
+                    [](int v) {
+                        int veh = LscGetVehicle(); if (!veh) return;
+                        RGB cur = GetVehicleColourRgb(veh, true);
+                        int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                        VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, cur.r, v, cur.b);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    },
+                    []() { int veh = LscGetVehicle(); if (!veh) return 0; return GetVehicleColourRgb(veh, true).g; }
+                );
+                createChild<CommandColourChannelSlider>(LIT("Blue"),
+                    [](int v) {
+                        int veh = LscGetVehicle(); if (!veh) return;
+                        RGB cur = GetVehicleColourRgb(veh, true);
+                        int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                        VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, cur.r, cur.g, v);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    },
+                    []() { int veh = LscGetVehicle(); if (!veh) return 0; return GetVehicleColourRgb(veh, true).b; }
+                );
 
                 createChild<CommandColourSectionHeader>("Other");
                 createChild<CommandCurrentPrimaryHex>();
@@ -639,22 +677,27 @@ namespace Stand
         public:
             CommandHsvChannelSecondary(CommandList* parent, Label name, int max_val, int ch)
                 : CommandSlider(parent, std::move(name), CMDNAMES_0(), NOLABEL, 0, max_val, 0)
-                , m_ch(ch) {}
+                , m_ch(ch)
+            { CommandTickDispatch::AddCommand(this); }
+            ~CommandHsvChannelSecondary() override { CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                int veh = LscGetVehicle(); if (!veh) return;
+                HSV hsv = RgbToHsv(GetVehicleColourRgb(veh, false));
+                int newVal;
+                if      (m_ch == 0) newVal = int(std::round(hsv.h));
+                else if (m_ch == 1) newVal = int(std::round(hsv.s * 100.f));
+                else                newVal = int(std::round(hsv.v * 100.f));
+                Click click(CLICK_AUTO, TC_SCRIPT_YIELDABLE);
+                setValueIndicator(click, newVal);
+            }
 
             void onChange(Click& click, int) override {
                 if (click.isAuto()) return;
                 int v = value; int ch = m_ch;
                 click.ensureScriptThread([v, ch] {
                     int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b;
-                    if (VEHICLE::GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(veh)) {
-                        VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    } else {
-                        int pri, sec; VEHICLE::GET_VEHICLE_COLOURS(veh, &pri, &sec);
-                        uint32_t p = (sec >= 0 && sec <= 160) ? kVehColourPalette[sec] : 0u;
-                        r = int(p & 0xFF); g = int((p >> 8) & 0xFF); b = int((p >> 16) & 0xFF);
-                    }
-                    HSV hsv = RgbToHsv({r, g, b});
+                    HSV hsv = RgbToHsv(GetVehicleColourRgb(veh, false));
                     if      (ch == 0) hsv.h = float(v);
                     else if (ch == 1) hsv.s = v / 100.f;
                     else              hsv.v = v / 100.f;
@@ -678,10 +721,9 @@ namespace Stand
             void onTick() override {
                 int veh = LscGetVehicle();
                 uint32_t p = 0;
-                if (veh && VEHICLE::GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(veh)) {
-                    int r, g, b;
-                    VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    p = (uint32_t(r) << 16) | (uint32_t(g) << 8) | uint32_t(b);
+                if (veh) {
+                    RGB rgb = GetVehicleColourRgb(veh, false);
+                    p = (uint32_t(rgb.r) << 16) | (uint32_t(rgb.g) << 8) | uint32_t(rgb.b);
                     p |= 0x80000000u;
                 }
                 m_packed.store(p, std::memory_order_relaxed);
@@ -730,27 +772,36 @@ namespace Stand
                 createChild<CommandHsvChannelSecondary>(LIT("Value"),      100, 2);
 
                 createChild<CommandColourSectionHeader>("RGB Representation");
-                createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, v, g, b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandColourChannelSlider>(LIT("Green"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, r, v, b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
-                createChild<CommandColourChannelSlider>(LIT("Blue"), [](int v) {
-                    int veh = LscGetVehicle(); if (!veh) return;
-                    int r, g, b; VEHICLE::GET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, &r, &g, &b);
-                    int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, r, g, v);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
-                });
+                createChild<CommandColourChannelSlider>(LIT("Red"),
+                    [](int v) {
+                        int veh = LscGetVehicle(); if (!veh) return;
+                        RGB cur = GetVehicleColourRgb(veh, false);
+                        int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                        VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, v, cur.g, cur.b);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    },
+                    []() { int veh = LscGetVehicle(); if (!veh) return 0; return GetVehicleColourRgb(veh, false).r; }
+                );
+                createChild<CommandColourChannelSlider>(LIT("Green"),
+                    [](int v) {
+                        int veh = LscGetVehicle(); if (!veh) return;
+                        RGB cur = GetVehicleColourRgb(veh, false);
+                        int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                        VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, cur.r, v, cur.b);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    },
+                    []() { int veh = LscGetVehicle(); if (!veh) return 0; return GetVehicleColourRgb(veh, false).g; }
+                );
+                createChild<CommandColourChannelSlider>(LIT("Blue"),
+                    [](int v) {
+                        int veh = LscGetVehicle(); if (!veh) return;
+                        RGB cur = GetVehicleColourRgb(veh, false);
+                        int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
+                        VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, cur.r, cur.g, v);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    },
+                    []() { int veh = LscGetVehicle(); if (!veh) return 0; return GetVehicleColourRgb(veh, false).b; }
+                );
 
                 createChild<CommandColourSectionHeader>("Other");
                 createChild<CommandCurrentSecondaryHex>();

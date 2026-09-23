@@ -44,6 +44,7 @@ namespace Stand::Rendering
 
 		for (auto& child : m_List->children)
 		{
+			if (child->isConcealed()) continue;
 			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, Theme::kContentItemHeight, child.get()));
 		}
 	}
