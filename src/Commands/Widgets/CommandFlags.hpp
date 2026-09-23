@@ -18,6 +18,7 @@
 #define CMDFLAG_SUPPORTS_STATE_OPERATIONS (Stand::commandflags_t)0b10
 #define CMDFLAG_NO_SAVED_STATE (Stand::commandflags_t)0b100
 #define CMDFLAG_CONCEALED (Stand::commandflags_t)0b1000
+#define CMDFLAG_SECTION_HEADER (Stand::commandflags_t)0b10000
 
 #define CMDFLAGS_ACTION 0
 #define CMDFLAGS_ACTION_NAME CMDFLAGS_ACTION

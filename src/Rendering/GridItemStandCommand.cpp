@@ -2,6 +2,7 @@
 
 #include "Commands/CommandInput.hpp"
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
@@ -54,6 +55,16 @@ namespace Stand::Rendering
 	{
 	}
 
+	bool GridItemStandCommand::isSectionHeader() const
+	{
+		return m_Command && (m_Command->flags & CMDFLAG_SECTION_HEADER) != 0;
+	}
+
+	bool GridItemStandCommand::isFocusable() const
+	{
+		return !isSectionHeader();
+	}
+
 	std::string GridItemStandCommand::GetDescription() const
 	{
 		if (!m_Command)
@@ -94,6 +105,9 @@ namespace Stand::Rendering
 
 	void GridItemStandCommand::draw()
 	{
+		if (isSectionHeader())
+			return;
+
 		if (Theme::kBorderWidth > 0)
 		{
 			const float bw = static_cast<float>(Theme::kBorderWidth);
@@ -214,13 +228,22 @@ namespace Stand::Rendering
 			return;
 		}
 
+		const float textScale = Theme::kCommandTextScale;
+		const auto label = Label(m_Command);
+		const auto labelSize = GridRenderer::MeasureText(label.c_str(), textScale);
+
+		if (isSectionHeader())
+		{
+			const float centreX = x + std::max(0.f, (width - labelSize.x) * 0.5f);
+			const float centreY = y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f);
+			GridRenderer::DrawText(centreX, centreY, label.c_str(), Theme::kUnfocusedRightText, textScale);
+			return;
+		}
+
 		const bool focused = isKeyboardFocused();
 		const auto& textColour = focused ? Theme::kFocusText : Theme::kUnfocusedText;
 		const auto& rightColour = focused ? Theme::kFocusRightText : Theme::kUnfocusedRightText;
 
-		const float textScale = Theme::kCommandTextScale;
-		const auto label = Label(m_Command);
-		const auto labelSize = GridRenderer::MeasureText(label.c_str(), textScale);
 		GridRenderer::DrawText(x + Theme::kCommandTextXOffset, y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
 
 		if (m_Command->isList())
@@ -279,7 +302,7 @@ namespace Stand::Rendering
 
 	void GridItemStandCommand::onClick(int16_t cursorX, int16_t)
 	{
-		if (!m_Command)
+		if (!m_Command || isSectionHeader())
 			return;
 
 		if (m_Command->isSlider())
@@ -298,7 +321,7 @@ namespace Stand::Rendering
 
 	void GridItemStandCommand::activate()
 	{
-		if (!m_Command)
+		if (!m_Command || isSectionHeader())
 			return;
 
 		if (m_Command->isToggle())

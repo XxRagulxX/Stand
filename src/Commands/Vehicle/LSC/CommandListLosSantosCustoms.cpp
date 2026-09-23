@@ -503,14 +503,11 @@ namespace Stand
             }
         };
 
-        class CommandColourSectionHeader : public CommandSlider
+        class CommandColourSectionHeader : public CommandPhysical
         {
-            const char* m_label;
         public:
             CommandColourSectionHeader(CommandList* parent, const char* label)
-                : CommandSlider(parent, LIT(""), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1)
-                , m_label(label) {}
-            std::string getValueText() const override { return m_label; }
+                : CommandPhysical(COMMAND_ACTION, parent, Label(label, Label::TagLiteral{}), {}, NOLABEL, CMDFLAG_SECTION_HEADER) {}
         };
 
         class CommandHsvChannelPrimary : public CommandSlider
