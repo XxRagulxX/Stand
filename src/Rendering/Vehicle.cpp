@@ -480,8 +480,23 @@ namespace Stand::Rendering
             }
         };
 
+        class CollisionsGrid : public Grid
+        {
+        public:
+            CollisionsGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.collisions->children)
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+            }
+        };
+
         MovementGrid           g_MovementContent{};
         RocketBoostGrid        g_RocketBoostContent{};
+        CollisionsGrid         g_CollisionsContent{};
     }
 
     Vehicle::Vehicle() :
@@ -500,5 +515,6 @@ namespace Stand::Rendering
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Los Santos Customs",       &g_LscContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Movement",                 &g_MovementContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Rocket Boost",              &g_RocketBoostContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Collisions",                &g_CollisionsContent));
     }
 }

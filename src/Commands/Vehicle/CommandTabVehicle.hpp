@@ -8,6 +8,7 @@
 #include "Commands/Vehicle/LSC/CommandListLosSantosCustoms.hpp"
 #include "Commands/Vehicle/Movement/CommandListMovement.hpp"
 #include "Commands/Vehicle/Boost/CommandListRocketBoost.hpp"
+#include "Commands/Vehicle/Collisions/CommandListCollisions.hpp"
 
 namespace Stand
 {
@@ -22,6 +23,7 @@ namespace Stand
         CommandListLosSantosCustoms* const lsc;
         CommandListMovement* const movement;
         CommandListRocketBoost* const rocketBoost;
+        CommandListCollisions* const collisions;
 
         explicit CommandTabVehicle()
             : CommandList(nullptr, LIT("Vehicle")),
@@ -32,7 +34,8 @@ namespace Stand
               lastVehicle(createChild<CommandListLastVehicle>()),
               lsc(createChild<CommandListLosSantosCustoms>()),
               movement(createChild<CommandListMovement>()),
-              rocketBoost(createChild<CommandListRocketBoost>())
+              rocketBoost(createChild<CommandListRocketBoost>()),
+              collisions(createChild<CommandListCollisions>())
         {
         }
     };
