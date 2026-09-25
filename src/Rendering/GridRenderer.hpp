@@ -10,6 +10,9 @@
 #include <VertexTypes.h>
 #include <d3d12.h>
 #include <memory>
+#include <mutex>
+#include <string>
+#include <vector>
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -148,6 +151,16 @@ namespace Stand::Rendering
 			GetInstance().DrawCircleFilledScreenImpl(centerX, centerY, radius, colour, segments);
 		}
 
+	// Queues a text draw at a normalized screen position (0–1 range from
+	// GET_SCREEN_COORD_FROM_WORLD_COORD). Safe to call from any thread,
+	// including the script tick. The queue is drained each frame during the
+	// SpriteBatch pass. norm_x/norm_y are multiplied by ScreenResX/Y at
+	// draw time; scale is the same plain multiplier as DrawTextScreen.
+	static void QueueText3D(float norm_x, float norm_y, std::string text, const DirectX::XMFLOAT4& colour, float scale = 1.f)
+	{
+		GetInstance().QueueText3DImpl(norm_x, norm_y, std::move(text), colour, scale);
+	}
+
 	private:
 		static GridRenderer& GetInstance()
 		{
@@ -165,11 +178,25 @@ namespace Stand::Rendering
 		void DrawRectFilledScreenImpl(float x1, float y1, float x2, float y2, const DirectX::XMFLOAT4& colour);
 		void DrawPolygonFilledScreenImpl(const DirectX::XMFLOAT2* points, int count, const DirectX::XMFLOAT4& colour);
 		void DrawCircleFilledScreenImpl(float centerX, float centerY, float radius, const DirectX::XMFLOAT4& colour, int segments);
+		void QueueText3DImpl(float norm_x, float norm_y, std::string text, const DirectX::XMFLOAT4& colour, float scale);
+		void DrainText3DQueue();
 
 		void EnsureDeviceResources(ID3D12Device* device);
 		void ReleaseDeviceResources();
 
 	private:
+		struct Text3DEntry
+		{
+			float norm_x, norm_y;
+			std::string text;
+			DirectX::XMFLOAT4 colour;
+			float scale;
+		};
+
+		std::mutex m_text3d_mutex;
+		std::vector<Text3DEntry> m_text3d_pending;
+		std::vector<Text3DEntry> m_text3d_draw;
+
 		ID3D12Device* m_Device{};
 
 		std::unique_ptr<DirectX::GraphicsMemory> m_GraphicsMemory;

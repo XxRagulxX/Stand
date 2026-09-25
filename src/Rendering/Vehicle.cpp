@@ -494,9 +494,39 @@ namespace Stand::Rendering
             }
         };
 
+        class DoorsGrid : public Grid
+        {
+        public:
+            DoorsGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.doors->children)
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+            }
+        };
+
+        class ArSpeedGrid : public Grid
+        {
+        public:
+            ArSpeedGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.arSpeed->children)
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+            }
+        };
+
         MovementGrid           g_MovementContent{};
         RocketBoostGrid        g_RocketBoostContent{};
         CollisionsGrid         g_CollisionsContent{};
+        DoorsGrid              g_DoorsContent{};
+        ArSpeedGrid            g_ArSpeedContent{};
     }
 
     Vehicle::Vehicle() :
@@ -516,5 +546,7 @@ namespace Stand::Rendering
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Movement",                 &g_MovementContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Rocket Boost",              &g_RocketBoostContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Collisions",                &g_CollisionsContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Open/Close Doors",          &g_DoorsContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "AR Speedometer",             &g_ArSpeedContent));
     }
 }

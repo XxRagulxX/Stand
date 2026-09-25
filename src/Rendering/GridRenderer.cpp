@@ -28,6 +28,8 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
+#include <mutex>
+#include <string>
 #include <vector>
 
 namespace Stand::Rendering
@@ -406,6 +408,7 @@ namespace Stand::Rendering
 			ChatDisplay::DrawText();
 			Onboarding::DrawText();
 			MenuCommandConsole::DrawText();
+			DrainText3DQueue();
 
 			m_SpriteBatch->End();
 		}
@@ -555,6 +558,29 @@ namespace Stand::Rendering
 		// Real client pixels, no PosH2C/resolution-scale correction -
 		// see GridRenderer.hpp's own DrawTextScreen doc comment for why.
 		m_Font->DrawString(m_SpriteBatch.get(), text, DirectX::XMFLOAT2(x, y), DirectX::XMLoadFloat4(&colour), 0.f, DirectX::XMFLOAT2{0.f, 0.f}, DirectX::XMFLOAT2{scale, scale});
+	}
+
+	void GridRenderer::QueueText3DImpl(float norm_x, float norm_y, std::string text, const DirectX::XMFLOAT4& colour, float scale)
+	{
+		std::lock_guard<std::mutex> lock(m_text3d_mutex);
+		m_text3d_pending.push_back({ norm_x, norm_y, std::move(text), colour, scale });
+	}
+
+	void GridRenderer::DrainText3DQueue()
+	{
+		{
+			std::lock_guard<std::mutex> lock(m_text3d_mutex);
+			m_text3d_draw.clear();
+			std::swap(m_text3d_pending, m_text3d_draw);
+		}
+		if (!m_Font || !m_SpriteBatch || m_text3d_draw.empty())
+			return;
+		const float res_x = static_cast<float>(*Pointers.ScreenResX);
+		const float res_y = static_cast<float>(*Pointers.ScreenResY);
+		for (const auto& e : m_text3d_draw)
+		{
+			DrawTextScreenImpl(e.norm_x * res_x, e.norm_y * res_y, e.text.c_str(), e.colour, e.scale);
+		}
 	}
 
 	DirectX::XMFLOAT2 GridRenderer::MeasureTextImpl(const char* text, float scale) const
