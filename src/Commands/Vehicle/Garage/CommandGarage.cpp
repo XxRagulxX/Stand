@@ -1,14 +1,11 @@
 #include "Commands/Vehicle/Garage/CommandGarage.hpp"
 
-#include "Commands/CommandInput.hpp"
-#include "Commands/Widgets/CommandLambdaAction.hpp"
-#include "Core/FileMgr.hpp"
+#include "Commands/Vehicle/Garage/CommandFindSaved.hpp"
+#include "Commands/Vehicle/Garage/CommandSaveVehicle.hpp"
+#include "Commands/Vehicle/Garage/CommandOpenGarageFolder.hpp"
+
 #include "Rendering/MenuCommandBox.hpp"
-#include "Rendering/Notifications.hpp"
-#include "Scripting/FiberPool.hpp"
-#include "Scripting/Natives.hpp"
-#include "Vehicle/GarageVehicleMgr.hpp"
-#include "World/Self.hpp"
+#include "Core/FileMgr.hpp"
 
 #include <filesystem>
 #include <shellapi.h>
@@ -16,90 +13,6 @@
 
 namespace Stand::Features
 {
-    namespace
-    {
-        class CommandFindSaved : public CommandInput
-        {
-        public:
-            CommandFindSaved()
-                : CommandInput("findsaved", "Search", "Filter your saved vehicles by name.", "") {}
-
-            void OnChange() override
-            {
-                ++GarageVehicleMgr::s_Version;
-            }
-
-            void OnCall() override
-            {
-                Rendering::MenuCommandBox::Open(
-                    "findsaved",
-                    "Search Garage",
-                    "Filter saved vehicles by name.",
-                    m_StringValue,
-                    [this](const std::string& text) -> bool {
-                        SetStringValue(text);
-                        return true;
-                    }
-                );
-            }
-        };
-        static CommandFindSaved s_FindSaved;
-
-        class CommandSaveVehicle : public CommandInput
-        {
-        public:
-            CommandSaveVehicle()
-                : CommandInput("savevehicle", "Save Vehicle",
-                    "Save your current vehicle to the garage with the given name.", "") {}
-
-            void OnChange() override
-            {
-                if (m_StringValue.empty())
-                    return;
-                const auto name = m_StringValue;
-                FiberPool::queueJob([name] {
-                    const int pedH = Self::GetPed().GetHandle();
-                    if (!PED::IS_PED_IN_ANY_VEHICLE(pedH, false))
-                    {
-                        Notifications::Show("Garage", "You are not in a vehicle.", NotificationType::Warning);
-                        return;
-                    }
-                    const int vehH = PED::GET_VEHICLE_PED_IS_IN(pedH, false);
-                    GarageVehicleMgr::Save(name, vehH);
-                    Notifications::Show("Garage", "Vehicle saved: " + name);
-                });
-            }
-
-            void OnCall() override
-            {
-                Rendering::MenuCommandBox::Open(
-                    "savevehicle",
-                    "Save Vehicle",
-                    "Enter a name for your current vehicle.",
-                    "",
-                    [this](const std::string& text) -> bool {
-                        if (text.empty())
-                            return false;
-                        SetStringValue(text);
-                        return true;
-                    }
-                );
-            }
-        };
-        static CommandSaveVehicle s_SaveVehicle;
-
-        static StandWidgets::CommandLambdaAction s_OpenGarageFolder{
-            "opengaragefolder",
-            "Open Folder",
-            "Opens the folder containing your saved garage vehicles.",
-            [] {
-                auto path = FileMgr::GetProjectFolder("./Vehicles").Path();
-                std::filesystem::create_directories(path);
-                ShellExecuteA(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
-            }
-        };
-    }
-
     std::string GetGarageFilter()
     {
         return s_FindSaved.GetString();
