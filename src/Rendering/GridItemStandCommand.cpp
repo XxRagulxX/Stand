@@ -1,7 +1,7 @@
 #include "Rendering/GridItemStandCommand.hpp"
 
-#include "Commands/CommandInput.hpp"
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Commands/Vehicle/LSC/CommandVehicleColour.hpp"
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
@@ -34,11 +34,6 @@ namespace Stand::Rendering
 			{
 				auto label = physical->getMenuName().getLocalisedUtf8();
 
-				// Same " [Ctrl+G]"-style suffix real Stand's own
-				// GridItemList::update() appends per-hotkey (confirmed
-				// against origin/stand-reference) - see
-				// CommandHotkeyDispatch.hpp's own class comment for what
-				// actually happens when one of these is pressed.
 				for (const auto& hotkey : physical->hotkeys)
 					label.append(" [").append(hotkey.toString()).append("]");
 
@@ -74,13 +69,6 @@ namespace Stand::Rendering
 		if (!physical)
 			return {};
 
-		// Each '\n'-separated section maps to a SEPARATE panel box in
-		// DescriptionPanel — mirrors Stand's own populateCorner() which
-		// pushes each piece into a separate corner vector entry (each
-		// entry becomes its own GridItemText box). The order is:
-		//   [0] help_text  (description box)
-		//   [1] command syntax incl. range, e.g. "Command: name [min to max]"
-		//   [2] slider behaviour: "Click to input a value." (if applicable)
 		std::string result = physical->help_text.getLocalisedUtf8();
 
 		if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
@@ -151,23 +139,17 @@ namespace Stand::Rendering
 			if (drawAll || (drawToggle && isToggle))
 			{
 				const auto& texColour = isKeyboardFocused() ? Theme::kFocusTexture : Theme::kUnfocusedTexture;
-				// Pick left-texture icon: toggles use Enabled/Disabled, all
-				// others use Enabled/List — mirrors Stand's own GridItemList
-				// leftbound_textures logic (origin/dev GridItemList.cpp).
+
 				const IconSlot iconSlot = isToggle
 				    ? (m_Command->as<Stand::CommandToggleNoCorrelation>()->m_on ? IconSlot::Enabled : IconSlot::Disabled)
 				    : IconSlot::List;
 
 				if (compact)
 				{
-					// Compact mode: always a geometry bar (no icon for the 4px strip).
 					GridRenderer::DrawRect(x, y, 4.f, height, texColour);
 				}
 				else if (ThemeIcons::IsLoaded(iconSlot))
 				{
-					// Stand draws the left icon at (command_height - texture_width, draw_y)
-					// with size (texture_width, command_height). For a square PNG that
-					// is (0, y) with size (height, height) — full row height, no inset.
 					ThemeIcons::QueueDraw(iconSlot, static_cast<float>(x), static_cast<float>(y), static_cast<float>(height), texColour);
 				}
 				else
@@ -182,9 +164,6 @@ namespace Stand::Rendering
 		if (!m_Command)
 			return;
 
-		// Right-side icon — mirrors Stand's drawSpriteCommandRight() dispatch:
-		// toggle → ToggleOn/Off, list → List, link → Link, input → Edit.
-		// Position/size: x = (x+width-height), y = y, w = h = height.
 		const float iconSize   = static_cast<float>(height);
 		const float iconX      = static_cast<float>(x + width) - iconSize;
 		const float iconY      = static_cast<float>(y);
@@ -210,20 +189,27 @@ namespace Stand::Rendering
 		}
 		else if (m_Command->isList())
 		{
-			// Stand: textureList (or ToggleOffList/ToggleOnList for indicator variants).
-			// We don't port indicator_type, so always use List.
+			auto listTint = spriteTint;
+			if (auto* cl = dynamic_cast<Stand::CommandColourList*>(m_Command)) {
+				uint32_t p = cl->m_listColour.load(std::memory_order_relaxed);
+				if (p & 0x01000000u)
+					listTint = { float(p & 0xFF) / 255.f, float((p >> 8) & 0xFF) / 255.f, float((p >> 16) & 0xFF) / 255.f, 1.f };
+			}
 			if (ThemeIcons::IsLoaded(IconSlot::List))
-				ThemeIcons::QueueDraw(IconSlot::List, iconX, iconY, iconSize, spriteTint);
-			// Geometry ">" fallback is handled in drawText() below.
+				ThemeIcons::QueueDraw(IconSlot::List, iconX, iconY, iconSize, listTint);
 		}
 		else if (m_Command->isLink())
 		{
 			if (ThemeIcons::IsLoaded(IconSlot::Link))
 				ThemeIcons::QueueDraw(IconSlot::Link, iconX, iconY, iconSize, spriteTint);
 		}
-		else if (dynamic_cast<Stand::CommandInput*>(m_Command))
+		else if (m_Command->flags & CMDFLAG_SEARCH_INPUT)
 		{
-			// Stand: CommandInput → textureEdit.
+			if (ThemeIcons::IsLoaded(IconSlot::Search))
+				ThemeIcons::QueueDraw(IconSlot::Search, iconX, iconY, iconSize, spriteTint);
+		}
+		else if (m_Command->flags & CMDFLAG_TEXT_INPUT)
+		{
 			if (ThemeIcons::IsLoaded(IconSlot::Edit))
 				ThemeIcons::QueueDraw(IconSlot::Edit, iconX, iconY, iconSize, spriteTint);
 		}
@@ -262,8 +248,14 @@ namespace Stand::Rendering
 			// Skip ">" text when the List icon is loaded — sprite in draw() replaces it.
 			if (!ThemeIcons::IsLoaded(IconSlot::List))
 			{
+				auto arrowColour = rightColour;
+				if (auto* cl = dynamic_cast<Stand::CommandColourList*>(m_Command)) {
+					uint32_t p = cl->m_listColour.load(std::memory_order_relaxed);
+					if (p & 0x01000000u)
+						arrowColour = { float(p & 0xFF) / 255.f, float((p >> 8) & 0xFF) / 255.f, float((p >> 16) & 0xFF) / 255.f, 1.f };
+				}
 				const auto arrowSize = GridRenderer::MeasureText(">");
-				GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, y + std::max(0.f, (height - arrowSize.y) * 0.5f), ">", rightColour);
+				GridRenderer::DrawText(x + width - arrowSize.x - kArrowGap, y + std::max(0.f, (height - arrowSize.y) * 0.5f), ">", arrowColour);
 			}
 			return;
 		}
@@ -275,9 +267,6 @@ namespace Stand::Rendering
 
 			if (focused)
 			{
-				// Focused: show full < value > layout — matches Stand's own
-				// GridItemList behaviour where arrows are only drawn for the
-				// focused row.
 				const auto layout = ComputeSliderLayout(valueStr);
 
 				const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
@@ -356,23 +345,6 @@ namespace Stand::Rendering
 	{
 		auto* toggle = m_Command->as<Stand::CommandToggleNoCorrelation>();
 
-		// A menu click, dispatched on a script thread since a toggle's
-		// own onEnable()/onDisable() touches game state/natives, which
-		// must never run directly on the render/input thread - same
-		// "queue it, don't call it inline" convention
-		// GridItemCommandButton.cpp's own onClick() already uses for
-		// this project's own Command::Call().
-		//
-		// Deliberately NOT calling click.ensureResponse()/respond() here
-		// (unlike MenuCommandConsole.cpp's own CLICK_COMMAND activation,
-		// or CommandHotkeyDispatch.cpp's own CLICK_HOTKEY one) - a
-		// previous pass here added it, then removed it again per explicit
-		// request: this row's own checkbox already shows the new state
-		// on screen the instant it flips, so a toast on top of that is
-		// redundant noise specifically for a menu click. Typing into the
-		// console (or a hotkey, which can fire with the menu closed
-		// entirely) has no such visible feedback of its own, which is
-		// exactly why those two still get one.
 		FiberPool::queueJob([toggle] {
 			Stand::Click click(Stand::CLICK_MENU, Stand::TC_SCRIPT_YIELDABLE);
 			toggle->onClick(click);
@@ -394,11 +366,6 @@ namespace Stand::Rendering
 
 	void GridItemStandCommand::ButtonClicked(Stand::CommandPhysical* physical)
 	{
-		// Same queue-it-not-call-it-inline convention as ToggleClicked()/
-		// SliderStep() above - a plain action's own onClick() can touch
-		// game natives just as freely as a toggle's onEnable()/onDisable().
-		// No ensureResponse()/respond() here either - see ToggleClicked()'s
-		// own comment for why a menu click doesn't get a toast.
 		FiberPool::queueJob([physical] {
 			Stand::Click click(Stand::CLICK_MENU, Stand::TC_SCRIPT_YIELDABLE);
 			physical->onClick(click);

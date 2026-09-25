@@ -4,6 +4,7 @@
 #include "Menu/Click.hpp"
 #include "Util/Label.hpp"
 
+#include <atomic>
 #include <functional>
 #include <vector>
 
@@ -18,9 +19,12 @@ namespace Stand
     int LscGetVehicle();
     RGB GetVehicleColourRgb(int veh, bool primary);
 
-    enum class ColourTarget { Primary, Secondary, Pearlescent, Interior, Wheel };
+    enum class ColourTarget { Primary, Secondary, Pearlescent, Interior, Wheel, Neon, TyreSmoke };
 
-    void AddStdColours(CommandList* parent, ColourTarget tgt);
+    void AddStdColours(CommandList* parent, ColourTarget tgt, bool searchable = false);
+
+    RGB GetNeonColourRgb(int veh);
+    RGB GetTyreSmokeColourRgb(int veh);
 
     class CommandVehRainbow : public CommandSlider
     {
@@ -36,11 +40,30 @@ namespace Stand
         void onTick() override;
     };
 
-    class CommandVehicleColour : public CommandList
+    class CommandColourList : public CommandList
+    {
+    public:
+        std::atomic<uint32_t> m_listColour{0};
+        using CommandList::CommandList;
+    };
+
+    class CommandVehicleColour : public CommandColourList
     {
     public:
         CommandVehicleColour(CommandList* parent, Label name,
                              std::vector<CommandName> cmdnames,
                              ColourTarget target);
+    };
+
+    class CommandNeonColour : public CommandColourList
+    {
+    public:
+        explicit CommandNeonColour(CommandList* parent);
+    };
+
+    class CommandTyreSmokeColour : public CommandColourList
+    {
+    public:
+        explicit CommandTyreSmokeColour(CommandList* parent);
     };
 }

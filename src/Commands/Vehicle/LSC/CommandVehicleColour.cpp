@@ -4,6 +4,7 @@
 #include "Commands/Widgets/CommandIssuable.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/Clipboard.hpp"
 #include "Rendering/GridStandCommandList.hpp"
@@ -35,6 +36,17 @@ namespace Stand
                 : CommandPhysical(COMMAND_ACTION, parent, Label(label, Label::TagLiteral{}), {}, NOLABEL, CMDFLAG_SECTION_HEADER) {}
         };
 
+        RGB GetColourByTarget(int veh, ColourTarget tgt)
+        {
+            switch (tgt) {
+            case ColourTarget::Primary:   return GetVehicleColourRgb(veh, true);
+            case ColourTarget::Secondary: return GetVehicleColourRgb(veh, false);
+            case ColourTarget::Neon:      return GetNeonColourRgb(veh);
+            case ColourTarget::TyreSmoke: return GetTyreSmokeColourRgb(veh);
+            default:                      return {0, 0, 0};
+            }
+        }
+
         class CommandColourChannelSlider : public CommandSlider
         {
             std::function<void(int)> m_apply;
@@ -65,17 +77,17 @@ namespace Stand
         class CommandHsvChannel : public CommandSlider
         {
             int  m_ch;
-            bool m_primary;
+            ColourTarget m_tgt;
         public:
-            CommandHsvChannel(CommandList* parent, Label name, int max_val, int ch, bool primary)
+            CommandHsvChannel(CommandList* parent, Label name, int max_val, int ch, ColourTarget tgt)
                 : CommandSlider(parent, std::move(name), CMDNAMES_0(), NOLABEL, 0, max_val, 0)
-                , m_ch(ch), m_primary(primary)
+                , m_ch(ch), m_tgt(tgt)
             { CommandTickDispatch::AddCommand(this); }
             ~CommandHsvChannel() override { CommandTickDispatch::RemoveCommand(this); }
 
             void onTick() override {
                 int veh = LscGetVehicle(); if (!veh) return;
-                HSV hsv = RgbToHsv(GetVehicleColourRgb(veh, m_primary));
+                HSV hsv = RgbToHsv(GetColourByTarget(veh, m_tgt));
                 int newVal;
                 if      (m_ch == 0) newVal = int(std::round(hsv.h));
                 else if (m_ch == 1) newVal = int(std::round(hsv.s * 100.f));
@@ -86,18 +98,32 @@ namespace Stand
 
             void onChange(Click& click, int) override {
                 if (click.isAuto()) return;
-                int v = value; int ch = m_ch; bool pri = m_primary;
-                click.ensureScriptThread([v, ch, pri] {
+                int v = value; int ch = m_ch; ColourTarget tgt = m_tgt;
+                click.ensureScriptThread([v, ch, tgt] {
                     int veh = LscGetVehicle(); if (!veh) return;
-                    HSV hsv = RgbToHsv(GetVehicleColourRgb(veh, pri));
+                    HSV hsv = RgbToHsv(GetColourByTarget(veh, tgt));
                     if      (ch == 0) hsv.h = float(v);
                     else if (ch == 1) hsv.s = v / 100.f;
                     else              hsv.v = v / 100.f;
                     RGB rgb = HsvToRgb(hsv);
                     int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                    if (pri) VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
-                    else     VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
-                    VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                    switch (tgt) {
+                    case ColourTarget::Primary:
+                        VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                        break;
+                    case ColourTarget::Secondary:
+                        VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, rgb.r, rgb.g, rgb.b);
+                        VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                        break;
+                    case ColourTarget::Neon:
+                        VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, rgb.r, rgb.g, rgb.b);
+                        break;
+                    case ColourTarget::TyreSmoke:
+                        VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, rgb.r, rgb.g, rgb.b);
+                        break;
+                    default: break;
+                    }
                 });
             }
         };
@@ -105,11 +131,11 @@ namespace Stand
         class CommandCurrentColourHex : public CommandSlider
         {
             std::atomic<uint32_t> m_packed{0};
-            bool m_primary;
+            ColourTarget m_tgt;
         public:
-            CommandCurrentColourHex(CommandList* parent, bool primary)
+            CommandCurrentColourHex(CommandList* parent, ColourTarget tgt)
                 : CommandSlider(parent, LIT("Current Colour (Hex)"), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1)
-                , m_primary(primary)
+                , m_tgt(tgt)
             { CommandTickDispatch::AddCommand(this); }
             ~CommandCurrentColourHex() override { CommandTickDispatch::RemoveCommand(this); }
 
@@ -117,7 +143,7 @@ namespace Stand
                 int veh = LscGetVehicle();
                 uint32_t p = 0;
                 if (veh) {
-                    RGB rgb = GetVehicleColourRgb(veh, m_primary);
+                    RGB rgb = GetColourByTarget(veh, m_tgt);
                     p = (uint32_t(rgb.r) << 16) | (uint32_t(rgb.g) << 8) | uint32_t(rgb.b);
                     p |= 0x80000000u;
                 }
@@ -164,11 +190,23 @@ namespace Stand
                         FiberPool::queueJob([tgt, r, g, b] {
                             int veh = LscGetVehicle(); if (!veh) return;
                             int pe, wh; VEHICLE::GET_VEHICLE_EXTRA_COLOURS(veh, &pe, &wh);
-                            if (tgt == ColourTarget::Primary)
+                            switch (tgt) {
+                            case ColourTarget::Primary:
                                 VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(veh, (int)r, (int)g, (int)b);
-                            else
+                                VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                                break;
+                            case ColourTarget::Secondary:
                                 VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(veh, (int)r, (int)g, (int)b);
-                            VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                                VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, wh);
+                                break;
+                            case ColourTarget::Neon:
+                                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, (int)r, (int)g, (int)b);
+                                break;
+                            case ColourTarget::TyreSmoke:
+                                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, (int)r, (int)g, (int)b);
+                                break;
+                            default: break;
+                            }
                         });
                         return true;
                     }
@@ -178,29 +216,92 @@ namespace Stand
 
         class CommandNavBarColourSync : public CommandPhysical
         {
-            bool m_primary;
+            ColourTarget m_tgt;
             bool m_wasActive = false;
         public:
-            CommandNavBarColourSync(CommandList* parent, bool primary)
+            CommandNavBarColourSync(CommandList* parent, ColourTarget tgt)
                 : CommandPhysical(COMMAND_ACTION, parent, LIT(""), {}, NOLABEL, CMDFLAG_CONCEALED)
-                , m_primary(primary)
+                , m_tgt(tgt)
             { CommandTickDispatch::AddCommand(this); }
             ~CommandNavBarColourSync() override { CommandTickDispatch::RemoveCommand(this); }
 
             void onTick() override {
                 bool active = (Rendering::MenuNavigation::Current() == &Rendering::GridStandCommandList::GetOrCreate(this->parent));
+                int veh = LscGetVehicle();
+                uint32_t packed = 0u;
+                if (veh) {
+                    RGB rgb = GetColourByTarget(veh, m_tgt);
+                    packed = 0x01000000u | uint32_t(rgb.r) | (uint32_t(rgb.g) << 8) | (uint32_t(rgb.b) << 16);
+                }
+                static_cast<CommandColourList*>(this->parent)->m_listColour.store(packed, std::memory_order_relaxed);
                 if (active) {
-                    int veh = LscGetVehicle();
-                    uint32_t packed = 0u;
-                    if (veh) {
-                        RGB rgb = GetVehicleColourRgb(veh, m_primary);
-                        packed = 0x01000000u | uint32_t(rgb.r) | (uint32_t(rgb.g) << 8) | (uint32_t(rgb.b) << 16);
-                    }
                     Rendering::Theme::kNavBarColour.store(packed, std::memory_order_relaxed);
                 } else if (m_wasActive) {
                     Rendering::Theme::kNavBarColour.store(0u, std::memory_order_relaxed);
                 }
                 m_wasActive = active;
+            }
+        };
+
+        class CommandColourSearch : public CommandPhysical
+        {
+            std::string m_filter;
+            bool m_wasActive = false;
+        public:
+            explicit CommandColourSearch(CommandList* parent)
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Search"), CMDNAMES_0(), NOLABEL, CMDFLAG_SEARCH_INPUT)
+            { CommandTickDispatch::AddCommand(this); }
+            ~CommandColourSearch() override { CommandTickDispatch::RemoveCommand(this); }
+
+            void onTick() override {
+                bool active = (Rendering::MenuNavigation::Current() == &Rendering::GridStandCommandList::GetOrCreate(this->parent));
+                if (m_wasActive && !active && !m_filter.empty()) {
+                    m_filter.clear();
+                    setMenuName(LIT("Search"));
+                    applyFilter();
+                }
+                m_wasActive = active;
+            }
+
+            void onClick(Click& click) override {
+                Rendering::MenuCommandBox::Open(
+                    "vehcolsearch",
+                    "Search Colours",
+                    "Filter by name",
+                    m_filter,
+                    [this](const std::string& text) -> bool {
+                        m_filter = text;
+                        if (m_filter.empty())
+                            setMenuName(LIT("Search"));
+                        else
+                            setMenuName(Label("Search: " + m_filter, Label::TagLiteral{}));
+                        applyFilter();
+                        return true;
+                    }
+                );
+            }
+
+        private:
+            void applyFilter() {
+                std::string lower = m_filter;
+                for (char& c : lower) c = (char)std::tolower((unsigned char)c);
+                for (auto& child : this->parent->children) {
+                    if (child.get() == this) continue;
+                    if (!child->isPhysical()) continue;
+                    auto* phys = child->getPhysical();
+                    if (phys->flags & CMDFLAG_SECTION_HEADER) continue;
+                    if (lower.empty()) {
+                        phys->flags &= ~CMDFLAG_CONCEALED;
+                    } else {
+                        std::string name = phys->menu_name.literal_str;
+                        for (char& c : name) c = (char)std::tolower((unsigned char)c);
+                        if (name.find(lower) != std::string::npos)
+                            phys->flags &= ~CMDFLAG_CONCEALED;
+                        else
+                            phys->flags |= CMDFLAG_CONCEALED;
+                    }
+                }
+                Rendering::GridStandCommandList::GetOrCreate(this->parent).invalidateContent();
             }
         };
 
@@ -243,6 +344,7 @@ namespace Stand
                     case ColourTarget::Wheel:
                         VEHICLE::SET_VEHICLE_EXTRA_COLOURS(veh, pe, ci);
                         break;
+                    default: break;
                     }
                 });
             }
@@ -349,8 +451,24 @@ namespace Stand
         return {r, g, b};
     }
 
-    void AddStdColours(CommandList* parent, ColourTarget tgt)
+    RGB GetNeonColourRgb(int veh)
     {
+        int r = 0, g = 0, b = 0;
+        VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
+        return {r, g, b};
+    }
+
+    RGB GetTyreSmokeColourRgb(int veh)
+    {
+        int r = 0, g = 0, b = 0;
+        VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
+        return {r, g, b};
+    }
+
+    void AddStdColours(CommandList* parent, ColourTarget tgt, bool searchable)
+    {
+        if (searchable)
+            parent->createChild<CommandColourSearch>();
         for (auto& [idx, name] : lscClassicColors)
             parent->createChild<CommandStdColourAction>(Label(name, Label::TagLiteral{}), tgt, idx);
     }
@@ -390,11 +508,11 @@ namespace Stand
     CommandVehicleColour::CommandVehicleColour(CommandList* parent, Label name,
                                                std::vector<CommandName> cmdnames,
                                                ColourTarget target)
-        : CommandList(parent, std::move(name), std::move(cmdnames))
+        : CommandColourList(parent, std::move(name), std::move(cmdnames))
     {
         const bool isPrimary = (target == ColourTarget::Primary);
 
-        createChild<CommandNavBarColourSync>(isPrimary);
+        createChild<CommandNavBarColourSync>(target);
 
         createChild<CommandVehRainbow>(
             isPrimary ? CMDNAMES("vehprimaryrainbow") : CMDNAMES("vehsecondaryrainbow"),
@@ -432,9 +550,9 @@ namespace Stand
             createChild<CommandCopyPrimaryToSecondary>();
 
         createChild<CommandColourSectionHeader>("HSV Representation");
-        createChild<CommandHsvChannel>(LIT("Hue"),        360, 0, isPrimary);
-        createChild<CommandHsvChannel>(LIT("Saturation"), 100, 1, isPrimary);
-        createChild<CommandHsvChannel>(LIT("Value"),      100, 2, isPrimary);
+        createChild<CommandHsvChannel>(LIT("Hue"),        360, 0, target);
+        createChild<CommandHsvChannel>(LIT("Saturation"), 100, 1, target);
+        createChild<CommandHsvChannel>(LIT("Value"),      100, 2, target);
 
         createChild<CommandColourSectionHeader>("RGB Representation");
         createChild<CommandColourChannelSlider>(LIT("Red"),
@@ -473,6 +591,136 @@ namespace Stand
 
         createChild<CommandColourSectionHeader>("Other");
         createChild<CommandEnterHexCode>(target);
-        createChild<CommandCurrentColourHex>(isPrimary);
+        createChild<CommandCurrentColourHex>(target);
+    }
+
+    CommandNeonColour::CommandNeonColour(CommandList* parent)
+        : CommandColourList(parent, LIT("Neon Colour"), CMDNAMES_0())
+    {
+        createChild<CommandNavBarColourSync>(ColourTarget::Neon);
+
+        createChild<CommandVehRainbow>(
+            CMDNAMES("neoncolourrainbow"),
+            [](RGB rgb) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, rgb.r, rgb.g, rgb.b);
+            }
+        );
+
+        createChild<CommandColourSectionHeader>("HSV Representation");
+        createChild<CommandHsvChannel>(LIT("Hue"),        360, 0, ColourTarget::Neon);
+        createChild<CommandHsvChannel>(LIT("Saturation"), 100, 1, ColourTarget::Neon);
+        createChild<CommandHsvChannel>(LIT("Value"),      100, 2, ColourTarget::Neon);
+
+        createChild<CommandColourSectionHeader>("RGB Representation");
+        createChild<CommandColourChannelSlider>(LIT("Red"),
+            [](int v) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
+                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, v, g, b);
+            },
+            []() { int veh = LscGetVehicle(); if (!veh) return 0; int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b); return r; }
+        );
+        createChild<CommandColourChannelSlider>(LIT("Green"),
+            [](int v) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
+                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, r, v, b);
+            },
+            []() { int veh = LscGetVehicle(); if (!veh) return 0; int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b); return g; }
+        );
+        createChild<CommandColourChannelSlider>(LIT("Blue"),
+            [](int v) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
+                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, r, g, v);
+            },
+            []() { int veh = LscGetVehicle(); if (!veh) return 0; int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b); return b; }
+        );
+
+        createChild<CommandColourSectionHeader>("Other");
+        createChild<CommandEnterHexCode>(ColourTarget::Neon);
+        createChild<CommandCurrentColourHex>(ColourTarget::Neon);
+    }
+
+    CommandTyreSmokeColour::CommandTyreSmokeColour(CommandList* parent)
+        : CommandColourList(parent, LIT("Tyre Smoke Colour"), CMDNAMES("vehtire"))
+    {
+        createChild<CommandNavBarColourSync>(ColourTarget::TyreSmoke);
+
+        createChild<CommandVehRainbow>(
+            CMDNAMES("vehtiresmokrainbow"),
+            [](RGB rgb) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, rgb.r, rgb.g, rgb.b);
+            }
+        );
+
+        struct CommandIndependenceTires : public CommandToggle {
+            explicit CommandIndependenceTires(CommandList* parent)
+                : CommandToggle(parent, LIT("Independence Day Tyre Smoke"), CMDNAMES("independencetiresmoke")) {}
+
+            void onChange(Click& click) override {
+                if (!m_on) return;
+                onChangeToggleScriptTickEventHandler(click, [this] {
+                    if (!m_on) return false;
+                    int veh = LscGetVehicle();
+                    if (!veh) return true;
+                    VEHICLE::TOGGLE_VEHICLE_MOD(veh, 20, true);
+                    VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, 0, 0, 0);
+                    return true;
+                });
+            }
+        };
+        createChild<CommandIndependenceTires>();
+
+        createChild<CommandColourSectionHeader>("HSV Representation");
+        createChild<CommandHsvChannel>(LIT("Hue"),        360, 0, ColourTarget::TyreSmoke);
+        createChild<CommandHsvChannel>(LIT("Saturation"), 100, 1, ColourTarget::TyreSmoke);
+        createChild<CommandHsvChannel>(LIT("Value"),      100, 2, ColourTarget::TyreSmoke);
+
+        createChild<CommandColourSectionHeader>("RGB Representation");
+        createChild<CommandColourChannelSlider>(LIT("Red"),
+            [](int v) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
+                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, v, g, b);
+            },
+            []() { int veh = LscGetVehicle(); if (!veh) return 0; int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b); return r; }
+        );
+        createChild<CommandColourChannelSlider>(LIT("Green"),
+            [](int v) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
+                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, r, v, b);
+            },
+            []() { int veh = LscGetVehicle(); if (!veh) return 0; int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b); return g; }
+        );
+        createChild<CommandColourChannelSlider>(LIT("Blue"),
+            [](int v) {
+                int veh = LscGetVehicle(); if (!veh) return;
+                int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
+                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, r, g, v);
+            },
+            []() { int veh = LscGetVehicle(); if (!veh) return 0; int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b); return b; }
+        );
+
+        createChild<CommandColourSectionHeader>("Other");
+        createChild<CommandEnterHexCode>(ColourTarget::TyreSmoke);
+        createChild<CommandCurrentColourHex>(ColourTarget::TyreSmoke);
+
+        struct CommandCopyPrimaryToTyreSmoke : public CommandPhysical {
+            explicit CommandCopyPrimaryToTyreSmoke(CommandList* parent)
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Copy Primary Colour"), CMDNAMES_0(), NOLABEL) {}
+
+            void onClick(Click& click) override {
+                click.ensureScriptThread([] {
+                    int veh = LscGetVehicle(); if (!veh) return;
+                    RGB rgb = GetVehicleColourRgb(veh, true);
+                    VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, rgb.r, rgb.g, rgb.b);
+                });
+            }
+        };
+        createChild<CommandCopyPrimaryToTyreSmoke>();
     }
 }

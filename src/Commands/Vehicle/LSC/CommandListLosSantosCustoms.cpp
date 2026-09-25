@@ -1,11 +1,14 @@
 #include "Commands/Vehicle/LSC/CommandListLosSantosCustoms.hpp"
 #include "Commands/Vehicle/LSC/CommandVehicleColour.hpp"
+#include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
+#include "Core/Pointers.hpp"
 #include "Menu/Click.hpp"
+#include "Rendering/MenuCommandBox.hpp"
 #include "Scripting/Natives.hpp"
 #include "Util/get_current_time_millis.hpp"
 #include "Util/Label.hpp"
@@ -22,6 +25,7 @@ namespace Stand
     namespace
     {
         static std::atomic<bool> s_lsc_in_veh{false};
+        static std::atomic<bool> s_lsc_show_na{false};
 
         namespace Mod
         {
@@ -71,13 +75,13 @@ namespace Stand
             constexpr int Lightbar    = 49;
 
             static constexpr int visual[] = {
-                Horns, Livery, SideSkirt, Suspension, Exhaust, Frame,
+                Horns, SideSkirt, Suspension, Exhaust, 
                 FrontBumper, RearBumper, Hood, Roof, Fender, RFender,
                 Grille, PlateHolder, VanityPlates, Trim, Ornaments,
                 Dashboard, Dial, Seats, DoorSpeaker, Wheel, Shifter,
                 Plaques, Speakers, Trunk, Hydraulics, EngineBlock,
                 AirFilter, Struts, ArchCover, Aerials, Trim2, Tank,
-                DoorL, DoorR, Lightbar,
+                DoorL, DoorR, Lightbar, Livery, Frame,
             };
 
             const char* GetName(int t)
@@ -150,10 +154,15 @@ namespace Stand
                 int veh = LscGetVehicle();
                 s_lsc_in_veh.store(veh != 0, std::memory_order_relaxed);
 
-                if (!veh) { setMaxValue(min_value); return; }
+                if (!veh) { setMaxValue(min_value); flags |= CMDFLAG_CONCEALED; return; }
                 int mx = VEHICLE::GET_NUM_VEHICLE_MODS(veh, m_mod) - 1;
                 setMaxValue(mx);
-                if (mx >= min_value) {
+                bool na = (mx < 0);
+                if (na && !s_lsc_show_na.load(std::memory_order_relaxed))
+                    flags |= CMDFLAG_CONCEALED;
+                else
+                    flags &= ~CMDFLAG_CONCEALED;
+                if (!na) {
                     Click c(CLICK_AUTO, TC_SCRIPT_NOYIELD);
                     setValueIndicator(c, VEHICLE::GET_VEHICLE_MOD(veh, m_mod));
                 }
@@ -338,24 +347,6 @@ namespace Stand
             }
         };
 
-        class CommandIndependenceTires : public CommandToggle
-        {
-        public:
-            explicit CommandIndependenceTires(CommandList* parent)
-                : CommandToggle(parent, LIT("Independence Day Tyre Smoke"), CMDNAMES("independencetiresmoke")) {}
-
-            void onChange(Click& click) override {
-                if (!m_on) return;
-                onChangeToggleScriptTickEventHandler(click, [this] {
-                    if (!m_on) return false;
-                    int veh = LscGetVehicle();
-                    if (!veh) return true;
-                    VEHICLE::TOGGLE_VEHICLE_MOD(veh, 20, true);
-                    VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, 0, 0, 0);
-                    return true;
-                });
-            }
-        };
 
         class CommandPlateType : public CommandSlider
         {
@@ -416,39 +407,78 @@ namespace Stand
             }
         };
 
-        class CommandScrollingPlateText : public CommandToggle
+        class CommandListScrollingText : public CommandList
         {
-            std::string m_baseText;
-            int         m_scrollPos = 0;
-            time_t      m_lastTick  = 0;
         public:
-            explicit CommandScrollingPlateText(CommandList* parent)
-                : CommandToggle(parent, LIT("Scrolling Plate Text"), CMDNAMES("platescroll", "scrollplatetext")) {}
+            std::string m_scrollText;
+            int m_intervalMs = 250;
 
-            void onChange(Click& click) override {
-                if (!m_on) return;
-                m_baseText.clear();
-                m_scrollPos = 0;
-                m_lastTick  = 0;
-                onChangeToggleScriptTickEventHandler(click, [this] {
-                    if (!m_on) return false;
-                    int veh = LscGetVehicle();
-                    if (!veh) return true;
-                    if (m_baseText.empty()) {
-                        const char* p = VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT(veh);
-                        m_baseText = (p && *p) ? p : "PLATE";
+            explicit CommandListScrollingText(CommandList* parent)
+                : CommandList(parent, LIT("Scrolling Text"), CMDNAMES("platescroll", "scrollplatetext"))
+            {
+                struct CommandScrollingToggle : public CommandToggle {
+                    int m_scrollPos = 0;
+                    time_t m_lastTick = 0;
+                    explicit CommandScrollingToggle(CommandList* p)
+                        : CommandToggle(p, LIT("Scrolling Text"), CMDNAMES_0()) {}
+
+                    void onChange(Click& click) override {
+                        if (!m_on) return;
+                        m_scrollPos = 0;
+                        m_lastTick = 0;
+                        onChangeToggleScriptTickEventHandler(click, [this] {
+                            if (!m_on) return false;
+                            int veh = LscGetVehicle(); if (!veh) return true;
+                            auto* list = static_cast<CommandListScrollingText*>(this->parent);
+                            std::string text = list->m_scrollText;
+                            if (text.empty()) {
+                                const char* p = VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT(veh);
+                                text = (p && *p) ? p : "PLATE";
+                            }
+                            auto now = get_current_time_millis();
+                            if (now - m_lastTick < (time_t)list->m_intervalMs) return true;
+                            m_lastTick = now;
+                            std::string padded = text + "        ";
+                            int pos = m_scrollPos % (int)padded.size();
+                            VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(veh, padded.substr(pos, 8).c_str());
+                            ++m_scrollPos;
+                            return true;
+                        });
                     }
-                    auto now = get_current_time_millis();
-                    if (now - m_lastTick < 200) return true;
-                    m_lastTick = now;
-                    std::string padded = m_baseText + "        ";
-                    int len = static_cast<int>(padded.size());
-                    int pos = m_scrollPos % len;
-                    std::string display = padded.substr(pos, 8);
-                    VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(veh, display.c_str());
-                    ++m_scrollPos;
-                    return true;
-                });
+                };
+                createChild<CommandScrollingToggle>();
+
+                struct CommandScrollingTextSetter : public CommandPhysical {
+                    explicit CommandScrollingTextSetter(CommandList* p)
+                        : CommandPhysical(COMMAND_ACTION, p, LIT("Text"), CMDNAMES_0(), NOLABEL, CMDFLAG_TEXT_INPUT) {}
+
+                    void onClick(Click& click) override {
+                        auto* list = static_cast<CommandListScrollingText*>(this->parent);
+                        Rendering::MenuCommandBox::Open(
+                            "platescrolltext",
+                            "Scrolling Text",
+                            "Text to scroll across the plate",
+                            list->m_scrollText,
+                            [list, this](const std::string& text) -> bool {
+                                list->m_scrollText = text;
+                                setMenuName(text.empty() ? LIT("Text") : Label("Text: " + text, Label::TagLiteral{}));
+                                return true;
+                            }
+                        );
+                    }
+                };
+                createChild<CommandScrollingTextSetter>();
+
+                struct CommandScrollingInterval : public CommandSlider {
+                    explicit CommandScrollingInterval(CommandList* p)
+                        : CommandSlider(p, LIT("Interval (ms)"), CMDNAMES_0(), NOLABEL, 50, 2000, 250) {}
+
+                    void onChange(Click& click, int) override {
+                        if (click.isAuto()) return;
+                        static_cast<CommandListScrollingText*>(this->parent)->m_intervalMs = value;
+                    }
+                };
+                createChild<CommandScrollingInterval>();
             }
         };
 
@@ -458,7 +488,7 @@ namespace Stand
             time_t      m_lastTick = 0;
         public:
             explicit CommandPlateSpeed(CommandList* parent)
-                : CommandToggle(parent, LIT("Speed on Plate"), CMDNAMES("platespeedometer", "platespeed")) {}
+                : CommandToggle(parent, LIT("Speedometer"), CMDNAMES("platespeedometer", "platespeed")) {}
 
             void onChange(Click& click) override {
                 if (!m_on) {
@@ -502,7 +532,7 @@ namespace Stand
             int         m_fps       = 0;
         public:
             explicit CommandPlateTps(CommandList* parent)
-                : CommandToggle(parent, LIT("FPS on Plate"), CMDNAMES("platetps")) {}
+                : CommandToggle(parent, LIT("Ticks Per Second"), CMDNAMES("platetps")) {}
 
             void onChange(Click& click) override {
                 if (!m_on) {
@@ -549,7 +579,7 @@ namespace Stand
             std::string m_lockedPlate;
         public:
             explicit CommandLockPlate(CommandList* parent)
-                : CommandToggle(parent, LIT("Lock Plate"), CMDNAMES("lockplate")) {}
+                : CommandToggle(parent, LIT("Lock License Plate Text"), CMDNAMES("lockplate")) {}
 
             void onChange(Click& click) override {
                 if (!m_on) { m_lockedPlate.clear(); return; }
@@ -571,7 +601,7 @@ namespace Stand
         {
         public:
             explicit CommandHeadlights(CommandList* parent)
-                : CommandSlider(parent, LIT("Headlights Colour"), CMDNAMES("headlights"), NOLABEL, 0, 12, 0)
+                : CommandSlider(parent, LIT("Headlights"), CMDNAMES("headlights"), NOLABEL, 0, 12, 0)
             {
                 CommandTickDispatch::AddCommand(this);
             }
@@ -582,7 +612,12 @@ namespace Stand
                 int veh = LscGetVehicle();
                 if (!veh) return;
                 Click c(CLICK_AUTO, TC_SCRIPT_NOYIELD);
-                setValueIndicator(c, VEHICLE::GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(veh));
+                if (VEHICLE::IS_TOGGLE_MOD_ON(veh, 22)) {
+                    int colour = VEHICLE::GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(veh);
+                    setValueIndicator(c, colour == 255 ? 1 : colour + 2);
+                } else {
+                    setValueIndicator(c, 0);
+                }
             }
 
             void onChange(Click& click, int) override {
@@ -590,25 +625,18 @@ namespace Stand
                 int v = value;
                 click.ensureScriptThread([v] {
                     int veh = LscGetVehicle(); if (!veh) return;
-                    VEHICLE::SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(veh, v);
+                    if (v == 0) {
+                        VEHICLE::TOGGLE_VEHICLE_MOD(veh, 22, false);
+                    } else {
+                        VEHICLE::TOGGLE_VEHICLE_MOD(veh, 22, true);
+                        VEHICLE::SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(veh, v == 1 ? 255 : v - 2);
+                    }
                 });
             }
         };
 
         class CommandWindowTint : public CommandSlider
         {
-            static const char* TintName(int v) {
-                switch (v) {
-                case 0: return "None";
-                case 1: return "Pure Black";
-                case 2: return "Dark Smoke";
-                case 3: return "Light Smoke";
-                case 4: return "Stock";
-                case 5: return "Limo";
-                case 6: return "Green";
-                default: return "";
-                }
-            }
         public:
             explicit CommandWindowTint(CommandList* parent)
                 : CommandSlider(parent, LIT("Window Tint"), CMDNAMES("windowtint"), NOLABEL, 0, 6, 0)
@@ -617,8 +645,6 @@ namespace Stand
             }
 
             ~CommandWindowTint() override { CommandTickDispatch::RemoveCommand(this); }
-
-            std::string getValueText() const override { return TintName(value); }
 
             void onTick() override {
                 int veh = LscGetVehicle();
@@ -712,17 +738,35 @@ namespace Stand
         class CommandVehicleExtra : public CommandToggle
         {
             const int m_extra;
-            static constexpr const char* kExtraNames[15] = {
-                "Extra 1",  "Extra 2",  "Extra 3",  "Extra 4",  "Extra 5",
-                "Extra 6",  "Extra 7",  "Extra 8",  "Extra 9",  "Extra 10",
-                "Extra 11", "Extra 12", "Extra 13", "Extra 14", "Extra 15",
-            };
         public:
             CommandVehicleExtra(CommandList* parent, int extra)
-                : CommandToggle(parent, LIT(kExtraNames[extra]), CMDNAMES_0())
-                , m_extra(extra) {}
+                : CommandToggle(parent,
+                    Label(std::string("Extra ") + std::to_string(extra), Label::TagLiteral{}),
+                    CMDNAMES_0())
+                , m_extra(extra)
+            {
+                CommandTickDispatch::AddCommand(this);
+            }
 
-            void onChange(Click& click) override {
+            ~CommandVehicleExtra() override
+            {
+                CommandTickDispatch::RemoveCommand(this);
+            }
+
+            void onTick() override
+            {
+                int veh = LscGetVehicle();
+                if (!veh || !VEHICLE::DOES_EXTRA_EXIST(veh, m_extra))
+                {
+                    flags |= CMDFLAG_CONCEALED;
+                    return;
+                }
+                flags &= ~CMDFLAG_CONCEALED;
+                m_on = (VEHICLE::IS_VEHICLE_EXTRA_TURNED_ON(veh, m_extra) != 0);
+            }
+
+            void onChange(Click& click) override
+            {
                 if (click.isAuto()) return;
                 bool on = m_on; int ex = m_extra;
                 click.ensureScriptThread([on, ex] {
@@ -754,13 +798,11 @@ namespace Stand
             }
         };
 
-        class CommandLscPresetTunings : public CommandSlider
+        class CommandLscPresetTunings : public CommandPhysical
         {
         public:
             explicit CommandLscPresetTunings(CommandList* parent)
-                : CommandSlider(parent, LIT(""), CMDNAMES_0(), NOLABEL, 0, 0, 0, 1) {}
-
-            std::string getValueText() const override { return "Preset Tunings"; }
+                : CommandPhysical(COMMAND_ACTION, parent, LIT("Preset Tunings"), CMDNAMES_0(), NOLABEL, CMDFLAG_SECTION_HEADER) {}
         };
 
         class CommandTune : public CommandPhysical
@@ -871,6 +913,117 @@ namespace Stand
             }
         };
 
+        class CommandParachuteEnable : public CommandSlider
+        {
+            bool m_ticking = false;
+        public:
+            explicit CommandParachuteEnable(CommandList* parent)
+                : CommandSlider(parent, LIT("Enable Parachute"), CMDNAMES("vehparachute"), NOLABEL, 0, 2, 0) {}
+
+            ~CommandParachuteEnable() override
+            {
+                if (m_ticking) CommandTickDispatch::RemoveCommand(this);
+            }
+
+            std::string getValueText() const override
+            {
+                switch (value)
+                {
+                case 1: return "On";
+                case 2: return "Off";
+                default: return "Don't Override";
+                }
+            }
+
+            void onTick() override
+            {
+                int veh = LscGetVehicle();
+                if (!veh) return;
+                void* cveh = Pointers.HandleToPtr(veh);
+                if (!cveh) return;
+                void* model = *reinterpret_cast<void**>(reinterpret_cast<char*>(cveh) + 0x20);
+                if (!model) return;
+                uint8_t& b = *reinterpret_cast<uint8_t*>(reinterpret_cast<char*>(model) + 0x57C + 16);
+                if (value == 1)
+                    b |= 0x01u;
+                else
+                    b &= static_cast<uint8_t>(~0x01u);
+            }
+
+            void onChange(Click& click, int) override
+            {
+                if (value == 0)
+                {
+                    if (m_ticking) { CommandTickDispatch::RemoveCommand(this); m_ticking = false; }
+                }
+                else
+                {
+                    if (!m_ticking) { CommandTickDispatch::AddCommand(this); m_ticking = true; }
+                }
+            }
+        };
+
+        struct ParachuteVariant { const char* name; uint32_t hash; int tint; };
+        static constexpr ParachuteVariant kParachuteVariants[] = {
+            { "General: Camo",             "sr_prop_specraces_para_s_01"_J, 0 },
+            { "General: Red",              "sr_prop_specraces_para_s_01"_J, 1 },
+            { "General: White/Blue/Yellow","sr_prop_specraces_para_s_01"_J, 2 },
+            { "General: Lilac/Red/White",  "sr_prop_specraces_para_s_01"_J, 3 },
+            { "General: Red/White/Blue",   "sr_prop_specraces_para_s_01"_J, 4 },
+            { "General: Blue",             "sr_prop_specraces_para_s_01"_J, 5 },
+            { "General: Lilac",            "sr_prop_specraces_para_s_01"_J, 6 },
+            { "General: Lilac/Yellow",     "sr_prop_specraces_para_s_01"_J, 7 },
+            { "General: Yellow/Blue/White","prop_v_parachute"_J,            0 },
+            { "General: Orange",           "gr_prop_gr_para_s_01"_J,        0 },
+            { "General: White",            "p_parachute1_sp_dec"_J,         0 },
+            { "SecuroServ",                "imp_prop_impexp_para_s"_J,      0 },
+            { "Broken",                    "p_para_broken1_s"_J,            0 },
+        };
+
+        class CommandParachuteModel : public CommandSlider
+        {
+            bool m_ticking = false;
+        public:
+            explicit CommandParachuteModel(CommandList* parent)
+                : CommandSlider(parent, LIT("Appearance"), CMDNAMES("vehparamodel"), NOLABEL, 0, 12, 11) {}
+
+            ~CommandParachuteModel() override
+            {
+                if (m_ticking) CommandTickDispatch::RemoveCommand(this);
+            }
+
+            std::string getValueText() const override
+            {
+                return kParachuteVariants[value].name;
+            }
+
+            void onTick() override
+            {
+                int veh = LscGetVehicle();
+                if (!veh) return;
+                VEHICLE::VEHICLE_SET_PARACHUTE_MODEL_OVERRIDE(veh, kParachuteVariants[value].hash);
+                VEHICLE::VEHICLE_SET_PARACHUTE_MODEL_TINT_INDEX(veh, kParachuteVariants[value].tint);
+            }
+
+            void onChange(Click& click, int) override
+            {
+                if (click.isAuto()) return;
+                if (!m_ticking) { CommandTickDispatch::AddCommand(this); m_ticking = true; }
+            }
+        };
+
+        class CommandLscShowNonApplicable : public CommandToggle
+        {
+        public:
+            explicit CommandLscShowNonApplicable(CommandList* parent)
+                : CommandToggle(parent, LIT("Show Non-Applicable"), CMDNAMES("lscshownonapplicable")) {}
+
+            void onChange(Click& click) override
+            {
+                s_lsc_show_na.store(m_on, std::memory_order_relaxed);
+            }
+        };
+
     }
 
     CommandListLosSantosCustoms::CommandListLosSantosCustoms(CommandList* parent)
@@ -884,30 +1037,11 @@ namespace Stand
         appear->createChild<CommandVehicleColour>(LIT("Secondary Colour"), CMDNAMES("vehsecondary", "vehiclesecondary"), ColourTarget::Secondary);
 
         auto* pearl = appear->createChild<CommandList>(LIT("Pearlescent Colour"), CMDNAMES("vehpearlescent"));
-        AddStdColours(pearl, ColourTarget::Pearlescent);
+        AddStdColours(pearl, ColourTarget::Pearlescent, true);
 
         auto* neons = appear->createChild<CommandList>(LIT("Neon Lights"), CMDNAMES("neoncolour"));
         {
-            auto* neonCol = neons->createChild<CommandList>(LIT("Neon Colour"), CMDNAMES_0());
-            neonCol->createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
-                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, v, g, b);
-            });
-            neonCol->createChild<CommandColourChannelSlider>(LIT("Green"), [](int v) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
-                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, r, v, b);
-            });
-            neonCol->createChild<CommandColourChannelSlider>(LIT("Blue"), [](int v) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                int r, g, b; VEHICLE::GET_VEHICLE_NEON_COLOUR(veh, &r, &g, &b);
-                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, r, g, v);
-            });
-            neonCol->createChild<CommandVehRainbow>(CMDNAMES("neoncolourrainbow"), [](RGB rgb) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                VEHICLE::SET_VEHICLE_NEON_COLOUR(veh, rgb.r, rgb.g, rgb.b);
-            });
+            neons->createChild<CommandNeonColour>();
             neons->createChild<CommandNeonAll>();
             neons->createChild<CommandNeonLight>(LIT("Front"),  CMDNAMES("vehneonfront"), 2);
             neons->createChild<CommandNeonLight>(LIT("Back"),   CMDNAMES("vehneonback"),  3);
@@ -923,28 +1057,7 @@ namespace Stand
             auto* wheelCol = wheels->createChild<CommandList>(LIT("Wheel Colour"), CMDNAMES("vehwheelcolour"));
             AddStdColours(wheelCol, ColourTarget::Wheel);
 
-            auto* smokeCol = wheels->createChild<CommandList>(LIT("Tyre Smoke Colour"), CMDNAMES("vehtire"));
-            smokeCol->createChild<CommandColourChannelSlider>(LIT("Red"), [](int v) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
-                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, v, g, b);
-            });
-            smokeCol->createChild<CommandColourChannelSlider>(LIT("Green"), [](int v) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
-                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, r, v, b);
-            });
-            smokeCol->createChild<CommandColourChannelSlider>(LIT("Blue"), [](int v) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                int r, g, b; VEHICLE::GET_VEHICLE_TYRE_SMOKE_COLOR(veh, &r, &g, &b);
-                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, r, g, v);
-            });
-            smokeCol->createChild<CommandVehRainbow>(CMDNAMES("vehtiresmokrainbow"), [](RGB rgb) {
-                int veh = LscGetVehicle(); if (!veh) return;
-                VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(veh, rgb.r, rgb.g, rgb.b);
-            });
-
-            wheels->createChild<CommandIndependenceTires>();
+            wheels->createChild<CommandTyreSmokeColour>();
             wheels->createChild<CommandVehDriftTyres>();
             wheels->createChild<CommandVehBulletproofTyres>();
         }
@@ -953,27 +1066,30 @@ namespace Stand
         {
             plate->createChild<CommandPlateType>();
             plate->createChild<CommandPlateRandomise>();
-            plate->createChild<CommandScrollingPlateText>();
+            plate->createChild<CommandListScrollingText>();
             plate->createChild<CommandPlateSpeed>();
             plate->createChild<CommandPlateTps>();
             plate->createChild<CommandLockPlate>();
         }
 
-        appear->createChild<CommandList>(LIT("Parachute"), CMDNAMES_0());
+        auto* interior = appear->createChild<CommandList>(LIT("Interior Colour"), CMDNAMES("vehinteriorcolour"));
+        AddStdColours(interior, ColourTarget::Interior);
+
+        {
+            auto* para = appear->createChild<CommandList>(LIT("Parachute"), CMDNAMES_0());
+            para->createChild<CommandParachuteEnable>();
+            para->createChild<CommandParachuteModel>();
+        }
 
         auto* extras = appear->createChild<CommandList>(LIT("Extras"), CMDNAMES_0());
-        for (int i = 0; i < 15; ++i)
+        for (int i = 1; i <= 14; ++i)
             extras->createChild<CommandVehicleExtra>(i);
 
         appear->createChild<CommandScorched>();
         appear->createChild<CommandTonk>();
-        appear->createChild<CommandToggle>(LIT("Show Non-Applicable"), CMDNAMES("lscshownonapplicable"), NOLABEL);
-
-        auto* interior = appear->createChild<CommandList>(LIT("Interior Colour"), CMDNAMES("vehinteriorcolour"));
-        AddStdColours(interior, ColourTarget::Interior);
+        appear->createChild<CommandLscShowNonApplicable>();
 
         appear->createChild<CommandHeadlights>();
-        appear->createChild<CommandVehmodBool>(22, CMDNAMES("xenonlights"));
         appear->createChild<CommandWindowTint>();
         appear->createChild<CommandVehRoofLivery>();
 
