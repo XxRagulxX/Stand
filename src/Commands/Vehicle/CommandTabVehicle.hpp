@@ -11,6 +11,7 @@
 #include "Commands/Vehicle/Collisions/CommandListCollisions.hpp"
 #include "Commands/Vehicle/Doors/CommandListDoors.hpp"
 #include "Commands/Vehicle/ARSpeed/CommandListArSpeed.hpp"
+#include "Commands/Vehicle/Countermeasures/CommandListCountermeasures.hpp"
 
 namespace Stand
 {
@@ -28,6 +29,7 @@ namespace Stand
         CommandListCollisions* const collisions;
         CommandListDoors* const doors;
         CommandListArSpeed* const arSpeed;
+        CommandListCountermeasures* const countermeasures;
 
         explicit CommandTabVehicle()
             : CommandList(nullptr, LIT("Vehicle")),
@@ -41,7 +43,8 @@ namespace Stand
               rocketBoost(createChild<CommandListRocketBoost>()),
               collisions(createChild<CommandListCollisions>()),
               doors(createChild<CommandListDoors>()),
-              arSpeed(createChild<CommandListArSpeed>())
+              arSpeed(createChild<CommandListArSpeed>()),
+              countermeasures(createChild<CommandListCountermeasures>())
         {
         }
     };

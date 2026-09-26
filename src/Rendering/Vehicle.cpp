@@ -522,11 +522,26 @@ namespace Stand::Rendering
             }
         };
 
+        class CountermeasuresGrid : public Grid
+        {
+        public:
+            CountermeasuresGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.countermeasures->children)
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+            }
+        };
+
         MovementGrid           g_MovementContent{};
         RocketBoostGrid        g_RocketBoostContent{};
         CollisionsGrid         g_CollisionsContent{};
         DoorsGrid              g_DoorsContent{};
         ArSpeedGrid            g_ArSpeedContent{};
+        CountermeasuresGrid    g_CountermeasuresContent{};
     }
 
     Vehicle::Vehicle() :
@@ -548,5 +563,6 @@ namespace Stand::Rendering
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Collisions",                &g_CollisionsContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Open/Close Doors",          &g_DoorsContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "AR Speedometer",             &g_ArSpeedContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Countermeasures",            &g_CountermeasuresContent));
     }
 }
