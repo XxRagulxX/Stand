@@ -536,12 +536,46 @@ namespace Stand::Rendering
             }
         };
 
+        class AutoDriveGrid : public Grid
+        {
+        public:
+            AutoDriveGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.autoDrive->children)
+                {
+                    if (child->isConcealed()) continue;
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+                }
+            }
+        };
+
         MovementGrid           g_MovementContent{};
         RocketBoostGrid        g_RocketBoostContent{};
         CollisionsGrid         g_CollisionsContent{};
         DoorsGrid              g_DoorsContent{};
         ArSpeedGrid            g_ArSpeedContent{};
         CountermeasuresGrid    g_CountermeasuresContent{};
+        AutoDriveGrid          g_AutoDriveContent{};
+
+        class LightSignalsGrid : public Grid
+        {
+        public:
+            LightSignalsGrid() : Grid(Theme::GetContentOrigin(), 0) {}
+        protected:
+            void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
+            {
+                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                auto& tab = Features::GetCommandTabVehicle();
+                for (auto& child : tab.lightSignals->children)
+                    items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, child.get()));
+            }
+        };
+
+        LightSignalsGrid       g_LightSignalsContent{};
     }
 
     Vehicle::Vehicle() :
@@ -552,6 +586,7 @@ namespace Stand::Rendering
     void Vehicle::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
     {
         constexpr int16_t kItemH = static_cast<int16_t>(Theme::kContentItemHeight);
+        auto& tab = Features::GetCommandTabVehicle();
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Spawn",             &g_SpawnContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Garage",            &g_GarageContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Personal Vehicles",        &g_PersonalVehiclesContent));
@@ -564,5 +599,24 @@ namespace Stand::Rendering
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Open/Close Doors",          &g_DoorsContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "AR Speedometer",             &g_ArSpeedContent));
         items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Countermeasures",            &g_CountermeasuresContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Auto-Drive",                  &g_AutoDriveContent));
+        items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Light Signals",               &g_LightSignalsContent));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.flip));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.fix));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.vehGod));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.mint));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.vehInvisibility));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.headlightsIntensity));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.noLockon));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.dontJackMe));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.instaSeat));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.exitStop));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.leaveEngineOn));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.submarineCar));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.vehicleSeat));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.pegasus));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.toggleEngine));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.vehicleDestroy));
+        items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.deleteVehicle));
     }
 }
