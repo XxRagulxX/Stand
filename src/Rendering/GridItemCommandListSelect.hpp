@@ -9,7 +9,7 @@
 namespace Stand::Rendering
 {
 	// A label + current selected item + "<"/">" buttons cycling through
-	// a real Stand::CommandListSelect's own option list - the Grid
+	// a real Stand::CommandLegacyListSelect's own option list - the Grid
 	// equivalent of ListCommandItem (src/ListCommandItem.cpp) for the
 	// ImGui menu, minus the dropdown/combo box: there's no popup system
 	// here yet, so cycling one entry at a time with the arrow buttons is
@@ -69,7 +69,7 @@ namespace Stand::Rendering
 		const char* CurrentItemText() const;
 		float MaxItemWidth() const; // cached on first call - the list itself doesn't change at runtime
 
-		CommandListSelect* m_Command;
+		CommandLegacyListSelect* m_Command;
 		std::optional<std::string> m_LabelOverride;
 		mutable std::optional<float> m_MaxItemWidth;
 	};

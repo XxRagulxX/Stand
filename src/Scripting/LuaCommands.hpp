@@ -93,7 +93,7 @@ namespace Stand
 		void OnChange() override;
 	};
 
-	class LuaListCommand : public CommandListSelect
+	class LuaListCommand : public CommandLegacyListSelect
 	{
 		LuaUserInterface* m_Interface;
 		int m_OnChange;

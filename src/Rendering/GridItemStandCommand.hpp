@@ -61,6 +61,7 @@ namespace Stand::Rendering
 	private:
 		void ToggleClicked();
 		void SliderStep(int direction);
+		void ListSelectStep(int direction);
 		void OpenSubList();
 		void ButtonClicked(Stand::CommandPhysical* physical);
 

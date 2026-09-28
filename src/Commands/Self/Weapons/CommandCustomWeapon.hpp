@@ -44,13 +44,13 @@ namespace Stand::Features
 		{static_cast<int>(CustomWeapons::TELEPORT_GUN), "Teleport Gun"},
 		{static_cast<int>(CustomWeapons::PAINT_GUN), "Paint Gun"},
 	};
-	static CommandListSelect _CustomWeaponType{"customweapontype", "Weapon Type", "The type of custom weapon to use", g_CustomWeaponTypes, static_cast<int>(CustomWeapons::CAGE_GUN)};
+	static CommandLegacyListSelect _CustomWeaponType{"customweapontype", "Weapon Type", "The type of custom weapon to use", g_CustomWeaponTypes, static_cast<int>(CustomWeapons::CAGE_GUN)};
 
 	static std::vector<std::pair<int, const char*>> g_PaintGunRainbowColorStyles = {
 		{static_cast<int>(RainbowColorStyle::Fade), "Fade"},
 		{static_cast<int>(RainbowColorStyle::Spasm), "Spasm"}
 	};
-	static CommandListSelect _PaintGunRainbowColorStyle{"paintgunrainbowcolorstyle", "Rainbow Color Style", "Style of rainbow color for paint gun", g_PaintGunRainbowColorStyles, static_cast<int>(RainbowColorStyle::Fade)};
+	static CommandLegacyListSelect _PaintGunRainbowColorStyle{"paintgunrainbowcolorstyle", "Rainbow Color Style", "Style of rainbow color for paint gun", g_PaintGunRainbowColorStyles, static_cast<int>(RainbowColorStyle::Fade)};
 
 	class CustomWeapon : public LoopedCommand
 	{

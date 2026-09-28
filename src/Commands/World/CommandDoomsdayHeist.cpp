@@ -48,7 +48,7 @@ namespace Stand::Features
 		    {0, "Heist Board"},
 		    {1, "Prisoner Cell"}};
 
-		static CommandListSelect _DoomsDayHeistTeleportList{"doomsdayheistteleportlist", "TP", "Teleport Location", DoomsDayHeistTeleportList, 0};
+		static CommandLegacyListSelect _DoomsDayHeistTeleportList{"doomsdayheistteleportlist", "TP", "Teleport Location", DoomsDayHeistTeleportList, 0};
 
 		static std::vector<std::pair<int, const char*>> DoomsDayHeistPlayers = {
 		    {1, "1 Player"},
@@ -56,7 +56,7 @@ namespace Stand::Features
 		    {3, "3 Players"},
 		    {4, "4 Players"}};
 
-		static CommandListSelect _DoomsDayHeistPlayers{"doomsdayheistplayers", "Players", "How many players are in the heist", DoomsDayHeistPlayers, 1};
+		static CommandLegacyListSelect _DoomsDayHeistPlayers{"doomsdayheistplayers", "Players", "How many players are in the heist", DoomsDayHeistPlayers, 1};
 
 
 		class ForceReady : public CommandLegacy
@@ -79,7 +79,7 @@ namespace Stand::Features
 		    {0, "The Data Breaches"},
 		    {1, "The Bogdan Problem"},
 		    {2, "The Doomsday Senario"}};
-		static CommandListSelect _DoomsdayHeistCategory{"doomsdayheistcategory", "Select Heist", "Heist categories", doomsdayHeistCategory, 0};
+		static CommandLegacyListSelect _DoomsdayHeistCategory{"doomsdayheistcategory", "Select Heist", "Heist categories", doomsdayHeistCategory, 0};
 
 		class Setup : public CommandLegacy
 		{

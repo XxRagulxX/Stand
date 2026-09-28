@@ -9,7 +9,7 @@
 namespace Stand::Rendering
 {
 	// GridItemCommandListSelect's counterpart for an arbitrary local option list
-	// instead of a real Stand::CommandListSelect looked up by joaat hash - the
+	// instead of a real Stand::CommandLegacyListSelect looked up by joaat hash - the
 	// same relationship GridItemIntStepper/GridItemFloatStepper already
 	// have to GridItemCommandSlider/GridItemCommandSliderFloat. Needed wherever a
 	// short fixed set of options isn't a registered Command at all (e.g.

@@ -1,12 +1,11 @@
 #include "Rendering/TeleportGrid.hpp"
 
-#include "Rendering/GridItemCommandButton.hpp"
-#include "Rendering/GridItemCommandToggle.hpp"
 #include "Rendering/GridItemFolder.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/GridItemText.hpp"
-#include "Util/Joaat.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/TeleportSavedGrid.hpp"
+#include "Commands/World/CommandTabWorld.hpp"
 
 namespace Stand::Rendering
 {
@@ -36,21 +35,15 @@ namespace Stand::Rendering
 
 	void TeleportGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
-		// Teleport's other category (the hand-rolled "Saved" locations
-		// UI) - has its own content Grid, listed at the very top of the
-		// whole list rather than at the bottom, so it's always reachable
-		// before the plain items below.
+		constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+		auto& tp = *Features::GetCommandTabWorld().places->teleportTo;
+
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Categories", Theme::kText));
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Saved", &g_SavedContent));
 
-		// Misc (MenuTeleport.cpp's miscGroup) - tptowaypoint is shown only
-		// while autotptowaypoint is *off* (negate); watchCondition() (not
-		// GridItemConditional) so it doesn't reserve its own layout slot
-		// while hidden.
 		items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Misc", Theme::kText));
-		if (watchCondition("autotptowaypoint"_J, true))
-			items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "tptowaypoint"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandToggle>(Theme::kContentWidth, kItemH, "autotptowaypoint"_J));
-		items_draft.push_back(std::make_unique<GridItemCommandButton>(Theme::kContentWidth, kItemH, "tptoobjective"_J));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tp.tpWp));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tp.tpObjective));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, tp.autoTpWp));
 	}
 }

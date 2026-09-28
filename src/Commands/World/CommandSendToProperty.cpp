@@ -114,7 +114,7 @@ namespace Stand::Features
 	    {115, "Vehicle Warehouse"},
 	};
 
-	static CommandListSelect _SelectedProperty{"sendtopropertyindex", "Send to Property Index", "The property index to send the player(s) to", g_Properties, 1};
+	static CommandLegacyListSelect _SelectedProperty{"sendtopropertyindex", "Send to Property Index", "The property index to send the player(s) to", g_Properties, 1};
 
 	class SendToProperty : public PlayerCommand
 	{

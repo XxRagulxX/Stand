@@ -38,7 +38,7 @@ namespace Stand::Features
 
 	static Stand::CommandTextslider _TestTextslider{"standwidgets_testtextslider",
 	    "Test: Textslider",
-	    "A flat left/right value cycler (CommandTextslider) distinct from CommandListSelect - no per-option sub-commands/categories",
+	    "A flat left/right value cycler (CommandTextslider) distinct from CommandLegacyListSelect - no per-option sub-commands/categories",
 	    {"Low", "Medium", "High", "Extreme"},
 	    0};
 

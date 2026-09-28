@@ -5,6 +5,7 @@
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
@@ -187,7 +188,7 @@ namespace Stand::Rendering
 				    toggle->m_on ? Theme::kAccent : Theme::kPanelBackground);
 			}
 		}
-		else if (m_Command->isList())
+		else if (m_Command->isList() && !m_Command->isListSelect())
 		{
 			auto listTint = spriteTint;
 			if (auto* cl = dynamic_cast<Stand::CommandColourList*>(m_Command)) {
@@ -242,6 +243,35 @@ namespace Stand::Rendering
 		const auto& rightColour = focused ? Theme::kFocusRightText : Theme::kUnfocusedRightText;
 
 		GridRenderer::DrawText(x + Theme::kCommandTextXOffset, y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
+
+		if (m_Command->isListSelect())
+		{
+			auto* ls = m_Command->as<Stand::CommandListSelect>();
+			const auto valueStr = ls->getState();
+			const auto valueSize = GridRenderer::MeasureText(valueStr.c_str());
+
+			if (focused)
+			{
+				const auto layout = ComputeSliderLayout(valueStr);
+				GridRenderer::DrawText(layout.valueX + std::max(0.f, (layout.valueWidth - valueSize.x) * 0.5f),
+				    y + std::max(0.f, (height - valueSize.y) * 0.5f),
+				    valueStr.c_str(), rightColour);
+				const auto minusSize = GridRenderer::MeasureText("<");
+				GridRenderer::DrawText(layout.minusX + std::max(0.f, (layout.buttonSize - minusSize.x) * 0.5f),
+				    y + std::max(0.f, (height - minusSize.y) * 0.5f), "<", rightColour);
+				const auto plusSize = GridRenderer::MeasureText(">");
+				GridRenderer::DrawText(layout.plusX + std::max(0.f, (layout.buttonSize - plusSize.x) * 0.5f),
+				    y + std::max(0.f, (height - plusSize.y) * 0.5f), ">", rightColour);
+			}
+			else
+			{
+				GridRenderer::DrawText(
+				    static_cast<float>(x + width) - valueSize.x - kArrowGap,
+				    y + std::max(0.f, (height - valueSize.y) * 0.5f),
+				    valueStr.c_str(), rightColour);
+			}
+			return;
+		}
 
 		if (m_Command->isList())
 		{
@@ -316,6 +346,17 @@ namespace Stand::Rendering
 			return;
 		}
 
+		if (m_Command->isListSelect())
+		{
+			auto* ls = m_Command->as<Stand::CommandListSelect>();
+			const auto layout = ComputeSliderLayout(ls->getState());
+			if (cursorX >= layout.plusX && cursorX < layout.plusX + layout.buttonSize)
+				ListSelectStep(1);
+			else if (cursorX >= layout.minusX && cursorX < layout.minusX + layout.buttonSize)
+				ListSelectStep(-1);
+			return;
+		}
+
 		activate();
 	}
 
@@ -326,6 +367,8 @@ namespace Stand::Rendering
 
 		if (m_Command->isToggle())
 			ToggleClicked();
+		else if (m_Command->isListSelect())
+			ListSelectStep(1);
 		else if (m_Command->isList())
 			OpenSubList();
 		else if (auto* physical = m_Command->getPhysical())
@@ -334,11 +377,22 @@ namespace Stand::Rendering
 
 	bool GridItemStandCommand::onArrow(int delta)
 	{
-		if (!m_Command || !m_Command->isSlider())
+		if (!m_Command)
 			return false;
 
-		SliderStep(delta > 0 ? 1 : -1);
-		return true;
+		if (m_Command->isSlider())
+		{
+			SliderStep(delta > 0 ? 1 : -1);
+			return true;
+		}
+
+		if (m_Command->isListSelect())
+		{
+			ListSelectStep(delta > 0 ? 1 : -1);
+			return true;
+		}
+
+		return false;
 	}
 
 	void GridItemStandCommand::ToggleClicked()
@@ -369,6 +423,18 @@ namespace Stand::Rendering
 		FiberPool::queueJob([physical] {
 			Stand::Click click(Stand::CLICK_MENU, Stand::TC_SCRIPT_YIELDABLE);
 			physical->onClick(click);
+		});
+	}
+
+	void GridItemStandCommand::ListSelectStep(int direction)
+	{
+		auto* ls = m_Command->as<Stand::CommandListSelect>();
+		FiberPool::queueJob([ls, direction] {
+			Stand::Click click(Stand::CLICK_MENU, Stand::TC_SCRIPT_YIELDABLE);
+			if (direction > 0)
+				ls->onRight(click, false);
+			else
+				ls->onLeft(click, false);
 		});
 	}
 

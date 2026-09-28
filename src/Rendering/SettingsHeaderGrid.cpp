@@ -21,7 +21,7 @@ namespace Stand::Rendering
 	void SettingsHeaderGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		auto& tab = Features::GetCommandTabHeader();
-		// Header select — CommandHeaderMode is a CommandListSelect (registered
+		// Header select — CommandHeaderMode is a CommandLegacyListSelect (registered
 		// under "header"_J), rendered with the cycling left/right buttons.
 		items_draft.push_back(std::make_unique<GridItemCommandListSelect>(Theme::kContentWidth, static_cast<int16_t>(kItemH), "header"_J));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, kItemH, tab.animationSpeed));

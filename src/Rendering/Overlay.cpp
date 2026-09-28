@@ -24,7 +24,7 @@ namespace Stand::Features
 	    {3, "bottomright"},
 	    {4, "free"}};
 
-	static CommandListSelect _OverlayPositionCmd("overlaypos", "Overlay Position", "Change overlay position", g_OverlayPositionConfig, 0);
+	static CommandLegacyListSelect _OverlayPositionCmd("overlaypos", "Overlay Position", "Change overlay position", g_OverlayPositionConfig, 0);
 }
 
 namespace Stand

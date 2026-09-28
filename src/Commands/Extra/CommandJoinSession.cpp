@@ -17,7 +17,7 @@ namespace Stand::Features
 	    {static_cast<int>(Network::JoinType::SOLO), "Solo"},
 	};
 
-	static CommandListSelect _JoinType{"joinsessiontype", "Join Session Type", "The session type to join", g_JoinTypes, static_cast<int>(Network::JoinType::JOIN_PUBLIC)};
+	static CommandLegacyListSelect _JoinType{"joinsessiontype", "Join Session Type", "The session type to join", g_JoinTypes, static_cast<int>(Network::JoinType::JOIN_PUBLIC)};
 
 	class JoinSession : public CommandLegacy
 	{

@@ -42,7 +42,7 @@ namespace Stand::Features
 		    {26, "Mi O Melee"}
 		};
 
-		static CommandListSelect _KortzCenterPrimaryTarget{"kortzcenterheistprimarytarget", "Primary Target", "Primary target", kortzCenterTargets, 0};
+		static CommandLegacyListSelect _KortzCenterPrimaryTarget{"kortzcenterheistprimarytarget", "Primary Target", "Primary target", kortzCenterTargets, 0};
 
 		static CommandToggleLegacy _KortzCenterGuardRoutes{"kortzcenterheistguardroutes", "Guard Routes", "Guard routes purchased", true};
 		static CommandToggleLegacy _KortzCenterGlassCutter{"kortzcenterheistglasscutter", "Glass Cutter", "Glass cutter purchased", true};

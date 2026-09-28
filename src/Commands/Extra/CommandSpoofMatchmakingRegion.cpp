@@ -16,7 +16,7 @@ namespace Stand::Features
 	    {8, "Unknown"},
 	};
 
-	static CommandListSelect _SpoofedRegion{"mmregion", "Matchmaking Region", "Matchmaking region to spoof to", g_RegionCodes, 0};
+	static CommandLegacyListSelect _SpoofedRegion{"mmregion", "Matchmaking Region", "Matchmaking region to spoof to", g_RegionCodes, 0};
 
 	class SpoofMatchmakingRegion : public LoopedCommand
 	{

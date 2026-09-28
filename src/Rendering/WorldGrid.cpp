@@ -5,11 +5,13 @@
 #include "Rendering/GridItemCommandListSelect.hpp"
 #include "Rendering/GridItemCommandToggle.hpp"
 #include "Rendering/GridItemFolder.hpp"
+#include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/GridItemText.hpp"
 #include "Util/Joaat.hpp"
 #include "Rendering/SpawnPedGrid.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/WorldIPLsGrid.hpp"
+#include "Commands/World/CommandTabWorld.hpp"
 
 namespace Stand::Rendering
 {
@@ -40,6 +42,10 @@ namespace Stand::Rendering
 
 	void WorldGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
+		constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+		auto& worldTab = Features::GetCommandTabWorld();
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.places));
+
 		// World's other categories (BuildSpawnPedMenu(), the IPLs
 		// Category) - grouped at the very top of the whole list rather
 		// than at the bottom, so a category is always reachable before

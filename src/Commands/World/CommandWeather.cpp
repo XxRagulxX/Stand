@@ -46,7 +46,7 @@ namespace Stand::Features
 	    "SNOW_HALLOWEEN",
 	};
 
-	static CommandListSelect _Weather{"weather", "Weather", "Weather to set or force. Note that this is local and cannot be seen by other players", g_WeatherTypes, 0};
+	static CommandLegacyListSelect _Weather{"weather", "Weather", "Weather to set or force. Note that this is local and cannot be seen by other players", g_WeatherTypes, 0};
 
 	class SetWeather : public CommandLegacy
 	{

@@ -9,7 +9,7 @@ namespace Stand::StandWidgets
 {
 	// Ported from real Stand's own CommandLambdaListSelect - see
 	// CommandLambdaToggle.hpp's own doc comment for why this whole file exists.
-	class CommandLambdaListSelect : public CommandListSelect
+	class CommandLambdaListSelect : public CommandLegacyListSelect
 	{
 	public:
 		CommandLambdaListSelect(std::string name,
@@ -18,7 +18,7 @@ namespace Stand::StandWidgets
 		    std::vector<std::pair<int, const char*>> list,
 		    int def_val,
 		    std::function<void(int)> onChange) :
-		    CommandListSelect(std::move(name), std::move(label), std::move(description), std::move(list), def_val),
+		    CommandLegacyListSelect(std::move(name), std::move(label), std::move(description), std::move(list), def_val),
 		    m_OnChange(std::move(onChange))
 		{
 		}

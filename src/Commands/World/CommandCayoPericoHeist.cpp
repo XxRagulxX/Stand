@@ -89,7 +89,7 @@ namespace Stand::Features
 		    {5, "Secondary Target"},
 		    {6, "Others"}};
 
-		static CommandListSelect _CayoPericoTeleportList{"cayopericoteleportlist", "Teleport Locations", "Teleport Location", cayoPericoTeleportList, 0};
+		static CommandLegacyListSelect _CayoPericoTeleportList{"cayopericoteleportlist", "Teleport Locations", "Teleport Location", cayoPericoTeleportList, 0};
 
 		static std::vector<TeleportLocation> cayoPericoOtherTeleportPoints = {
 		    {5081.0415f, -5755.32f, 15.829645f, -45.0f, "North"},
@@ -126,7 +126,7 @@ namespace Stand::Features
 		    {13, "Loot - #3 (Dock)"},
 		};
 
-		static CommandListSelect _CayoPericoOtherTeleportList{"cayopericootherteleportlist", "Other TP", "Other teleport locations", cayoPericoOtherTeleportList, 0};
+		static CommandLegacyListSelect _CayoPericoOtherTeleportList{"cayopericootherteleportlist", "Other TP", "Other teleport locations", cayoPericoOtherTeleportList, 0};
 
 		static std::vector<std::pair<int, const char*>> cayoPlayers = {
 		    {1, "1 Player"},
@@ -134,12 +134,12 @@ namespace Stand::Features
 		    {3, "3 Players"},
 		    {4, "4 Players"}};
 
-		static CommandListSelect _CayoPericoHeistPlayers{"cayopericoheistplayers", "Players", "How many players are in the heist", cayoPlayers, 1};
+		static CommandLegacyListSelect _CayoPericoHeistPlayers{"cayopericoheistplayers", "Players", "How many players are in the heist", cayoPlayers, 1};
 
 		static std::vector<std::pair<int, const char*>> cayoPericoHeistDifficulty = {
 		    {126823, "Normal"},
 		    {131055, "Hard"}};
-		static CommandListSelect _CayoPericoHeistDifficulty{"cayopericoheistdifficulty", "Difficulty", "Heist difficulty", cayoPericoHeistDifficulty, 126823};
+		static CommandLegacyListSelect _CayoPericoHeistDifficulty{"cayopericoheistdifficulty", "Difficulty", "Heist difficulty", cayoPericoHeistDifficulty, 126823};
 
 		static std::vector<std::pair<int, const char*>> cayoPericoHeistPrimaryTarget = {
 		    {5, "Panther Statue"},
@@ -148,7 +148,7 @@ namespace Stand::Features
 		    {2, "Bearer Bonds"},
 		    {1, "Ruby Necklace"},
 		    {0, "Sinsimito Tequila"}};
-		static CommandListSelect _CayoPericoHeistPrimaryTarget{"cayopericoheistprimarytarget", "Primary Target", "Primary target", cayoPericoHeistPrimaryTarget, 5};
+		static CommandLegacyListSelect _CayoPericoHeistPrimaryTarget{"cayopericoheistprimarytarget", "Primary Target", "Primary target", cayoPericoHeistPrimaryTarget, 5};
 
 		static std::vector<std::pair<int, const char*>> cayoPericoHeistWeapon = {
 		    {1, "Aggressor"},
@@ -156,7 +156,7 @@ namespace Stand::Features
 		    {3, "Crack Shot"},
 		    {4, "Saboteur"},
 		    {5, "Marksman"}};
-		static CommandListSelect _CayoPericoHeistWeapon{"cayopericoheistweapon", "Weapon", "Weapon category", cayoPericoHeistWeapon, 1};
+		static CommandLegacyListSelect _CayoPericoHeistWeapon{"cayopericoheistweapon", "Weapon", "Weapon category", cayoPericoHeistWeapon, 1};
 
 		class RequestKosatka : public CommandLegacy
 		{

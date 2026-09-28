@@ -3,7 +3,7 @@
 
 namespace Stand
 {
-	class CommandListSelect : public CommandLegacy
+	class CommandLegacyListSelect : public CommandLegacy
 	{
 	protected:
 		virtual void OnChange() {};
@@ -15,7 +15,7 @@ namespace Stand
 		std::vector<std::pair<int, const char*>> m_List; // not very efficient but keeps things sorted
 
 	public:
-		CommandListSelect(std::string name, std::string label, std::string description, std::vector<std::pair<int, const char*>> list, int def_val = 0);
+		CommandLegacyListSelect(std::string name, std::string label, std::string description, std::vector<std::pair<int, const char*>> list, int def_val = 0);
 		int GetState();
 		void SetState(int state);
 		void SetList(std::vector<std::pair<int, const char*>> list);

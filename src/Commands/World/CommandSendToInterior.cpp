@@ -47,7 +47,7 @@ namespace Stand::Features
 
 	};
 
-	static CommandListSelect _SelectedInterior{"sendtointeriorindex", "Send to Interior Index", "The interior index to send the player(s) to", g_Interiors, (int)eSimpleInteriorIndex::SIMPLE_INTERIOR_ARMORY_TRUCK_1};
+	static CommandLegacyListSelect _SelectedInterior{"sendtointeriorindex", "Send to Interior Index", "The interior index to send the player(s) to", g_Interiors, (int)eSimpleInteriorIndex::SIMPLE_INTERIOR_ARMORY_TRUCK_1};
 
 	class SendToInterior : public PlayerCommand
 	{

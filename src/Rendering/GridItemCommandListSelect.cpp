@@ -18,7 +18,7 @@ namespace Stand::Rendering
 
 	GridItemCommandListSelect::GridItemCommandListSelect(int16_t width, int16_t height, joaat_t id, std::optional<std::string> labelOverride) :
 	    GridItem(GRIDITEM_INDIFFERENT, width, height),
-	    m_Command(Commands::GetCommand<CommandListSelect>(id)),
+	    m_Command(Commands::GetCommand<CommandLegacyListSelect>(id)),
 	    m_LabelOverride(std::move(labelOverride))
 	{
 	}

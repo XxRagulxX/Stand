@@ -23,7 +23,7 @@ namespace Stand
 	// cache). If a preset file is not found the header is simply hidden.
 	// The "Custom" option loads the Custom subfolder (all files, animated
 	// like real Stand's value-200 branch).
-	class CommandHeaderMode : public CommandListSelect
+	class CommandHeaderMode : public CommandLegacyListSelect
 	{
 		// Mapping from list value → filename inside the Headers folder.
 		// Matches real Stand's own unanimated_headers[] order/names
@@ -58,7 +58,7 @@ namespace Stand
 
 	public:
 		explicit CommandHeaderMode(CommandList* const parent)
-			: CommandListSelect(
+			: CommandLegacyListSelect(
 				"header",
 				"Header",
 				"",
@@ -204,7 +204,7 @@ namespace Stand
 	class CommandTabHeader : public CommandList
 	{
 	public:
-		// CommandHeaderMode is a CommandListSelect (different hierarchy from
+		// CommandHeaderMode is a CommandLegacyListSelect (different hierarchy from
 		// Command) — declared as a static in CommandTabHeader.cpp and
 		// self-registered under "header"_J. Not a createChild<> child.
 		CommandHeaderAnimationSpeed* const animationSpeed;

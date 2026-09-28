@@ -27,7 +27,7 @@ namespace Stand::Features
 	    {static_cast<int>(eAppVinewoodMenuSafe::GARMENT_FACTORY), "Garment Factory"},
 	    {static_cast<int>(eAppVinewoodMenuSafe::HANDS_ON_CAR_WASH), "Hands on Car Wash"}};
 
-	static CommandListSelect _SelectedBusiness{"businesssafe", "Business", "Business to claim earning from.", businessNames, 0};
+	static CommandLegacyListSelect _SelectedBusiness{"businesssafe", "Business", "Business to claim earning from.", businessNames, 0};
 
 	class ClaimSafeEarnings : public CommandLegacy
 	{

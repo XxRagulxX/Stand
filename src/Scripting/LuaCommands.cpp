@@ -162,7 +162,7 @@ namespace Stand
 	}
 
 	LuaListCommand::LuaListCommand(LuaUserInterface* iface, std::string name, std::string label, std::string description, std::vector<std::pair<int, std::string>> entries, int default_value, int on_change) :
-	    CommandListSelect(std::move(name), std::move(label), std::move(description), {}, default_value),
+	    CommandLegacyListSelect(std::move(name), std::move(label), std::move(description), {}, default_value),
 	    m_Interface(iface),
 	    m_OnChange(on_change)
 	{

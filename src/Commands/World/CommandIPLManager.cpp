@@ -24,7 +24,7 @@ namespace Stand::Features
 	};
 
 	static IPLSelectorHelper g_IPLSelectorHelper{};
-	static CommandListSelect _IPLSelector{"iplselector", "IPL", "The IPL to load", g_IPLSelectorHelper.availableIplNames, 0};
+	static CommandLegacyListSelect _IPLSelector{"iplselector", "IPL", "The IPL to load", g_IPLSelectorHelper.availableIplNames, 0};
 
 	class IPLLoader : public CommandLegacy
 	{

@@ -7,11 +7,11 @@
 namespace Stand::StandWidgets
 {
 	// Ported from real Stand's own CommandListSelectPointer - the
-	// CommandListSelect equivalent of CommandTogglePointer.hpp/CommandSliderPointer.hpp (see
+	// CommandLegacyListSelect equivalent of CommandTogglePointer.hpp/CommandSliderPointer.hpp (see
 	// either's own doc comment for the shared reasoning: a one-way sync
-	// onto CommandListSelect's own OnChange() hook, no changes to
-	// CommandListSelect.hpp needed).
-	class CommandListSelectPointer : public CommandListSelect
+	// onto CommandLegacyListSelect's own OnChange() hook, no changes to
+	// CommandLegacyListSelect.hpp needed).
+	class CommandListSelectPointer : public CommandLegacyListSelect
 	{
 	public:
 		CommandListSelectPointer(std::string name,
@@ -19,7 +19,7 @@ namespace Stand::StandWidgets
 		    std::string description,
 		    std::vector<std::pair<int, const char*>> list,
 		    int* ptr) :
-		    CommandListSelect(std::move(name), std::move(label), std::move(description), std::move(list), ptr ? *ptr : 0),
+		    CommandLegacyListSelect(std::move(name), std::move(label), std::move(description), std::move(list), ptr ? *ptr : 0),
 		    m_Ptr(ptr)
 		{
 		}

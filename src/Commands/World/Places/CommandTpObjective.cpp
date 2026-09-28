@@ -1,0 +1,48 @@
+#include "Commands/World/Places/CommandTpObjective.hpp"
+
+#include "Commands/World/Places/TpUtil.hpp"
+#include "Game/BlipSprite.hpp"
+#include "Menu/Click.hpp"
+#include "Scripting/Natives.hpp"
+#include "Util/Label.hpp"
+
+namespace Stand
+{
+    CommandTpObjective::CommandTpObjective(CommandList* parent)
+        : CommandPhysical(COMMAND_ACTION, parent, LIT("Objective"), CMDNAMES("tpobjective"))
+    {
+    }
+
+    void CommandTpObjective::onClick(Click& click)
+    {
+        click.ensureScriptThread([this] {
+            static constexpr BlipSprite kSprites[] = {
+                BlipSprite::RADAR_LEVEL, BlipSprite::RADAR_HIGHER, BlipSprite::RADAR_LOWER,
+                BlipSprite::RADAR_OBJECTIVE_BLUE, BlipSprite::RADAR_OBJECTIVE_GREEN,
+                BlipSprite::RADAR_OBJECTIVE_RED, BlipSprite::RADAR_OBJECTIVE_YELLOW,
+                BlipSprite::RADAR_CONTRABAND,
+                BlipSprite::RADAR_TARGET_A, BlipSprite::RADAR_TARGET_B, BlipSprite::RADAR_TARGET_C,
+                BlipSprite::RADAR_TARGET_D, BlipSprite::RADAR_TARGET_E, BlipSprite::RADAR_TARGET_F,
+                BlipSprite::RADAR_TARGET_G, BlipSprite::RADAR_TARGET_H,
+                BlipSprite::RADAR_PICKUP_MACHINEGUN,
+            };
+            for (const auto sprite : kSprites)
+            {
+                Blip blip = HUD::GET_CLOSEST_BLIP_INFO_ID(static_cast<int>(sprite));
+                if (!blip)
+                    continue;
+                auto raw = HUD::GET_BLIP_COORDS(blip);
+                bool in_vehicle = TpUtil::GetPlayerVehicle() != 0;
+                auto tp = TpUtil::FollowRedirects(raw.x, raw.y, raw.z, true, in_vehicle);
+                if (!tp.z_exact)
+                {
+                    Vector3 vec{tp.x, tp.y, tp.z};
+                    TpUtil::ResolveZCoordinate(vec);
+                    tp.x = vec.x; tp.y = vec.y; tp.z = vec.z;
+                }
+                TpUtil::DoTeleport(tp.x, tp.y, tp.z);
+                return;
+            }
+        });
+    }
+}

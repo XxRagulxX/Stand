@@ -102,6 +102,11 @@ namespace Stand
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_LIST_ACTION;
 		}
 
+		[[nodiscard]] bool isListSelect() const noexcept
+		{
+			return type == COMMAND_LIST_SELECT;
+		}
+
 		[[nodiscard]] bool isToggle() const noexcept
 		{
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_TOGGLE;

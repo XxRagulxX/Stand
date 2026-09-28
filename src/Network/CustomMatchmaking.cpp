@@ -45,7 +45,7 @@ namespace Stand::Features
 	    "mmspoofregiontype",
 	    "Spoof Region Type",
 	    "Spoofs the region type of the session"};
-	CommandListSelect _RegionType{
+	CommandLegacyListSelect _RegionType{
 	    "mmregiontype",
 	    "Region Type",
 	    "The region to spoof the session to",
@@ -55,7 +55,7 @@ namespace Stand::Features
 	    "mmspooflanguage",
 	    "Spoof Language",
 	    "Spoofs the session language"};
-	CommandListSelect _Language{
+	CommandLegacyListSelect _Language{
 	    "mmlanguage",
 	    "Language",
 	    "The language to spoof the session to",

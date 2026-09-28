@@ -6,7 +6,7 @@ namespace Stand
 {
 	class CommandToggleLegacy;
 	class PlayerCommand;
-	class CommandListSelect;
+	class CommandLegacyListSelect;
 	class CommandSliderLegacy;
 	class CommandSliderFloatLegacy;
 	class CommandPosition3d;
@@ -102,7 +102,7 @@ namespace Stand
 		void Draw() override;
 
 	private:
-		CommandListSelect* m_Command;
+		CommandLegacyListSelect* m_Command;
 		std::optional<std::string> m_LabelOverride;
 	};
 

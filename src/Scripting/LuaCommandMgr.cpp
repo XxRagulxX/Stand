@@ -102,7 +102,7 @@ namespace Stand::Lua
 				lua_pushnil(state);
 			return 1;
 		case LuaCommandHandle::Kind::List:
-			if (auto* c = Commands::GetCommand<CommandListSelect>(h.hash))
+			if (auto* c = Commands::GetCommand<CommandLegacyListSelect>(h.hash))
 				lua_pushinteger(state, c->GetState());
 			else
 				lua_pushnil(state);
@@ -132,7 +132,7 @@ namespace Stand::Lua
 				c->SetState(static_cast<float>(luaL_checknumber(state, 2)));
 			return 0;
 		case LuaCommandHandle::Kind::List:
-			if (auto* c = Commands::GetCommand<CommandListSelect>(h.hash))
+			if (auto* c = Commands::GetCommand<CommandLegacyListSelect>(h.hash))
 				c->SetState(static_cast<int>(luaL_checkinteger(state, 2)));
 			return 0;
 		}
@@ -305,7 +305,7 @@ namespace Stand::Lua
 		}
 
 		LuaCommandHandle::Kind kind;
-		if (dynamic_cast<CommandListSelect*>(cmd))
+		if (dynamic_cast<CommandLegacyListSelect*>(cmd))
 			kind = LuaCommandHandle::Kind::List;
 		else if (dynamic_cast<CommandSliderLegacy*>(cmd))
 			kind = LuaCommandHandle::Kind::Int;

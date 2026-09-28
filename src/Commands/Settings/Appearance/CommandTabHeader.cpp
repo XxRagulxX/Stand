@@ -2,7 +2,7 @@
 
 namespace Stand
 {
-	// Declared here (not as a createChild<> member) because CommandListSelect
+	// Declared here (not as a createChild<> member) because CommandLegacyListSelect
 	// derives from CommandLegacy, which is a separate hierarchy from Command —
 	// CommandList::createChild<T> expects T to derive from Command and would
 	// fail to compile. Static storage auto-calls CommandLegacy's constructor,
