@@ -6,6 +6,8 @@
 #include "Commands/World/Places/CommandRepeatTeleport.hpp"
 #include "Commands/World/Places/CommandUndoTp.hpp"
 #include "Commands/World/Places/CommandTeleportParticle.hpp"
+#include "Commands/World/Interiors/CommandListInteriors.hpp"
+#include "Commands/World/Places/IPLs/CommandListIPLs.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand
@@ -14,19 +16,23 @@ namespace Stand
     {
     public:
         CommandListTeleportTo* const teleportTo;
-        CommandListWaypoint* const waypoint;
-        CommandMyPosition* const position;
         CommandRepeatTeleport* const repeatTp;
         CommandUndoTp* const undoTp;
+        CommandListWaypoint* const waypoint;
+        CommandMyPosition* const position;
+        CommandListInteriors* const interiors;
+        CommandListIPLs* const ipls;
         CommandTeleportParticle* const tpEffect;
 
         explicit CommandListPlaces(CommandList* parent)
             : CommandList(parent, LIT("Places")),
               teleportTo(createChild<CommandListTeleportTo>()),
-              waypoint(createChild<CommandListWaypoint>()),
-              position(createChild<CommandMyPosition>()),
               repeatTp(createChild<CommandRepeatTeleport>()),
               undoTp(createChild<CommandUndoTp>()),
+              waypoint(createChild<CommandListWaypoint>()),
+              position(createChild<CommandMyPosition>()),
+              interiors(createChild<CommandListInteriors>()),
+              ipls(createChild<CommandListIPLs>()),
               tpEffect(createChild<CommandTeleportParticle>())
         {
             position->populateChildren();
