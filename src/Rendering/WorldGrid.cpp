@@ -45,6 +45,7 @@ namespace Stand::Rendering
 		constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
 		auto& worldTab = Features::GetCommandTabWorld();
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.places));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.inhabitants));
 
 		// World's other categories (BuildSpawnPedMenu(), the IPLs
 		// Category) - grouped at the very top of the whole list rather

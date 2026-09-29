@@ -1,6 +1,7 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/World/Places/CommandListPlaces.hpp"
+#include "Commands/World/Inhabitants/CommandListInhabitants.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand
@@ -9,10 +10,12 @@ namespace Stand
     {
     public:
         CommandListPlaces* const places;
+        CommandListInhabitants* const inhabitants;
 
         explicit CommandTabWorld()
             : CommandList(nullptr, LIT("World")),
-              places(createChild<CommandListPlaces>())
+              places(createChild<CommandListPlaces>()),
+              inhabitants(createChild<CommandListInhabitants>())
         {
         }
     };

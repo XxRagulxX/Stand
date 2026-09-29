@@ -7,6 +7,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderProximity.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/GridStandCommandList.hpp"
@@ -14,6 +15,8 @@
 #include "Rendering/Theme.hpp"
 #include "Rendering/ThemeIcons.hpp"
 #include "Scripting/FiberPool.hpp"
+#include "Scripting/Natives.hpp"
+#include "World/Self.hpp"
 
 #include <algorithm>
 #include <string>
@@ -213,6 +216,28 @@ namespace Stand::Rendering
 		{
 			if (ThemeIcons::IsLoaded(IconSlot::Edit))
 				ThemeIcons::QueueDraw(IconSlot::Edit, iconX, iconY, iconSize, spriteTint);
+		}
+
+		if (isKeyboardFocused())
+		{
+			if (auto* prox = dynamic_cast<Stand::CommandSliderProximity*>(m_Command))
+			{
+				const float radius = prox->getFloatValue();
+				if (radius > 0.f)
+				{
+					constexpr int kMarkerTypeDebugSphere = 28;
+					const auto pos = Self::GetPed().GetPosition();
+					const auto& colour = Theme::kAccent;
+					GRAPHICS::DRAW_MARKER(kMarkerTypeDebugSphere,
+					    pos.x, pos.y, pos.z,
+					    0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+					    radius * 2.f, radius * 2.f, radius * 2.f,
+					    static_cast<int>(colour.x * 255.f),
+					    static_cast<int>(colour.y * 255.f),
+					    static_cast<int>(colour.z * 255.f),
+					    80, false, false, 2, false, nullptr, nullptr, false);
+				}
+			}
 		}
 	}
 
@@ -441,7 +466,9 @@ namespace Stand::Rendering
 	void GridItemStandCommand::OpenSubList()
 	{
 		auto* list = m_Command->as<Stand::CommandList>();
-		MenuNavigation::Push(Label(m_Command), &GridStandCommandList::GetOrCreate(list));
+		auto& grid = GridStandCommandList::GetOrCreate(list);
+		list->onBecomesActiveGrid(&grid);
+		MenuNavigation::Push(Label(m_Command), &grid);
 	}
 
 	GridItemStandCommand::SliderLayout GridItemStandCommand::ComputeSliderLayout(const std::string& valueText) const

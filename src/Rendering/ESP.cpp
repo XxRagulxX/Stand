@@ -6,6 +6,7 @@
 #include "Network/Players.hpp"
 #include "World/Self.hpp"
 #include "Core/Pointers.hpp"
+#include "Game/AllEntitiesEveryTick.hpp"
 #include "Game/Pools.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Scripting/Invoker.hpp"
@@ -80,12 +81,13 @@ namespace Stand
 			DirectX::XMFLOAT2 pos;
 			DirectX::XMFLOAT4 colour;
 			std::string       text;
+			float             scale = kEspTextScale;
 		};
 		std::vector<TextItem> g_TextItems;
 
-		void PushText(DirectX::XMFLOAT2 pos, const DirectX::XMFLOAT4& colour, std::string text)
+		void PushText(DirectX::XMFLOAT2 pos, const DirectX::XMFLOAT4& colour, std::string text, float scale = kEspTextScale)
 		{
-			g_TextItems.push_back({pos, colour, std::move(text)});
+			g_TextItems.push_back({pos, colour, std::move(text), scale});
 		}
 
 		void DrawSkeleton(Ped ped, const DirectX::XMFLOAT4& colour)
@@ -113,6 +115,32 @@ namespace Stand
 			line(leftKneeBone,     leftFootBone);
 			line(torsoBone,        rightKneeBone);
 			line(rightKneeBone,    rightFootBone);
+		}
+
+		void DrawPlayerBox(Ped ped, const DirectX::XMFLOAT4& colour)
+		{
+			DirectX::XMFLOAT2 topPx = worldToScreen(ped.GetBonePosition(headBone));
+			DirectX::XMFLOAT2 botPx = worldToScreen(ped.GetBonePosition(rightFootBone));
+			if (topPx.x <= 0.f || botPx.x <= 0.f || botPx.y <= topPx.y) return;
+			const float h = botPx.y - topPx.y;
+			const float w = h * 0.4f;
+			const float cx = (topPx.x + botPx.x) * 0.5f;
+			constexpr float kThick = 1.5f;
+			using Rendering::GridRenderer;
+			GridRenderer::DrawLineScreen(cx - w, topPx.y, cx + w, topPx.y, colour, kThick);
+			GridRenderer::DrawLineScreen(cx - w, botPx.y, cx + w, botPx.y, colour, kThick);
+			GridRenderer::DrawLineScreen(cx - w, topPx.y, cx - w, botPx.y, colour, kThick);
+			GridRenderer::DrawLineScreen(cx + w, topPx.y, cx + w, botPx.y, colour, kThick);
+		}
+
+		void DrawPlayerLine(Ped ped, const DirectX::XMFLOAT4& colour)
+		{
+			DirectX::XMFLOAT2 pedPx = worldToScreen(ped.GetBonePosition(torsoBone));
+			if (pedPx.x <= 0.f) return;
+			using Rendering::GridRenderer;
+			GridRenderer::DrawLineScreen(
+				*Pointers.ScreenResX * 0.5f, static_cast<float>(*Pointers.ScreenResY),
+				pedPx.x, pedPx.y, colour, 1.5f);
 		}
 
 		void DrawPlayer(const CommandTabESP& esp, Player plyr)
@@ -279,6 +307,72 @@ namespace Stand
 				}
 			}
 
+			if (AllEntitiesEveryTick::npc_bone_esp && GetPedPool())
+			{
+				const DirectX::XMFLOAT4 npcEspColour{
+				    AllEntitiesEveryTick::npc_esp_colour_r / 255.f,
+				    AllEntitiesEveryTick::npc_esp_colour_g / 255.f,
+				    AllEntitiesEveryTick::npc_esp_colour_b / 255.f,
+				    0.78431f
+				};
+				for (Ped ped : Pools::GetPeds())
+				{
+					if (!ped || ped.IsPlayer()) continue;
+					if (AllEntitiesEveryTick::npc_bone_esp_exclude_dead && ped.IsDead()) continue;
+					if (worldToScreen(ped.GetBonePosition(torsoBone)).x == 0) continue;
+					DrawSkeleton(ped, npcEspColour);
+				}
+			}
+
+			if (AllEntitiesEveryTick::player_esp_bone || AllEntitiesEveryTick::player_esp_name
+			    || AllEntitiesEveryTick::player_esp_box || AllEntitiesEveryTick::player_esp_line)
+			{
+				using AEET = AllEntitiesEveryTick;
+				const DirectX::XMFLOAT4 defaultEspColour{
+				    AEET::player_esp_colour_r / 255.f,
+				    AEET::player_esp_colour_g / 255.f,
+				    AEET::player_esp_colour_b / 255.f,
+				    0.78431f
+				};
+				auto tagColour = [](const AEET::PlayerEspTagEntry& t) {
+					return DirectX::XMFLOAT4{t.r / 255.f, t.g / 255.f, t.b / 255.f, 0.78431f};
+				};
+				for (auto& [id, player] : Players::GetPlayers())
+				{
+					if (!player.IsValid() || player == Self::GetPlayer()) continue;
+					Ped ped = player.GetPed();
+					if (!ped.IsValid()) continue;
+					const int h = ped.GetHandle();
+					if (worldToScreen(ped.GetBonePosition(torsoBone)).x == 0.f) continue;
+					const float dist = Self::GetPed().GetPosition().GetDistance(ped.GetBonePosition(torsoBone));
+					const int pid = player.GetId();
+
+					DirectX::XMFLOAT4 espColour = defaultEspColour;
+					if      (AEET::player_esp_tag_dead.use        && PED::IS_PED_DEAD_OR_DYING(h, TRUE))                  espColour = tagColour(AEET::player_esp_tag_dead);
+					else if (AEET::player_esp_tag_invulnerable.use && PLAYER::GET_PLAYER_INVINCIBLE(pid))                 espColour = tagColour(AEET::player_esp_tag_invulnerable);
+					else if (AEET::player_esp_tag_modder.use       && player.IsModder())                                   espColour = tagColour(AEET::player_esp_tag_modder);
+					else if (AEET::player_esp_tag_invisible.use    && !ENTITY::IS_ENTITY_VISIBLE(h))                      espColour = tagColour(AEET::player_esp_tag_invisible);
+
+					if (AEET::player_esp_bone)
+						DrawSkeleton(ped, espColour);
+					if (AEET::player_esp_name && dist <= static_cast<float>(AEET::player_esp_name_max_dist))
+					{
+						const float min_s  = AEET::player_esp_name_min_scale / 100.f;
+						const float max_s  = AEET::player_esp_name_max_scale / 100.f;
+						const float max_d  = static_cast<float>(AEET::player_esp_name_max_dist);
+						const float mul    = max_s - min_s;
+						float       ts     = max_d > 0.f ? (mul / max_d) * dist : 0.f;
+						if (AEET::player_esp_name_invert_scale)
+							ts = (mul + 1.f) / (ts + 1.f) - 1.f;
+						PushText(worldToScreen(ped.GetBonePosition(headBone)), espColour, player.GetName(), ts + min_s);
+					}
+					if (AEET::player_esp_box && dist <= static_cast<float>(AEET::player_esp_box_max_dist))
+						DrawPlayerBox(ped, espColour);
+					if (AEET::player_esp_line && dist <= static_cast<float>(AEET::player_esp_line_max_dist))
+						DrawPlayerLine(ped, espColour);
+				}
+			}
+
 			{
 				auto& weapons = Features::GetCommandTabWeapons();
 				auto* aimbotToggle = weapons.aimbot->toggle;
@@ -325,6 +419,6 @@ namespace Stand
 	{
 		using Rendering::GridRenderer;
 		for (auto& item : g_TextItems)
-			GridRenderer::DrawTextScreen(item.pos.x, item.pos.y, item.text.c_str(), item.colour, kEspTextScale);
+			GridRenderer::DrawTextScreen(item.pos.x, item.pos.y, item.text.c_str(), item.colour, item.scale);
 	}
 }

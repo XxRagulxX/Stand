@@ -5,15 +5,8 @@
 #include <utility>
 #include <vector>
 
-// Real Stand's CommandList also carries a cursor/scroll offset paired
-// with its own GridItemList rendering, a soup::WeakRef "parent for back"
-// pointer, web-command state sync, context-menu redirect helpers
-// (redirectOpen), and a divider count. None of that is wired to anything
-// in this project yet - this is a plain tree container: own the
-// children, and provide the createChild<T>()/makeChild<T>() factory
-// pattern CommandTabSelf.cpp's own population code is built entirely
-// around (list->createChild<CommandFoo>(args...) constructs a
-// CommandFoo(this, args...) and takes ownership of it).
+namespace Stand::Rendering { class Grid; }
+
 namespace Stand
 {
 	class CommandList : public CommandPhysical
@@ -28,6 +21,8 @@ namespace Stand
 
 		virtual bool requiresVehicle() const { return false; }
 		virtual const char* vehicleRequiredMessage() const { return "Get your ass in a vehicle :/"; }
+
+		virtual void onBecomesActiveGrid(Rendering::Grid* grid) {}
 
 		[[nodiscard]] bool isRoot() const noexcept
 		{
