@@ -156,6 +156,11 @@ namespace Stand::Rendering
 			return false;
 		}
 
+		virtual bool handleNavigation(int)
+		{
+			return false;
+		}
+
 		// Whether this item is the one keyboard focus currently sits
 		// on - see MenuFocus.hpp. Only meaningful for an item that's
 		// actually part of MenuNavigation::Current()'s own item list

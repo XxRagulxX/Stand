@@ -3,16 +3,6 @@
 
 #include <cstdint>
 
-// Real Stand's Command also carries a Lua binding (CommandLuaData -
-// unrelated to this project's own, separate Lua API), a soup::WeakRef/
-// TransientToken pair for safe weak references, chat-command address/
-// path resolution (getPathConfig/getPathEn/getPathWeb/getTab...), a
-// warning-dialog confirm system (showWarning/warnSelfHarm), and the
-// hotkeys-list UI (openHotkeysList) - none of which this project has or
-// is building yet. Kept only the shape every widget (CommandToggle,
-// CommandSlider, ...) actually needs to exist in a tree and be told
-// apart by type: the CommandType bitfield-flagged enum, parent/flags,
-// and the isX() type tests built on it.
 namespace Stand
 {
 	class CommandList;
@@ -59,12 +49,6 @@ namespace Stand
 
 		virtual ~Command() = default;
 
-		// reinterpret_cast, not static_cast, deliberately - matches real
-		// Stand's own as<T>(): lets this compile with T only forward-
-		// declared (CommandPhysical, at the point getPhysical() below
-		// needs it) since the real object is guaranteed to already be a
-		// T whenever a caller has actually checked isT<T>()/isPhysical()
-		// first.
 		template<typename T>
 		[[nodiscard]] T* as() noexcept
 		{
@@ -124,5 +108,8 @@ namespace Stand
 
 		[[nodiscard]] CommandPhysical* getPhysical() noexcept;
 		[[nodiscard]] const CommandPhysical* getPhysical() const noexcept;
+
+		virtual void onFocus() {}
+		virtual void onBlur() {}
 	};
 }

@@ -264,6 +264,13 @@ namespace Stand::Rendering
 		}
 
 		const bool focused = isKeyboardFocused();
+		if (focused != m_wasFocused) {
+			m_wasFocused = focused;
+			if (m_Command) {
+				if (focused) m_Command->onFocus();
+				else         m_Command->onBlur();
+			}
+		}
 		const auto& textColour = focused ? Theme::kFocusText : Theme::kUnfocusedText;
 		const auto& rightColour = focused ? Theme::kFocusRightText : Theme::kUnfocusedRightText;
 

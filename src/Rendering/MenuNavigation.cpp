@@ -5,30 +5,54 @@ namespace Stand::Rendering
 {
 	std::vector<MenuNavigation::Level> MenuNavigation::s_Stack{};
 	std::unordered_map<size_t, std::vector<MenuNavigation::Level>> MenuNavigation::s_SavedStacks{};
+	std::mutex MenuNavigation::s_Mutex{};
 
 	void MenuNavigation::Reset(std::string rootLabel, Grid* rootContent)
 	{
+		std::lock_guard lock(s_Mutex);
 		s_Stack.clear();
 		s_Stack.push_back(Level{std::move(rootLabel), rootContent});
 	}
 
 	void MenuNavigation::Push(std::string label, Grid* content)
 	{
-		MenuFocus::SaveFor(s_Stack.empty() ? nullptr : s_Stack.back().Content);
-		s_Stack.push_back(Level{std::move(label), content});
-		MenuFocus::RestoreFor(s_Stack.back().Content);
+		Grid* prev;
+		{
+			std::lock_guard lock(s_Mutex);
+			prev = s_Stack.empty() ? nullptr : s_Stack.back().Content;
+			s_Stack.push_back(Level{std::move(label), content});
+		}
+		MenuFocus::SaveFor(prev);
+		MenuFocus::RestoreFor(content);
 	}
 
 	void MenuNavigation::Pop()
 	{
-		// The root level (index 0) always stays - there's nowhere further
-		// back to go once you're there, same as Stand's own address bar.
-		if (s_Stack.size() > 1)
+		Grid* saved = nullptr;
+		Grid* restored = nullptr;
 		{
-			MenuFocus::SaveFor(s_Stack.back().Content);
-			s_Stack.pop_back();
-			MenuFocus::RestoreFor(s_Stack.back().Content);
+			std::lock_guard lock(s_Mutex);
+			if (s_Stack.size() > 1)
+			{
+				saved = s_Stack.back().Content;
+				s_Stack.pop_back();
+				restored = s_Stack.back().Content;
+			}
 		}
+		if (saved)
+		{
+			MenuFocus::SaveFor(saved);
+			MenuFocus::RestoreFor(restored);
+		}
+	}
+
+	bool MenuNavigation::IsDescendantActive(const Grid* g)
+	{
+		std::lock_guard lock(s_Mutex);
+		for (const auto& level : s_Stack)
+			if (level.Content == g)
+				return true;
+		return false;
 	}
 
 	Grid* MenuNavigation::Current()

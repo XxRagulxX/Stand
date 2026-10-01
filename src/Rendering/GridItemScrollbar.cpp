@@ -17,7 +17,9 @@ namespace Stand::Rendering
 
 		int16_t x1, y1, x2, y2;
 		m_View->getBounds(x1, y1, x2, y2);
-		const auto contentHeight = static_cast<float>(y2 - y1);
+		const float contentHeight = m_View->GetVirtualContentHeight() > 0
+		    ? static_cast<float>(m_View->GetVirtualContentHeight())
+		    : static_cast<float>(y2 - y1);
 		const bool scrollable = contentHeight > static_cast<float>(height);
 
 		if (!scrollable && Theme::kScrollbarMode == Theme::ScrollbarMode::EnabledWhenNeeded)
@@ -30,7 +32,10 @@ namespace Stand::Rendering
 
 		const auto thumbHeight = std::max(1.f, static_cast<float>(height) * static_cast<float>(height) / contentHeight);
 		const auto maxOffset = contentHeight - static_cast<float>(height);
-		const auto thumbOffset = (static_cast<float>(m_View->GetScrollOffset()) / maxOffset) * (static_cast<float>(height) - thumbHeight);
+		const float scrollOff = m_View->GetVirtualContentHeight() > 0
+		    ? static_cast<float>(m_View->GetVirtualScrollOffset())
+		    : static_cast<float>(m_View->GetScrollOffset());
+		const auto thumbOffset = (scrollOff / maxOffset) * (static_cast<float>(height) - thumbHeight);
 
 		GridRenderer::DrawRect(x, y + thumbOffset, width, thumbHeight, Theme::kAccent);
 	}

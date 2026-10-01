@@ -1,5 +1,6 @@
 #include "Rendering/GridStandCommandList.hpp"
 
+#include "Commands/Widgets/CommandPhysical.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/GridItemText.hpp"
 #include "Rendering/Theme.hpp"
@@ -42,9 +43,15 @@ namespace Stand::Rendering
 			}
 		}
 
+		items_draft.reserve(m_List->children.size());
 		for (auto& child : m_List->children)
 		{
 			if (child->isConcealed()) continue;
+			if (child->isPhysical()) {
+				const size_t before = items_draft.size();
+				child->as<Stand::CommandPhysical>()->fillVirtualItems(items_draft, this);
+				if (items_draft.size() != before) continue;
+			}
 			items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, Theme::kContentItemHeight, child.get()));
 		}
 	}

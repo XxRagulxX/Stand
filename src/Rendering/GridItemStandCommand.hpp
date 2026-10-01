@@ -76,5 +76,6 @@ namespace Stand::Rendering
 		SliderLayout ComputeSliderLayout(const std::string& valueText) const;
 
 		Stand::Command* m_Command;
+		bool m_wasFocused = false;
 	};
 }

@@ -6,7 +6,10 @@
 #include "Util/Label.hpp"
 
 #include <functional>
+#include <memory>
 #include <vector>
+
+namespace Stand::Rendering { class GridItem; class Grid; }
 
 namespace Stand
 {
@@ -29,14 +32,9 @@ namespace Stand
 		    help_text(std::move(help_text)),
 		    hotkeys(default_hotkeys)
 		{
-			// See CommandStateSerializer.hpp's own class comment - only
-			// commands whose state is actually meant to persist register
-			// here at all.
 			if (supportsStateOperations())
 				CommandStateSerializer::AddCommand(this);
 
-			// See CommandHotkeyDispatch.hpp's own class comment - only
-			// commands actually constructed with a hotkey register here.
 			if (!this->hotkeys.empty())
 				CommandHotkeyDispatch::AddCommand(this);
 		}
@@ -127,6 +125,8 @@ namespace Stand
 
 		void ensureWorkerContext(ThreadContext thread_context, std::function<void()>&& func);
 		void ensureWorkerContext(const Click& click, std::function<void()>&& func);
+
+		virtual void fillVirtualItems(std::vector<std::unique_ptr<Rendering::GridItem>>&, Rendering::Grid*) {}
 
 	private:
 		void queueWorkerJob(std::function<void()>&& func);

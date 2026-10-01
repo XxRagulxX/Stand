@@ -204,6 +204,15 @@ namespace Stand::Rendering
 			return m_ScrollOffset;
 		}
 
+		void setVirtualScroll(int32_t totalHeight, int16_t offset)
+		{
+			m_VirtualContentHeight = totalHeight;
+			m_VirtualScrollOffset  = offset;
+		}
+
+		[[nodiscard]] int32_t GetVirtualContentHeight() const { return m_VirtualContentHeight; }
+		[[nodiscard]] int16_t GetVirtualScrollOffset()  const { return m_VirtualScrollOffset; }
+
 		// Limits draw/hit-test to items whose top Y (post-scroll, pre-menu-
 		// offset) is below maxY. MenuGrid sets this to origin.y + visibleHeight
 		// before drawing the content Grid so rows past the kMenuHeight cap
@@ -236,6 +245,8 @@ namespace Stand::Rendering
 		void checkWatchedConditions();
 
 		int16_t m_ScrollOffset = 0;
+		int32_t m_VirtualContentHeight = 0;
+		int16_t m_VirtualScrollOffset  = 0;
 		// H-space Y beyond which items are not drawn/hit-tested. Matches
 		// Stand's own command_rows limit (content->origin.y + visibleHeight).
 		// INT16_MAX = no clip (default).

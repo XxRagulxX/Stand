@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -62,8 +63,13 @@ namespace Stand::Rendering
 		static void SaveStackFor(size_t sidebarIndex);
 		static bool RestoreStackFor(size_t sidebarIndex);
 
+		// Returns true if the given grid appears anywhere in the navigation
+		// stack - not just at the top. Safe to call from any thread.
+		static bool IsDescendantActive(const Grid* g);
+
 	private:
 		static std::vector<Level> s_Stack;
 		static std::unordered_map<size_t, std::vector<Level>> s_SavedStacks;
+		static std::mutex s_Mutex;
 	};
 }

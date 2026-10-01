@@ -444,7 +444,9 @@ namespace Stand::Rendering
 			if (auto* content = MenuNavigation::Current())
 			{
 				const int delta = (vkCode == VK_DOWN || vkCode == VK_NUMPAD2) ? 1 : -1;
-				MenuFocus::MoveContent(content, delta);
+				auto* focused = MenuFocus::GetFocusedItem(content);
+				if (!focused || !focused->handleNavigation(delta))
+					MenuFocus::MoveContent(content, delta);
 				MenuFocus::SetRegion(MenuFocus::Region::Content);
 			}
 			break;
