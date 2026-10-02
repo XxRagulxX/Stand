@@ -6,6 +6,24 @@ namespace Stand
     class AllEntitiesEveryTick
     {
     public:
+        inline static bool dedsec_mode = false;
+        inline static int dedsec_deselect_delay = 0;
+        inline static bool dedsec_passive_reticle = true;
+        inline static bool dedsec_passive_line = true;
+        inline static bool dedsec_passive_box = false;
+        inline static bool dedsec_active_reticle = true;
+        inline static bool dedsec_active_line = true;
+        inline static bool dedsec_active_box = true;
+        inline static int dedsec_r = 255;
+        inline static int dedsec_g = 0;
+        inline static int dedsec_b = 255;
+        inline static int dedsec_a = 255;
+        inline static int dedsec_h = 300;
+        inline static int dedsec_s = 100;
+        inline static int dedsec_v = 100;
+        inline static int dedsec_rainbow = 0;
+        inline static int phone_input_delay = 200;
+
         inline static punishment_t npc_existence_punishments = 0;
         inline static float npc_punishable_proximity = 10.0f;
         inline static punishment_t npc_proximity_punishments = 0;
