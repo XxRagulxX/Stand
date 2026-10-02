@@ -26,5 +26,6 @@ namespace Stand
 		Hooking::Get<Hooks::Script::InitNativeTables>()->Original<decltype(&Hooks::Script::InitNativeTables)>()(program);
 		free(program);
 		m_AreHandlersCached = true;
+		LOG(INFO) << "GET_WATER_HEIGHT handler: " << (void*)m_Handlers[6576];
 	}
 }

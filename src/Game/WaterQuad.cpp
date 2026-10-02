@@ -1,12 +1,31 @@
 #include "Game/WaterQuad.hpp"
 #include "Core/Pointers.hpp"
 
+// Enhanced layout: Pointers.water_quads = WaterQuad*** pointing to a global.
+// *water_quads  = struct ptr  (heap)
+// **water_quads = WaterQuad*  (array, at struct+0)
+// count         = uint16_t    (at struct+8)
+static WaterQuad* getArray()
+{
+    if (!Stand::Pointers.water_quads) return nullptr;
+    auto* mgr = reinterpret_cast<std::uint8_t*>(*Stand::Pointers.water_quads);
+    if (!mgr) return nullptr;
+    return *reinterpret_cast<WaterQuad**>(mgr);
+}
+
+static std::uint16_t getCount()
+{
+    if (!Stand::Pointers.water_quads) return 0;
+    auto* mgr = reinterpret_cast<std::uint8_t*>(*Stand::Pointers.water_quads);
+    if (!mgr) return 0;
+    return *reinterpret_cast<std::uint16_t*>(mgr + 8);
+}
+
 WaterQuad* WaterQuad::at(std::int16_t x, std::int16_t y)
 {
-    if (!Stand::Pointers.water_quads || !Stand::Pointers.water_quads_size)
-        return nullptr;
-    WaterQuad* quads = *Stand::Pointers.water_quads;
-    const std::uint16_t count = *Stand::Pointers.water_quads_size;
+    WaterQuad* quads = getArray();
+    if (!quads) return nullptr;
+    const std::uint16_t count = getCount();
     for (std::uint16_t i = 0; i < count; ++i)
     {
         if (quads[i].minX <= x && x < quads[i].maxX
@@ -21,10 +40,9 @@ WaterQuad* WaterQuad::at(std::int16_t x, std::int16_t y)
 std::vector<std::uint16_t> WaterQuad::idsAt(std::int16_t x, std::int16_t y)
 {
     std::vector<std::uint16_t> res;
-    if (!Stand::Pointers.water_quads || !Stand::Pointers.water_quads_size)
-        return res;
-    WaterQuad* quads = *Stand::Pointers.water_quads;
-    const std::uint16_t count = *Stand::Pointers.water_quads_size;
+    WaterQuad* quads = getArray();
+    if (!quads) return res;
+    const std::uint16_t count = getCount();
     for (std::uint16_t i = 0; i < count; ++i)
     {
         if (quads[i].minX <= x && x < quads[i].maxX
@@ -38,14 +56,12 @@ std::vector<std::uint16_t> WaterQuad::idsAt(std::int16_t x, std::int16_t y)
 
 WaterQuad* WaterQuad::get(std::uint16_t id)
 {
-    if (!Stand::Pointers.water_quads)
-        return nullptr;
-    return &(*Stand::Pointers.water_quads)[id];
+    WaterQuad* quads = getArray();
+    if (!quads) return nullptr;
+    return &quads[id];
 }
 
 std::uint16_t WaterQuad::size()
 {
-    if (!Stand::Pointers.water_quads_size)
-        return 0;
-    return *Stand::Pointers.water_quads_size;
+    return getCount();
 }

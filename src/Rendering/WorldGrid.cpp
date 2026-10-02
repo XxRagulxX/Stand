@@ -34,6 +34,7 @@ namespace Stand::Rendering
 		constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
 		auto& worldTab = Features::GetCommandTabWorld();
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.atmosphere));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.water));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.editor));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.places));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.inhabitants));

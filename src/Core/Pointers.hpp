@@ -175,7 +175,7 @@ namespace Stand
 		PVOID MatchmakingUnadvertise;
 		PVOID MatchmakingSessionDetailSendResponse;
 		PVOID GameSkeletonUpdate;
-		WaterQuad** water_quads;
+		WaterQuad*** water_quads;
 		std::uint16_t* water_quads_size;
 	};
 

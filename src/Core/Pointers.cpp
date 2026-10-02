@@ -450,10 +450,11 @@ namespace Stand
 		});
 
 		soup::Range waterQuadsRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
-		batch.AddOptional("WaterQuads", std::move(waterQuadsRange), "48 8D 0D ? ? ? ? 66 44 89 05 ? ? ? ? E8 ? ? ? ? 0F B7 05 ? ? ? ?", [this](soup::Pointer p) {
-			PointerCalculator ptr(p.as<std::uintptr_t>());
-			water_quads = ptr.Add(3).Rip().As<WaterQuad**>();
-			water_quads_size = ptr.Add(11).Rip().As<std::uint16_t*>();
+		batch.AddOptional("WaterQuads", std::move(waterQuadsRange), "E8 ? ? ? ? 4C 8B 3D ? ? ? ? 41 0F B7 7F 08 49 8B 1F", [this](soup::Pointer p) {
+			// Pattern: call ... | mov r15,[rip+disp] | movzx edi,word[r15+8] | mov rbx,[r15]
+			// *[global] = struct { WaterQuad* quads; uint16_t count; }
+			PointerCalculator ptr(p.as<std::uintptr_t>() + 5); // skip 5-byte call
+			water_quads = ptr.Add(3).Rip().As<WaterQuad***>();  // &global -> struct -> array
 		}, [](PatternBatch&) {
 			LOG(WARNING) << "WaterQuads pattern not found — water features disabled";
 		});

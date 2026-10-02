@@ -268,6 +268,8 @@ namespace Stand
 		}
 	}
 
+	static void ESP_DrawImpl(CommandTabESP& esp);
+
 	void ESP::Draw()
 	{
 		g_TextItems.clear();
@@ -283,6 +285,15 @@ namespace Stand
 
 		__try
 		{
+			ESP_DrawImpl(esp);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+	}
+
+	static void ESP_DrawImpl(CommandTabESP& esp)
+	{
 			if (esp.drawPlayers->m_on)
 			{
 				for (auto& [id, player] : Players::GetPlayers())
@@ -409,10 +420,6 @@ namespace Stand
 					}
 				}
 			}
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
-		{
-		}
 	}
 
 	void ESP::DrawText()
