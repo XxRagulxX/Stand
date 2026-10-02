@@ -43,6 +43,12 @@ namespace Stand::Rendering
 			}
 		}
 
+		{
+			const size_t snap = m_List->countVisibleChildren();
+			auto* list_for_watch = m_List;
+			watchCondition([list_for_watch, snap] { return list_for_watch->countVisibleChildren() == snap; });
+		}
+
 		items_draft.reserve(m_List->children.size());
 		for (auto& child : m_List->children)
 		{
