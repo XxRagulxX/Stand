@@ -7,6 +7,8 @@
 #include "Core/BytePatches.hpp"
 #include "Game/atArray.hpp"
 
+struct WaterQuad;
+
 namespace rage
 {
 	template<typename T>
@@ -173,6 +175,8 @@ namespace Stand
 		PVOID MatchmakingUnadvertise;
 		PVOID MatchmakingSessionDetailSendResponse;
 		PVOID GameSkeletonUpdate;
+		WaterQuad** water_quads;
+		std::uint16_t* water_quads_size;
 	};
 
 	struct Pointers : PointerData

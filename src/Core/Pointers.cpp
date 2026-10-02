@@ -1,5 +1,6 @@
 #include "Core/Pointers.hpp"
 
+#include "Game/WaterQuad.hpp"
 #include "Core/ModuleMgr.hpp"
 #include "Util/Joaat.hpp"
 #include "Game/atArray.hpp"
@@ -446,6 +447,15 @@ namespace Stand
 		batch.Add("GameSkeletonUpdate", std::move(gameSkeletonUpdateRange), "56 48 83 EC 20 48 8B 81 40 01 00 00 48 85 C0", [this](soup::Pointer p) {
 			PointerCalculator ptr(p.as<std::uintptr_t>());
 			GameSkeletonUpdate = ptr.As<PVOID>();
+		});
+
+		soup::Range waterQuadsRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
+		batch.AddOptional("WaterQuads", std::move(waterQuadsRange), "48 8D 0D ? ? ? ? 66 44 89 05 ? ? ? ? E8 ? ? ? ? 0F B7 05 ? ? ? ?", [this](soup::Pointer p) {
+			PointerCalculator ptr(p.as<std::uintptr_t>());
+			water_quads = ptr.Add(3).Rip().As<WaterQuad**>();
+			water_quads_size = ptr.Add(11).Rip().As<std::uint16_t*>();
+		}, [](PatternBatch&) {
+			LOG(WARNING) << "WaterQuads pattern not found — water features disabled";
 		});
 
 		soup::Range modelSpawnBypassRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
