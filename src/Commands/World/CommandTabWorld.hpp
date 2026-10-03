@@ -8,6 +8,10 @@
 #include "Commands/World/GeoGuessr/CommandGeoGuessr.hpp"
 #include "Commands/World/AestheticLight/CommandListAestheticLight.hpp"
 #include "Commands/World/WorldBorder/CommandListWorldBorder.hpp"
+#include "Commands/World/CommandBlackout.hpp"
+#include "Commands/World/CommandTrains.hpp"
+#include "Commands/World/CommandArWaypoint.hpp"
+#include "Commands/World/CommandArGps.hpp"
 #include "Commands/World/Editor/CommandListEditor.hpp"
 #include "Commands/World/Places/CommandListPlaces.hpp"
 #include "Commands/World/Inhabitants/CommandListInhabitants.hpp"
@@ -29,6 +33,10 @@ namespace Stand
         CommandGeoGuessr* const geoguessr;
         CommandListAestheticLight* const aestheticlight;
         CommandListWorldBorder* const worldborder;
+        CommandBlackout* const blackout;
+        CommandTrains* const trains;
+        CommandArWaypoint* const arwaypoint;
+        CommandArGps* const argps;
 
         explicit CommandTabWorld()
             : CommandList(nullptr, LIT("World")),
@@ -42,7 +50,11 @@ namespace Stand
               dedsec(createChild<CommandListDedsec>()),
               geoguessr(createChild<CommandGeoGuessr>()),
               aestheticlight(createChild<CommandListAestheticLight>()),
-              worldborder(createChild<CommandListWorldBorder>())
+              worldborder(createChild<CommandListWorldBorder>()),
+              blackout(createChild<CommandBlackout>()),
+              trains(createChild<CommandTrains>()),
+              arwaypoint(createChild<CommandArWaypoint>()),
+              argps(createChild<CommandArGps>())
         {
         }
     };

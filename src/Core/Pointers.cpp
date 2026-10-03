@@ -459,6 +459,14 @@ namespace Stand
 			LOG(WARNING) << "WaterQuads pattern not found — water features disabled";
 		});
 
+		soup::Range gpsSlotsRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
+		batch.AddOptional("GpsSlots", std::move(gpsSlotsRange), "48 8D 55 F0 48 8D 0D ? ? ? ? 48 98", [this](soup::Pointer p) {
+			PointerCalculator ptr(p.as<std::uintptr_t>());
+			gps_slots = ptr.Add(7).Rip().As<CGpsSlot*>();
+		}, [](PatternBatch&) {
+			LOG(WARNING) << "GpsSlots pattern not found - AR GPS disabled";
+		});
+
 		soup::Range modelSpawnBypassRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
 		batch.Add("ModelSpawnBypass", std::move(modelSpawnBypassRange), "E8 ? ? ? ? 48 8B 78 48", [this](soup::Pointer p) {
 			PointerCalculator ptr(p.as<std::uintptr_t>());

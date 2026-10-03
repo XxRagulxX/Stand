@@ -44,6 +44,10 @@ namespace Stand::Rendering
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.geoguessr));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.aestheticlight));
 		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.worldborder));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.blackout));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.trains));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.arwaypoint));
+		items_draft.push_back(std::make_unique<GridItemStandCommand>(Theme::kContentWidth, h, worldTab.argps));
 
 
 		// items_draft.push_back(std::make_unique<GridItemText>(Theme::kContentWidth, kSectionHeaderH, "Categories", Theme::kText));

@@ -8,6 +8,7 @@
 #include "Game/atArray.hpp"
 
 struct WaterQuad;
+class CGpsSlot;
 
 namespace rage
 {
@@ -177,6 +178,7 @@ namespace Stand
 		PVOID GameSkeletonUpdate;
 		WaterQuad*** water_quads;
 		std::uint16_t* water_quads_size;
+		CGpsSlot* gps_slots;
 	};
 
 	struct Pointers : PointerData
