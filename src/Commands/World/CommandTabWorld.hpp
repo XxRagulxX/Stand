@@ -6,6 +6,8 @@
 #include "Commands/World/CommandListEnhancedOpenWorld.hpp"
 #include "Commands/World/Watch_Dogs/CommandListDedsec.hpp"
 #include "Commands/World/GeoGuessr/CommandGeoGuessr.hpp"
+#include "Commands/World/AestheticLight/CommandListAestheticLight.hpp"
+#include "Commands/World/WorldBorder/CommandListWorldBorder.hpp"
 #include "Commands/World/Editor/CommandListEditor.hpp"
 #include "Commands/World/Places/CommandListPlaces.hpp"
 #include "Commands/World/Inhabitants/CommandListInhabitants.hpp"
@@ -25,6 +27,8 @@ namespace Stand
         CommandListEnhancedOpenWorld* const enhancedopenworld;
         CommandListDedsec* const dedsec;
         CommandGeoGuessr* const geoguessr;
+        CommandListAestheticLight* const aestheticlight;
+        CommandListWorldBorder* const worldborder;
 
         explicit CommandTabWorld()
             : CommandList(nullptr, LIT("World")),
@@ -36,7 +40,9 @@ namespace Stand
               worldstate(createChild<CommandWorldState>()),
               enhancedopenworld(createChild<CommandListEnhancedOpenWorld>()),
               dedsec(createChild<CommandListDedsec>()),
-              geoguessr(createChild<CommandGeoGuessr>())
+              geoguessr(createChild<CommandGeoGuessr>()),
+              aestheticlight(createChild<CommandListAestheticLight>()),
+              worldborder(createChild<CommandListWorldBorder>())
         {
         }
     };
