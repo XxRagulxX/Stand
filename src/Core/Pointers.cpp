@@ -1,5 +1,7 @@
 #include "Core/Pointers.hpp"
 
+#include <cstring>
+
 #include "Game/WaterQuad.hpp"
 #include "Core/ModuleMgr.hpp"
 #include "Util/Joaat.hpp"
@@ -460,9 +462,41 @@ namespace Stand
 		});
 
 		soup::Range gpsSlotsRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
-		batch.AddOptional("GpsSlots", std::move(gpsSlotsRange), "48 8D 55 F0 48 8D 0D ? ? ? ? 48 98", [this](soup::Pointer p) {
-			PointerCalculator ptr(p.as<std::uintptr_t>());
-			gps_slots = ptr.Add(7).Rip().As<CGpsSlot*>();
+		// Enhanced-specific pattern: `lea rcx,[rip+mgr]` then `call GetSlot` then
+		// `xor edi,edi; cmp [rax+0x44],0`.  RAX after GetSlot = the active GPS slot.
+		// RSI (loaded just before the call from a static variable) = gps_slots array base.
+		// Walk back to find `mov rsi,[rip+X]` (48 8B 35) whose target holds the array ptr.
+		batch.AddOptional("GpsSlots", std::move(gpsSlotsRange), "48 8D 0D ? ? ? ? E8 ? ? ? ? 31 FF 83 78 44 00", [this](soup::Pointer p) {
+			// The pattern is: lea rcx,[rip+mgr] / call GetSlot / xor edi,edi / cmp [rax+44h],0
+			// RSI fed into GetSlot holds the GPS slot array base, loaded earlier via:
+			//   mov rsi,[rip+static_var]   (48 8B 35 ?? ?? ?? ??)
+			// Walk back up to 2048 bytes to find that instruction.
+			// Filter: the static_var address must be in EXE .data (addr >> 32 == 0x7FF7),
+			// and the value it holds must be a non-null canonical address (the heap slot array).
+			const uint8_t* pat = p.as<const uint8_t*>();
+			CGpsSlot* last_candidate = nullptr;
+			for (int back = 7; back <= 2048; back++)
+			{
+				const uint8_t* s = pat - back;
+				if (s[0] != 0x48 || s[1] != 0x8B || s[2] != 0x35) continue;
+				int32_t disp; std::memcpy(&disp, s + 3, 4);
+				const auto* src = reinterpret_cast<const uintptr_t*>(s + 7 + disp);
+				// src must be an EXE-resident static variable (0x7FF7XXXXXXXXXX → src>>32 == 0x7FF7)
+				if ((reinterpret_cast<uintptr_t>(src) >> 32) != 0x7FF7u) continue;
+				const uintptr_t val = *src;
+				// val is the slot array address: non-null, canonical user-space
+				if (val < 0x10000u || val > 0x7FFFFFFFFFFFFull) continue;
+				last_candidate = reinterpret_cast<CGpsSlot*>(val);
+			}
+			gps_slots = last_candidate;
+			if (gps_slots)
+				LOG(INFO) << "[GPS] gps_slots=0x" << std::hex
+				          << reinterpret_cast<uintptr_t>(gps_slots)
+				          << " slot[0].m_NumNodes=" << std::dec
+				          << *reinterpret_cast<const int32_t*>(
+				                 reinterpret_cast<const uint8_t*>(gps_slots) + 0x44);
+			else
+				LOG(WARNING) << "[GPS] No 'mov rsi' candidate found — AR GPS disabled";
 		}, [](PatternBatch&) {
 			LOG(WARNING) << "GpsSlots pattern not found - AR GPS disabled";
 		});
