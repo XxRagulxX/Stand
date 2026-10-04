@@ -1,9 +1,9 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
-#include "Commands/World/CommandListAtmosphere.hpp"
-#include "Commands/World/CommandListWater.hpp"
-#include "Commands/World/CommandWorldState.hpp"
-#include "Commands/World/CommandListEnhancedOpenWorld.hpp"
+#include "Commands/World/Atmosphere/CommandListAtmosphere.hpp"
+#include "Commands/World/Water/CommandListWater.hpp"
+#include "Commands/World/WorldState/CommandWorldState.hpp"
+#include "Commands/World/EnhancedOpenWorld/CommandListEnhancedOpenWorld.hpp"
 #include "Commands/World/Watch_Dogs/CommandListDedsec.hpp"
 #include "Commands/World/GeoGuessr/CommandGeoGuessr.hpp"
 #include "Commands/World/AestheticLight/CommandListAestheticLight.hpp"

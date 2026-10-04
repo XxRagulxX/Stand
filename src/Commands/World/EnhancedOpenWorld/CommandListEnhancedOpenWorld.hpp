@@ -1,7 +1,7 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
-#include "Commands/World/CommandWorldDoors.hpp"
+#include "Commands/World/EnhancedOpenWorld/CommandWorldDoors.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand

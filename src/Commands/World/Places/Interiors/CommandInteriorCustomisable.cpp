@@ -1,5 +1,5 @@
-#include "Commands/World/Interiors/CommandInteriorCustomisable.hpp"
-#include "Commands/World/Interiors/CommandInterior.hpp"
+#include "Commands/World/Places/Interiors/CommandInteriorCustomisable.hpp"
+#include "Commands/World/Places/Interiors/CommandInterior.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "Util/Label.hpp"

@@ -1,4 +1,4 @@
-#include "Commands/World/CommandDailyActivities.hpp"
+#include "Commands/OLDStuff/CommandDailyActivities.hpp"
 #include "Commands/CommandListSelect.hpp"
 #include "Commands/CommandToggleLegacy.hpp"
 #include "Scripting/ScriptMgr.hpp"

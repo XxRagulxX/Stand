@@ -1,12 +1,12 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/World/Places/TeleportTo/CommandListTeleportTo.hpp"
-#include "Commands/World/Places/Waypoint/CommandListWaypoint.hpp"
+#include "Commands/World/Places/WaypointTo/CommandListWaypoint.hpp"
 #include "Commands/World/Places/Position/CommandMyPosition.hpp"
 #include "Commands/World/Places/CommandRepeatTeleport.hpp"
 #include "Commands/World/Places/CommandUndoTp.hpp"
 #include "Commands/World/Places/CommandTeleportParticle.hpp"
-#include "Commands/World/Interiors/CommandListInteriors.hpp"
+#include "Commands/World/Places/Interiors/CommandListInteriors.hpp"
 #include "Commands/World/Places/IPLs/CommandListIPLs.hpp"
 #include "Util/Label.hpp"
 

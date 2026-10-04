@@ -1,4 +1,4 @@
-#include "Commands/World/CommandWorldDoors.hpp"
+#include "Commands/World/EnhancedOpenWorld/CommandWorldDoors.hpp"
 
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
-#include "Commands/World/Interiors/CommandInterior.hpp"
+#include "Commands/World/Places/Interiors/CommandInterior.hpp"
 
 namespace Stand
 {

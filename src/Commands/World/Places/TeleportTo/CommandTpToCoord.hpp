@@ -20,7 +20,7 @@ namespace Stand
         void onClick(Click& click) override
         {
             click.ensureScriptThread([this] {
-                TpUtil::DoTeleport(m_x, m_y, m_z);
+                TpUtil::teleport_exact(m_x, m_y, m_z);
             });
         }
     };

@@ -1,5 +1,6 @@
-#include "Commands/World/Places/Waypoint/CommandWpObjective.hpp"
+#include "Commands/World/Places/TeleportTo/CommandTpObjective.hpp"
 
+#include "Commands/World/Places/TpUtil.hpp"
 #include "Game/BlipSprite.hpp"
 #include "Menu/Click.hpp"
 #include "Scripting/Natives.hpp"
@@ -7,12 +8,12 @@
 
 namespace Stand
 {
-    CommandWpObjective::CommandWpObjective(CommandList* parent)
-        : CommandPhysical(COMMAND_ACTION, parent, LIT("Objective"), CMDNAMES("wpobjective"))
+    CommandTpObjective::CommandTpObjective(CommandList* parent)
+        : CommandPhysical(COMMAND_ACTION, parent, LIT("Objective"), CMDNAMES("tpobjective"))
     {
     }
 
-    void CommandWpObjective::onClick(Click& click)
+    void CommandTpObjective::onClick(Click& click)
     {
         click.ensureScriptThread([this] {
             static constexpr BlipSprite kSprites[] = {
@@ -31,7 +32,7 @@ namespace Stand
                 if (!blip)
                     continue;
                 auto raw = HUD::GET_BLIP_COORDS(blip);
-                HUD::SET_NEW_WAYPOINT(raw.x, raw.y);
+                TpUtil::teleportWithRedirects(raw.x, raw.y, raw.z, true);
                 return;
             }
         });

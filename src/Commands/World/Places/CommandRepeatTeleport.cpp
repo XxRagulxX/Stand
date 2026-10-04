@@ -15,10 +15,10 @@ namespace Stand
     void CommandRepeatTeleport::onClick(Click& click)
     {
         click.ensureScriptThread([this] {
-            if (!TpUtil::g_lastTp.has_value())
+            if (!TpUtil::last_tp.has_value())
                 return;
-            auto& pos = TpUtil::g_lastTp.value();
-            TpUtil::DoTeleport(pos.x, pos.y, pos.z);
+            auto& pos = TpUtil::last_tp.value();
+            TpUtil::teleport_exact(pos.x, pos.y, pos.z);
         });
     }
 }

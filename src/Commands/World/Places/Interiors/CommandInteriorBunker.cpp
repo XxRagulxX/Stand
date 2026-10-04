@@ -1,4 +1,4 @@
-#include "Commands/World/Interiors/CommandInteriorBunker.hpp"
+#include "Commands/World/Places/Interiors/CommandInteriorBunker.hpp"
 
 namespace Stand
 {

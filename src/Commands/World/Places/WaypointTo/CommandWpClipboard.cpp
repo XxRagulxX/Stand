@@ -1,4 +1,4 @@
-#include "Commands/World/Places/Waypoint/CommandWpClipboard.hpp"
+#include "Commands/World/Places/WaypointTo/CommandWpClipboard.hpp"
 
 #include "Menu/Click.hpp"
 #include "Rendering/Clipboard.hpp"

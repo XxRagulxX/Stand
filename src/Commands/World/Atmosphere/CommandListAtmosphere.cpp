@@ -1,4 +1,4 @@
-#include "Commands/World/CommandListAtmosphere.hpp"
+#include "Commands/World/Atmosphere/CommandListAtmosphere.hpp"
 
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"

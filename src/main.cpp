@@ -24,7 +24,7 @@
 #include "Menu/GUI.hpp"
 #include "Core/Pointers.hpp"
 #include "Commands/Self/Weapons/CommandOpenGunLocker.hpp"
-#include "Commands/World/CommandDailyActivities.hpp"
+#include "Commands/OLDStuff/CommandDailyActivities.hpp"
 #include "Core/LogHelper.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Script.hpp"

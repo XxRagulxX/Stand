@@ -1,6 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
-#include "Commands/World/Places/Waypoint/CommandWpToCoord.hpp"
+#include "Commands/World/Places/WaypointTo/CommandWpToCoord.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand

@@ -1,4 +1,4 @@
-#include "Commands/World/Interiors/CommandInterior.hpp"
+#include "Commands/World/Places/Interiors/CommandInterior.hpp"
 #include "Commands/World/Places/TpUtil.hpp"
 #include "Scripting/Natives.hpp"
 #include "Util/Label.hpp"
@@ -61,13 +61,13 @@ namespace Stand
     void CommandInterior::teleport() const
     {
         enable();
-        TpUtil::DoTeleport(pos.x, pos.y, pos.z);
+        TpUtil::teleport_exact(pos.x, pos.y, pos.z);
     }
 
     void CommandInterior::teleport(Vector3 pos, bool needs_mp_world_state)
     {
         enable(pos, needs_mp_world_state);
-        TpUtil::DoTeleport(pos.x, pos.y, pos.z);
+        TpUtil::teleport_exact(pos.x, pos.y, pos.z);
     }
 
     void CommandInterior::onClick(Click& click)

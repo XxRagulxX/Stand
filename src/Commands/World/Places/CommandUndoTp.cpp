@@ -15,7 +15,7 @@ namespace Stand
     void CommandUndoTp::onClick(Click& click)
     {
         click.ensureScriptThread([this] {
-            TpUtil::UndoTeleport();
+            TpUtil::undo_teleport();
         });
     }
 }

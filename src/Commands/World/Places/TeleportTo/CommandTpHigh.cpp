@@ -15,7 +15,7 @@ namespace Stand
     void CommandTpHigh::onClick(Click& click)
     {
         click.ensureScriptThread([this] {
-            TpUtil::DoTeleport(-75.2188f, -818.582f, 2500.0f);
+            TpUtil::teleport_exact(-75.2188f, -818.582f, 2500.0f);
         });
     }
 }

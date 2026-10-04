@@ -1,8 +1,9 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
-#include "Commands/World/Places/CommandTpWp.hpp"
-#include "Commands/World/Places/CommandTpObjective.hpp"
-#include "Commands/World/Places/CommandAutoTpWp.hpp"
+#include "Commands/World/Places/TeleportTo/CommandTpWp.hpp"
+#include "Commands/World/Places/TeleportTo/CommandTpObjective.hpp"
+#include "Commands/World/Places/TeleportTo/CommandAutoTpWp.hpp"
+#include "Commands/World/Places/TeleportTo/CommandWaypointPortal.hpp"
 #include "Commands/World/Places/TeleportTo/CommandListSavedPlaces.hpp"
 #include "Commands/World/Places/TeleportTo/CommandListStores.hpp"
 #include "Commands/World/Places/TeleportTo/CommandListLandmarks.hpp"
@@ -23,6 +24,7 @@ namespace Stand
         CommandTpHigh* const tpHigh;
         CommandTpClipboard* const tpClipboard;
         CommandAutoTpWp* const autoTpWp;
+        CommandWaypointPortal* const waypointPortal;
 
         explicit CommandListTeleportTo(CommandList* parent)
             : CommandList(parent, LIT("Teleport To...")),
@@ -33,7 +35,8 @@ namespace Stand
               landmarks(createChild<CommandListLandmarks>()),
               tpHigh(createChild<CommandTpHigh>()),
               tpClipboard(createChild<CommandTpClipboard>()),
-              autoTpWp(createChild<CommandAutoTpWp>())
+              autoTpWp(createChild<CommandAutoTpWp>()),
+              waypointPortal(createChild<CommandWaypointPortal>())
         {
         }
     };

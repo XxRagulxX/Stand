@@ -24,7 +24,7 @@ namespace Stand
             std::istringstream ss(text);
             if (!(ss >> x >> sep >> y >> sep >> z))
                 return;
-            TpUtil::DoTeleport(x, y, z);
+            TpUtil::teleport_exact(x, y, z);
         });
     }
 }

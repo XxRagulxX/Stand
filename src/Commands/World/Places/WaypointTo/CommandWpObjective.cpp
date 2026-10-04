@@ -1,6 +1,5 @@
-#include "Commands/World/Places/CommandTpObjective.hpp"
+#include "Commands/World/Places/WaypointTo/CommandWpObjective.hpp"
 
-#include "Commands/World/Places/TpUtil.hpp"
 #include "Game/BlipSprite.hpp"
 #include "Menu/Click.hpp"
 #include "Scripting/Natives.hpp"
@@ -8,12 +7,12 @@
 
 namespace Stand
 {
-    CommandTpObjective::CommandTpObjective(CommandList* parent)
-        : CommandPhysical(COMMAND_ACTION, parent, LIT("Objective"), CMDNAMES("tpobjective"))
+    CommandWpObjective::CommandWpObjective(CommandList* parent)
+        : CommandPhysical(COMMAND_ACTION, parent, LIT("Objective"), CMDNAMES("wpobjective"))
     {
     }
 
-    void CommandTpObjective::onClick(Click& click)
+    void CommandWpObjective::onClick(Click& click)
     {
         click.ensureScriptThread([this] {
             static constexpr BlipSprite kSprites[] = {
@@ -32,15 +31,7 @@ namespace Stand
                 if (!blip)
                     continue;
                 auto raw = HUD::GET_BLIP_COORDS(blip);
-                bool in_vehicle = TpUtil::GetPlayerVehicle() != 0;
-                auto tp = TpUtil::FollowRedirects(raw.x, raw.y, raw.z, true, in_vehicle);
-                if (!tp.z_exact)
-                {
-                    Vector3 vec{tp.x, tp.y, tp.z};
-                    TpUtil::ResolveZCoordinate(vec);
-                    tp.x = vec.x; tp.y = vec.y; tp.z = vec.z;
-                }
-                TpUtil::DoTeleport(tp.x, tp.y, tp.z);
+                HUD::SET_NEW_WAYPOINT(raw.x, raw.y);
                 return;
             }
         });

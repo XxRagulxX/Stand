@@ -33,7 +33,7 @@ namespace Stand
             for (const auto& ipl : m_remove_enable_only)
                 STREAMING::REMOVE_IPL(ipl);
             if (m_tp_toggle->m_on)
-                TpUtil::DoTeleport(coords.x, coords.y, coords.z);
+                TpUtil::teleport_exact(coords.x, coords.y, coords.z);
         });
     }
 

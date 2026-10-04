@@ -1,9 +1,9 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
-#include "Commands/World/Places/Waypoint/CommandWpObjective.hpp"
-#include "Commands/World/Places/Waypoint/CommandListWpStores.hpp"
-#include "Commands/World/Places/Waypoint/CommandListWpLandmarks.hpp"
-#include "Commands/World/Places/Waypoint/CommandWpClipboard.hpp"
+#include "Commands/World/Places/WaypointTo/CommandWpObjective.hpp"
+#include "Commands/World/Places/WaypointTo/CommandListWpStores.hpp"
+#include "Commands/World/Places/WaypointTo/CommandListWpLandmarks.hpp"
+#include "Commands/World/Places/WaypointTo/CommandWpClipboard.hpp"
 #include "Util/Label.hpp"
 
 namespace Stand

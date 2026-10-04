@@ -1,4 +1,4 @@
-#include "Commands/World/Places/CommandTpWp.hpp"
+#include "Commands/World/Places/TeleportTo/CommandTpWp.hpp"
 
 #include "Commands/World/Places/TpUtil.hpp"
 #include "Menu/Click.hpp"
@@ -19,15 +19,7 @@ namespace Stand
                 return;
             auto blip = HUD::GET_CLOSEST_BLIP_INFO_ID(HUD::GET_WAYPOINT_BLIP_ENUM_ID());
             auto raw = HUD::GET_BLIP_COORDS(blip);
-            bool in_vehicle = TpUtil::GetPlayerVehicle() != 0;
-            auto tp = TpUtil::FollowRedirects(raw.x, raw.y, raw.z, true, in_vehicle);
-            if (!tp.z_exact)
-            {
-                Vector3 vec{tp.x, tp.y, tp.z};
-                TpUtil::ResolveZCoordinate(vec);
-                tp.x = vec.x; tp.y = vec.y; tp.z = vec.z;
-            }
-            TpUtil::DoTeleport(tp.x, tp.y, tp.z);
+            TpUtil::teleportWithRedirects(raw.x, raw.y, raw.z, true);
         });
     }
 }

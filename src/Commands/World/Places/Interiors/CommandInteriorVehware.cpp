@@ -1,4 +1,4 @@
-#include "Commands/World/Interiors/CommandInteriorVehware.hpp"
+#include "Commands/World/Places/Interiors/CommandInteriorVehware.hpp"
 #include "Scripting/Natives.hpp"
 
 namespace Stand
