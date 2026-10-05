@@ -4,11 +4,14 @@
 #include "Rendering/Theme.hpp"
 
 #include <algorithm>
+#include <chrono>
 
 namespace Stand
 {
 	std::vector<OverlayLine> Overlay::s_Lines{};
 	OverlayPosition          Overlay::s_Position{OverlayPosition::TopLeft};
+	float                    Overlay::s_Tps{0.f};
+	float                    Overlay::s_Dps{0.f};
 
 	namespace
 	{
@@ -33,6 +36,18 @@ namespace Stand
 	void Overlay::Draw()
 	{
 		using namespace Rendering;
+
+		{
+			static auto s_Last = std::chrono::steady_clock::now();
+			const auto now     = std::chrono::steady_clock::now();
+			const float dt     = std::chrono::duration<float>(now - s_Last).count();
+			s_Last             = now;
+			if (dt > 0.f)
+			{
+				const float instant = 1.f / dt;
+				s_Dps = s_Dps <= 0.f ? instant : s_Dps * 0.9f + instant * 0.1f;
+			}
+		}
 
 		g_State       = {};
 		g_State.lines = s_Lines;

@@ -25,6 +25,8 @@ namespace Stand
 	public:
 		static std::vector<OverlayLine> s_Lines;
 		static OverlayPosition          s_Position;
+		static float                    s_Tps;
+		static float                    s_Dps;
 
 		static void Draw();
 		static void DrawText();
