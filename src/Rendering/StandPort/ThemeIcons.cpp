@@ -1,4 +1,5 @@
-#include "Rendering/ThemeIcons.hpp"
+#include "ThemeIcons.hpp"
+#include "ThemeIconsData.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Rendering/Theme.hpp"
 #include "Core/FileMgr.hpp"
@@ -15,9 +16,6 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		// Matches Stand's own slot-to-filename table in Renderer.cpp
-		// (origin/dev, reloadTextures()). File extension (.png) is appended
-		// by LoadSlot() below — same pattern as Stand's own RELOAD_TEXTURE macro.
 		static constexpr const wchar_t* kSlotNames[static_cast<int>(IconSlot::Count)] = {
 		    // Core toggle / list
 		    L"Toggle Off",
@@ -103,8 +101,29 @@ namespace Stand::Rendering
 		    L"Custom/1F",
 		};
 
-		// PosH2C/SizeH2C replicated from GridRenderer.cpp — converts
-		// Stand's virtual 1920x1080 H-space coords to real client pixels.
+		struct EmbeddedFallback { IconSlot slot; const uint8_t* data; size_t size; };
+		static constexpr EmbeddedFallback kEmbedded[] = {
+		    { IconSlot::WantedStar, IconData::kWantedStar, IconData::kWantedStarSize },
+		    { IconSlot::Lock,       IconData::kLock,       IconData::kLockSize       },
+		    { IconSlot::Rs,         IconData::kRs,         IconData::kRsSize         },
+		    { IconSlot::RsVerified, IconData::kRsVerified, IconData::kRsVerifiedSize },
+		    { IconSlot::RsCreated,  IconData::kRsCreated,  IconData::kRsCreatedSize  },
+		    { IconSlot::Blankbox,   IconData::kBlankbox,   IconData::kBlankboxSize   },
+		    { IconSlot::Newline,    IconData::kNewline,    IconData::kNewlineSize    },
+		    { IconSlot::Reset,      IconData::kReset,      IconData::kResetSize      },
+		    { IconSlot::Uni0000,    IconData::kUni0000,    IconData::kUni0000Size    },
+		    { IconSlot::Uni26A0,    IconData::kUni26A0,    IconData::kUni26A0Size    },
+		    { IconSlot::Uni2728,    IconData::kUni2728,    IconData::kUni2728Size    },
+		    { IconSlot::Uni2764,    IconData::kUni2764,    IconData::kUni2764Size    },
+		    { IconSlot::Uni1F4AF,   IconData::kUni1F4AF,   IconData::kUni1F4AFSize   },
+		    { IconSlot::Uni1F60A,   IconData::kUni1F60A,   IconData::kUni1F60ASize   },
+		    { IconSlot::Uni1F480,   IconData::kUni1F480,   IconData::kUni1F480Size   },
+		    { IconSlot::Uni1F525,   IconData::kUni1F525,   IconData::kUni1F525Size   },
+		    { IconSlot::Uni1F602,   IconData::kUni1F602,   IconData::kUni1F602Size   },
+		    { IconSlot::Uni1F629,   IconData::kUni1F629,   IconData::kUni1F629Size   },
+		    { IconSlot::Uni1F633,   IconData::kUni1F633,   IconData::kUni1F633Size   },
+		};
+
 		DirectX::XMFLOAT2 SizeH2C(float x, float y, float clientW, float clientH)
 		{
 			const float hudW = Theme::kHudWidth;
@@ -148,24 +167,31 @@ namespace Stand::Rendering
 		std::filesystem::create_directories(themeDir / "Tabs");
 		std::filesystem::create_directories(themeDir / "Custom");
 
-		// Fallback 1: StandEnhanced\Themes (old plural name the Open Theme
-		// Folder button used before it was corrected to "Theme").
 		const auto themesDir = themeDir.parent_path() / "Themes";
-
-		// Fallback 2: %APPDATA%\Stand\Theme (original Stand installation).
-		std::filesystem::path standThemeDir;
-		if (const char* appdata = std::getenv("APPDATA"))
-			standThemeDir = std::filesystem::path(appdata) / "Stand" / "Theme";
 
 		for (int i = 0; i < static_cast<int>(IconSlot::Count); ++i)
 		{
-			// Priority: Theme/ → Themes/ → Stand/Theme/
 			if (LoadSlot(i, (themeDir / kSlotNames[i]).wstring() + L".png"))
 				continue;
-			if (LoadSlot(i, (themesDir / kSlotNames[i]).wstring() + L".png"))
-				continue;
-			if (!standThemeDir.empty())
-				LoadSlot(i, (standThemeDir / kSlotNames[i]).wstring() + L".png");
+			LoadSlot(i, (themesDir / kSlotNames[i]).wstring() + L".png");
+		}
+
+		for (const auto& fb : kEmbedded)
+		{
+			const int idx = static_cast<int>(fb.slot);
+			bool loaded = false;
+			{ std::lock_guard lock(m_Mutex); loaded = m_Slots[idx].Loaded; }
+			if (!loaded)
+				LoadSlotFromMemory(idx, fb.data, fb.size);
+		}
+
+		const int custom0 = static_cast<int>(IconSlot::Custom00);
+		for (int i = 0; i < 32; ++i)
+		{
+			bool loaded = false;
+			{ std::lock_guard lock(m_Mutex); loaded = m_Slots[custom0 + i].Loaded; }
+			if (!loaded)
+				CopySlot(custom0 + i, static_cast<int>(IconData::kCustomFallback[i]));
 		}
 	}
 
@@ -208,6 +234,51 @@ namespace Stand::Rendering
 		std::lock_guard lock(m_Mutex);
 		m_Slots[idx] = std::move(slot);
 		return true;
+	}
+
+	bool ThemeIcons::LoadSlotFromMemory(int idx, const uint8_t* data, size_t size)
+	{
+		auto* device = Renderer::GetDevice();
+		if (!device)
+			return false;
+
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc{
+		    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1,
+		    D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap;
+		if (FAILED(device->CreateDescriptorHeap(&heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)heap.ReleaseAndGetAddressOf())))
+			return false;
+
+		Slot slot;
+		try
+		{
+			DirectX::ResourceUploadBatch upload(device);
+			upload.Begin();
+			if (FAILED(DirectX::CreateWICTextureFromMemory(device, upload, data, size, slot.Texture.ReleaseAndGetAddressOf())))
+				return false;
+			const auto desc = slot.Texture->GetDesc();
+			slot.Width  = static_cast<UINT>(desc.Width);
+			slot.Height = desc.Height;
+			slot.CpuHandle = heap->GetCPUDescriptorHandleForHeapStart();
+			slot.GpuHandle = heap->GetGPUDescriptorHandleForHeapStart();
+			device->CreateShaderResourceView(slot.Texture.Get(), nullptr, slot.CpuHandle);
+			upload.End(Renderer::GetCommandQueue()).wait();
+		}
+		catch (...) { return false; }
+
+		slot.Heap   = std::move(heap);
+		slot.Loaded = true;
+
+		std::lock_guard lock(m_Mutex);
+		m_Slots[idx] = std::move(slot);
+		return true;
+	}
+
+	void ThemeIcons::CopySlot(int dst, int src)
+	{
+		std::lock_guard lock(m_Mutex);
+		if (src >= 0 && src < static_cast<int>(IconSlot::Count) && m_Slots[src].Loaded)
+			m_Slots[dst] = m_Slots[src];
 	}
 
 	bool ThemeIcons::IsLoadedImpl(IconSlot slot) const
@@ -272,8 +343,6 @@ namespace Stand::Rendering
 		const float clientW = viewport.Width;
 		const float clientH = viewport.Height;
 
-		// Each slot has its own descriptor heap — bind and draw per-slot.
-		// Group consecutive same-slot draws to minimise heap switches.
 		std::lock_guard lock(m_Mutex);
 
 		int prevSlot = -1;
