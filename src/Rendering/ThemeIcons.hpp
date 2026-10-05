@@ -17,6 +17,7 @@ namespace Stand::Rendering
 	// and fall back to DrawRect geometry when the slot is empty.
 	enum class IconSlot : int
 	{
+		// ── Core toggle / list icons ──────────────────────────────────
 		ToggleOff = 0,
 		ToggleOn,
 		ToggleOffAuto,
@@ -33,7 +34,33 @@ namespace Stand::Rendering
 		Edit,
 		Search,
 		HeaderLoading,
-		// Sidebar tab icons — loaded from Theme/Tabs/<name>.png
+
+		// ── Player / network badge icons ──────────────────────────────
+		WantedStar,
+		Lock,
+		Rs,
+		RsVerified,
+		RsCreated,
+
+		// ── Utility icons ─────────────────────────────────────────────
+		Blankbox,
+		Newline,
+		Reset,
+
+		// ── Unicode emoji icons (chat / notifications) ────────────────
+		Uni0000,
+		Uni26A0,
+		Uni2728,
+		Uni2764,
+		Uni1F4AF,
+		Uni1F60A,
+		Uni1F480,
+		Uni1F525,
+		Uni1F602,
+		Uni1F629,
+		Uni1F633,
+
+		// ── Sidebar tab icons — loaded from Theme/Tabs/<name>.png ─────
 		TabSelf,
 		TabVehicle,
 		TabTeleport,
@@ -43,6 +70,41 @@ namespace Stand::Rendering
 		TabRecovery,
 		TabSettings,
 		TabDebug,
+
+		// ── Custom slots — loaded from Theme/Custom/<hex>.png ─────────
+		Custom00,
+		Custom01,
+		Custom02,
+		Custom03,
+		Custom04,
+		Custom05,
+		Custom06,
+		Custom07,
+		Custom08,
+		Custom09,
+		Custom0A,
+		Custom0B,
+		Custom0C,
+		Custom0D,
+		Custom0E,
+		Custom0F,
+		Custom10,
+		Custom11,
+		Custom12,
+		Custom13,
+		Custom14,
+		Custom15,
+		Custom16,
+		Custom17,
+		Custom18,
+		Custom19,
+		Custom1A,
+		Custom1B,
+		Custom1C,
+		Custom1D,
+		Custom1E,
+		Custom1F,
+
 		Count,
 	};
 

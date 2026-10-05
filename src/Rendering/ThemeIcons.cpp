@@ -19,6 +19,7 @@ namespace Stand::Rendering
 		// (origin/dev, reloadTextures()). File extension (.png) is appended
 		// by LoadSlot() below — same pattern as Stand's own RELOAD_TEXTURE macro.
 		static constexpr const wchar_t* kSlotNames[static_cast<int>(IconSlot::Count)] = {
+		    // Core toggle / list
 		    L"Toggle Off",
 		    L"Toggle On",
 		    L"Toggle Off Auto",
@@ -35,7 +36,29 @@ namespace Stand::Rendering
 		    L"Edit",
 		    L"Search",
 		    L"Header Loading",
-		    // Tab icons — path is relative to theme root (Tabs/<name>.png)
+		    // Player / network badges
+		    L"Wanted Star",
+		    L"Lock",
+		    L"Rs",
+		    L"Rs Verified",
+		    L"Rs Created",
+		    // Utility
+		    L"Blankbox",
+		    L"Newline",
+		    L"Reset",
+		    // Unicode emoji
+		    L"Uni0000",
+		    L"Uni26A0",
+		    L"Uni2728",
+		    L"Uni2764",
+		    L"Uni1F4AF",
+		    L"Uni1F60A",
+		    L"Uni1F480",
+		    L"Uni1F525",
+		    L"Uni1F602",
+		    L"Uni1F629",
+		    L"Uni1F633",
+		    // Sidebar tab icons
 		    L"Tabs/Self",
 		    L"Tabs/Vehicle",
 		    L"Tabs/Teleport",
@@ -45,6 +68,39 @@ namespace Stand::Rendering
 		    L"Tabs/Recovery",
 		    L"Tabs/Settings",
 		    L"Tabs/Debug",
+		    // Custom slots — Theme/Custom/<hex>.png
+		    L"Custom/00",
+		    L"Custom/01",
+		    L"Custom/02",
+		    L"Custom/03",
+		    L"Custom/04",
+		    L"Custom/05",
+		    L"Custom/06",
+		    L"Custom/07",
+		    L"Custom/08",
+		    L"Custom/09",
+		    L"Custom/0A",
+		    L"Custom/0B",
+		    L"Custom/0C",
+		    L"Custom/0D",
+		    L"Custom/0E",
+		    L"Custom/0F",
+		    L"Custom/10",
+		    L"Custom/11",
+		    L"Custom/12",
+		    L"Custom/13",
+		    L"Custom/14",
+		    L"Custom/15",
+		    L"Custom/16",
+		    L"Custom/17",
+		    L"Custom/18",
+		    L"Custom/19",
+		    L"Custom/1A",
+		    L"Custom/1B",
+		    L"Custom/1C",
+		    L"Custom/1D",
+		    L"Custom/1E",
+		    L"Custom/1F",
 		};
 
 		// PosH2C/SizeH2C replicated from GridRenderer.cpp — converts
