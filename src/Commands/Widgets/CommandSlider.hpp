@@ -52,6 +52,11 @@ namespace Stand
 		void setState(Click& click, const std::string& state) override;
 		void applyDefaultState() override;
 
+		[[nodiscard]] virtual std::wstring formatNumber(int num, bool = true) const
+		{
+			return std::to_wstring(num);
+		}
+
 		[[nodiscard]] virtual std::string getValueText() const
 		{
 			return std::to_string(value);

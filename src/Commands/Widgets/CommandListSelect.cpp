@@ -15,6 +15,18 @@ namespace Stand
         return std::nullopt;
     }
 
+    Label CommandListSelect::getCurrentValueMenuName() const
+    {
+        if (auto lbl = getLabelForValue(value))
+            return *lbl;
+        return NOLABEL;
+    }
+
+    Label CommandListSelect::getCurrentValueHelpText() const
+    {
+        return NOLABEL;
+    }
+
     void CommandListSelect::updateValue(Click& click, long long new_val)
     {
         ensureScriptThread(click, [this, new_val](Click& click) mutable {

@@ -108,5 +108,11 @@ namespace Stand
 		{
 			return literal_str;
 		}
+
+		[[nodiscard]] std::wstring getLocalisedUtf16() const
+		{
+			return std::wstring(literal_str.begin(), literal_str.end());
+		}
+
 	};
 }

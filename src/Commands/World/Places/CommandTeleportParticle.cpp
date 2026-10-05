@@ -15,6 +15,6 @@ namespace Stand
         if (!instance)
             return;
         if (const auto value = instance->value)
-            Particles::play(value, pos);
+            PlaceParticles::play(value, pos);
     }
 }

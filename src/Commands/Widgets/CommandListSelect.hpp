@@ -25,6 +25,9 @@ namespace Stand
         bool onLeft(Click& click, bool holding) override;
         bool onRight(Click& click, bool holding) override;
 
+        [[nodiscard]] Label getCurrentValueMenuName() const;
+        [[nodiscard]] Label getCurrentValueHelpText() const;
+
         void setValue(Click& click, long long value);
 
         [[nodiscard]] std::string getState() const override;

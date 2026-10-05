@@ -31,6 +31,16 @@ namespace Stand
 
 		COMMAND_SLIDER = COMMAND_FLAG_SLIDER,
 		COMMAND_SLIDER_FLOAT,
+
+		COMMAND_LIST_SEARCH,
+
+		COMMAND_TEXTSLIDER,
+		COMMAND_TEXTSLIDER_STATEFUL,
+		COMMAND_READONLY_VALUE,
+		COMMAND_DIVIDER,
+		COMMAND_INPUT,
+		COMMAND_READONLY_LINK,
+		COMMAND_ACTION_ITEM,
 	};
 
 	class Command
@@ -108,6 +118,11 @@ namespace Stand
 
 		[[nodiscard]] CommandPhysical* getPhysical() noexcept;
 		[[nodiscard]] const CommandPhysical* getPhysical() const noexcept;
+
+		template<typename T>
+		[[nodiscard]] bool isT() const noexcept { return false; }
+
+		[[nodiscard]] bool shouldShowUntrimmedName() const;
 
 		virtual void onFocus() {}
 		virtual void onBlur() {}

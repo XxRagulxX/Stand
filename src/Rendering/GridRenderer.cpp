@@ -109,7 +109,7 @@ namespace Stand::Rendering
 		}
 	}
 
-	static MenuGrid g_MenuGrid{};
+	MenuGrid g_MenuGrid{};
 
 	void GridRenderer::InvalidateMenuLayout()
 	{

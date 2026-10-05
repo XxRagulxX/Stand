@@ -9,16 +9,12 @@
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/MenuNavigation.hpp"
-#include "Rendering/Stand/MiscGrid.hpp"
-#include "Rendering/Stand/NetworkGrid.hpp"
-#include "Rendering/Stand/PlayersGrid.hpp"
-#include "Rendering/Stand/RecoveryGrid.hpp"
-#include "Rendering/Stand/Self.hpp"
-#include "Rendering/Stand/SettingsGrid.hpp"
-#include "Rendering/Stand/TeleportGrid.hpp"
+#include "Rendering/GridItemListGrid.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/Stand/Vehicle.hpp"
-#include "Rendering/Stand/World.hpp"
+#include "Commands/Self/CommandTabSelf.hpp"
+#include "Commands/Vehicle/CommandTabVehicle.hpp"
+#include "Commands/World/CommandTabWorld.hpp"
+#include "Commands/Settings/CommandTabSettings.hpp"
 
 #include <utility>
 #include <windows.h>
@@ -64,25 +60,15 @@ namespace Stand::Rendering
 			return {
 			    "Self",
 			    "Vehicle",
-			    "Teleport",
-			    "Network",
-			    "Players",
 			    "World",
-			    "Recovery",
-			    "Settings",
-			    "Debug"};
+			    "Settings"};
 		}
 
 		// Indices into the sidebar's entry list.
 		constexpr size_t kSelfIndex = 0;
 		constexpr size_t kVehicleIndex = 1;
-		constexpr size_t kTeleportIndex = 2;
-		constexpr size_t kNetworkIndex = 3;
-		constexpr size_t kPlayersIndex = 4;
-		constexpr size_t kWorldIndex = 5;
-		constexpr size_t kRecoveryIndex = 6;
-		constexpr size_t kSettingsIndex = 7;
-		constexpr size_t kDebugIndex = 8;
+		constexpr size_t kWorldIndex = 2;
+		constexpr size_t kSettingsIndex = 3;
 
 		// Computes the capped visible height for a content Grid — same
 		// kMenuHeight/kListHeight caps draw() applies, so scroll and
@@ -97,18 +83,6 @@ namespace Stand::Rendering
 			return h;
 		}
 
-		// The only real content grids this system has so far. Live here
-		// (not in GridRenderer.cpp) since MenuGrid is the only thing that
-		// decides when any of them is actually shown.
-		Self g_SelfContent{};
-		Vehicle g_VehicleContent{};
-		TeleportGrid g_TeleportContent{};
-		NetworkGrid g_NetworkContent{};
-		PlayersGrid g_PlayersContent{};
-		RecoveryGrid g_RecoveryContent{};
-		World g_WorldContent{};
-		SettingsGrid g_SettingsContent{};
-		MiscGrid g_MiscContent{};
 	}
 
 	MenuGrid::MenuGrid() :
@@ -203,15 +177,10 @@ namespace Stand::Rendering
 		// comment in MenuGrid.hpp for why there's no separate "nothing
 		// migrated for this one" path any more.
 		m_Roots = {
-		    {kSelfIndex, "Self", &g_SelfContent},
-		    {kVehicleIndex, "Vehicle", &g_VehicleContent},
-		    {kTeleportIndex, "Teleport", &g_TeleportContent},
-		    {kNetworkIndex, "Network", &g_NetworkContent},
-		    {kPlayersIndex, "Players", &g_PlayersContent},
-		    {kWorldIndex, "World", &g_WorldContent},
-		    {kRecoveryIndex, "Recovery", &g_RecoveryContent},
-		    {kSettingsIndex, "Settings", &g_SettingsContent},
-		    {kDebugIndex, "Debug", &g_MiscContent},
+		    {kSelfIndex,     "Self",     &GridItemListGrid::GetOrCreate(&Features::GetCommandTabSelf())},
+		    {kVehicleIndex,  "Vehicle",  &GridItemListGrid::GetOrCreate(&Features::GetCommandTabVehicle())},
+		    {kWorldIndex,    "World",    &GridItemListGrid::GetOrCreate(&Features::GetCommandTabWorld())},
+		    {kSettingsIndex, "Settings", &GridItemListGrid::GetOrCreate(&Features::GetCommandTabSettings())},
 		};
 	}
 
@@ -434,20 +403,20 @@ namespace Stand::Rendering
 		case VK_DOWN:
 		case VK_NUMPAD2:
 		{
-			// Real Stand feel: Up/Down only ever drive the currently-shown
-			// submenu's own item list, never the main menu (sidebar) - see
-			// VK_CONTROL/VK_SHIFT below for that. Also claims Content focus
-			// outright, same as SetFocusedItem() already does for a mouse
-			// move/click, so a follow-up Enter activates the item just
-			// moved to instead of needing a separate "enter Content" press
-			// first.
 			if (auto* content = MenuNavigation::Current())
 			{
-				const int delta = (vkCode == VK_DOWN || vkCode == VK_NUMPAD2) ? 1 : -1;
-				auto* focused = MenuFocus::GetFocusedItem(content);
-				if (!focused || !focused->handleNavigation(delta))
-					MenuFocus::MoveContent(content, delta);
-				MenuFocus::SetRegion(MenuFocus::Region::Content);
+				if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+				{
+					listGrid->handleKey(vkCode);
+				}
+				else
+				{
+					const int delta = (vkCode == VK_DOWN || vkCode == VK_NUMPAD2) ? 1 : -1;
+					auto* focused = MenuFocus::GetFocusedItem(content);
+					if (!focused || !focused->handleNavigation(delta))
+						MenuFocus::MoveContent(content, delta);
+					MenuFocus::SetRegion(MenuFocus::Region::Content);
+				}
 			}
 			break;
 		}
@@ -503,14 +472,13 @@ namespace Stand::Rendering
 		case VK_NUMPAD5:
 			if (MenuFocus::GetRegion() == MenuFocus::Region::Sidebar)
 			{
-				// Selecting a sidebar entry (Ctrl/Shift - see above) already
-				// switches content live, same as Stand's own tab strip;
-				// Enter here just moves focus into what's already showing.
 				MenuFocus::SetRegion(MenuFocus::Region::Content);
 			}
 			else if (auto* content = MenuNavigation::Current())
 			{
-				if (auto* focused = MenuFocus::GetFocusedItem(content))
+				if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+					listGrid->handleKey(vkCode);
+				else if (auto* focused = MenuFocus::GetFocusedItem(content))
 					focused->activate();
 			}
 			break;

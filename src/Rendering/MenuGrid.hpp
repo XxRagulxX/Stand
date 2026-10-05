@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace Stand::Rendering
 {
@@ -46,6 +47,12 @@ namespace Stand::Rendering
 	class MenuGrid : public Grid
 	{
 	public:
+		bool number_sliders_rightbound_values = true;
+		bool left_space_before_all_commands = true;
+		bool leftbound_textures_toggles = false;
+		bool leftbound_textures_nontoggles = false;
+		std::wstring untrimmed_menu_name{};
+
 		MenuGrid();
 		~MenuGrid() override;
 
@@ -137,4 +144,6 @@ namespace Stand::Rendering
 		std::vector<SubmenuRoot> m_Roots;
 		size_t m_LastSidebarIndex = static_cast<size_t>(-1);
 	};
+
+	extern MenuGrid g_MenuGrid;
 }

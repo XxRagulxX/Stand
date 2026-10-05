@@ -1,20 +1,10 @@
 #pragma once
+#include "Rendering/Particles.hpp"
 #include "Scripting/Natives.hpp"
 
 namespace Stand
 {
-    struct Particle
-    {
-        const char* rawName;
-        const char* assetCategory;
-
-        constexpr Particle(const char* rawName, const char* assetCategory = "core")
-            : rawName(rawName), assetCategory(assetCategory)
-        {
-        }
-    };
-
-    class Particles
+    class PlaceParticles
     {
     public:
         static inline Particle particles[] = {
