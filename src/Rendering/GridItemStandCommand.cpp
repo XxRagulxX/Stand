@@ -13,7 +13,7 @@
 #include "Rendering/GridStandCommandList.hpp"
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/ThemeIcons.hpp"
+#include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Self.hpp"

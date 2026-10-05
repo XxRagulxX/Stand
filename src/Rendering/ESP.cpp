@@ -1,7 +1,7 @@
 #include "Rendering/ESP.hpp"
 #include "Commands/Settings/Game/CommandTabESP.hpp"
 #include "Commands/Self/Weapons/CommandTabWeapons.hpp"
-#include "Commands/CommandColourCustom.hpp"
+#include "Commands/CommandLegacy.hpp"
 #include "World/Object.hpp"
 #include "Network/Players.hpp"
 #include "World/Self.hpp"
@@ -35,14 +35,33 @@ namespace
 
 namespace Stand::Features
 {
-	CommandColourCustom _NameColorPlayers("namecolorplayers",     "Player Name Color",     "Color of the player name label",     ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
-	CommandColourCustom _DistanceColorPlayers("distancecolorplayers", "Player Distance Color", "Color of the player distance label", ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
-	CommandColourCustom _SkeletonColorPlayers("skeletoncolorplayers", "Player Skeleton Color", "Color of the player skeleton lines",  ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+	namespace
+	{
+		class CommandESPColour : public CommandLegacy
+		{
+			ImVec4 m_State;
+		public:
+			CommandESPColour(const char* name, const char* label, const char* desc, ImVec4 def)
+				: CommandLegacy(name, label, desc, 0), m_State(def) {}
+			ImVec4 GetState() const { return m_State; }
+			void SetState(ImVec4 s) { m_State = s; MarkDirty(); }
+			void OnCall() override {}
+			void SaveState(nlohmann::json& v) override { v = {m_State.x, m_State.y, m_State.z, m_State.w}; }
+			void LoadState(nlohmann::json& v) override
+			{
+				if (v.is_array()) { auto a = v.get<std::array<float, 4>>(); m_State = {a[0], a[1], a[2], a[3]}; }
+			}
+		};
+	}
 
-	CommandColourCustom _HashColorPeds("hashcolorpeds",       "Ped Hash Color",    "Color of the ped hash label",    ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
-	CommandColourCustom _SkeletonColorPeds("skeletoncolorpeds", "Ped Skeleton Color", "Color of the ped skeleton lines", ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+	CommandESPColour _NameColorPlayers("namecolorplayers",       "Player Name Color",     "Color of the player name label",     ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+	CommandESPColour _DistanceColorPlayers("distancecolorplayers", "Player Distance Color", "Color of the player distance label", ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+	CommandESPColour _SkeletonColorPlayers("skeletoncolorplayers", "Player Skeleton Color", "Color of the player skeleton lines",  ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
 
-	CommandColourCustom _HashColorObjects("hashcolorobjects", "Object Hash Color", "Color of the object hash label", ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+	CommandESPColour _HashColorPeds("hashcolorpeds",         "Ped Hash Color",    "Color of the ped hash label",    ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+	CommandESPColour _SkeletonColorPeds("skeletoncolorpeds", "Ped Skeleton Color", "Color of the ped skeleton lines", ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
+
+	CommandESPColour _HashColorObjects("hashcolorobjects", "Object Hash Color", "Color of the object hash label", ImVec4{1.0f, 1.0f, 1.0f, 1.0f});
 }
 
 namespace Stand

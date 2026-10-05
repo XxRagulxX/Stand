@@ -3,7 +3,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/ThemeIcons.hpp"
+#include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Menu/Click.hpp"
 
 #include <string>

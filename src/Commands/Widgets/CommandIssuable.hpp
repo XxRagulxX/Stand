@@ -23,6 +23,7 @@ namespace Stand
 	#define CMDNAME(x) x
 	#define utf8ToCmdName(x) x
 	#define cmdNameToUtf8(x) x
+	#define cmdNameToUtf16(x) std::wstring((x).begin(), (x).end())
 #else
 	#define CMDNAME(x) (L##x)
 	[[nodiscard]] std::wstring utf8ToCmdName(const std::string& str);

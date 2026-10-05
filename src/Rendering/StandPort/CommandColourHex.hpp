@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/StandPort/CommandAction.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 #include "Menu/Click.hpp"
 
 namespace Stand

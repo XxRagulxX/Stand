@@ -6,7 +6,7 @@
 #include "Rendering/DescriptionPanel.hpp"
 #include "Rendering/ESP.hpp"
 #include "Rendering/HeaderBanner.hpp"
-#include "Rendering/ThemeIcons.hpp"
+#include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Rendering/Onboarding.hpp"
 #include "Rendering/MenuCommandBox.hpp"
 #include "Rendering/MenuCommandConsole.hpp"

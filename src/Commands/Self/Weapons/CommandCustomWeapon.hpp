@@ -1,6 +1,5 @@
 #pragma once
 #include "Commands/CommandToggleLegacy.hpp"
-#include "Commands/CommandColourCustom.hpp"
 #include "Commands/CommandSliderLegacy.hpp"
 #include "Commands/CommandListSelect.hpp"
 #include "Commands/LoopedCommand.hpp"
@@ -63,7 +62,21 @@ namespace Stand::Features
 	static CommandToggleLegacy _CustomWeaponEnabledOnWeaponOut{"customweaponenabledonweaponout", "Enable Only if Weapon is Out", "Enables custom weapon only when weapon is out", true};
 	static CommandToggleLegacy _GravityGunLaunchOnRelease{"gravitygunlaunchonrelease", "Launch Entity on Release", "Launches entity when released", false};
 	static CommandInput _VehicleGunModel{"vehiclegunmodel", "Vehicle Model", "Model of the vehicle"};
-	static CommandColourCustom _PaintGunColor{"paintguncolor", "Paint Gun Color", "Color of the paint gun"};
+	class CommandPaintGunColor : public CommandLegacy
+	{
+		ImVec4 m_State = ImVec4(1.f, 1.f, 1.f, 1.f);
+	public:
+		CommandPaintGunColor() : CommandLegacy("paintguncolor", "Paint Gun Color", "Color of the paint gun", 0) {}
+		ImVec4 GetState() const { return m_State; }
+		void SetState(ImVec4 s) { m_State = s; MarkDirty(); }
+		void OnCall() override {}
+		void SaveState(nlohmann::json& v) override { v = {m_State.x, m_State.y, m_State.z, m_State.w}; }
+		void LoadState(nlohmann::json& v) override
+		{
+			if (v.is_array()) { auto a = v.get<std::array<float, 4>>(); m_State = {a[0], a[1], a[2], a[3]}; }
+		}
+	};
+	static CommandPaintGunColor _PaintGunColor{};
 	static CommandToggleLegacy _PaintGunRainbowColorEnabled{"paintgunrainbowcolorenabled", "Rainbow Color", "Enables rainbow color for paint gun", false};
 	static CommandSliderLegacy _PaintGunRainbowColorSpeed{"paintgunrainbowcolorspeed", "Rainbow Color Speed", "Speed of rainbow color for paint gun", 1, 10, 1};
 }

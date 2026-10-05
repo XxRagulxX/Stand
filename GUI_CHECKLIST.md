@@ -10,7 +10,7 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 
 | Status | System | Our File(s) | OSS Reference |
 |--------|--------|-------------|---------------|
-| ✅ | Theme Icons (checkbox/arrow sprites via SpriteBatch) | `Rendering/ThemeIcons.hpp/cpp` | `Renderer.hpp` |
+| ✅ | Theme Icons — 76 slots, SpriteBatch, embedded PNG fallbacks, Custom→Uni fallback | `Rendering/StandPort/ThemeIcons.hpp/cpp`, `ThemeIconsData.hpp` | `Renderer.hpp` |
 | ✅ | Icon left-column spacing (`left_space_before_all_commands`) | `Rendering/MenuGrid.hpp` | `menu_grid.left_space_before_all_commands` |
 | ✅ | Right-aligned slider values (`< value >`) | `Rendering/GridItemList.cpp` | `GridItemList.hpp/cpp` |
 | ✅ | Focused-item accent highlight rect | `Rendering/GridItemList.cpp` | `GridItemList.cpp` |

@@ -1,5 +1,6 @@
 #include "Rendering/StandPort/CommandColourCustom.hpp"
 
+#include "Commands/Widgets/CommandIssuable.hpp"
 #include "Rendering/StandPort/CommandColourSlider.hpp"
 #include "Commands/Widgets/CommandStateSerializer.hpp"
 #include "Menu/Click.hpp"
