@@ -1,4 +1,4 @@
-#include "Rendering/NetworkGrid.hpp"
+#include "Rendering/Stand/NetworkGrid.hpp"
 
 #include "Rendering/GridItemCommandButton.hpp"
 #include "Rendering/GridItemCommandSlider.hpp"

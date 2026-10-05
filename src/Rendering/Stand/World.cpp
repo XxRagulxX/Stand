@@ -1,4 +1,4 @@
-#include "Rendering/WorldGrid.hpp"
+#include "Rendering/Stand/World.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
@@ -6,16 +6,12 @@
 
 namespace Stand::Rendering
 {
-	namespace
-	{
-	}
-
-	WorldGrid::WorldGrid() :
+	World::World() :
 	    Grid(Theme::GetContentOrigin(), 0)
 	{
 	}
 
-	void WorldGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
+	void World::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
 		constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
 		auto& worldTab = Features::GetCommandTabWorld();

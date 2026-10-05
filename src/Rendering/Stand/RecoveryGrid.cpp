@@ -1,4 +1,4 @@
-#include "Rendering/RecoveryGrid.hpp"
+#include "Rendering/Stand/RecoveryGrid.hpp"
 
 #include "Rendering/GridItemCommandSliderFloat.hpp"
 #include "Rendering/GridItemCommandToggle.hpp"

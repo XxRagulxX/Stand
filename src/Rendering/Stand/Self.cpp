@@ -1,4 +1,4 @@
-#include "Rendering/Self.hpp"
+#include "Rendering/Stand/Self.hpp"
 
 #include "Commands/Self/Movement/CommandTabFloppy.hpp"
 #include "Commands/Self/Movement/CommandTabLevitation.hpp"

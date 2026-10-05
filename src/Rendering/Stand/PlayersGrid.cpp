@@ -1,4 +1,4 @@
-#include "Rendering/PlayersGrid.hpp"
+#include "Rendering/Stand/PlayersGrid.hpp"
 
 #include "Rendering/GridItemCommandToggle.hpp"
 #include "Rendering/GridItemFolder.hpp"

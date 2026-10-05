@@ -1,4 +1,4 @@
-#include "Rendering/TeleportGrid.hpp"
+#include "Rendering/Stand/TeleportGrid.hpp"
 
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"

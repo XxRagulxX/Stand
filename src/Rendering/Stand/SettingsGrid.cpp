@@ -1,4 +1,4 @@
-#include "Rendering/SettingsGrid.hpp"
+#include "Rendering/Stand/SettingsGrid.hpp"
 
 #include "Commands/Settings/CommandTabSettings.hpp"
 #include "Rendering/GridItemFolder.hpp"

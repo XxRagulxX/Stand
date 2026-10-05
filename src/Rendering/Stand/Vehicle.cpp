@@ -1,4 +1,4 @@
-#include "Rendering/Vehicle.hpp"
+#include "Rendering/Stand/Vehicle.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnSettings.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnOnFoot.hpp"
 #include "Commands/Vehicle/Spawn/CommandTabSpawnInVehicle.hpp"

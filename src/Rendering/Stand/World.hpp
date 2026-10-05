@@ -3,10 +3,10 @@
 
 namespace Stand::Rendering
 {
-	class WorldGrid : public Grid
+	class World : public Grid
 	{
 	public:
-		WorldGrid();
+		World();
 
 	protected:
 		void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override;

@@ -9,16 +9,16 @@
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/MenuNavigation.hpp"
-#include "Rendering/MiscGrid.hpp"
-#include "Rendering/NetworkGrid.hpp"
-#include "Rendering/PlayersGrid.hpp"
-#include "Rendering/RecoveryGrid.hpp"
-#include "Rendering/Self.hpp"
-#include "Rendering/SettingsGrid.hpp"
-#include "Rendering/TeleportGrid.hpp"
+#include "Rendering/Stand/MiscGrid.hpp"
+#include "Rendering/Stand/NetworkGrid.hpp"
+#include "Rendering/Stand/PlayersGrid.hpp"
+#include "Rendering/Stand/RecoveryGrid.hpp"
+#include "Rendering/Stand/Self.hpp"
+#include "Rendering/Stand/SettingsGrid.hpp"
+#include "Rendering/Stand/TeleportGrid.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/Vehicle.hpp"
-#include "Rendering/WorldGrid.hpp"
+#include "Rendering/Stand/Vehicle.hpp"
+#include "Rendering/Stand/World.hpp"
 
 #include <utility>
 #include <windows.h>
@@ -106,7 +106,7 @@ namespace Stand::Rendering
 		NetworkGrid g_NetworkContent{};
 		PlayersGrid g_PlayersContent{};
 		RecoveryGrid g_RecoveryContent{};
-		WorldGrid g_WorldContent{};
+		World g_WorldContent{};
 		SettingsGrid g_SettingsContent{};
 		MiscGrid g_MiscContent{};
 	}
