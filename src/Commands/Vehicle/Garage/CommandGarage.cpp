@@ -50,7 +50,7 @@ namespace Stand::Features
 
     void OpenGarageFolder()
     {
-        auto path = FileMgr::GetProjectFolder("./Vehicles").Path();
+        auto path = FileMgr::GetProjectFolder("./Vehicles");
         std::filesystem::create_directories(path);
         ShellExecuteA(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
     }

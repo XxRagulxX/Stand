@@ -1,7 +1,6 @@
 #pragma once
 #include <filesystem>
 #include "Core/File.hpp"
-#include "Menu/Folder.hpp"
 
 namespace Stand
 {
@@ -24,7 +23,7 @@ namespace Stand
 		{
 			return GetInstance().GetProjectFileImpl(file);
 		}
-		[[nodiscard]] static Folder GetProjectFolder(const std::filesystem::path& folder)
+		[[nodiscard]] static std::filesystem::path GetProjectFolder(const std::filesystem::path& folder)
 		{
 			return GetInstance().GetProjectFolderImpl(folder);
 		}
@@ -36,7 +35,7 @@ namespace Stand
 		void InitImpl(const std::filesystem::path& rootFolder);
 
 		File GetProjectFileImpl(const std::filesystem::path& file) const;
-		Folder GetProjectFolderImpl(const std::filesystem::path& folder) const;
+		std::filesystem::path GetProjectFolderImpl(const std::filesystem::path& folder) const;
 
 		static FileMgr& GetInstance()
 		{

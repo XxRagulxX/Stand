@@ -1,6 +1,5 @@
 #include "Core/FileMgr.hpp"
 #include "Core/File.hpp"
-#include "Menu/Folder.hpp"
 
 namespace Stand
 {
@@ -47,7 +46,7 @@ namespace Stand
 		return projFile;
 	}
 
-	Folder FileMgr::GetProjectFolderImpl(const std::filesystem::path& folder) const
+	std::filesystem::path FileMgr::GetProjectFolderImpl(const std::filesystem::path& folder) const
 	{
 		if (folder.is_absolute())
 			throw std::invalid_argument("FileMgr::GetProjectFolder expects a relative path.");

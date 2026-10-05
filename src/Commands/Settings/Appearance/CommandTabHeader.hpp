@@ -104,7 +104,7 @@ namespace Stand
 				return;
 			}
 
-			const auto headersRoot = FileMgr::GetProjectFolder("Headers").Path();
+			const auto headersRoot = FileMgr::GetProjectFolder("Headers");
 
 			if (val == 200)
 			{
@@ -194,7 +194,7 @@ namespace Stand
 
 		void onClick(Click& click) override
 		{
-			const auto path = FileMgr::GetProjectFolder("Headers").Path();
+			const auto path = FileMgr::GetProjectFolder("Headers");
 			std::filesystem::create_directories(path);
 			ShellExecuteW(nullptr, L"explore",
 				path.wstring().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);

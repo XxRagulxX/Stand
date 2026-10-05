@@ -162,7 +162,7 @@ namespace Stand::Rendering
 			return;
 
 		// Primary theme folder: %APPDATA%\StandEnhanced\Theme
-		const auto themeDir = FileMgr::GetProjectFolder("Theme").Path();
+		const auto themeDir = FileMgr::GetProjectFolder("Theme");
 		std::filesystem::create_directories(themeDir);
 		std::filesystem::create_directories(themeDir / "Tabs");
 		std::filesystem::create_directories(themeDir / "Custom");

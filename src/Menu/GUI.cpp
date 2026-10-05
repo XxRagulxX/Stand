@@ -1,5 +1,4 @@
 #include "Menu/GUI.hpp"
-#include "Menu/Menu.hpp"
 #include "Scripting/Script.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Scripting/Natives.hpp"
@@ -75,8 +74,6 @@ namespace Stand
 	GUI::GUI() :
 	    m_IsOpen(false)
 	{
-		Menu::Init();
-
 		Renderer::AddWindowProcedureCallback([this](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			GUI::WndProc(hwnd, msg, wparam, lparam);
 		});
@@ -110,8 +107,7 @@ namespace Stand
 			{
 				SetCursorPos(CursorCoords.x, CursorCoords.y);
 			}
-			if (!GUI::IsOnboarding())
-				Toggle();
+			Toggle();
 			ToggleMouse();
 		}
 	}
@@ -125,11 +121,6 @@ namespace Stand
 			ShowCursor(want_mouse);
 			cursorShown = want_mouse;
 		}
-	}
-
-	void GUI::SetOnboardingImpl(bool state)
-	{
-		m_Onboarding = state;
 	}
 
 	void GUI::RunScriptImpl()

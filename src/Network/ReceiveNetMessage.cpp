@@ -1,5 +1,4 @@
 #include "Core/DetourHook.hpp"
-#include "Scripting/LuaManager.hpp"
 #include "AntiCheat/AnticheatBypass.hpp"
 #include "Network/Players.hpp"
 #include "Rendering/ChatDisplay.hpp"
@@ -46,13 +45,6 @@ namespace Stand::Hooks
 			{
 				char msg[256]{};
 				buffer.ReadString(msg, sizeof(msg)); // we don't need the rest
-
-				if (!LuaManager::DispatchEvent(MenuEvent::ChatMessageReceived, [player, msg](lua_State* state){
-					lua_pushinteger(state, player.GetId());
-					lua_pushstring(state, msg);
-					return 2;
-				}))
-					return;
 
 				ChatDisplay::Show(player.GetName(), msg, ImGui::Colors::LightBlue);
 			}

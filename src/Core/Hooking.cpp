@@ -87,10 +87,6 @@ namespace Stand
 
 		auto* matchmakingUpdateHook = AddHook<Hooks::Matchmaking::MatchmakingUpdate>("MatchmakingUpdate", Pointers.MatchmakingUpdate, reinterpret_cast<void*>(Hooks::Matchmaking::MatchmakingUpdate));
 
-		// Misc hooks
-
-		auto* assistedAimShouldReleaseEntityHook = AddHook<Hooks::Misc::AssistedAimShouldReleaseEntity>("AssistedAimShouldReleaseEntity", Pointers.AssistedAimShouldReleaseEntity, reinterpret_cast<void*>(Hooks::Misc::AssistedAimShouldReleaseEntity));
-
 	}
 
 	Hooking::~Hooking()

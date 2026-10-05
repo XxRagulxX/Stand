@@ -73,7 +73,6 @@ namespace Stand
 		using GetSessionByGamerHandle = bool (*)(int profile_index, rage::rlGamerHandle* handles, int num_handles, rage::rlSessionByGamerTaskResult* results, int num_results, bool* success, rage::rlTaskStatus* state);
 		using GetPresenceAttributes = bool (*)(int profile_index, rage::rlScGamerHandle* handles, int num_handles, rage::rlQueryPresenceAttributesContext** contexts, int count, rage::rlScTaskStatus* state);
 		using GetAvatars = bool (*)(rage::rlGetAvatarsContext* context, rage::rlGetAvatarsPlayerList* players);
-		using AssistedAimFindNewTarget = bool (*)(__int64 a1);
 	}
 
 	struct PointerData
@@ -163,8 +162,6 @@ namespace Stand
 		CGameDataHash* GameDataHash;
 		void** DLCManager;
 		PVOID GetDLCHash;
-		PVOID AssistedAimShouldReleaseEntity;
-		Functions::AssistedAimFindNewTarget AssistedAimFindNewTarget;
 		PVOID Nullsub;
 		rage::Obf32** AnticheatInitializedHash;
 		PVOID GetAnticheatInitializedHash;

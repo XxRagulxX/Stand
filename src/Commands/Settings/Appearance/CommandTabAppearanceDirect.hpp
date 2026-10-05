@@ -133,8 +133,8 @@ namespace Stand
 			// Stand's own getThemePath() uses %APPDATA%\Stand\Theme\ —
 			// we mirror that with %APPDATA%\StandEnhanced\Theme\.
 			const auto folder = FileMgr::GetProjectFolder("Theme");
-			std::filesystem::create_directories(folder.Path());
-			const auto pathStr = folder.Path().string();
+			std::filesystem::create_directories(folder);
+			const auto pathStr = folder.string();
 			ShellExecuteA(nullptr, "explore", pathStr.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
 		}
 	};

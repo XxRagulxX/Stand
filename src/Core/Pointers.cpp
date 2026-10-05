@@ -384,17 +384,6 @@ namespace Stand
 			GameDataHash = ptr.Add(3).Rip().As<CGameDataHash*>();
 		});
 
-		soup::Range assistedAimShouldReleaseEntityRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
-		batch.Add("AssistedAimShouldReleaseEntity", std::move(assistedAimShouldReleaseEntityRange), "80 7F 28 04 75 6A", [this](soup::Pointer p) {
-			PointerCalculator ptr(p.as<std::uintptr_t>());
-			AssistedAimShouldReleaseEntity = ptr.Sub(0xF).As<PVOID>();
-		});
-
-		soup::Range assistedAimFindNewTargetRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
-		batch.Add("AssistedAimFindNewTarget", std::move(assistedAimFindNewTargetRange), "0F 84 C9 00 00 00 48 89 CE 48 89 F9", [this](soup::Pointer p) {
-			PointerCalculator ptr(p.as<std::uintptr_t>());
-			AssistedAimFindNewTarget = ptr.Sub(0x33).As<Functions::AssistedAimFindNewTarget>();
-		});
 
 		soup::Range anticheatInitializedHashRange(reinterpret_cast<void*>(gta5->Base()), gta5->Size());
 		batch.Add("InitializedHash-Anticheat&GetAnticheat", std::move(anticheatInitializedHashRange), "89 9E C8 00 00 00 48 8B 0D ? ? ? ? 48 85 C9 74 46", [this](soup::Pointer p) {

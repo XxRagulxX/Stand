@@ -2,7 +2,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
-#include "Config/HotkeySystem.hpp"
+#include "Commands/Widgets/CommandLink.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 #include <algorithm>

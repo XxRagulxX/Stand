@@ -19,7 +19,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(cmake/async-logger.cmake)
 include(cmake/json.cmake)
 include(cmake/minhook.cmake)
-include(cmake/luajit.cmake)
 include(cmake/directxtk12.cmake)
 
 # Source
@@ -30,6 +29,7 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
     "${SRC_DIR}/*.hpp"
     "${SRC_DIR}/*.cpp"
 )
+
 
 # StandEnhanced target
 
@@ -93,16 +93,6 @@ if(TARGET fmt AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     )
 endif()
 
-# LuaJIT
-
-if(TARGET luajit)
-    target_compile_definitions(
-        luajit
-        PRIVATE
-            _CRT_SECURE_NO_WARNINGS
-    )
-endif()
-
 # Include directories
 
 message(STATUS "Setting up include directories.")
@@ -114,8 +104,6 @@ target_include_directories(
         "${SRC_DIR}/lib"
         "${minhook_SOURCE_DIR}/include"
         "${minhook_SOURCE_DIR}/src/hde"
-        "${luajit_SOURCE_DIR}/src"
-        "${luajit_BINARY_DIR}/src"
 )
 
 
@@ -143,7 +131,6 @@ target_link_libraries(
         dwmapi
         gdi32
         dxgi
-        libluajit
 
         # DirectXTK12 dependency: EffectDeviceResources::DemandCreateRootSig
         # calls D3D12SerializeRootSignature, which lives in d3d12.lib. Nothing

@@ -7,7 +7,6 @@
 #include "Rendering/ESP.hpp"
 #include "Rendering/HeaderBanner.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
-#include "Rendering/Onboarding.hpp"
 #include "Rendering/MenuCommandBox.hpp"
 #include "Rendering/MenuCommandConsole.hpp"
 #include "Rendering/MenuFocus.hpp"
@@ -354,7 +353,6 @@ namespace Stand::Rendering
 			Overlay::Draw();
 			ESP::Draw();
 			ChatDisplay::Draw();
-			Onboarding::Draw();
 			MenuCommandConsole::Draw();
 
 			m_Batch->End();
@@ -406,7 +404,6 @@ namespace Stand::Rendering
 			Overlay::DrawText();
 			ESP::DrawText();
 			ChatDisplay::DrawText();
-			Onboarding::DrawText();
 			MenuCommandConsole::DrawText();
 			DrainText3DQueue();
 
@@ -727,16 +724,7 @@ namespace Stand::Rendering
 			GetInstance().WndProcImpl(hwnd, msg, wparam, lparam);
 		});
 
-		// Deliberately separate from WndProcImpl above (and ungated by its
-		// own GUI::IsOpen() check) - see Onboarding.hpp's own class
-		// comment for why: it has to be interactable even before the menu
-		// has ever been opened.
-		Renderer::AddWindowProcedureCallback([](HWND, UINT msg, WPARAM wparam, LPARAM) {
-			if (msg == WM_KEYDOWN)
-				Onboarding::HandleKey(static_cast<unsigned int>(wparam));
-		});
-
-		// Same reason as Onboarding's own callback right above -
+		// MenuCommandConsole
 		// deliberately ungated by GUI::IsOpen() so MenuCommandConsole
 		// opens (the 'U' key) and works whether or not the main menu is
 		// open, matching real Stand's own Gui::showCommandBox() (no

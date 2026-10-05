@@ -1,5 +1,4 @@
 #include "Rendering/ChatDisplay.hpp"
-#include "Menu/Menu.hpp"
 #include "Core/Pointers.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/TextWrap.hpp"

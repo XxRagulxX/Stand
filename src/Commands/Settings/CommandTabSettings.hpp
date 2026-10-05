@@ -1,5 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Extra/CommandListInfoOverlay.hpp"
 #include "Commands/Settings/CommandClearNotifications.hpp"
 #include "Commands/Settings/CommandConsole.hpp"
 #include "Commands/Settings/CommandEmptyLog.hpp"
@@ -17,6 +18,7 @@ namespace Stand
 		CommandClearNotifications* const clearNotifications;
 		CommandEmptyLog* const emptyLog;
 		CommandFeatureList* const featureList;
+		CommandListInfoOverlay* const infoOverlay;
 		CommandUnload* const unload;
 
 		explicit CommandTabSettings() :
@@ -26,6 +28,7 @@ namespace Stand
 		    clearNotifications(createChild<CommandClearNotifications>()),
 		    emptyLog(createChild<CommandEmptyLog>()),
 		    featureList(createChild<CommandFeatureList>()),
+		    infoOverlay(createChild<CommandListInfoOverlay>()),
 		    unload(createChild<CommandUnload>())
 		{
 		}

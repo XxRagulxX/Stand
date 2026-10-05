@@ -3,7 +3,6 @@
 #include "Commands/Commands.hpp"
 #include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
-#include "Config/HotkeySystem.hpp"
 #include "Config/Settings.hpp"
 #include "Core/FileMgr.hpp"
 #include "Rendering/Notifications.hpp"
@@ -12,10 +11,8 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Core/Wine.hpp"
-#include "Scripting/LuaManager.hpp"
 #include "AntiCheat/AnticheatBypass.hpp"
 #include "Network/Players.hpp"
-#include "Commands/Extra/CommandSavedLocations.hpp"
 #include "Commands/Extra/CommandSavedPlayers.hpp"
 #include "World/Self.hpp"
 #include "Scripting/NativeHooks.hpp"
@@ -52,7 +49,6 @@
 #include "Commands/Settings/Appearance/CommandTabNotifySample.hpp"
 #include "Commands/Settings/Appearance/CommandTabNotifyTiming.hpp"
 #include "Commands/Settings/Appearance/CommandTabPresetFont.hpp"
-#include "Commands/Settings/Profiles/CommandTabProfiles.hpp"
 #include "Commands/Settings/Appearance/CommandTabTextures.hpp"
 #include "Commands/Settings/Appearance/CommandTabColours.hpp"
 #include "Commands/Settings/Appearance/CommandTabCommandInfoText.hpp"
@@ -75,8 +71,6 @@ namespace Stand
 
 		LOGF(INFO, "Welcome to StandEnhanced! Build date: {} at {}", __DATE__, __TIME__);
 
-		g_HotkeySystem.RegisterCommands();
-		SavedLocations::FetchSavedLocations();
 		(void)Features::GetCommandTabESP();
 		(void)Features::GetCommandTabSelf();
 		(void)Features::GetCommandTabWeapons();
@@ -107,7 +101,6 @@ namespace Stand
 		(void)Features::GetCommandTabNotifySample();
 		(void)Features::GetCommandTabNotifyTiming();
 		(void)Features::GetCommandTabPresetFont();
-		(void)Features::GetCommandTabProfiles();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;
@@ -163,8 +156,6 @@ namespace Stand
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Self::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&GUI::RunScript));
 
-		g_script_mgr.addScript(module, std::make_unique<Script>(&LuaManager::RunScript));
-		g_script_mgr.addScript(module, std::make_unique<Script>(&HotkeySystem::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Commands::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Stand::CommandHotkeyDispatch::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Stand::CommandTickDispatch::RunScript));
