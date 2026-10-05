@@ -1,13 +1,11 @@
 #pragma once
-#include "Commands/CommandColourCustom.hpp"
-#include "Commands/Commands.hpp"
+#include "Rendering/StandPort/CommandColour.hpp"
 #include "Commands/Settings/Appearance/CommandTabColours.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
-#include "Util/Joaat.hpp"
 
 #include <climits>
 
@@ -59,6 +57,23 @@ namespace Stand
 		}
 	};
 
+	class CommandCursorBorderColour : public CommandColour
+	{
+	public:
+		explicit CommandCursorBorderColour(CommandList* const parent)
+			: CommandColour(parent, LIT("Colour"), CMDNAMES("cursorborder"),
+				LIT("The colour of the cursor border."),
+				255, 255, 255, 255)
+		{
+		}
+
+		void onChange(Click& click) override
+		{
+			auto rgba = getRGBA();
+			Rendering::Theme::kCursorBorderColour = {rgba.x, rgba.y, rgba.z, rgba.w};
+		}
+	};
+
 	class CommandCursorBorderRainbow : public CommandColourRainbow
 	{
 	public:
@@ -75,7 +90,7 @@ namespace Stand
 		CommandCursorPadding* const padding;
 		CommandCursorBorderWidth* const borderWidth;
 		CommandCursorBorderRounded* const borderRounded;
-		CommandColourCustom* const borderColour;
+		CommandColour* const borderColour;
 		CommandCursorBorderRainbow* const borderRainbow;
 
 		explicit CommandTabCursor()
@@ -83,7 +98,7 @@ namespace Stand
 			, padding(createChild<CommandCursorPadding>())
 			, borderWidth(createChild<CommandCursorBorderWidth>())
 			, borderRounded(createChild<CommandCursorBorderRounded>())
-			, borderColour(Commands::GetCommand<CommandColourCustom>("cursorborder"_J))
+			, borderColour(createChild<CommandCursorBorderColour>())
 			, borderRainbow(createChild<CommandCursorBorderRainbow>())
 		{
 		}

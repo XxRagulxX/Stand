@@ -25,6 +25,7 @@ namespace Stand
 		cursor_t m_cursor = 0;
 		cursor_t m_offset = 0;
 		ListIndicatorType indicator_type = LISTINDICATOR_ARROW;
+		int dividers = 0;
 
 		explicit CommandList(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names = {}, Label&& help_text = NOLABEL, commandflags_t flags = CMDFLAGS_LIST, CommandType type = COMMAND_LIST) :
 		    CommandPhysical(type, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags)
@@ -40,6 +41,8 @@ namespace Stand
 		{
 			return parent == nullptr;
 		}
+
+		[[nodiscard]] bool canUpdateCursor() const noexcept { return true; }
 
 		[[nodiscard]] size_t countVisibleChildren() const
 		{

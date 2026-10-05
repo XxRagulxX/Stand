@@ -73,6 +73,7 @@ namespace Stand
 		[[nodiscard]] bool canHaveGenericErrorResponse() const noexcept;
 		void setResponse(Label&& response) noexcept;
 		void setResponse(Label&& response) const;
+		void showCommandBoxIfPossible(std::wstring prefill) {}
 		void setGenericResponse(Label&& response);
 		void setNoResponse() noexcept;
 

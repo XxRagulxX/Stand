@@ -1,65 +1,68 @@
 #include "Commands/Settings/Appearance/CommandTabColours.hpp"
 
-#include "Commands/CommandColourCustom.hpp"
-#include "Commands/Commands.hpp"
-#include "Util/Joaat.hpp"
-
 namespace Stand
 {
 	void CommandCopyFocusTextToRightText::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kFocusText;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.focusRightText->set(click, srcColor);
 		Rendering::Theme::kFocusRightText = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("focusrighttext"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 
 	void CommandCopyFocusTextToTexture::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kFocusText;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.focusTexture->set(click, srcColor);
 		Rendering::Theme::kFocusTexture = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("focustexture"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 
 	void CommandCopyUnfocusedTextToRightText::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kUnfocusedText;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.unfocusedRightText->set(click, srcColor);
 		Rendering::Theme::kUnfocusedRightText = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("unfocusedrighttext"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 
 	void CommandCopyUnfocusedTextToTexture::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kUnfocusedText;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.unfocusedTexture->set(click, srcColor);
 		Rendering::Theme::kUnfocusedTexture = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("unfocusedtexture"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 
 	void CommandCopyPrimaryToHud::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kAccent;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.hud->set(click, srcColor);
 		Rendering::Theme::kHud = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("hud"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 
 	void CommandCopyPrimaryToAr::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kAccent;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.ar->set(click, srcColor);
 		Rendering::Theme::kAr = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("ar"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 
 	void CommandCopyPrimaryToMinigame::onClick(Click& click)
 	{
 		auto src = Rendering::Theme::kAccent;
+		DirectX::SimpleMath::Color srcColor{src.x, src.y, src.z, src.w};
+		auto& tab = Features::GetCommandTabColours();
+		tab.minigame->set(click, srcColor);
 		Rendering::Theme::kMinigame = src;
-		if (auto* cmd = Commands::GetCommand<CommandColourCustom>("minigame"_J))
-			cmd->SetState(ImVec4{src.x, src.y, src.z, src.w});
 	}
 }
 

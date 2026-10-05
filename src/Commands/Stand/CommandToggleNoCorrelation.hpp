@@ -29,6 +29,7 @@ namespace Stand
 		void setState(Click& click, const std::string& state) override;
 		void applyDefaultState() override;
 
+		void applyDefaultStateImpl(Click& click, bool should_be_on);
 		void setStateBool(Click& click, bool toggle);
 		void toggleState(Click& click);
 		void updateState(Click& click);

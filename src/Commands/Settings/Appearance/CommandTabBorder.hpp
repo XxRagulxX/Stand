@@ -1,13 +1,11 @@
 #pragma once
-#include "Commands/CommandColourCustom.hpp"
-#include "Commands/Commands.hpp"
+#include "Rendering/StandPort/CommandColour.hpp"
 #include "Commands/Settings/Appearance/CommandTabColours.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
-#include "Util/Joaat.hpp"
 
 #include <climits>
 
@@ -43,6 +41,23 @@ namespace Stand
 		}
 	};
 
+	class CommandBorderColour : public CommandColour
+	{
+	public:
+		explicit CommandBorderColour(CommandList* const parent)
+			: CommandColour(parent, LIT("Colour"), CMDNAMES("border"),
+				LIT("The colour of the item border."),
+				255, 255, 255, 255)
+		{
+		}
+
+		void onChange(Click& click) override
+		{
+			auto rgba = getRGBA();
+			Rendering::Theme::kBorderColour = {rgba.x, rgba.y, rgba.z, rgba.w};
+		}
+	};
+
 	class CommandBorderRainbow : public CommandColourRainbow
 	{
 	public:
@@ -58,14 +73,14 @@ namespace Stand
 	public:
 		CommandBorderWidth* const width;
 		CommandBorderRounded* const rounded;
-		CommandColourCustom* const colour;
+		CommandColour* const colour;
 		CommandBorderRainbow* const rainbow;
 
 		explicit CommandTabBorder()
 			: CommandList(nullptr, LIT("Border"))
 			, width(createChild<CommandBorderWidth>())
 			, rounded(createChild<CommandBorderRounded>())
-			, colour(Commands::GetCommand<CommandColourCustom>("border"_J))
+			, colour(createChild<CommandBorderColour>())
 			, rainbow(createChild<CommandBorderRainbow>())
 		{
 		}

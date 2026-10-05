@@ -28,6 +28,7 @@ namespace Stand
 		COMMAND_LIST_SELECT,
 
 		COMMAND_TOGGLE = COMMAND_FLAG_TOGGLE,
+		COMMAND_TOGGLE_CUSTOM,
 
 		COMMAND_SLIDER = COMMAND_FLAG_SLIDER,
 		COMMAND_SLIDER_FLOAT,
@@ -41,6 +42,7 @@ namespace Stand
 		COMMAND_INPUT,
 		COMMAND_READONLY_LINK,
 		COMMAND_ACTION_ITEM,
+		COMMAND_LIST_COLOUR,
 	};
 
 	class Command
@@ -58,6 +60,7 @@ namespace Stand
 		}
 
 		virtual ~Command() = default;
+		virtual void preDelete() {}
 
 		template<typename T>
 		[[nodiscard]] T* as() noexcept

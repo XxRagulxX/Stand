@@ -1,6 +1,5 @@
 #pragma once
-#include "Commands/CommandColourCustom.hpp"
-#include "Commands/Commands.hpp"
+#include "Rendering/StandPort/CommandColour.hpp"
 #include "Commands/Settings/Appearance/CommandTabColours.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
@@ -9,7 +8,6 @@
 #include "Rendering/NotifySettings.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
-#include "Util/Joaat.hpp"
 
 #include <algorithm>
 #include <string>
@@ -85,6 +83,23 @@ namespace Stand
 		}
 	};
 
+	class CommandNotifyBorderColour : public CommandColour
+	{
+	public:
+		explicit CommandNotifyBorderColour(CommandList* const parent)
+			: CommandColour(parent, LIT("Border Colour"), CMDNAMES("notifyborder"),
+				LIT("The notification card's own border/remaining-time colour."),
+				255, 0, 255, 255)
+		{
+		}
+
+		void onChange(Click& click) override
+		{
+			auto rgba = getRGBA();
+			Rendering::NotifySettings::kBorderColour = {rgba.x, rgba.y, rgba.z, rgba.w};
+		}
+	};
+
 	class CommandNotifyBorderRainbow : public CommandColourRainbow
 	{
 	public:
@@ -106,6 +121,23 @@ namespace Stand
 		void onClick(Click& click) override;
 	};
 
+	class CommandNotifyFlashColour : public CommandColour
+	{
+	public:
+		explicit CommandNotifyFlashColour(CommandList* const parent)
+			: CommandColour(parent, LIT("Flash Colour"), CMDNAMES("notifyflash"),
+				LIT("Briefly shown in place of Border Colour right after a notification first appears or re-triggers."),
+				158, 0, 158, 255)
+		{
+		}
+
+		void onChange(Click& click) override
+		{
+			auto rgba = getRGBA();
+			Rendering::NotifySettings::kFlashColour = {rgba.x, rgba.y, rgba.z, rgba.w};
+		}
+	};
+
 	class CommandNotifyFlashRainbow : public CommandColourRainbow
 	{
 	public:
@@ -113,6 +145,23 @@ namespace Stand
 			: CommandColourRainbow(parent, LIT("Rainbow Mode"), CMDNAMES("notifyflashrainbow"),
 				Rendering::NotifySettings::kFlashColour)
 		{
+		}
+	};
+
+	class CommandNotifyBackgroundColour : public CommandColour
+	{
+	public:
+		explicit CommandNotifyBackgroundColour(CommandList* const parent)
+			: CommandColour(parent, LIT("Background Colour"), CMDNAMES("notifybg"),
+				LIT("The notification card's own translucent background."),
+				0, 0, 0, 77)
+		{
+		}
+
+		void onChange(Click& click) override
+		{
+			auto rgba = getRGBA();
+			Rendering::NotifySettings::kBackgroundColour = {rgba.x, rgba.y, rgba.z, rgba.w};
 		}
 	};
 
@@ -145,12 +194,12 @@ namespace Stand
 		CommandNotifyInvertFlow* const invertFlow;
 		CommandNotifyWidth* const width;
 		CommandNotifyPadding* const padding;
-		CommandColourCustom* const borderColour;
+		CommandColour* const borderColour;
 		CommandNotifyBorderRainbow* const borderRainbow;
 		CommandNotifyCopyPrimary* const copyPrimary;
-		CommandColourCustom* const flashColour;
+		CommandColour* const flashColour;
 		CommandNotifyFlashRainbow* const flashRainbow;
-		CommandColourCustom* const bgColour;
+		CommandColour* const bgColour;
 		CommandNotifyCopyBg* const copyBg;
 		CommandNotifyFlashNow* const flashNow;
 
@@ -160,12 +209,12 @@ namespace Stand
 			, invertFlow(createChild<CommandNotifyInvertFlow>())
 			, width(createChild<CommandNotifyWidth>())
 			, padding(createChild<CommandNotifyPadding>())
-			, borderColour(Commands::GetCommand<CommandColourCustom>("notifyborder"_J))
+			, borderColour(createChild<CommandNotifyBorderColour>())
 			, borderRainbow(createChild<CommandNotifyBorderRainbow>())
 			, copyPrimary(createChild<CommandNotifyCopyPrimary>())
-			, flashColour(Commands::GetCommand<CommandColourCustom>("notifyflash"_J))
+			, flashColour(createChild<CommandNotifyFlashColour>())
 			, flashRainbow(createChild<CommandNotifyFlashRainbow>())
-			, bgColour(Commands::GetCommand<CommandColourCustom>("notifybg"_J))
+			, bgColour(createChild<CommandNotifyBackgroundColour>())
 			, copyBg(createChild<CommandNotifyCopyBg>())
 			, flashNow(createChild<CommandNotifyFlashNow>())
 		{

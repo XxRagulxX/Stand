@@ -11,6 +11,7 @@
 namespace Stand
 {
     class CommandList;
+    class CommandToggle;
 
     enum class MouseMode : uint8_t
     {
@@ -58,8 +59,11 @@ namespace Stand
         bool hotkeys_disabled = false;
 
         std::vector<CommandList*> m_active_list{};
+        std::vector<CommandToggle*> commands_with_correlation{};
 
         [[nodiscard]] CommandList* getCurrentUiList() const noexcept;
+
+        void processToggleCorrelation(ThreadContext thread_context, ToggleCorrelation_t correlation, bool value);
 
         [[nodiscard]] cursor_t getCommandsOnScreenLimit() const noexcept
         {
@@ -71,6 +75,8 @@ namespace Stand
         [[nodiscard]] bool isRootUpdatePendingOrInProgress() const noexcept { return false; }
         [[nodiscard]] bool isInBadBoyTimeout() const noexcept { return false; }
         [[nodiscard]] bool isAwaitingSetHotkeyInput() const noexcept { return false; }
+		bool inputUp(ThreadContext thread_context, const bool holding = false) { return false; }
+		bool inputDown(ThreadContext thread_context, const bool holding = false) { return false; }
         [[nodiscard]] bool isPromptActive() const noexcept { return false; }
     };
 

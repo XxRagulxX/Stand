@@ -59,6 +59,11 @@ namespace Stand
 			onClick(click);
 	}
 
+	void CommandToggleNoCorrelation::applyDefaultStateImpl(Click& click, bool should_be_on)
+	{
+		setStateBool(click, should_be_on);
+	}
+
 	void CommandToggleNoCorrelation::setStateBool(Click& click, bool toggle)
 	{
 		if (m_on != toggle)

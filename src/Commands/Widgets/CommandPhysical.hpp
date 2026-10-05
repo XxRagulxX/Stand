@@ -110,6 +110,9 @@ namespace Stand
 		}
 
 		virtual void onTick();
+		virtual void onTickInGameViewport() {}
+		virtual void onTickInWebViewport() {}
+		virtual void onPreScriptedAccess() {}
 
 		void queueJob(std::function<void()>&& func);
 		void queueJob(std::function<void(ThreadContext)>&& func);

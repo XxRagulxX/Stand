@@ -1,17 +1,57 @@
 #include "Rendering/GridItemList.hpp"
 
+#include <optional>
+
+#include "Rendering/StandPort/CommandColourCustom.hpp"
+#include "Commands/CommandInput.hpp"
+#include "Commands/CommandTextslider.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandReadonlyValue.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Widgets/CommandToggleCustom.hpp"
+#include "Menu/Hotkey.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Gui.hpp"
 #include "Rendering/MenuGrid.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/ThemeIcons.hpp"
+#include "Rendering/StandPort/ThemeIcons.hpp"
+#include "Rendering/StandPort/ColourUtil.hpp"
+#include "Util/Joaat.hpp"
 
 namespace Stand
 {
+    static std::optional<Rendering::IconSlot> getSpriteByMenuName(const Label& menu_name)
+    {
+        using Rendering::IconSlot;
+        switch (menu_name.getHash())
+        {
+        case "on"_J:
+            return IconSlot::Enabled;
+
+        case "doff"_J:
+        case "noone"_J:
+            return IconSlot::Disabled;
+
+        case "ps_f_s"_J:
+        case "psc_m"_J:
+        case "issuer"_J:
+            return IconSlot::User;
+
+        case "ps_s"_J:
+        case "psc_fm"_J:
+        case "issuer_n_me"_J:
+            return IconSlot::Friends;
+
+        case "psc_cfm"_J:
+        case "everyone"_J:
+            return IconSlot::Users;
+        }
+        return std::nullopt;
+    }
+
     void DrawCommandData::setSlider(std::wstring&& value, std::wstring& name, float& command_name_max_width)
     {
         using namespace Rendering;
@@ -83,6 +123,22 @@ namespace Stand
             draw_data.focused         = focused;
             draw_data.iconColour      = focused ? Theme::kFocusTexture    : Theme::kUnfocusedTexture;
 
+            if (focused && view->type == COMMAND_LIST_COLOUR)
+            {
+                auto rgba = static_cast<CommandColourCustom*>(view)->getRGBA();
+                draw_data.hasRectColourOverride = true;
+                draw_data.rectColourOverride = {rgba.x, rgba.y, rgba.z, rgba.w};
+                auto negateXmFloat4IfLowContrast = [&](DirectX::XMFLOAT4& col) {
+                    DirectX::SimpleMath::Color c{col.x, col.y, col.z, col.w};
+                    if (!ColourUtil::isContrastSufficient(c, rgba))
+                        c.Negate();
+                    col = {c.x, c.y, c.z, c.w};
+                };
+                negateXmFloat4IfLowContrast(draw_data.textColour);
+                negateXmFloat4IfLowContrast(draw_data.rightTextColour);
+                negateXmFloat4IfLowContrast(draw_data.iconColour);
+            }
+
             std::wstring name{};
             float command_name_max_width = (float)width - 5.f - (float)Theme::kContentItemHeight;
 
@@ -90,10 +146,26 @@ namespace Stand
             {
                 name = command->menu_name.getLocalisedUtf16();
 
+                if (!g_gui.hotkeys_disabled)
+                {
+                    for (const auto& hotkey : command->hotkeys)
+                    {
+                        const auto hs = hotkey.toString();
+                        name.append(L" [").append(std::wstring(hs.begin(), hs.end())).push_back(L']');
+                    }
+                }
+
                 if (command->isToggle())
                 {
                     auto* const toggle = command->as<CommandToggleNoCorrelation>();
-                    const IconSlot toggleIcon = toggle->m_on ? IconSlot::ToggleOn : IconSlot::ToggleOff;
+                    const bool useAuto =
+                        (command->type == COMMAND_TOGGLE && toggle->as<CommandToggle>()->correlation.isActive())
+                        || (command->type == COMMAND_TOGGLE_CUSTOM && toggle->as<CommandToggleCustom>()->auto_indicator);
+                    IconSlot toggleIcon;
+                    if (useAuto)
+                        toggleIcon = toggle->m_on ? IconSlot::ToggleOnAuto : IconSlot::ToggleOffAuto;
+                    else
+                        toggleIcon = toggle->m_on ? IconSlot::ToggleOn : IconSlot::ToggleOff;
 
                     if (g_MenuGrid.leftbound_textures_toggles)
                         draw_data.leftIcon = toggleIcon;
@@ -106,7 +178,8 @@ namespace Stand
 
                     if (list->type == COMMAND_LIST_SELECT)
                     {
-                        auto cur_val = static_cast<const CommandListSelect*>(command)->getCurrentValueMenuName().getLocalisedUtf16();
+                        auto current_value_label = static_cast<const CommandListSelect*>(command)->getCurrentValueMenuName();
+                        auto cur_val = current_value_label.getLocalisedUtf16();
                         if (focused)
                         {
                             std::wstring compact = name + L": " + cur_val;
@@ -123,6 +196,13 @@ namespace Stand
                         {
                             name.append(L": ").append(cur_val);
                         }
+                        if (auto icon = getSpriteByMenuName(current_value_label))
+                        {
+                            if (g_MenuGrid.leftbound_textures_nontoggles)
+                                draw_data.leftIcon = *icon;
+                            else
+                                draw_data.rightIcon = *icon;
+                        }
                     }
                     else
                     {
@@ -135,7 +215,7 @@ namespace Stand
 
                         if (showIcon)
                         {
-                            IconSlot iconSlot;
+                            IconSlot iconSlot = IconSlot::List;
                             if (list->type == COMMAND_LIST_SEARCH)
                             {
                                 iconSlot = IconSlot::Search;
@@ -148,28 +228,49 @@ namespace Stand
                             {
                                 iconSlot = IconSlot::ToggleOnList;
                             }
-                            else
+
+                            DirectX::XMFLOAT4 arrowColour = draw_data.iconColour;
+                            if (list->type == COMMAND_LIST_COLOUR)
                             {
-                                iconSlot = IconSlot::List;
+                                auto rgba = static_cast<const CommandColourCustom*>(command)->getRGBA();
+                                if (!focused || ColourUtil::isContrastSufficient(rgba, DirectX::SimpleMath::Color{Theme::kAccent.x, Theme::kAccent.y, Theme::kAccent.z, Theme::kAccent.w}))
+                                    arrowColour = {rgba.x, rgba.y, rgba.z, rgba.w};
                             }
 
                             if (g_MenuGrid.leftbound_textures_nontoggles)
+                            {
                                 draw_data.leftIcon = iconSlot;
+                                draw_data.iconColour = arrowColour;
+                            }
                             else
+                            {
                                 draw_data.rightIcon = iconSlot;
+                                draw_data.iconColour = arrowColour;
+                            }
                         }
                     }
                 }
                 else if (command->isSlider())
                 {
                     auto* const slider = static_cast<const CommandSlider*>(command);
-                    std::wstring value = slider->formatNumber(slider->value);
-                    if (focused)
-                        value.insert(0, L"< ").append(L" >");
+                    std::wstring value;
+                    if (slider->min_value == slider->max_value)
+                    {
+                        value = L"N/A";
+                    }
+                    else
+                    {
+                        value = slider->formatNumber(slider->value);
+                        if (focused)
+                            value.insert(0, L"< ").append(L" >");
+                    }
                     draw_data.setSlider(std::move(value), name, command_name_max_width);
                 }
                 else if (command->type == COMMAND_INPUT)
                 {
+                    auto val = command->as<CommandInput>()->GetString();
+                    if (!val.empty())
+                        name.append(L": ").append(std::wstring(val.begin(), val.end()));
                     if (g_MenuGrid.leftbound_textures_nontoggles)
                         draw_data.leftIcon = IconSlot::Edit;
                     else
@@ -188,9 +289,57 @@ namespace Stand
                 }
                 else if (command->type == COMMAND_READONLY_VALUE)
                 {
+                    auto val = command->as<StandWidgets::CommandReadonlyValue>()->GetValue();
+                    if (!val.empty())
+                    {
+                        std::wstring wval(val.begin(), val.end());
+                        auto val_w = GridRenderer::MeasureText(val.c_str(), Theme::kTextScale).x;
+                        auto name_w = GridRenderer::MeasureText(std::string(name.begin(), name.end()).c_str(), Theme::kTextScale).x;
+                        if (val_w > command_name_max_width - (name_w + 5.f))
+                        {
+                            name.append(L": ").append(wval);
+                        }
+                        else
+                        {
+                            draw_data.rightbound_text = std::move(wval);
+                            draw_data.rightbound_text_width = val_w;
+                            command_name_max_width -= val_w;
+                        }
+                    }
                 }
-                else if (command->type == COMMAND_TEXTSLIDER || command->type == COMMAND_TEXTSLIDER_STATEFUL)
+                else if (command->type == COMMAND_TEXTSLIDER)
                 {
+                    auto* const ts = command->as<CommandTextslider>();
+                    if (focused && !ts->GetOptions().empty())
+                    {
+                        std::wstring cur(ts->GetCurrentOption().begin(), ts->GetCurrentOption().end());
+                        draw_data.rightbound_text = std::wstring(L"< ").append(cur).append(L" >");
+                        draw_data.rightbound_text_width = GridRenderer::MeasureText(
+                            std::string(draw_data.rightbound_text.begin(), draw_data.rightbound_text.end()).c_str(),
+                            Theme::kTextScale).x;
+                        command_name_max_width -= draw_data.rightbound_text_width;
+                    }
+                }
+                else if (command->type == COMMAND_TEXTSLIDER_STATEFUL)
+                {
+                    auto* const ts = command->as<CommandTextslider>();
+                    if (!ts->GetOptions().empty())
+                    {
+                        std::wstring cur(ts->GetCurrentOption().begin(), ts->GetCurrentOption().end());
+                        if (focused && ts->GetOptions().size() != 1)
+                            cur.insert(0, L"< ").append(L" >");
+                        draw_data.setSlider(std::move(cur), name, command_name_max_width);
+                    }
+                }
+                else if (command->type == COMMAND_ACTION_ITEM)
+                {
+                    if (auto icon = getSpriteByMenuName(command->menu_name))
+                    {
+                        if (g_MenuGrid.leftbound_textures_nontoggles)
+                            draw_data.leftIcon = *icon;
+                        else
+                            draw_data.rightIcon = *icon;
+                    }
                 }
             }
             else
@@ -198,17 +347,30 @@ namespace Stand
                 name = L"[?]";
             }
 
+            std::replace(name.begin(), name.end(), L'\n', L' ');
+
             if (draw_data.trimmed_name.empty())
             {
                 draw_data.trimmed_name = name;
-                trimTextH(draw_data.trimmed_name, Theme::kTextScale, command_name_max_width);
-            }
-
-            if (focused)
-            {
-                if (_command->shouldShowUntrimmedName())
-                    g_MenuGrid.untrimmed_menu_name = name;
+                if (trimTextH(draw_data.trimmed_name, Theme::kTextScale, command_name_max_width))
+                {
+                    if (focused)
+                    {
+                        if (_command->shouldShowUntrimmedName())
+                            g_MenuGrid.untrimmed_menu_name = name;
+                        else
+                            g_MenuGrid.untrimmed_menu_name.clear();
+                    }
+                }
                 else
+                {
+                    if (focused)
+                        g_MenuGrid.untrimmed_menu_name.clear();
+                }
+            }
+            else
+            {
+                if (focused)
                     g_MenuGrid.untrimmed_menu_name.clear();
             }
 
@@ -259,7 +421,7 @@ namespace Stand
             {
                 focus_y = fy + (float)(kContentItemHeight * draw_cursor);
                 GridRenderer::DrawRect(fx, fy, fw, (float)(kContentItemHeight * draw_cursor), kPanelBackground);
-                GridRenderer::DrawRect(fx, focus_y, fw, (float)kContentItemHeight, kAccent);
+                GridRenderer::DrawRect(fx, focus_y, fw, (float)kContentItemHeight, cmd.hasRectColourOverride ? cmd.rectColourOverride : kAccent);
                 GridRenderer::DrawRect(fx, focus_y + (float)kContentItemHeight,
                     fw, (float)(kContentItemHeight * (int16_t)(dd.list.size() - (int)(g_gui.lerp != 0) - dd.has_extra_top - draw_cursor) - (int)kContentItemHeight),
                     kPanelBackground);
@@ -313,7 +475,9 @@ namespace Stand
         for (const auto& cmd : dd.list)
         {
             float draw_y = fy + (float)(kContentItemHeight * draw_cursor);
-            float text_x = fx + (float)kContentItemHeight;
+            const float text_x_offset = (cmd.leftIcon != Rendering::IconSlot::Count || g_MenuGrid.left_space_before_all_commands)
+                ? (float)kContentItemHeight : 5.f;
+            float text_x = fx + text_x_offset;
             std::string utf8(cmd.trimmed_name.begin(), cmd.trimmed_name.end());
 
             if (cmd.centered)
