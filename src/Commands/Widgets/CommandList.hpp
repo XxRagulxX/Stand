@@ -66,5 +66,7 @@ namespace Stand
 		{
 			return std::make_unique<T>(this, std::forward<Args>(args)...);
 		}
+
+		void recursivelyApplyDefaultState();
 	};
 }

@@ -115,6 +115,16 @@ namespace Stand
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_SLIDER;
 		}
 
+		[[nodiscard]] bool isListNonAction() const noexcept
+		{
+			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_LIST;
+		}
+
+		[[nodiscard]] bool canBeResolved() const noexcept
+		{
+			return type != COMMAND_DIVIDER;
+		}
+
 		[[nodiscard]] bool isConcealed() const noexcept
 		{
 			return (flags & CMDFLAG_CONCEALED) != 0;

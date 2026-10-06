@@ -17,6 +17,7 @@ namespace Stand
 	{
 	private:
 		bool m_JobQueued = false;
+		std::vector<Hotkey> m_DefaultHotkeys;
 
 	protected:
 		std::function<bool()> m_tickHandler;
@@ -30,7 +31,8 @@ namespace Stand
 		    CommandIssuable(parent, std::move(command_names), perm, flags, type),
 		    menu_name(std::move(menu_name)),
 		    help_text(std::move(help_text)),
-		    hotkeys(default_hotkeys)
+		    hotkeys(default_hotkeys),
+		    m_DefaultHotkeys(default_hotkeys)
 		{
 			if (supportsStateOperations())
 				CommandStateSerializer::AddCommand(this);
@@ -74,6 +76,17 @@ namespace Stand
 		{
 			return (flags & CMDFLAG_NO_SAVED_STATE) == 0;
 		}
+
+		[[nodiscard]] CommandPhysical* getStateCommand();
+
+		[[nodiscard]] bool canHotkeyBeRemoved(const Hotkey hotkey) const noexcept;
+		[[nodiscard]] bool canCountAsCommandWithHotkeys() const noexcept;
+		void removeHotkey(const Hotkey hotkey);
+		void updateHotkeysState();
+		void removeFromCommandsWithHotkeys();
+		void onHotkeysChanged();
+		void updateHotkeysInContextMenu();
+		[[nodiscard]] std::string getActivationName() const;
 
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;

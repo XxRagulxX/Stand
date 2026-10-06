@@ -87,12 +87,17 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 | Status | System | Our File(s) | OSS Reference |
 |--------|--------|-------------|---------------|
 | ✅ | Context menu shell (opens `CommandContextGrid`) | `Rendering/CommandContextGrid.hpp/cpp` | — |
-| ✅ | Save / Load state actions | `Rendering/CommandContextGrid.hpp/cpp` | — |
-| ❌ | **Hotkey list** (view / add / edit / remove per-command hotkeys) | — | `CommandCtxHotkeys.hpp/cpp`, `CommandCtxHotkey.hpp/cpp`, `CommandCtxHotkeyRemove.hpp` |
-| ❌ | Hold-mode toggle per hotkey | — | `CommandCtxHotkeyHoldMode.hpp` |
-| ❌ | Copy address to clipboard | — | `CommandCtxAddress.hpp` |
-| ❌ | Star / favourite a command | — | `CommandCtxStar.hpp` |
-| ❌ | Toggle correlation (link two toggles) | — | `CommandCtxToggleCorrelation.hpp/cpp` |
+| ✅ | Save / Load state actions (conditional: not CMDFLAG_TEMPORARY, supportsSavedState) | `Rendering/CommandContextGrid.hpp/cpp` | — |
+| ✅ | Apply Default State to Children (list commands) | `Rendering/CommandContextGrid.cpp`, `CommandList::recursivelyApplyDefaultState()` | `ContextMenu::doApplyDefaultStateToChildren` |
+| ✅ | Slider Min / Max (slider commands only) | `Rendering/CommandContextGrid.cpp` | `ContextMenu::doMin/doMax` |
+| ✅ | `getStateCommand()` on `CommandPhysical` | `Commands/Widgets/CommandPhysical.hpp/cpp` | `CommandPhysical::getStateCommand()` |
+| ✅ | `isListNonAction()` / `canBeResolved()` on `Command` | `Commands/Widgets/Command.hpp` | `Command.hpp` |
+| ✅ | Context menu item order matches OSS (correlation → state ops → list children → slider min/max → hotkeys → star → address) | `Rendering/CommandContextGrid.cpp` | `ContextMenu::open()` |
+| ✅ | **Hotkey list** (view / add / edit / remove per-command hotkeys) | `Rendering/CtxHotkeysGrid.hpp/cpp`, `CommandPhysical` hotkey methods | `CommandCtxHotkeys.hpp/cpp`, `CommandCtxHotkey.hpp/cpp`, `CommandCtxHotkeyRemove.hpp` |
+| ✅ | Hold-mode toggle per hotkey | `Rendering/CtxHotkeysGrid.cpp` (CtxHotkeyEntryGrid) | `CommandCtxHotkeyHoldMode.hpp` |
+| ✅ | Copy address to clipboard (4 modes: User / Default / API / Link) | `Rendering/CommandContextGrid.cpp` `BuildPath`/`BuildDefaultPath`/`BuildApiPath` | `CommandCtxAddress.hpp` |
+| ✅ | Star / favourite a command | `Rendering/CommandContextGrid.cpp` Star button, `Rendering/Gui.hpp` `starred_commands` | `CommandCtxStar.hpp` |
+| ✅ | Toggle correlation — flat root-level items (type selector + invert), `stateCommand == target` guard | `Rendering/CommandContextGrid.cpp` (inline), `Gui::active_profile`, `Gui::isUsingAutosaveState()` stubs | `CommandCtxToggleCorrelation.hpp/cpp`, `CommandCtxToggleCorrelationInvert.hpp` |
 
 ---
 

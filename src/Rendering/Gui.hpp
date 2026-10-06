@@ -60,6 +60,7 @@ namespace Stand
 
         std::vector<CommandList*> m_active_list{};
         std::vector<CommandToggle*> commands_with_correlation{};
+        std::unordered_map<std::string, std::string> starred_commands;
 
         [[nodiscard]] CommandList* getCurrentUiList() const noexcept;
 
@@ -69,6 +70,13 @@ namespace Stand
         {
             return command_rows * command_columns;
         }
+
+        struct ActiveProfile
+        {
+            [[nodiscard]] bool isInitialised() const noexcept { return true; }
+        } active_profile;
+
+        [[nodiscard]] bool isUsingAutosaveState() const noexcept { return false; }
 
         [[nodiscard]] bool isRootStateFull() const noexcept { return true; }
         [[nodiscard]] bool isUnloadPending() const noexcept { return false; }

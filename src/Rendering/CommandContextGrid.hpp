@@ -27,5 +27,7 @@ namespace Stand::Rendering
         }
 
         static std::string BuildPath(Stand::Command* cmd);
+        static std::string BuildDefaultPath(Stand::Command* cmd);
+        static std::string BuildApiPath(Stand::Command* cmd);
     };
 }
