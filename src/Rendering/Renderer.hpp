@@ -92,6 +92,20 @@ namespace Stand
 			return GetInstance().m_CommandQueue.Get();
 		}
 
+		static ID3D12Resource* GetCurrentBackBuffer()
+		{
+			auto& inst = GetInstance();
+			const UINT idx = inst.m_SwapChain->GetCurrentBackBufferIndex();
+			return inst.m_FrameContext[idx].Resource;
+		}
+
+		static D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferRtv()
+		{
+			auto& inst = GetInstance();
+			const UINT idx = inst.m_SwapChain->GetCurrentBackBufferIndex();
+			return inst.m_FrameContext[idx].Descriptor;
+		}
+
 		static UINT GetBufferCount()
 		{
 			return GetInstance().m_SwapChainDesc.BufferCount;

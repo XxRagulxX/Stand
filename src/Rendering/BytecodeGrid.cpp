@@ -2,7 +2,7 @@
 
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemHexRow.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/GridItemTextInput.hpp"
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/Theme.hpp"

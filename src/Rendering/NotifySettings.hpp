@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 
 #include <cstdint>
+#include <ctime>
 
 namespace Stand::Rendering::NotifySettings
 {
@@ -31,4 +32,7 @@ namespace Stand::Rendering::NotifySettings
 	inline int kMaxDurationMs = 10000;
 
 	constexpr int kFlashMs = 500;
+
+	inline time_t kFrozenSince = 0;
+	[[nodiscard]] inline bool isFrozen() noexcept { return kFrozenSince != 0; }
 }

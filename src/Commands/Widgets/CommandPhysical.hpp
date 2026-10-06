@@ -76,6 +76,7 @@ namespace Stand
 		}
 
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
+		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
 
 		virtual void onClick(Click& click)
 		{

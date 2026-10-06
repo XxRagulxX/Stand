@@ -1,6 +1,6 @@
 #pragma once
 #include "Game/Entity.hpp"
-#include "Rendering/GridItem.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 #include "Rendering/GridItemFocusTracker.hpp"
 
 #include <atomic>

@@ -7,7 +7,7 @@
 #include "Rendering/GridItemLiveText.hpp"
 #include "Rendering/GridItemLocalList.hpp"
 #include "Rendering/GridItemSelectList.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/CGameScriptHandlerNetComponent.hpp"
 #include "Scripting/FiberPool.hpp"

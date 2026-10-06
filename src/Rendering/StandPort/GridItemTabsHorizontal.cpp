@@ -1,4 +1,4 @@
-#include "Rendering/GridItemTabsHorizontal.hpp"
+#include "Rendering/StandPort/GridItemTabsHorizontal.hpp"
 
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
@@ -32,15 +32,16 @@ namespace Stand::Rendering
 	void GridItemTabsHorizontal::drawText()
 	{
 		float drawX = x;
-		for (const auto& tab : m_Tabs)
+		for (size_t i = 0; i < m_Tabs.size(); ++i)
 		{
-			const auto size = GridRenderer::MeasureText(tab.c_str());
+			const auto size = GridRenderer::MeasureText(m_Tabs[i].c_str());
 			const float tabWidth = size.x + kTabPaddingX * 2.f;
-			// Clamped to 0 - see the identical comment in
-			// GridItemToggle.cpp: otherwise a label taller than height
-			// centres upward out of this item's own row.
 			const float textY = y + std::max(0.f, (height - size.y) * 0.5f);
-			GridRenderer::DrawText(drawX + kTabPaddingX, textY, tab.c_str(), Theme::kText);
+			GridRenderer::DrawText(
+			    drawX + kTabPaddingX,
+			    textY,
+			    m_Tabs[i].c_str(),
+			    i == m_ActiveIndex ? Theme::kText : Theme::kUnfocusedText);
 			drawX += tabWidth + kTabGap;
 		}
 	}

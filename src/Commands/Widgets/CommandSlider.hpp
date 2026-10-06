@@ -21,14 +21,16 @@ namespace Stand
 		int value;
 		int default_value;
 		unsigned int step_size;
+		bool is_click_to_apply = false;
 
-		explicit CommandSlider(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, const std::vector<Hotkey>& default_hotkeys = {}, CommandType type = COMMAND_SLIDER) :
+		explicit CommandSlider(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, bool is_click_to_apply = false, const std::vector<Hotkey>& default_hotkeys = {}, CommandType type = COMMAND_SLIDER) :
 		    CommandPhysical(type, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags, perm, default_hotkeys),
 		    min_value(min_value),
 		    max_value(max_value),
 		    value(default_value),
 		    default_value(default_value),
-		    step_size(step_size)
+		    step_size(step_size),
+		    is_click_to_apply(is_click_to_apply)
 		{
 		}
 

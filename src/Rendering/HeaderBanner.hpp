@@ -45,6 +45,9 @@ namespace Stand::Rendering
 			return GetInstance().m_Loaded.load();
 		}
 
+		static inline uint16_t kLoadingProgress = 0;
+		static inline uint16_t kLoadingGoal = 0;
+
 		static float GetRenderHeight(float width)
 		{
 			return GetInstance().GetRenderHeightImpl(width);

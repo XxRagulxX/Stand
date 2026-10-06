@@ -6,11 +6,12 @@
 #include "Rendering/DescriptionPanel.hpp"
 #include "Rendering/ESP.hpp"
 #include "Rendering/HeaderBanner.hpp"
+#include "Rendering/HeaderLoadingSprite.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Rendering/MenuCommandBox.hpp"
 #include "Rendering/MenuCommandConsole.hpp"
 #include "Rendering/MenuFocus.hpp"
-#include "Rendering/MenuGrid.hpp"
+#include "Rendering/StandPort/MenuGrid.hpp"
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/MenuPopup.hpp"
 #include "Core/Pointers.hpp"
@@ -278,6 +279,9 @@ namespace Stand::Rendering
 		commandList->RSSetViewports(1, &viewport);
 		commandList->RSSetScissorRects(1, &scissorRect);
 
+		m_ActiveCommandList = commandList;
+		m_ActiveViewport    = viewport;
+
 		// Same gate WndProcImpl already applies to input - the menu/popup
 		// content stays tied to GUI::IsOpen() (the Insert toggle).
 		// Notifications below are deliberately outside this gate.
@@ -421,21 +425,47 @@ namespace Stand::Rendering
 		// itself loaded.
 		if (menuActive && HeaderBanner::IsLoaded())
 		{
-			int16_t headerX, headerY, headerWidth;
-			if (g_MenuGrid.GetHeaderBarRect(headerX, headerY, headerWidth))
+			float bx, by, bw, bh;
+			bool hasBanner = false;
+			if (m_HeaderQueue.pending)
 			{
-				const auto bannerHeightH = HeaderBanner::GetRenderHeight(static_cast<float>(headerWidth));
-				if (bannerHeightH > 0.f)
+				bx = m_HeaderQueue.x; by = m_HeaderQueue.y;
+				bw = m_HeaderQueue.w; bh = m_HeaderQueue.h;
+				m_HeaderQueue.pending = false;
+				hasBanner = true;
+			}
+			else
+			{
+				int16_t headerX, headerY, headerWidth;
+				if (g_MenuGrid.GetHeaderBarRect(headerX, headerY, headerWidth))
 				{
-					const auto bannerYH = static_cast<float>(headerY) - bannerHeightH - Theme::kSpacer;
-					const auto posC = PosH2C(static_cast<float>(headerX), bannerYH);
-					const auto sizeC = SizeH2C(static_cast<float>(headerWidth), bannerHeightH);
-
-					HeaderBanner::Draw(commandList, viewport, posC.x, posC.y, sizeC.x, sizeC.y);
+					bh = HeaderBanner::GetRenderHeight(static_cast<float>(headerWidth));
+					if (bh > 0.f)
+					{
+						bx = static_cast<float>(headerX);
+						by = static_cast<float>(headerY) - bh - Theme::kSpacer;
+						bw = static_cast<float>(headerWidth);
+						hasBanner = true;
+					}
 				}
+			}
+			if (hasBanner)
+			{
+				const auto posC  = PosH2C(bx, by);
+				const auto sizeC = SizeH2C(bw, bh);
+				HeaderBanner::Draw(commandList, viewport, posC.x, posC.y, sizeC.x, sizeC.y);
 			}
 		}
 
+		if (menuActive && m_HeaderLoadingQueue.pending && HeaderLoadingSprite::IsLoaded())
+		{
+			const auto posC  = PosH2C(m_HeaderLoadingQueue.x, m_HeaderLoadingQueue.y);
+			const auto sizeC = SizeH2C(m_HeaderLoadingQueue.w, m_HeaderLoadingQueue.h);
+			m_HeaderLoadingQueue.pending = false;
+			HeaderLoadingSprite::Draw(commandList, viewport, posC.x, posC.y, sizeC.x, sizeC.y);
+		}
+
+		m_ActiveCommandList = nullptr;
 		m_GraphicsMemory->Commit(Renderer::GetCommandQueue());
 	}
 
@@ -590,6 +620,67 @@ namespace Stand::Rendering
 		size.x *= scale;
 		size.y *= scale;
 		return size;
+	}
+
+	static void WrapLine(std::string& out, std::string_view line, float scale, float maxWidth, float spaceWidth)
+	{
+		float lineWidth = 0.f;
+		bool firstWord = true;
+		size_t pos = 0;
+		while (pos <= line.size())
+		{
+			size_t spacePos = line.find(' ', pos);
+			if (spacePos == std::string_view::npos)
+				spacePos = line.size();
+			auto word = line.substr(pos, spacePos - pos);
+			if (!word.empty())
+			{
+				std::string wordStr{word};
+				float wordWidth = GridRenderer::MeasureText(wordStr.c_str(), scale).x;
+				if (!firstWord)
+				{
+					if (lineWidth + spaceWidth + wordWidth > maxWidth)
+					{
+						out += '\n';
+						lineWidth = 0.f;
+						firstWord = true;
+					}
+					else
+					{
+						out += ' ';
+						lineWidth += spaceWidth;
+					}
+				}
+				out += wordStr;
+				lineWidth += wordWidth;
+				firstWord = false;
+			}
+			if (spacePos >= line.size())
+				break;
+			pos = spacePos + 1;
+		}
+	}
+
+	std::string GridRenderer::WrapTextImpl(const std::string& text, float scale, float maxWidth) const
+	{
+		if (!m_Font)
+			return text;
+		const float spaceWidth = MeasureText("a a", scale).x - MeasureText("aa", scale).x;
+		std::string result;
+		size_t offset = 0;
+		while (offset <= text.size())
+		{
+			size_t nlPos = text.find('\n', offset);
+			if (nlPos == std::string::npos)
+				nlPos = text.size();
+			if (!result.empty())
+				result += '\n';
+			WrapLine(result, std::string_view{text}.substr(offset, nlPos - offset), scale, maxWidth, spaceWidth);
+			if (nlPos >= text.size())
+				break;
+			offset = nlPos + 1;
+		}
+		return result;
 	}
 
 	void GridRenderer::WndProcImpl(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -747,5 +838,35 @@ namespace Stand::Rendering
 				MenuCommandConsole::Open();
 			}
 		});
+	}
+
+	DirectX::XMFLOAT2 GridRenderer::PosH2CPublic(float x, float y)
+	{
+		return PosH2C(x, y);
+	}
+
+	DirectX::XMFLOAT2 GridRenderer::SizeH2CPublic(float w, float h)
+	{
+		return SizeH2C(w, h);
+	}
+
+	DirectX::XMFLOAT2 GridRenderer::GetClientSizePublic()
+	{
+		return GetClientSize();
+	}
+
+	void GridRenderer::PauseBatchImpl()
+	{
+		if (m_Batch)
+			m_Batch->End();
+	}
+
+	void GridRenderer::ResumeBatchImpl()
+	{
+		if (m_Effect && m_Batch && m_ActiveCommandList)
+		{
+			m_Effect->Apply(m_ActiveCommandList);
+			m_Batch->Begin(m_ActiveCommandList);
+		}
 	}
 }

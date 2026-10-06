@@ -1,4 +1,4 @@
-#include "Rendering/GridItemTabsVertical.hpp"
+#include "Rendering/StandPort/GridItemTabsVertical.hpp"
 
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
@@ -72,7 +72,7 @@ namespace Stand::Rendering
 			    textX,
 			    rowY + Theme::kTabsTextYOffset + std::max(0.f, (m_EntryHeight - size.y) * 0.5f),
 			    m_Entries[i].c_str(),
-			    Theme::kText,
+			    i == m_ActiveIndex ? Theme::kText : Theme::kUnfocusedText,
 			    scale);
 		}
 	}

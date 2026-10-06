@@ -1,10 +1,18 @@
-#include "Rendering/GridItem.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/MenuNavigation.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand::Rendering
 {
+	void GridItem::drawBackgroundBlur()
+	{
+		bgblur.DrawH(static_cast<float>(x), static_cast<float>(y),
+		    static_cast<float>(width), static_cast<float>(height),
+		    Theme::kBlur);
+	}
+
 	bool GridItem::isKeyboardFocused() const
 	{
 		// Only meaningful for an item that's actually part of

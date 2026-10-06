@@ -9,7 +9,7 @@
 #include "Rendering/GridItemCommandPlayer.hpp"
 #include "Rendering/GridItemCommandPosition3d.hpp"
 #include "Rendering/GridItemLiveText.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Util/Joaat.hpp"
 #include "Scripting/Natives.hpp"
 #include "Network/Players.hpp"
