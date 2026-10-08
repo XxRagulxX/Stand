@@ -1,12 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include "Game/gta_player.hpp"
 
 namespace Stand
 {
 	struct PlayerExcludes
 	{
-		bool isExcluded(class AbstractPlayer) const { return false; }
+		bool isExcluded(compactplayer_t) const { return false; }
 	};
 
 	struct TargetingData

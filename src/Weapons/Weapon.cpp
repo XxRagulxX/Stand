@@ -195,3 +195,19 @@ namespace Stand
 		return "removeunknown";
 	}
 }
+
+namespace Stand
+{
+	const Weapon* Weapon::find(Hash hash)
+	{
+		for (const auto& w : weapons)
+			if (w.hash == hash)
+				return &w;
+		return nullptr;
+	}
+
+	std::vector<Hash> Weapon::getAllHashesIncludingWeirdos()
+	{
+		return getAllHashes();
+	}
+}

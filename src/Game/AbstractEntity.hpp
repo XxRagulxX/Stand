@@ -9,6 +9,8 @@
 #include "Game/natives_decl.hpp"
 #include "Game/typedecl.hpp"
 
+class CPlayerInfo;
+
 #include "Game/nullsub.hpp"
 
 namespace Stand
@@ -168,7 +170,6 @@ namespace Stand
 		[[nodiscard]] AbstractModel getModel();
 		[[nodiscard]] CBaseModelInfo* getModelInfo();
 		[[nodiscard]] Hash getModelHash();
-		[[nodiscard]] AbstractPlayer getOwner();
 		[[nodiscard]] bool isOwner();
 		void requestControl(Hash reason, std::function<void(AbstractEntity&)>&& callback, std::function<void(AbstractEntity&)>&& = &nullsub<AbstractEntity&>);
 
@@ -206,7 +207,6 @@ namespace Stand
 		void setAlwaysSynch(bool always_synch);
 		[[nodiscard]] uint16_t getNetObjId();
 		[[nodiscard]] bool isNetObjId(uint16_t id);
-		void giveControl(AbstractPlayer p);
 		[[nodiscard]] bool isInWater();
 		[[nodiscard]] float getSpeed();
 
@@ -217,7 +217,6 @@ namespace Stand
 		[[nodiscard]] bool couldBePlayer();
 		[[nodiscard]] CPlayerInfo* getPlayerInfo();
 		[[nodiscard]] compactplayer_t getPlayerId();
-		[[nodiscard]] AbstractPlayer getPlayer();
 		[[nodiscard]] float getMaxHealth();
 		[[nodiscard]] float getArmour();
 		void setMaxHealth(float max_health);
@@ -299,7 +298,6 @@ namespace Stand
 		void setPlateBasedOnSeed();
 		void randomiseSeedAndUpdatePlate();
 		[[nodiscard]] bool isOnRoad();
-		[[nodiscard]] AbstractPlayer getPersonalVehicleOwner();
 		[[nodiscard]] std::pair<Vector3, Vector3> getBombBayPos();
 		[[nodiscard]] Hash getEquippedVehicleWeapon();
 	};

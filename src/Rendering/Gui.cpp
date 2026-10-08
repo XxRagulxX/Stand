@@ -1,7 +1,9 @@
 #include "Rendering/Gui.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
+#include "lib/soup/WeakRef.hpp"
 
 namespace Stand
 {
@@ -23,4 +25,17 @@ namespace Stand
                 command->setStateBasedOnCorrelation(click, value);
         }
     }
+}
+
+namespace Stand
+{
+	bool Gui::parseCommand(std::wstring& command, std::wstring& args)
+	{
+		return false;
+	}
+
+	std::vector<soup::WeakRef<CommandIssuable>> Gui::findCommandsWhereCommandNameStartsWithAsWeakrefs(const CommandName& command_name_prefix, CommandPerm perms) const
+	{
+		return {};
+	}
 }

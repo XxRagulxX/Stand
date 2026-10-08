@@ -6,7 +6,7 @@ namespace Stand
 {
     struct StandMenuGrid
     {
-        Position2d origin{ 1323, 560 };
+        Rendering::Position2d origin{ 1323, 560 };
         int16_t spacer_size = 3;
 
         void update() {}

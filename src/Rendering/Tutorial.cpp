@@ -114,6 +114,6 @@ namespace Stand
 
     void Tutorial::update()
     {
-        g_tutorial_grid.updateNow();
+        g_tutorial_grid.refresh();
     }
 }

@@ -2,23 +2,22 @@
 
 #include "Game/FlowEvent.hpp"
 #include "Game/typedecl.hpp"
-#include "PlayerType.hpp"
 #include "Util/Util.hpp"
 
 namespace Stand
 {
 	struct FlowEventReactionData
 	{
-		floweventreaction_t reactions[PlayerType::SIZE] = { 0 };
+		floweventreaction_t reactions[1] = { 0 };
 
-		[[nodiscard]] floweventreaction_t& getReactions(playertype_t player_type = PlayerType::SELF)
+		[[nodiscard]] floweventreaction_t& getReactions(playertype_t = 0)
 		{
-			return reactions[player_type < PlayerType::SIZE ? player_type : 0];
+			return reactions[0];
 		}
 
-		[[nodiscard]] const floweventreaction_t& getReactions(playertype_t player_type = PlayerType::SELF) const
+		[[nodiscard]] const floweventreaction_t& getReactions(playertype_t = 0) const
 		{
-			return reactions[player_type < PlayerType::SIZE ? player_type : 0];
+			return reactions[0];
 		}
 	};
 

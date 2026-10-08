@@ -6,6 +6,20 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 
 ---
 
+## Intentionally Excluded Features
+
+> This menu is built for solo/private session self-use only. The following categories are permanently out of scope and must **never** be ported:
+
+| Category | Removed Files | Reason |
+|----------|--------------|--------|
+| Player targeting & ESP | `AbstractPlayer.hpp/cpp`, `CommandPlayer.hpp/cpp`, `CommandHistoricPlayer.hpp`, `CommandSearchPlayer.hpp/cpp`, `CommandEspBase.hpp`, `CommandEspTags.hpp` | Not needed — solo only |
+| Player network info | `CNetworkPlayerMgr.cpp` (body), `CNetworkSession.hpp`, `CNetworkPlayerMgr.hpp` (re-created as stub), `CPlayerInfo.hpp` (Game+Network), `CNetworkPlayerMgr.hpp` | No other-player tracking |
+| Player identifiers / RID | `netPeerId.hpp`, `netConnection.hpp`, `netEndpoint.hpp`, `HistoricPlayer.hpp`, `PlayerHistory.hpp`, `PlayerType.hpp`, `player_tags.hpp`, `PlayerScope.hpp`, `gta_player.hpp` (re-created — type aliases only) | No RID/IP lookup |
+| Chat & messages | `Chat.hpp`, `CMultiplayerChat.hpp`, `MsgTextMessage.hpp`, `DirectPacket.hpp`, `netComplaintMsg.hpp` | No chat injection |
+| Anti-cheat / detection | `tse.hpp`, `script_packets.hpp`, `snet_messages.hpp`, `NetworkSessionMessages.hpp`, `IceQueen.hpp` | Not relevant for self-use |
+
+---
+
 ## Visual Rendering
 
 | Status | System | Our File(s) | OSS Reference |

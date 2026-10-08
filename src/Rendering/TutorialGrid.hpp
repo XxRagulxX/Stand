@@ -9,6 +9,7 @@ namespace Stand
     public:
         TutorialGrid();
 
+        void refresh() { updateNow(); }
         void populate(std::vector<std::unique_ptr<Rendering::GridItem>>& items_draft) final;
     };
     inline TutorialGrid g_tutorial_grid{};

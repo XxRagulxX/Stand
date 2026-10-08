@@ -46,7 +46,6 @@ namespace rage
 
 	struct netPeerAddress;
 }
-#include "Network/netPeerId.hpp"
 namespace rage
 {
 

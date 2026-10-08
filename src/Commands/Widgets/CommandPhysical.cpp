@@ -1,4 +1,5 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
+#include "Util/Label.hpp"
 
 #include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandList.hpp"
@@ -221,5 +222,13 @@ namespace Stand
 			result = std::string(parent->getPhysical()->menu_name.getLocalisedUtf8()) + separator;
 		result += menu_name.getLocalisedUtf8();
 		return LIT(std::move(result));
+	}
+}
+
+namespace Stand
+{
+	std::string CommandPhysical::getNameForConfig() const
+	{
+		return menu_name.getEnglishUtf8();
 	}
 }

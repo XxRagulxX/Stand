@@ -41,7 +41,7 @@ namespace Stand
 		ObjectData object_data;
 	};
 
-	namespace PedBoneId
+	namespace AnimBoneId
 	{
 		constexpr int SKEL_ROOT       = 0;
 		constexpr int SKEL_Spine2     = 24818;

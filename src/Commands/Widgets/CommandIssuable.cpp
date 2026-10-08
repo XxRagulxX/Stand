@@ -58,3 +58,11 @@ namespace Stand
 		return res;
 	}
 }
+
+namespace Stand
+{
+	std::wstring CommandIssuable::getCompletionHint() const
+	{
+		return {};
+	}
+}

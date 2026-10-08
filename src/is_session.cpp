@@ -4,6 +4,8 @@
 #include "Scripting/ScriptGlobal.hpp"
 #include "Util/pointers.hpp"
 
+using namespace Stand;
+
 bool is_session_started() noexcept
 {
 	return *pointers::is_session_started;

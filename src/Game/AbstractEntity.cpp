@@ -6,14 +6,12 @@
 #include <soup/rand.hpp>
 
 #include "Game/AbstractModel.hpp"
-#include "Game/AbstractPlayer.hpp"
 #include "Util/atStringHash.hpp"
 #include "Game/Box.hpp"
 #include "Game/CObject.hpp"
 #include "Commands/Self/Appearance/CommandLockOutfit.hpp"
 #include "Game/CPedHeadBlendData.hpp"
 #include "Game/CPickup.hpp"
-#include "Game/CPlayerInfo.hpp"
 #include "Util/distance_sort.hpp"
 #include "Game/eDamageFlags.hpp"
 #include "Game/eEntityType.hpp"
@@ -37,7 +35,6 @@
 #include "Game/gta_replayinterface.hpp"
 #include "Game/gta_vehicle.hpp"
 #include "Rendering/Gui.hpp"
-#include "Game/is_session.hpp"
 #include "Util/joaatToString.hpp"
 #include "Core/Metrics.hpp"
 #include "Names.hpp"
@@ -152,22 +149,7 @@ namespace Stand
 			}
 			else
 			{
-				__try
-				{
-					const auto p = AbstractEntity::get(entry.first).getOwner();
-					g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Dropping control request for entity {} from {} due to timeout.").str()), entry.first, p.getName()));
-					if (p.isInTimeout())
-					{
-						g_logger.log(soup::ObfusString("Note: Player has been timed out. This wound is a self-inflicted one."));
-					}
-					else
-					{
-						p.triggerDetection(FlowEvent::MOD_NONET, {}, 75);
-					}
-				}
-				__EXCEPTIONAL()
-				{
-				}
+				g_logger.log(fmt::format(fmt::runtime(soup::ObfusString("Dropping control request for entity {} due to timeout.").str()), entry.first));
 			}
 			__try
 			{
@@ -701,11 +683,6 @@ namespace Stand
 		}
 		else if (isPed())
 		{
-			if (isAPlayer())
-			{
-				return getPlayer().getNameWithFlags();
-			}
-
 			const Hash model_hash = getModel();
 			switch ((hash_t)model_hash)
 			{
@@ -742,10 +719,6 @@ namespace Stand
 		else
 		{
 			name = joaatToString(getModelHash());
-		}
-		if (include_owner && getNetObject() != nullptr)
-		{
-			name.append((const char*)u8" - ").append(getOwner().getNameWithFlags());
 		}
 		return name;
 	}
@@ -865,21 +838,9 @@ namespace Stand
 		return 0;
 	}
 
-	AbstractPlayer AbstractEntity::getOwner()
-	{
-		if (*pointers::is_session_started
-			&& ensurePointer()
-			&& ptr->m_net_object != nullptr
-			)
-		{
-			return AbstractPlayer(ptr->m_net_object->owner_id);
-		}
-		return g_player;
-	}
-
 	bool AbstractEntity::isOwner()
 	{
-		return getOwner() == g_player;
+		return true;
 	}
 
 	void AbstractEntity::requestControl(Hash reason, std::function<void(AbstractEntity&)>&& callback, std::function<void(AbstractEntity&)>&& timeout_callback)
@@ -932,27 +893,7 @@ namespace Stand
 		SOUP_ASSERT(ExecCtx::get().isScript());
 #endif
 		removeFromPlaneOfExistenceRemoveRelationships();
-		if (isOwner())
-		{
-			removeFromPlaneOfExistenceAfterControlRequest();
-		}
-		else
-		{
-			if (getOwner().isBlockingRequestControl())
-			{
-				removeFromPlaneOfExistenceForce();
-			}
-			else
-			{
-				requestControl(ATSTRINGHASH("delete"), [](AbstractEntity& ent)
-				{
-					ent.removeFromPlaneOfExistenceAfterControlRequest();
-				}, [](AbstractEntity& ent)
-				{
-					ent.removeFromPlaneOfExistenceForce();
-				});
-			}
-		}
+		removeFromPlaneOfExistenceAfterControlRequest();
 	}
 
 	void AbstractEntity::removeFromPlaneOfExistenceRemoveRelationships()
@@ -1033,23 +974,6 @@ namespace Stand
 	{
 		if (ensurePointer())
 		{
-			if (auto p = getPlayer(); p.isValid())
-			{
-				if (NETWORK::NETWORK_IS_ACTIVITY_SESSION())
-				{
-					return ptr->m_nPhysicalFlags.bNotDamagedByAnything
-						|| ptr->m_nPhysicalFlags.bNotDamagedByAnythingButHasReactions
-						;
-				}
-
-				if (p.isInInterior() && !p.isInStore())
-				{
-					return ptr->m_nPhysicalFlags.bNotDamagedBySteam
-						|| ptr->m_nPhysicalFlags.bNotDamagedBySmoke
-						;
-				}
-			}
-
 			if (ptr->m_nPhysicalFlags.bNotDamagedByBullets
 				|| ptr->m_nPhysicalFlags.bNotDamagedByCollisions
 				|| ptr->m_nPhysicalFlags.bNotDamagedByMelee
@@ -1141,10 +1065,6 @@ namespace Stand
 
 	bool AbstractEntity::isFrozen()
 	{
-		if (isAPlayer())
-		{
-			return getPlayer().isFrozen();
-		}
 		if (auto p = getPointer())
 		{
 			return (p->base_flags & rage::fwEntity::IS_FIXED);
@@ -1154,34 +1074,30 @@ namespace Stand
 
 	void AbstractEntity::freeze()
 	{
-		if (isAPlayer())
+		if (isAPlayer() && ensureHandle())
 		{
-			getPlayer().freeze(true);
+			ENTITY::FREEZE_ENTITY_POSITION(handle, true);
+			return;
 		}
-		else
+		requestControl(ATSTRINGHASH("freeze"), [](AbstractEntity& ent)
 		{
-			requestControl(ATSTRINGHASH("freeze"), [](AbstractEntity& ent)
-			{
-				ENTITY::FREEZE_ENTITY_POSITION(ent, true);
-				ent.setCanMigrate(false);
-			});
-		}
+			ENTITY::FREEZE_ENTITY_POSITION(ent, true);
+			ent.setCanMigrate(false);
+		});
 	}
 
 	void AbstractEntity::unfreeze()
 	{
-		if (isAPlayer())
+		if (isAPlayer() && ensureHandle())
 		{
-			getPlayer().freeze(false);
+			ENTITY::FREEZE_ENTITY_POSITION(handle, false);
+			return;
 		}
-		else
+		requestControl(ATSTRINGHASH("unfreeze"), [](AbstractEntity& ent)
 		{
-			requestControl(ATSTRINGHASH("unfreeze"), [](AbstractEntity& ent)
-			{
-				ENTITY::FREEZE_ENTITY_POSITION(ent, false);
-				ent.setCanMigrate(true);
-			});
-		}
+			ENTITY::FREEZE_ENTITY_POSITION(ent, false);
+			ent.setCanMigrate(true);
+		});
 	}
 
 	Vector3 AbstractEntity::getDimensions()
@@ -1251,7 +1167,7 @@ namespace Stand
 			switch (getType())
 			{
 			case ENTITY_TYPE_PED:
-				if (isAPlayer() && data.excludes.isExcluded(getPlayer()))
+				if (false)
 				{
 					break;
 				}
@@ -1379,21 +1295,6 @@ namespace Stand
 		return false;
 	}
 
-	void AbstractEntity::giveControl(AbstractPlayer p)
-	{
-		if (p == g_player)
-		{
-			return;
-		}
-		if (auto netply = p.getCNetGamePlayer())
-		{
-			if (auto netobj = getNetObject())
-			{
-				pointers::CGiveControlEvent_Trigger(reinterpret_cast<const rage::netPlayer*>(netply), netobj, rage::MIGRATE_FORCED);
-			}
-		}
-	}
-
 	bool AbstractEntity::isInWater()
 	{
 		if (auto pEntity = getPointer())
@@ -1495,15 +1396,10 @@ namespace Stand
 				{
 					return cped->m_net_object->owner_id;
 				}
-				return g_player;
+				return 0;
 			}
 		}
 		return -1;
-	}
-
-	AbstractPlayer AbstractEntity::getPlayer()
-	{
-		return AbstractPlayer(getPlayerId());
 	}
 
 	float AbstractEntity::getMaxHealth()
@@ -1555,12 +1451,12 @@ namespace Stand
 
 	float AbstractEntity::getMaxArmour()
 	{
-		return is_session_or_transition_active() ? 50.0f : 100.0f;
+		return *pointers::is_session_started ? 50.0f : 100.0f;
 	}
 
 	bool AbstractEntity::isFriend()
 	{
-		return isAPlayer() ? getPlayer().isFriend() : PED::GET_RELATIONSHIP_BETWEEN_PEDS(g_player_ped, operator Entity()) <= 1;
+		return PED::GET_RELATIONSHIP_BETWEEN_PEDS(g_player_ped, operator Entity()) <= 1;
 	}
 
 	bool AbstractEntity::isInAnyVehicle()
@@ -2405,7 +2301,7 @@ namespace Stand
 			{
 				auto pos = veh.getPos();
 				FIRE::ADD_EXPLOSION(pos.x, pos.y, pos.z, EXP_TAG_STICKYBOMB, 1.0f, true, false, 0.0f, false);
-				if (is_session_started())
+				if (*pointers::is_session_started)
 				{
 					CExplosionManager::CExplosionArgs args{ EXP_TAG_STICKYBOMB, pos };
 					args.m_bMakeSound = false;
@@ -2522,7 +2418,7 @@ namespace Stand
 
 	bool AbstractEntity::isUserPersonalVehicle()
 	{
-		return ensureHandle() && DECORATOR::DECOR_GET_INT(handle, "Player_Vehicle") == NETWORK::NETWORK_HASH_FROM_PLAYER_HANDLE(g_player);
+		return ensureHandle() && DECORATOR::DECOR_GET_INT(handle, "Player_Vehicle") == NETWORK::NETWORK_HASH_FROM_PLAYER_HANDLE(0);
 	}
 
 	void AbstractEntity::slingshot()
@@ -2938,25 +2834,7 @@ namespace Stand
 	bool AbstractEntity::isOnRoad()
 	{
 		const auto coords = getPos();
-		return PATHFIND::IS_POINT_ON_ROAD(coords.x, coords.y, coords.z, *this);
-	}
-
-	AbstractPlayer AbstractEntity::getPersonalVehicleOwner()
-	{
-		const auto hash = DECORATOR::DECOR_GET_INT(*this, "Player_Vehicle");
-
-		if (hash != 0)
-		{
-			for (const auto& p : AbstractPlayer::listAll())
-			{
-				if (hash == NETWORK::NETWORK_HASH_FROM_PLAYER_HANDLE(p))
-				{
-					return p;
-				}
-			}
-		}
-
-		return AbstractPlayer::invalid();
+		return PATH::IS_POINT_ON_ROAD(coords.x, coords.y, coords.z, *this);
 	}
 
 	[[nodiscard]] static float GET_BOMB_OFFSET(hash_t model)

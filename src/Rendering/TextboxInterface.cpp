@@ -2,21 +2,17 @@
 
 #include <soup/base.hpp>
 
-#include "Network/Chat.hpp"
 #include "Network/CMultiplayerChat.hpp"
 #include "Util/pointers.hpp"
 
 namespace Stand
 {
-    void ChatboxInterface::add(const std::wstring& text) const
+    void ChatboxInterface::add(const std::wstring&) const
     {
-        Chat::addToDraft(text);
     }
 
-    void ChatboxInterface::remove(size_t len) const
+    void ChatboxInterface::remove(size_t) const
     {
-        SOUP_ASSERT(len <= 0xFFFF);
-        Chat::removeFromDraft((uint16_t)len);
     }
 
     std::wstring ChatboxInterface::getText() const noexcept

@@ -101,6 +101,6 @@ namespace Stand
     void TutorialGrid::populate(std::vector<std::unique_ptr<Rendering::GridItem>>& items_draft)
     {
         items_draft.emplace_back(std::make_unique<Rendering::GridItemPrimaryText>(width, 24, LANG_GET_W("TUT2")));
-        items_draft.emplace_back(std::make_unique<Rendering::GridItemText>(width, 0, getCurrentInstruction(), {}));
+        items_draft.emplace_back(std::make_unique<Rendering::GridItemText>(width, 0, getCurrentInstruction(), DirectX::XMFLOAT4{1.f, 1.f, 1.f, 1.f}));
     }
 }

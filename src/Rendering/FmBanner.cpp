@@ -2,7 +2,6 @@
 
 #include <fmt/format.h>
 
-#include "Game/AbstractPlayer.hpp"
 #include "Scripting/ScriptGlobal.hpp"
 #include "Util/StringUtils.hpp"
 #include "Util/Util.hpp"
@@ -63,7 +62,7 @@ namespace Stand
         }
         if (player_1 != -1)
         {
-            StringUtils::replace_single(str, "~a~", AbstractPlayer(player_1).getName());
+            StringUtils::replace_single(str, "~a~", std::to_string(player_1));
         }
 
         if (customint_1 != -1)
