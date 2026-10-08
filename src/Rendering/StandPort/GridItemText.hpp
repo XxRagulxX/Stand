@@ -14,6 +14,8 @@ namespace Stand::Rendering
 	class GridItemText : public GridItem
 	{
 	public:
+		explicit GridItemText(std::string&& text, int16_t width, int16_t extra_padding, uint8_t priority, Alignment alignment_relative_to_last = ALIGN_BOTTOM_LEFT, GridItem* force_alignment_to = nullptr);
+
 		GridItemText(int16_t width, int16_t height, std::string text, DirectX::XMFLOAT4 colour) :
 		    GridItem(GRIDITEM_INDIFFERENT, width, height),
 		    m_Text(std::move(text)),

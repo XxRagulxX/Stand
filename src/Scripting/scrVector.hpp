@@ -78,6 +78,24 @@ namespace rage
 			return this->x != 0.0f || this->y != 0.0f || this->z != 0.0f;
 		}
 
+		scrVector& operator-=(const scrVector& other) noexcept
+		{
+			x -= other.x; y -= other.y; z -= other.z;
+			return *this;
+		}
+
+		scrVector& operator*=(float s) noexcept
+		{
+			x *= s; y *= s; z *= s;
+			return *this;
+		}
+
+		[[nodiscard]] float max() const noexcept
+		{
+			float m = x > y ? x : y;
+			return m > z ? m : z;
+		}
+
 		alignas(8) float x{};
 		alignas(8) float y{};
 		alignas(8) float z{};

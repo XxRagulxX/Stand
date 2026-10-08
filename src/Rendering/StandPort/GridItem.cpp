@@ -2,10 +2,16 @@
 
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/MenuNavigation.hpp"
+#include "Rendering/StandRendererCompat.hpp"
 #include "Rendering/Theme.hpp"
 
 namespace Stand::Rendering
 {
+	void GridItem::drawBackground(const DirectX::SimpleMath::Color& colour)
+	{
+		g_renderer.drawRectH(float(x), float(y), float(width), float(height), colour);
+	}
+
 	void GridItem::drawBackgroundBlur()
 	{
 		bgblur.DrawH(static_cast<float>(x), static_cast<float>(y),

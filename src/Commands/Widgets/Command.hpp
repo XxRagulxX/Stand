@@ -2,6 +2,8 @@
 #include "Commands/Widgets/CommandFlags.hpp"
 
 #include <cstdint>
+#include <soup/TransientToken.hpp>
+#include <soup/WeakRef.hpp>
 
 namespace Stand
 {
@@ -52,6 +54,7 @@ namespace Stand
 		CommandList* parent;
 		const CommandType type;
 		commandflags_t flags;
+		soup::TransientToken transient_token;
 
 		explicit Command(CommandType type, CommandList* parent, commandflags_t flags = 0) :
 		    parent(parent),
@@ -73,6 +76,12 @@ namespace Stand
 		[[nodiscard]] const T* as() const noexcept
 		{
 			return reinterpret_cast<const T*>(this);
+		}
+
+		template <typename T = Command>
+		[[nodiscard]] soup::WeakRef<T> getWeakRef()
+		{
+			return soup::WeakRef<T>(static_cast<T*>(this));
 		}
 
 		[[nodiscard]] bool isLink() const noexcept

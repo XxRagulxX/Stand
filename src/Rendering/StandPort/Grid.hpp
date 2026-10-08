@@ -145,6 +145,8 @@ namespace Stand::Rendering
 		// position along with it, since it no longer necessarily makes
 		// sense against the rebuilt content.
 		void invalidate();
+		void update() { invalidate(); }
+		void updateNow() { invalidate(); }
 
 	public:
 		// Registers hash (a CommandToggle looked up via Commands::GetCommand,
@@ -220,13 +222,15 @@ namespace Stand::Rendering
 		void SetClipMaxY(int16_t maxY) noexcept { m_ClipMaxY = maxY; }
 		void ClearClipMaxY() noexcept { m_ClipMaxY = INT16_MAX; }
 
-	protected:
+	public:
 		// Same soup::SharedPtr<std::vector<std::unique_ptr<GridItem>>>
 		// Stand's own Grid uses (see the class comment above for why this
 		// stays a soup type rather than a plain std::vector) - default-
 		// constructed (null) until ensurePopulated()'s first
 		// soup::make_shared call.
 		soup::SharedPtr<std::vector<std::unique_ptr<GridItem>>> items;
+
+	protected:
 
 	private:
 		void ensurePopulated();

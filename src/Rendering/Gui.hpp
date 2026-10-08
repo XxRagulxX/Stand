@@ -2,11 +2,17 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <soup/WeakRef.hpp>
+
+#include "Commands/Widgets/CommandIssuable.hpp"
 #include "Core/RecursiveScopedSpinlock.hpp"
 #include "Core/ThreadContext.hpp"
 #include "Game/typedecl.hpp"
+#include "Rendering/StandPort/Direction.hpp"
 
 namespace Stand
 {
@@ -86,6 +92,26 @@ namespace Stand
 		bool inputUp(ThreadContext thread_context, const bool holding = false) { return false; }
 		bool inputDown(ThreadContext thread_context, const bool holding = false) { return false; }
         [[nodiscard]] bool isPromptActive() const noexcept { return false; }
+
+        bool opened = false;
+        bool players_discovered = false;
+        bool show_syntax = true;
+        bool user_understands_navigation = false;
+
+        Direction tabs_pos = LEFT;
+        int16_t tabs_width = 112;
+
+        void inputStop() {}
+        void updateTabsIgnoreContextMenu() {}
+        void saveTutorialFlags() {}
+        void setProfilesTutorialDone() {}
+        [[nodiscard]] bool isInteractionMenuOpen() const noexcept { return false; }
+
+        float character_scale_multiplier = 1.0f;
+
+        [[nodiscard]] static bool parseCommand(std::wstring& command, std::wstring& args);
+        [[nodiscard]] std::vector<CommandIssuable*> findCommandsWhereCommandNameStartsWith(const CommandName& command_name_prefix, CommandPerm perms = COMMANDPERM_ALL) const;
+        [[nodiscard]] std::vector<soup::WeakRef<CommandIssuable>> findCommandsWhereCommandNameStartsWithAsWeakrefs(const CommandName& command_name_prefix, CommandPerm perms = COMMANDPERM_ALL) const;
     };
 
     extern Gui g_gui;

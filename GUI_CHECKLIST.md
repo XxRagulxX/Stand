@@ -168,6 +168,24 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 
 ---
 
+## Core Utilities & Infrastructure
+
+| Status | File | Our File(s) | OSS Reference | Notes |
+|--------|------|-------------|---------------|-------|
+| ✅ | `String2Hash.hpp` / `.cpp` | `Util/String2Hash.hpp/cpp` | `String2Hash.hpp/cpp` | 1:1; `convertToHash()` hashes `.str` field in-place |
+| ✅ | `StringCastable.hpp` / `.cpp` | `Util/StringCastable.hpp/cpp` | `StringCastable.hpp/cpp` | 1:1; numeric constructors use `fmt::to_string` |
+| ✅ | `StringUtils.hpp` / `.cpp` | `Util/StringUtils.hpp/cpp` | `StringUtils.hpp/cpp` | 1:1; `owoifyWithFmtException` skips `IsolatedText` (not in port); `to_lower` inlined in header removed for parity |
+| ✅ | `Label.hpp` / `.cpp` | `Util/Label.hpp/cpp` | `Label.hpp/cpp` | Adapted: port is always-literal (no LOC hash-only); new methods added: `combineWithSpace/Brackets`, `setLocalised`, `getLiteralUtf8/16`, `getEnglishUtf16`, `getLiteralForCommandName`, `getEnglishForCommandName`, `makeLiteralLocalised` |
+| ✅ | `EventLabel.hpp` / `.cpp` | `EventLabel.hpp/cpp` | `EventLabel.hpp/cpp` | 1:1 |
+| ✅ | `vector.cpp` | `Game/vector.cpp` | `vector.cpp` | `v_collectAxis`, `v_getZFromHeightmap`, `v_world2screen`; `scrVector3` ctors skipped (already inline in port as `rage::scrVector`) |
+| ✅ | `Vector2Plus.hpp` / `.cpp` | `Game/Vector2Plus.hpp/cpp` | `Vector2Plus.hpp/cpp` | `VectorBase` inheritance dropped (soup::VectorBase not in port); `operator std::string()` uses `fmt::format`; `rage::scrVector3` → `rage::scrVector` |
+| ✅ | `DrawUtil3d.hpp` | `Rendering/DrawUtil3d.hpp` | `DrawUtil3d.hpp/cpp` | Header fully ported with stub implementations; `.cpp` skipped (requires `Circle`, `soup::UvSphere`, stream_proof, g_player_ped — not yet in port) |
+| ❌ | `EventAggregation.hpp` / `.cpp` | `EventAggregation.hpp` | `EventAggregation.hpp/cpp` | Blocked: `FlowEvent.hpp` not in port |
+| ❌ | `lang.cpp` | — | `lang.cpp` | Blocked: `LangBuiltins` data (15+ language maps) not in port; port uses minimal `lang.hpp` stub |
+| ➖ | `ContextMenu.cpp` | `Rendering/CommandContextGrid.hpp/cpp` | `ContextMenu.hpp/cpp` | Port uses `CommandContextGrid` instead; OSS version requires `ExecCtx`, `FiberPool`, `Tutorial` — N/A |
+
+---
+
 ## Cannot Port (DX11-specific)
 
 | System | Reason |

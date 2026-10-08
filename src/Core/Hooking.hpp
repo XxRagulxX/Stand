@@ -5,6 +5,9 @@
 #include <vector>
 
 #include "Core/DetourHook.hpp"
+#include "Core/types.hpp"
+
+class CBaseModelInfo;
 
 namespace Stand
 {
@@ -81,5 +84,8 @@ namespace Stand
 			static Hooking instance;
 			return instance;
 		}
+
+	public:
+		[[nodiscard]] static CBaseModelInfo* getModelInfo(Hash modelHash) noexcept;
 	};
 }

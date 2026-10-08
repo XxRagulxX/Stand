@@ -1,4 +1,5 @@
 #pragma once
+#include "Commands/CommandExtraInfo.hpp"
 #include "Commands/Online/CommandName.hpp"
 #include "Commands/Online/CommandPerm.hpp"
 #include "Commands/Widgets/Command.hpp"
@@ -118,5 +119,8 @@ namespace Stand
 		virtual void onCommand(Click& click, std::wstring& args)
 		{
 		}
+
+		[[nodiscard]] std::wstring getCompletionHint() const;
+		virtual void getExtraInfo(CommandExtraInfo& info, std::wstring& args) {}
 	};
 }

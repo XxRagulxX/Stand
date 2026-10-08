@@ -1,27 +1,25 @@
 #pragma once
+
 #include "Util/Joaat.hpp"
 
 #include <string>
 #include <utility>
 
-// This project has no equivalent of Stand's own translation database
-// (Localization/lang_en.cpp and friends) - a real Stand Label can be
-// hash-only (LOC), resolved later against that database. Without one,
-// there's nothing for a hash-only Label to resolve to, so this Label
-// always keeps the literal text alongside its hash: LOC(key) stores key
-// itself as literal_str (displays as the raw translation key, e.g. "SLF",
-// until/unless a real English text table is ported) rather than being
-// unrenderable. LIT(text) is the one to use for actually-correct display
-// text ported from Stand's own English lang_en.cpp values by hand.
+#include "Util/hashtype.hpp"
+#include "Commands/Online/CommandName.hpp"
+
 #define LOC(key) Stand::Label(key, Stand::Label::TagLiteral{})
 #define LIT(text) Stand::Label(text, Stand::Label::TagLiteral{})
 #define NOLABEL Stand::Label()
 
 namespace Stand
 {
+#pragma pack(push, 1)
 	class Label
 	{
 	public:
+		static const Label sNoLabel;
+
 		struct TagLiteral
 		{
 		};
@@ -34,27 +32,30 @@ namespace Stand
 
 		Label() noexcept = default;
 
-		Label(const std::string& str, TagLiteral) noexcept :
-		    hash(Stand::Joaat(str)),
-		    literal_str(str)
+		Label(const std::string& str, TagLiteral) noexcept
+			: hash(Stand::Joaat(str)), literal_str(str)
 		{
 		}
 
-		Label(std::string&& str, TagLiteral) noexcept :
-		    hash(Stand::Joaat(str)),
-		    literal_str(std::move(str))
+		Label(std::string&& str, TagLiteral) noexcept
+			: hash(Stand::Joaat(str)), literal_str(std::move(str))
 		{
 		}
 
-		Label(const char* str, TagLiteral) noexcept :
-		    Label(std::string(str), TagLiteral{})
+		Label(const char* str, TagLiteral) noexcept
+			: Label(std::string(str), TagLiteral{})
 		{
 		}
+
+		Label(const std::wstring& str, TagLiteral);
 
 		Label(const Label&) noexcept = default;
 		Label(Label&&) noexcept = default;
 		Label& operator=(const Label&) noexcept = default;
 		Label& operator=(Label&&) noexcept = default;
+
+		[[nodiscard]] static Label combineWithSpace(const Label& primary, const Label& secondary);
+		[[nodiscard]] static Label combineWithBrackets(const Label& primary, const Label& secondary);
 
 		void setLiteral(const std::string& str) noexcept
 		{
@@ -68,6 +69,8 @@ namespace Stand
 			literal_str = std::move(str);
 		}
 
+		void setLocalised(hash_t hash) noexcept;
+
 		[[nodiscard]] bool empty() const noexcept
 		{
 			return literal_str.empty();
@@ -79,6 +82,7 @@ namespace Stand
 			literal_str.clear();
 		}
 
+		[[nodiscard]] bool operator==(const hash_t hash) const noexcept;
 		[[nodiscard]] bool operator==(const Label& b) const noexcept
 		{
 			return hash == b.hash && literal_str == b.literal_str;
@@ -89,7 +93,14 @@ namespace Stand
 			return !operator==(b);
 		}
 
+		[[nodiscard]] bool isLiteralString(const std::string& b) const noexcept;
+
 		[[nodiscard]] Stand::joaat_t getHash() const noexcept
+		{
+			return hash;
+		}
+
+		[[nodiscard]] Stand::joaat_t getLocalisationHash() const noexcept
 		{
 			return hash;
 		}
@@ -109,10 +120,21 @@ namespace Stand
 			return literal_str;
 		}
 
-		[[nodiscard]] std::wstring getLocalisedUtf16() const
+		[[nodiscard]] std::wstring getLocalisedUtf16() const;
+
+		[[nodiscard]] bool isLiteral() const noexcept
 		{
-			return std::wstring(literal_str.begin(), literal_str.end());
+			return true;
 		}
 
+		[[nodiscard]] std::string getLiteralUtf8() const noexcept;
+		[[nodiscard]] std::wstring getLiteralUtf16() const noexcept;
+		[[nodiscard]] CommandName getLiteralForCommandName() const noexcept;
+
+		[[nodiscard]] std::wstring getEnglishUtf16() const noexcept;
+		[[nodiscard]] CommandName getEnglishForCommandName() const noexcept;
+
+		void makeLiteralLocalised() noexcept;
 	};
+#pragma pack(pop)
 }

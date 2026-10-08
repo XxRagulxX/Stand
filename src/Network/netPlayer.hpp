@@ -5,6 +5,7 @@
 namespace rage
 {
 	class rlGamerInfo;
+	class netEndpoint;
 }
 class CNonPhysicalPlayerData;
 
@@ -25,6 +26,8 @@ namespace rage
 		virtual rage::rlGamerInfo* GetGamerInfo() = 0;
 		virtual void UpdateUnk() = 0; // force updates a player ped data node
 
+		[[nodiscard]] rage::netEndpoint* getEndpoint() const { return nullptr; }
+
 		inline bool IsLocal() const
 		{
 			return (m_Flags & 1) != 0;
@@ -36,9 +39,12 @@ namespace rage
 		uint32_t unk_0048;                           //0x0048
 		CNonPhysicalPlayerData* m_NonPhysicalPlayer; //0x0050
 		uint32_t m_MessageId;                        //0x0058
-		char pad_005C[4];                            //0x005C
+		uint32_t endpoint_id;                        //0x005C
 		uint8_t m_ActiveIndex;                       //0x0060
-		uint8_t m_PlayerIndex;                       //0x0061
+		union {
+			uint8_t m_PlayerIndex;
+			uint8_t player_id;
+		};                                           //0x0061
 		char pad_0062[0x6E];                         //0x0062
 		uint8_t m_Flags;                             //0x00D0
 		char pad_0091[0xF];                          //0x00D1

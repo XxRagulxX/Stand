@@ -29,7 +29,9 @@ namespace Stand
 
 		static const std::vector<Weapon> weapons;
 
+		[[nodiscard]] static const Weapon* find(Hash hash);
 		[[nodiscard]] static std::vector<Hash> getAllHashes();
+		[[nodiscard]] static std::vector<Hash> getAllHashesIncludingWeirdos();
 		[[nodiscard]] static std::vector<Hash> getCategoryHashes(Category cat);
 
 		static const char* getCategoryName(Category cat) noexcept;

@@ -1,6 +1,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 
 #include "Commands/Widgets/CommandHotkeyDispatch.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Menu/Click.hpp"
@@ -186,5 +187,39 @@ namespace Stand
 			node = node->parent;
 		}
 		return nullptr;
+	}
+
+	void CommandPhysical::registerScriptTickEventHandlerInContext(std::function<bool()>&& handler)
+	{
+		m_tickHandler = std::move(handler);
+		CommandTickDispatch::AddCommand(this);
+	}
+
+	void CommandPhysical::registerScriptTickEventHandler(ThreadContext, std::function<bool()>&& handler)
+	{
+		registerScriptTickEventHandlerInContext(std::move(handler));
+	}
+
+	void CommandPhysical::registerScriptTickEventHandler(const Click&, std::function<bool()>&& handler)
+	{
+		registerScriptTickEventHandlerInContext(std::move(handler));
+	}
+
+	void CommandPhysical::registerScriptTickEventHandler(std::function<bool()>&& handler)
+	{
+		registerScriptTickEventHandlerInContext(std::move(handler));
+	}
+
+	void CommandPhysical::registerPresentEventHandler(std::function<bool()>&&)
+	{
+	}
+
+	Label CommandPhysical::getActivationNameImplCombineWithParent(const char* separator) const
+	{
+		std::string result;
+		if (parent && parent->getPhysical())
+			result = std::string(parent->getPhysical()->menu_name.getLocalisedUtf8()) + separator;
+		result += menu_name.getLocalisedUtf8();
+		return LIT(std::move(result));
 	}
 }

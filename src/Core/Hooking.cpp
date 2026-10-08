@@ -1,4 +1,5 @@
 #include "Core/Hooking.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
 #include <array>
 #include <stdexcept>
@@ -310,5 +311,10 @@ namespace Stand
 	DetourHook* Hooking::GetHook(std::string_view name)
 	{
 		return GetInstance().FindHook(name);
+	}
+
+	CBaseModelInfo* Hooking::getModelInfo(Hash) noexcept
+	{
+		return nullptr;
 	}
 }

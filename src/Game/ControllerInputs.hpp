@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-enum class ControllerInputs : uint32_t
+enum ControllerInputs : uint32_t
 {
 	INPUT_NEXT_CAMERA,
 	INPUT_LOOK_LR,

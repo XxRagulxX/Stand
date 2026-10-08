@@ -9,6 +9,13 @@
 #include <memory>
 #include <vector>
 
+#include "lib/soup/base.hpp"
+
+#define HANDLER_BREAK return false;
+#define HANDLER_CHECK(cond) SOUP_IF_UNLIKELY (!(cond)) HANDLER_BREAK;
+#define HANDLER_END return true;
+#define HANDLER(cond, impl) HANDLER_CHECK(cond); impl; HANDLER_END;
+
 namespace Stand::Rendering { class GridItem; class Grid; }
 
 namespace Stand
@@ -87,6 +94,7 @@ namespace Stand
 		void onHotkeysChanged();
 		void updateHotkeysInContextMenu();
 		[[nodiscard]] std::string getActivationName() const;
+		[[nodiscard]] Label getActivationNameImplCombineWithParent(const char* separator) const;
 
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
@@ -104,6 +112,8 @@ namespace Stand
 		{
 			return true;
 		}
+
+		[[nodiscard]] virtual std::string getNameForConfig() const;
 
 		[[nodiscard]] virtual std::string getState() const
 		{
@@ -142,6 +152,12 @@ namespace Stand
 
 		void ensureWorkerContext(ThreadContext thread_context, std::function<void()>&& func);
 		void ensureWorkerContext(const Click& click, std::function<void()>&& func);
+
+		void registerScriptTickEventHandlerInContext(std::function<bool()>&& handler);
+		void registerScriptTickEventHandler(ThreadContext thread_context, std::function<bool()>&& handler);
+		void registerScriptTickEventHandler(const Click& click, std::function<bool()>&& handler);
+		void registerScriptTickEventHandler(std::function<bool()>&& handler);
+		void registerPresentEventHandler(std::function<bool()>&& handler);
 
 		virtual void fillVirtualItems(std::vector<std::unique_ptr<Rendering::GridItem>>&, Rendering::Grid*) {}
 

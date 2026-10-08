@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <string>
 
+#include <SimpleMath.h>
+
 namespace Stand::Rendering
 {
 	// Ported from stand-reference's src/Menu/GridItem.hpp - same fields,
@@ -233,6 +235,7 @@ namespace Stand::Rendering
 			return {};
 		}
 
+		void drawBackground(const DirectX::SimpleMath::Color& colour);
 		void drawBackgroundBlur();
 
 	public:

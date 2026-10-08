@@ -68,5 +68,17 @@ namespace Stand
 		}
 
 		void recursivelyApplyDefaultState();
+
+		void resetChildren()
+		{
+			children.clear();
+		}
+
+		virtual void processChildrenUpdate() {}
+		virtual void onActiveListUpdate() {}
+
+		[[nodiscard]] bool isThisOrSublistActiveInMyTabMenu() const noexcept { return false; }
+
+		void open(ThreadContext) {}
 	};
 }

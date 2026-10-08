@@ -2,10 +2,16 @@
 
 namespace rage
 {
+	struct fwKnownRefHolder
+	{
+		void** m_ppReference;
+		fwKnownRefHolder* m_pNext;
+	};
+
 	template<typename T>
 	class fwRefAwareBaseImpl : public T
 	{
-	private:
-		void* m_Ref; // 0x08
+	public:
+		fwKnownRefHolder* m_pKnownRefHolderHead;
 	};
 }
