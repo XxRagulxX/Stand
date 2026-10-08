@@ -18,6 +18,7 @@ namespace Stand
 		static inline CNetworkObjectMgr** network_object_mgr{};
 		static inline CNetworkPlayerMgr** network_player_mgr{};
 		static inline CNetworkSession** network_session{};
+		static inline rage::rlGamerInfo* rlPresence_GamerPresences_0_GamerInfo{};
 
 		static inline int (__fastcall* CTheScripts_GetGUIDFromEntity)(const rage::fwEntity&){};
 		static inline bool (__fastcall* CPedFactory_DestroyPed)(CPedFactory*, CPed*, bool){};

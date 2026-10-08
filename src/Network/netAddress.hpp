@@ -7,7 +7,10 @@ namespace rage
 	class netAddress
 	{
 	public:
-		netSocketAddress m_InternalIp; // 0x00
+		union {
+			netSocketAddress proxy_sock_addr;
+			netSocketAddress m_InternalIp;
+		};                             // 0x00
 		netSocketAddress m_ExternalIp; // 0x08
 		uint64_t m_PeerId;             // 0x10 for peer relay cxns
 		char m_Pad[6];                 // 0x18 TODO: what is this? it's not a usual address (padding would exist otherwise)

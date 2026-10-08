@@ -14,5 +14,15 @@ struct netSocketAddress
 		};
 	} m_IpAddress;
 	std::uint16_t m_Port;
+
+	[[nodiscard]] bool operator==(const netSocketAddress& b) const noexcept
+	{
+		return m_IpAddress.m_Packed == b.m_IpAddress.m_Packed && m_Port == b.m_Port;
+	}
+
+	[[nodiscard]] bool operator!=(const netSocketAddress& b) const noexcept
+	{
+		return !(*this == b);
+	}
 };
 static_assert(sizeof(netSocketAddress) == 0x08);

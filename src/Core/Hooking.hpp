@@ -2,10 +2,15 @@
 
 #include <memory>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
+
+#include <soup/ShortString.hpp>
 
 #include "Core/DetourHook.hpp"
 #include "Core/types.hpp"
+#include "Game/FlowEvent.hpp"
+#include "Game/FlowEventReaction.hpp"
 
 class CBaseModelInfo;
 
@@ -78,7 +83,7 @@ namespace Stand
 		void BatchDisable(const std::vector<DetourHook*>& hooks);
 		void BatchRemove(const std::vector<DetourHook*>& hooks);
 
-	private:
+	public:
 		static Hooking& GetInstance()
 		{
 			static Hooking instance;
@@ -87,5 +92,12 @@ namespace Stand
 
 	public:
 		[[nodiscard]] static CBaseModelInfo* getModelInfo(Hash modelHash) noexcept;
+
+		bool spoof_name = false;
+		soup::ShortString<16> spoofed_name;
+		std::unordered_map<uint64_t, soup::ShortString<16>> name_overrides{};
+		FlowEventReactionData flow_event_reactions[FlowEvent::SIZE];
 	};
+
+	inline Hooking& g_hooking = Hooking::GetInstance();
 }

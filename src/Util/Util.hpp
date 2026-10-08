@@ -5,6 +5,11 @@
 #include <cstdio>
 #include <string>
 
+#include "Util/Label.hpp"
+
+#include "Core/types.hpp"
+#include "Game/fwddecl.hpp"
+
 #include "Game/typedecl.hpp"
 
 #define TOAST_ABOVE_MAP         ((Stand::toast_t)0b1)
@@ -92,5 +97,10 @@ namespace Stand
 
 		static void toast(const std::string& message, toast_t flags = TOAST_DEFAULT) {}
 		static void toast(std::string&& message, toast_t flags = TOAST_DEFAULT) {}
+		static void toast(Label&& label, toast_t flags = TOAST_DEFAULT) {}
+		static void toast(const Label& label, toast_t flags = TOAST_DEFAULT) {}
+
+		[[nodiscard]] static class AbstractEntity createObject(const Hash model, const v3& pos, const bool networked = true);
+		[[nodiscard]] static std::string getRandomLicensePlate(int seed) { return ""; }
 	};
 }

@@ -4,13 +4,6 @@
 
 namespace rage
 {
-#ifndef POOL_FLAG_ISFREE
-#define POOL_FLAG_ISFREE 0x80
-#endif
-#ifndef POOL_FLAG_REFERENCEMASK
-#define POOL_FLAG_REFERENCEMASK 0x7f
-#endif
-
 	struct fwBasePool
 	{
 		uint8_t* m_aStorage;
@@ -45,12 +38,12 @@ namespace rage
 
 		[[nodiscard]] bool GetIsFree(int32_t index) const noexcept
 		{
-			return (m_aFlags[index] & POOL_FLAG_ISFREE) != 0;
+			return (m_aFlags[index] & 0x80u) != 0;
 		}
 
 		void SetReference(int32_t index, uint8_t nReference) noexcept
 		{
-			m_aFlags[index] = (m_aFlags[index] & ~POOL_FLAG_REFERENCEMASK) | (((nReference & POOL_FLAG_REFERENCEMASK) > 1 ? (nReference & POOL_FLAG_REFERENCEMASK) : 1));
+			m_aFlags[index] = (m_aFlags[index] & 0x80u) | (((nReference & 0x7fu) > 1 ? (nReference & 0x7fu) : 1));
 		}
 	};
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace Stand
 {
 	struct FlowEvent
@@ -9,6 +11,7 @@ namespace Stand
 			MOD_NONET = 0,
 			MISC_HOSTCHANGE,
 			MISC_SCRIPTHOSTCHANGE,
+			SIZE
 		};
 	};
 }
