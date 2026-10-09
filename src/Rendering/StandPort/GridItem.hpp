@@ -1,6 +1,6 @@
 #pragma once
-#include "Rendering/Alignment.hpp"
-#include "Rendering/GridItemType.hpp"
+#include "Rendering/StandPort/Alignment.hpp"
+#include "Rendering/StandPort/GridItemType.hpp"
 
 #include <climits>
 #include <cstdint>

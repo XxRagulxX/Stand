@@ -2,7 +2,7 @@
 #include "Commands/Self/Appearance/CommandPtfxTrail.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandSliderFloat.hpp"
-#include "Rendering/Particles.hpp"
+#include "Rendering/StandPort/Particles.hpp"
 
 #include <vector>
 

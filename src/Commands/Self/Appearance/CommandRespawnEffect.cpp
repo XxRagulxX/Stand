@@ -1,7 +1,7 @@
 #include "Commands/Self/Appearance/CommandRespawnEffect.hpp"
 
 #include "Commands/Widgets/CommandTickDispatch.hpp"
-#include "Rendering/Particles.hpp"
+#include "Rendering/StandPort/Particles.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Self.hpp"

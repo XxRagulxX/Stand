@@ -8,7 +8,7 @@
 #include "Rendering/Clipboard.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemFolder.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/HotkeysGrid.hpp"
 #include "Rendering/Theme.hpp"
 

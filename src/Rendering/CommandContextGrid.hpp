@@ -1,5 +1,7 @@
 #pragma once
-#include "Rendering/Grid.hpp"
+#include "Rendering/StandPort/Grid.hpp"
+#include "Rendering/StandPort/Position2d.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 
 #include <string>
 #include <unordered_map>

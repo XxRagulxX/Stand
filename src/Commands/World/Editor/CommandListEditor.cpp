@@ -16,8 +16,8 @@
 
 #include "Commands/Widgets/CommandSliderFloat.hpp"
 
-#include "Rendering/Grid.hpp"
-#include "Rendering/GridItem.hpp"
+#include "Rendering/StandPort/Position2d.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/MenuCommandBox.hpp"
 #include "Rendering/GridStandCommandList.hpp"

@@ -32,7 +32,7 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 
 | Status | System | Our File(s) | OSS Reference |
 |--------|--------|-------------|---------------|
-| ✅ | `Grid` base class | `Rendering/Grid.hpp/cpp` | `Grid.hpp/cpp` |
+| ✅ | `Grid` base class | `Rendering/StandPort/Position2d.hpp/cpp` | `Grid.hpp/cpp` |
 | ✅ | `MenuGrid` (header + sidebar + content chrome) | `Rendering/MenuGrid.hpp/cpp` | `MenuGrid.hpp/cpp` |
 | ✅ | `GridItemList` (command list two-pass renderer) | `Rendering/GridItemList.hpp/cpp` | `GridItemList.hpp/cpp` |
 | ✅ | `GridItemScrollbar` | `Rendering/GridItemScrollbar.hpp/cpp` | `GridItemScrollbar.hpp/cpp` |

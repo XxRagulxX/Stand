@@ -1,4 +1,5 @@
-#include "Rendering/Grid.hpp"
+#include "Rendering/StandPort/Grid.hpp"
+#include "Rendering/StandPort/Position2d.hpp"
 
 #include "Commands/CommandToggleLegacy.hpp"
 #include "Commands/Commands.hpp"

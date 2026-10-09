@@ -5,7 +5,7 @@
 #include "Rendering/GridItemFloatStepper.hpp"
 #include "Rendering/GridItemIntStepper.hpp"
 #include "Rendering/GridItemLocalList.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/GridItemTextInput.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/scrVector.hpp"

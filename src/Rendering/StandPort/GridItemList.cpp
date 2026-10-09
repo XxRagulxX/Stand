@@ -1,4 +1,4 @@
-#include "Rendering/GridItemList.hpp"
+#include "Rendering/StandPort/GridItemList.hpp"
 
 #include <optional>
 
@@ -15,7 +15,7 @@
 #include "Menu/Hotkey.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Gui.hpp"
-#include "Rendering/MenuGrid.hpp"
+#include "Rendering/StandPort/MenuGrid.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Rendering/StandPort/ColourUtil.hpp"

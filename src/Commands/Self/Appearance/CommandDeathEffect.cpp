@@ -1,7 +1,7 @@
 #include "Commands/Self/Appearance/CommandDeathEffect.hpp"
 
 #include "Commands/Widgets/CommandTickDispatch.hpp"
-#include "Rendering/Particles.hpp"
+#include "Rendering/StandPort/Particles.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Self.hpp"
 
