@@ -90,6 +90,11 @@ namespace Stand::Rendering
 			return GetInstance().MeasureTextImpl(text, scale);
 		}
 
+		static std::string WrapText(const std::string& text, float scale, float maxWidth)
+		{
+			return GetInstance().WrapTextImpl(text, scale, maxWidth);
+		}
+
 		// Screen-space counterparts of DrawRect/DrawText, for ESP (and
 		// anything else projecting a 3D world position onto the screen
 		// via GET_SCREEN_COORD_FROM_WORLD_COORD) - deliberately separate
@@ -161,6 +166,73 @@ namespace Stand::Rendering
 		GetInstance().QueueText3DImpl(norm_x, norm_y, std::move(text), colour, scale);
 	}
 
+		// Called by GridItemHeaderAnimation::draw() so the banner sprite is drawn
+		// at the item's own grid position rather than the fallback MenuGrid
+		// header-bar position.  Only one request survives per frame — the last
+		// writer wins, matching the single-header-item pattern.
+		static void QueueHeaderDraw(float x, float y, float width, float height)
+		{
+			auto& q      = GetInstance().m_HeaderQueue;
+			q.x          = x;
+			q.y          = y;
+			q.w          = width;
+			q.h          = height;
+			q.pending    = true;
+		}
+
+		// Called by GridItemHeaderLoading::draw() so the loading sprite is drawn
+		// at the item's grid position (same pattern as QueueHeaderDraw above).
+		static void QueueHeaderLoadingDraw(float x, float y, float width, float height)
+		{
+			auto& q      = GetInstance().m_HeaderLoadingQueue;
+			q.x          = x;
+			q.y          = y;
+			q.w          = width;
+			q.h          = height;
+			q.pending    = true;
+		}
+
+		// H-space → client-pixel conversion (Stand's own posH2C/sizeH2C).
+		// Exposed for BackgroundBlur so it can convert GridItem H-space
+		// coordinates to real pixels before copying from the back buffer.
+		// Only valid while a frame is being drawn (i.e. from a GridItem
+		// draw() call or BackgroundBlur::DrawH()).
+		static DirectX::XMFLOAT2 PosH2C(float x, float y)
+		{
+			return GetInstance().PosH2CPublic(x, y);
+		}
+		static DirectX::XMFLOAT2 SizeH2C(float w, float h)
+		{
+			return GetInstance().SizeH2CPublic(w, h);
+		}
+		static DirectX::XMFLOAT2 GetClientSize()
+		{
+			return GetInstance().GetClientSizePublic();
+		}
+
+		// Active frame state — only valid while DrawImpl is on the call stack.
+		static ID3D12GraphicsCommandList* GetActiveCommandList()
+		{
+			return GetInstance().m_ActiveCommandList;
+		}
+		static D3D12_VIEWPORT GetActiveViewport()
+		{
+			return GetInstance().m_ActiveViewport;
+		}
+
+		// Temporarily end/restart the PrimitiveBatch so BackgroundBlur can
+		// record its own commands into the same command list.  Always call
+		// PauseBatch() before any non-batch D3D12 work and ResumeBatch()
+		// after — mismatched calls will corrupt the batch state.
+		static void PauseBatch()
+		{
+			GetInstance().PauseBatchImpl();
+		}
+		static void ResumeBatch()
+		{
+			GetInstance().ResumeBatchImpl();
+		}
+
 	private:
 		static GridRenderer& GetInstance()
 		{
@@ -171,8 +243,15 @@ namespace Stand::Rendering
 		void DrawImpl(ID3D12GraphicsCommandList* commandList);
 		void WndProcImpl(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 		void DrawRectImpl(float x, float y, float width, float height, const DirectX::XMFLOAT4& colour);
+
+		DirectX::XMFLOAT2 PosH2CPublic(float x, float y);
+		DirectX::XMFLOAT2 SizeH2CPublic(float w, float h);
+		DirectX::XMFLOAT2 GetClientSizePublic();
+		void PauseBatchImpl();
+		void ResumeBatchImpl();
 		void DrawTextImpl(float x, float y, const char* text, const DirectX::XMFLOAT4& colour, float scale);
 		DirectX::XMFLOAT2 MeasureTextImpl(const char* text, float scale) const;
+		std::string WrapTextImpl(const std::string& text, float scale, float maxWidth) const;
 		void DrawLineScreenImpl(float x1, float y1, float x2, float y2, const DirectX::XMFLOAT4& colour, float thickness);
 		void DrawTextScreenImpl(float x, float y, const char* text, const DirectX::XMFLOAT4& colour, float scale);
 		void DrawRectFilledScreenImpl(float x1, float y1, float x2, float y2, const DirectX::XMFLOAT4& colour);
@@ -193,11 +272,19 @@ namespace Stand::Rendering
 			float scale;
 		};
 
+		struct HeaderDrawRequest { float x = 0, y = 0, w = 0, h = 0; bool pending = false; };
+		HeaderDrawRequest m_HeaderQueue;
+		HeaderDrawRequest m_HeaderLoadingQueue;
+
+		ID3D12GraphicsCommandList* m_ActiveCommandList = nullptr;
+		D3D12_VIEWPORT m_ActiveViewport{};
+
 		std::mutex m_text3d_mutex;
 		std::vector<Text3DEntry> m_text3d_pending;
 		std::vector<Text3DEntry> m_text3d_draw;
 
 		ID3D12Device* m_Device{};
+		int m_IconLoadCountdown = 2;
 
 		std::unique_ptr<DirectX::GraphicsMemory> m_GraphicsMemory;
 		std::unique_ptr<DirectX::CommonStates> m_States;

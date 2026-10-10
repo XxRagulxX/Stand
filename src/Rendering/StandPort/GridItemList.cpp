@@ -74,7 +74,6 @@ namespace Stand
             Rendering::Theme::kContentWidth, height, priority, alignment_relative_to_last),
           view(view), offset(offset)
     {
-        update();
     }
 
     bool GridItemList::trimTextH(std::wstring& text, float scale, float maxWidth)
@@ -102,7 +101,11 @@ namespace Stand
 
     void GridItemList::update()
     {
+        std::lock_guard<std::mutex> lock(m_DrawMutex);
         using namespace Rendering;
+
+        static bool s_UpdateLogged = false;
+        if (!s_UpdateLogged) { s_UpdateLogged = true; LOG(INFO) << "[GridItemList::update] entered, view=" << (void*)view << " children.size=" << view->children.size(); }
 
         m_draw_data = DrawListData{};
         cursor_t emul_cursor = m_draw_data.offset = view->m_offset + this->offset;
@@ -158,9 +161,13 @@ namespace Stand
                 if (command->isToggle())
                 {
                     auto* const toggle = command->as<CommandToggleNoCorrelation>();
+                    static bool s_CorrelationLogged = false;
+                    if (!s_CorrelationLogged) { s_CorrelationLogged = true; LOG(INFO) << "[GridItemList::update] about to call correlation.isActive() for emul_cursor=" << emul_cursor; }
                     const bool useAuto =
                         (command->type == COMMAND_TOGGLE && toggle->as<CommandToggle>()->correlation.isActive())
                         || (command->type == COMMAND_TOGGLE_CUSTOM && toggle->as<CommandToggleCustom>()->auto_indicator);
+                    static bool s_CorrelationDoneLogged = false;
+                    if (!s_CorrelationDoneLogged) { s_CorrelationDoneLogged = true; LOG(INFO) << "[GridItemList::update] correlation.isActive() returned, useAuto=" << useAuto; }
                     IconSlot toggleIcon;
                     if (useAuto)
                         toggleIcon = toggle->m_on ? IconSlot::ToggleOnAuto : IconSlot::ToggleOffAuto;
@@ -400,8 +407,7 @@ namespace Stand
 
     void GridItemList::draw()
     {
-        update();
-
+        std::lock_guard<std::mutex> lock(m_DrawMutex);
         using namespace Rendering;
         using namespace Rendering::Theme;
 
@@ -463,6 +469,7 @@ namespace Stand
 
     void GridItemList::drawText()
     {
+        std::lock_guard<std::mutex> lock(m_DrawMutex);
         using namespace Rendering;
         using namespace Rendering::Theme;
 

@@ -23,6 +23,11 @@ namespace Stand
 		return "Command: " + command_names.front();
 	}
 
+	bool CommandPhysical::canBeUsedByOtherPlayers() const
+	{
+		return perm != COMMANDPERM_USERONLY && !command_names.empty();
+	}
+
 	void CommandPhysical::queueJob(std::function<void()>&& func)
 	{
 		if (!m_JobQueued)

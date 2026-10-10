@@ -293,7 +293,7 @@ namespace Stand::Rendering
 
 	void MenuGrid::draw()
 	{
-		Grid::draw(); // chrome rects: header background + sidebar (also populates on first call)
+		Grid::draw();
 		SyncNavigation();
 
 		if (auto* content = MenuNavigation::Current())

@@ -11,8 +11,8 @@ namespace Stand
 	public:
 		uint8_t precision = 2;
 
-		explicit CommandSliderFloat(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, const std::vector<Hotkey>& default_hotkeys = {}) :
-		    CommandSlider(parent, std::move(menu_name), std::move(command_names), std::move(help_text), min_value, max_value, default_value, step_size, flags, perm, default_hotkeys, COMMAND_SLIDER_FLOAT)
+		explicit CommandSliderFloat(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, bool is_click_to_apply = false, const std::vector<Hotkey>& default_hotkeys = {}) :
+		    CommandSlider(parent, std::move(menu_name), std::move(command_names), std::move(help_text), min_value, max_value, default_value, step_size, flags, perm, is_click_to_apply, default_hotkeys, COMMAND_SLIDER_FLOAT)
 		{
 		}
 

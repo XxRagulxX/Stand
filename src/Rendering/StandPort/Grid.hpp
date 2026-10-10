@@ -66,6 +66,7 @@ namespace Stand::Rendering
 
 		virtual void draw();
 		virtual void drawText();
+		virtual void ScriptTick() {}
 
 		// This project's own addition (see the class comment above) -
 		// hit-tests cursor_x/cursor_y against every item via occupies(),

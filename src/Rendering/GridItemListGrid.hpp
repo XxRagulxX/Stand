@@ -20,6 +20,7 @@ namespace Stand::Rendering
 
         static GridItemListGrid& GetOrCreate(Stand::CommandList* list);
 
+        void ScriptTick() override;
         void handleKey(unsigned int vkCode);
 
     protected:

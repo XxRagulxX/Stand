@@ -10,6 +10,8 @@ namespace Stand::Rendering
 {
 	void GridItemTabsVertical::draw()
 	{
+		static bool s_Logged = false;
+		if (!s_Logged) { s_Logged = true; LOG(INFO) << "[GridItemTabsVertical::draw] start, entries=" << m_Entries.size(); }
 		for (size_t i = 0; i < m_Entries.size(); ++i)
 		{
 			const float rowY = y + m_EntryHeight * static_cast<float>(i);
@@ -20,8 +22,6 @@ namespace Stand::Rendering
 			    m_EntryHeight,
 			    i == m_ActiveIndex ? Theme::kAccent : Theme::kPanelBackground);
 
-			// Tab icon — mirrors Stand's TABRENDER_LICON / TABRENDER_RICON dispatch.
-			// Slot index = TabSelf + entry index; slots beyond TabDebug are silently skipped.
 			const auto tabSlot = static_cast<IconSlot>(static_cast<int>(IconSlot::TabSelf) + static_cast<int>(i));
 			if (tabSlot < IconSlot::Count && ThemeIcons::IsLoaded(tabSlot))
 			{
@@ -34,6 +34,8 @@ namespace Stand::Rendering
 					ThemeIcons::QueueDraw(tabSlot, static_cast<float>(x + width) - m_EntryHeight, rowY, m_EntryHeight, tint);
 			}
 		}
+		static bool s_DoneLogged = false;
+		if (!s_DoneLogged) { s_DoneLogged = true; LOG(INFO) << "[GridItemTabsVertical::draw] done"; }
 	}
 
 	void GridItemTabsVertical::drawText()
@@ -72,7 +74,7 @@ namespace Stand::Rendering
 			    textX,
 			    rowY + Theme::kTabsTextYOffset + std::max(0.f, (m_EntryHeight - size.y) * 0.5f),
 			    m_Entries[i].c_str(),
-			    Theme::kText,
+			    i == m_ActiveIndex ? Theme::kText : Theme::kUnfocusedText,
 			    scale);
 		}
 	}

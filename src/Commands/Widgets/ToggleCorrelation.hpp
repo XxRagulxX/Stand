@@ -2,6 +2,7 @@
 #include "Game/typedecl.hpp"
 
 #include <string>
+#include <string_view>
 
 namespace Stand
 {
@@ -42,6 +43,7 @@ namespace Stand
 
 		[[nodiscard]] bool isActive() const;
 		[[nodiscard]] std::string getState() const;
+		[[nodiscard]] std::string getExplanation(std::string_view command_name) const;
 	};
 #pragma pack(pop)
 }

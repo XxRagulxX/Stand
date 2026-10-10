@@ -37,6 +37,12 @@ namespace Stand::Rendering
         items_draft.push_back(std::move(item));
     }
 
+    void GridItemListGrid::ScriptTick()
+    {
+        if (m_Item)
+            m_Item->update();
+    }
+
     void GridItemListGrid::moveCursor(int delta)
     {
         if (!m_List || m_List->children.empty())

@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/StandPort/Alignment.hpp"
+#include "Rendering/StandPort/BackgroundBlur.hpp"
 #include "Rendering/StandPort/GridItemType.hpp"
 
 #include <climits>
@@ -231,6 +232,11 @@ namespace Stand::Rendering
 		{
 			return {};
 		}
+
+		void drawBackgroundBlur();
+
+	public:
+		BackgroundBlur bgblur;
 
 	private:
 		GridItem* m_FocusProxy = nullptr;

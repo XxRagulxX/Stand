@@ -6,6 +6,7 @@
 #include "Rendering/DescriptionPanel.hpp"
 #include "Rendering/ESP.hpp"
 #include "Rendering/HeaderBanner.hpp"
+#include "Rendering/StandPort/HeaderLoadingSprite.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Rendering/MenuCommandBox.hpp"
 #include "Rendering/MenuCommandConsole.hpp"
@@ -59,7 +60,7 @@ namespace Stand::Rendering
 		using Theme::kHudHeight;
 		using Theme::kHudWidth;
 
-		DirectX::XMFLOAT2 GetClientSize()
+		DirectX::XMFLOAT2 GetClientSizeImpl()
 		{
 			return {static_cast<float>(*Pointers.ScreenResX), static_cast<float>(*Pointers.ScreenResY)};
 		}
@@ -81,18 +82,18 @@ namespace Stand::Rendering
 			return std::min(clientSize.x / kHudWidth, clientSize.y / kHudHeight);
 		}
 
-		DirectX::XMFLOAT2 SizeH2C(float x, float y)
+		DirectX::XMFLOAT2 SizeH2CImpl(float x, float y)
 		{
-			const auto clientSize = GetClientSize();
+			const auto clientSize = GetClientSizeImpl();
 			const auto correction = GetHudCorrection(clientSize);
 			return {(x / kHudWidth) * (clientSize.x - correction.x * 2.f), (y / kHudHeight) * (clientSize.y - correction.y * 2.f)};
 		}
 
-		DirectX::XMFLOAT2 PosH2C(float x, float y)
+		DirectX::XMFLOAT2 PosH2CImpl(float x, float y)
 		{
-			const auto clientSize = GetClientSize();
+			const auto clientSize = GetClientSizeImpl();
 			const auto correction = GetHudCorrection(clientSize);
-			const auto size = SizeH2C(x, y);
+			const auto size = SizeH2CImpl(x, y);
 			return {size.x + correction.x, size.y + correction.y};
 		}
 
@@ -103,7 +104,7 @@ namespace Stand::Rendering
 		// coordinates directly and never need this).
 		DirectX::XMFLOAT3 PixelToNdc(float px, float py)
 		{
-			const auto clientSize = GetClientSize();
+			const auto clientSize = GetClientSizeImpl();
 			return {(px / clientSize.x) * 2.f - 1.f, 1.f - (py / clientSize.y) * 2.f, 0.f};
 		}
 	}
@@ -142,11 +143,6 @@ namespace Stand::Rendering
 		m_Batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>(device);
 
 		LOG(INFO) << "[GridRenderer] DirectXTK12 rect pipeline ready";
-
-		// Load theme icons from %APPDATA%\StandEnhanced\Theme\ on a
-		// background thread — same timing as Stand's own reloadTextures()
-		// call, which fires on the first successful renderer init.
-		ThemeIcons::Load();
 
 		// Text: embedded "Be Vietnam Pro" spritefont (see
 		// font_bevietnamprolight.hpp). Failure here (e.g. a malformed blob)
@@ -204,6 +200,7 @@ namespace Stand::Rendering
 		m_States.reset();
 		m_GraphicsMemory.reset();
 		m_Device = nullptr;
+		m_IconLoadCountdown = 2;
 	}
 
 	void GridRenderer::DrawImpl(ID3D12GraphicsCommandList* commandList)
@@ -277,6 +274,9 @@ namespace Stand::Rendering
 		D3D12_RECT scissorRect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
 		commandList->RSSetViewports(1, &viewport);
 		commandList->RSSetScissorRects(1, &scissorRect);
+
+		m_ActiveCommandList = commandList;
+		m_ActiveViewport    = viewport;
 
 		// Same gate WndProcImpl already applies to input - the menu/popup
 		// content stays tied to GUI::IsOpen() (the Insert toggle).
@@ -421,33 +421,62 @@ namespace Stand::Rendering
 		// itself loaded.
 		if (menuActive && HeaderBanner::IsLoaded())
 		{
-			int16_t headerX, headerY, headerWidth;
-			if (g_MenuGrid.GetHeaderBarRect(headerX, headerY, headerWidth))
+			float bx, by, bw, bh;
+			bool hasBanner = false;
+			if (m_HeaderQueue.pending)
 			{
-				const auto bannerHeightH = HeaderBanner::GetRenderHeight(static_cast<float>(headerWidth));
-				if (bannerHeightH > 0.f)
+				bx = m_HeaderQueue.x; by = m_HeaderQueue.y;
+				bw = m_HeaderQueue.w; bh = m_HeaderQueue.h;
+				m_HeaderQueue.pending = false;
+				hasBanner = true;
+			}
+			else
+			{
+				int16_t headerX, headerY, headerWidth;
+				if (g_MenuGrid.GetHeaderBarRect(headerX, headerY, headerWidth))
 				{
-					const auto bannerYH = static_cast<float>(headerY) - bannerHeightH - Theme::kSpacer;
-					const auto posC = PosH2C(static_cast<float>(headerX), bannerYH);
-					const auto sizeC = SizeH2C(static_cast<float>(headerWidth), bannerHeightH);
-
-					HeaderBanner::Draw(commandList, viewport, posC.x, posC.y, sizeC.x, sizeC.y);
+					bh = HeaderBanner::GetRenderHeight(static_cast<float>(headerWidth));
+					if (bh > 0.f)
+					{
+						bx = static_cast<float>(headerX);
+						by = static_cast<float>(headerY) - bh - Theme::kSpacer;
+						bw = static_cast<float>(headerWidth);
+						hasBanner = true;
+					}
 				}
+			}
+			if (hasBanner)
+			{
+				const auto posC  = PosH2CImpl(bx, by);
+				const auto sizeC = SizeH2CImpl(bw, bh);
+				HeaderBanner::Draw(commandList, viewport, posC.x, posC.y, sizeC.x, sizeC.y);
 			}
 		}
 
+		if (menuActive && m_HeaderLoadingQueue.pending && HeaderLoadingSprite::IsLoaded())
+		{
+			const auto posC  = PosH2CImpl(m_HeaderLoadingQueue.x, m_HeaderLoadingQueue.y);
+			const auto sizeC = SizeH2CImpl(m_HeaderLoadingQueue.w, m_HeaderLoadingQueue.h);
+			m_HeaderLoadingQueue.pending = false;
+			HeaderLoadingSprite::Draw(commandList, viewport, posC.x, posC.y, sizeC.x, sizeC.y);
+		}
+
+		m_ActiveCommandList = nullptr;
 		m_GraphicsMemory->Commit(Renderer::GetCommandQueue());
+
+		if (m_IconLoadCountdown > 0 && --m_IconLoadCountdown == 0)
+			ThemeIcons::Load();
+
+		if (menuActive)
+			Renderer::RequestFrame();
 	}
 
 	void GridRenderer::DrawRectImpl(float x, float y, float width, float height, const DirectX::XMFLOAT4& colour)
 	{
 		using namespace DirectX;
 
-		// x/y/width/height are H-space (see the block comment by
-		// PosH2C/SizeH2C above) - convert to real client pixels before
-		// building NDC coordinates below.
-		const auto posC = PosH2C(x, y);
-		const auto sizeC = SizeH2C(width, height);
+		const auto posC  = PosH2CImpl(x, y);
+		const auto sizeC = SizeH2CImpl(width, height);
 
 		VertexPositionColor v0(PixelToNdc(posC.x, posC.y), colour);
 		VertexPositionColor v1(PixelToNdc(posC.x + sizeC.x, posC.y), colour);
@@ -541,8 +570,8 @@ namespace Stand::Rendering
 		if (!m_Font || !m_SpriteBatch)
 			return;
 
-		const auto posC = PosH2C(x + Theme::kTextOffsetX, y + Theme::kTextOffsetY);
-		const auto finalScale = scale * GetResolutionTextScale(GetClientSize());
+		const auto posC = PosH2CImpl(x + Theme::kTextOffsetX, y + Theme::kTextOffsetY);
+		const auto finalScale = scale * GetResolutionTextScale(GetClientSizeImpl());
 
 		m_Font->DrawString(m_SpriteBatch.get(), text, DirectX::XMFLOAT2(posC.x, posC.y), DirectX::XMLoadFloat4(&colour), 0.f, DirectX::XMFLOAT2{0.f, 0.f}, DirectX::XMFLOAT2{finalScale, finalScale});
 	}
@@ -590,6 +619,67 @@ namespace Stand::Rendering
 		size.x *= scale;
 		size.y *= scale;
 		return size;
+	}
+
+	static void WrapLine(std::string& out, std::string_view line, float scale, float maxWidth, float spaceWidth)
+	{
+		float lineWidth = 0.f;
+		bool firstWord = true;
+		size_t pos = 0;
+		while (pos <= line.size())
+		{
+			size_t spacePos = line.find(' ', pos);
+			if (spacePos == std::string_view::npos)
+				spacePos = line.size();
+			auto word = line.substr(pos, spacePos - pos);
+			if (!word.empty())
+			{
+				std::string wordStr{word};
+				float wordWidth = GridRenderer::MeasureText(wordStr.c_str(), scale).x;
+				if (!firstWord)
+				{
+					if (lineWidth + spaceWidth + wordWidth > maxWidth)
+					{
+						out += '\n';
+						lineWidth = 0.f;
+						firstWord = true;
+					}
+					else
+					{
+						out += ' ';
+						lineWidth += spaceWidth;
+					}
+				}
+				out += wordStr;
+				lineWidth += wordWidth;
+				firstWord = false;
+			}
+			if (spacePos >= line.size())
+				break;
+			pos = spacePos + 1;
+		}
+	}
+
+	std::string GridRenderer::WrapTextImpl(const std::string& text, float scale, float maxWidth) const
+	{
+		if (!m_Font)
+			return text;
+		const float spaceWidth = MeasureText("a a", scale).x - MeasureText("aa", scale).x;
+		std::string result;
+		size_t offset = 0;
+		while (offset <= text.size())
+		{
+			size_t nlPos = text.find('\n', offset);
+			if (nlPos == std::string::npos)
+				nlPos = text.size();
+			if (!result.empty())
+				result += '\n';
+			WrapLine(result, std::string_view{text}.substr(offset, nlPos - offset), scale, maxWidth, spaceWidth);
+			if (nlPos >= text.size())
+				break;
+			offset = nlPos + 1;
+		}
+		return result;
 	}
 
 	void GridRenderer::WndProcImpl(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -747,5 +837,35 @@ namespace Stand::Rendering
 				MenuCommandConsole::Open();
 			}
 		});
+	}
+
+	DirectX::XMFLOAT2 GridRenderer::PosH2CPublic(float x, float y)
+	{
+		return PosH2CImpl(x, y);
+	}
+
+	DirectX::XMFLOAT2 GridRenderer::SizeH2CPublic(float w, float h)
+	{
+		return SizeH2CImpl(w, h);
+	}
+
+	DirectX::XMFLOAT2 GridRenderer::GetClientSizePublic()
+	{
+		return GetClientSizeImpl();
+	}
+
+	void GridRenderer::PauseBatchImpl()
+	{
+		if (m_Batch)
+			m_Batch->End();
+	}
+
+	void GridRenderer::ResumeBatchImpl()
+	{
+		if (m_Effect && m_Batch && m_ActiveCommandList)
+		{
+			m_Effect->Apply(m_ActiveCommandList);
+			m_Batch->Begin(m_ActiveCommandList);
+		}
 	}
 }

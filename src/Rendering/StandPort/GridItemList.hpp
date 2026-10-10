@@ -5,6 +5,7 @@
 
 #include <DirectXMath.h>
 
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -58,6 +59,7 @@ namespace Stand
         void drawText() override;
 
     private:
+        mutable std::mutex m_DrawMutex;
         DrawListData m_draw_data{};
 
         static bool trimTextH(std::wstring& text, float scale, float maxWidth);

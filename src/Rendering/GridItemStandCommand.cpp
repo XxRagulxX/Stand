@@ -1,6 +1,9 @@
 #include "Rendering/GridItemStandCommand.hpp"
 
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Rendering/StandPort/CommandReadonlyLink.hpp"
+#include "Commands/Online/CommandPerm.hpp"
 #include "Commands/Vehicle/LSC/CommandVehicleColour.hpp"
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandList.hpp"
@@ -85,10 +88,83 @@ namespace Stand::Rendering
 		if (m_Command->isSlider() && Theme::kShowSliderBehaviour)
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
-			if (!slider->command_names.empty())
+			if (slider->is_click_to_apply)
+			{
+				result += '\n';
+				result += "Click to apply.";
+			}
+			else if (!slider->command_names.empty())
 			{
 				result += '\n';
 				result += "Click to input a value.";
+			}
+			else
+			{
+				result += '\n';
+				result += slider->getRangeString();
+			}
+		}
+		else if (auto* toggle = dynamic_cast<Stand::CommandToggle*>(m_Command))
+		{
+			if (toggle->correlation.isActive())
+			{
+				auto explanation = toggle->correlation.getExplanation(physical->menu_name.getLocalisedUtf8());
+				if (!explanation.empty())
+				{
+					if (!result.empty())
+						result += '\n';
+					result += std::move(explanation);
+				}
+			}
+		}
+		else if (m_Command->type == COMMAND_READONLY_NAME)
+		{
+			if (!result.empty())
+				result += '\n';
+			result += "Cannot bind.";
+		}
+		else if (m_Command->type == COMMAND_READONLY_LINK)
+		{
+			auto* cmd = m_Command->as<Stand::CommandReadonlyLink>();
+			if (!cmd->link.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += "Open link: ";
+				result += cmd->link;
+			}
+		}
+		else if (m_Command->isListSelect())
+		{
+			auto* sel = m_Command->as<Stand::CommandListSelect>();
+
+			if (Theme::kShowSliderBehaviour)
+			{
+				if (!result.empty())
+					result += '\n';
+				result += "Click to select.";
+			}
+
+			auto valueHelp = sel->getCurrentValueHelpText();
+			if (!valueHelp.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += sel->getCurrentValueMenuName().getLocalisedUtf8();
+				result += ": ";
+				result += valueHelp.getLocalisedUtf8();
+			}
+		}
+
+		if (physical->canBeUsedByOtherPlayers())
+		{
+			auto permLabel = getCommandPermLabel(physical->perm).getLocalisedUtf8();
+			if (!permLabel.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += "Other players: ";
+				result += std::move(permLabel);
 			}
 		}
 

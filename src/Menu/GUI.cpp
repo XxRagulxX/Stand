@@ -7,6 +7,8 @@
 #include "Rendering/MenuPopup.hpp"
 #include "Commands/Widgets/ToggleCorrelation.hpp"
 #include "Rendering/Gui.hpp"
+#include "Rendering/MenuNavigation.hpp"
+#include "Rendering/StandPort/Grid.hpp"
 
 namespace Stand
 {
@@ -177,6 +179,12 @@ namespace Stand
 					g_gui.processToggleCorrelation(TC_SCRIPT_NOYIELD, ToggleCorrelation::SESSION_HOST, cur_host);
 					prev_host = cur_host;
 				}
+			}
+
+			if (GUI::IsOpen())
+			{
+				if (auto* content = Rendering::MenuNavigation::Current())
+					content->ScriptTick();
 			}
 
 			Script::current()->yield();

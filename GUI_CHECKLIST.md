@@ -24,7 +24,7 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 | ✅ | Cursor border around focused row (`kCursorBorderWidth/Colour`) | `Rendering/GridItemList.cpp draw()` | `g_renderer.drawBorderH/C()` |
 | ✅ | `CommandListSelect` shows `< value >` only when focused | `Rendering/GridItemList.cpp` | `GridItemList.cpp COMMAND_LIST_SELECT` |
 | ❌ | CJK font fallback (Yahei / NanumGothic for JP/KR/CN) | — | `Renderer.hpp` (3 SpriteFont instances) |
-| ➖ | Background blur behind menu panels | — | `BackgroundBlur.hpp/cpp` — DX11 capture; DX12 UAV rewrite required |
+| ✅ | Background blur behind menu panels | `Rendering/BackgroundBlur.hpp/cpp` | DX12 port: `CopyTextureRegion` back-buffer capture + `BasicPostProcess::GaussianBlur_5x5` ping-pong; `GridItem::bgblur` + `drawBackgroundBlur()`; `GridItemHeaderAnimation::draw()` calls it when `HeaderBanner::GetBgBlur()` |
 
 ---
 
@@ -40,15 +40,15 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 | ✅ | `GridItemTabsVertical` (sidebar) | `Rendering/GridItemTabsVertical.hpp/cpp` | `GridItemTabsVertical.hpp/cpp` |
 | ✅ | `GridItemTabsHorizontal` | `Rendering/GridItemTabsHorizontal.hpp/cpp` | `GridItemTabsHorizontal.hpp/cpp` |
 | ✅ | `GridItemText` | `Rendering/GridItemText.hpp/cpp` | `GridItemText.hpp/cpp` |
-| ❌ | `GridItemPrimaryText` (abstract base for address/header text) | — | `GridItemPrimaryText.hpp/cpp` |
-| ❌ | `GridItemTextBigCentre` + Bordered variant | — | `GridItemTextBigCentre.hpp/cpp`, `GridItemTextBigCentreBordered.hpp/cpp` |
-| ❌ | `GridItemColourBox` + Bordered variant (colour palette) | — | `GridItemColourBox.hpp/cpp`, `GridItemColourBoxBordered.hpp/cpp` |
-| ❌ | `GridItemCommandboxInput` (typed-text field with cursor blink) | — | `GridItemCommandboxInput.hpp/cpp` |
-| ❌ | `GridItemQrcode` (QR code via `soup::Canvas`) | — | `GridItemQrcode.hpp/cpp` |
-| ❌ | `GridItemHeaderLoading` (progress bar in header during load) | — | `GridItemHeaderLoading.hpp/cpp` |
-| ❌ | `GridItemHeader` (abstract base for all header items) | — | `GridItemHeader.hpp/cpp` |
-| ❌ | `GridItemHeaderAnimation` (animated PNG frame header) | — | `GridItemHeaderAnimation.hpp/cpp` |
-| ❌ | `GridItemNotify` (standalone timed notification card class) | — | `GridItemNotify.hpp/cpp` |
+| ❌ | `GridItemPrimaryText` (abstract base for address/header text — to port explicitly later) | — | `GridItemPrimaryText.hpp/cpp` — functionality inlined in `GridItemAddressbar` for now; needs proper port so subclasses can inherit it |
+| ✅ | `GridItemTextBigCentre` + Bordered variant | `Rendering/GridItemTextBigCentre.hpp/cpp`, `Rendering/GridItemTextBigCentreBordered.hpp/cpp` | `GridItemTextBigCentre.hpp/cpp`, `GridItemTextBigCentreBordered.hpp/cpp` |
+| ✅ | `GridItemColourBox` + Bordered variant (colour palette) | `Rendering/GridItemColourBox.hpp/cpp`, `Rendering/GridItemColourBoxBordered.hpp/cpp` | `GridItemColourBox.hpp/cpp`, `GridItemColourBoxBordered.hpp/cpp` |
+| ✅ | `GridItemCommandboxInput` (word-wrapped text field for command box) | `Rendering/GridItemCommandboxInput.hpp/cpp` | `GridItemCommandboxInput.hpp/cpp` |
+| ✅ | `GridItemQrcode` (QR code via `soup::Canvas`) | `Rendering/GridItemQrcode.hpp/cpp` | `GridItemQrcode.hpp/cpp` |
+| ✅ | `GridItemHeaderLoading` (progress overlay text + loading sprite during header load) | `Rendering/GridItemHeaderLoading.hpp/cpp`, `Rendering/HeaderLoadingSprite.hpp/cpp` | `GridItemHeaderLoading.hpp/cpp` — `header_goal/progress` → `HeaderBanner::kLoadingGoal/Progress`; height + sprite from `HeaderLoadingSprite`; queued via `GridRenderer::QueueHeaderLoadingDraw` |
+| ✅ | `GridItemHeader` (abstract base for all header items) | `Rendering/GridItemHeader.hpp/cpp` | `GridItemHeader.hpp/cpp` |
+| ✅ | `GridItemHeaderAnimation` (animated PNG frame header) | `Rendering/GridItemHeaderAnimation.hpp/cpp` | `GridItemHeaderAnimation.hpp/cpp` — height from `HeaderBanner::GetRenderHeight`; frame draw via `GridRenderer::QueueHeaderDraw` (flushed by DrawImpl) |
+| ✅ | `GridItemNotify` (standalone timed notification card class) | `Rendering/GridItemNotify.hpp/cpp` | `GridItemNotify.hpp/cpp` — inherits `GridItem` (OSS `GridItemText` interface differs); `notifyBorder/Bg/Flash` → `NotifySettings`; `g_notify_grid.update()` → `on_expire` callback; freeze: `NotifySettings::kFrozenSince` + static instance registry + `Freeze()`/`Unfreeze()` |
 
 ---
 
@@ -141,10 +141,10 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 | ✅ | AR overlays (speed, waypoint, GPS route) | `Commands/Vehicle/ARSpeed/`, `Commands/World/CommandArWaypoint`, `CommandArGps` | — |
 | ✅ | `MenuPopup` (Yes/No confirm modal) | `Rendering/MenuPopup.hpp/cpp` | — |
 | ✅ | Onboarding (first-run setup screen) | `Rendering/Onboarding.hpp/cpp` | — |
-| ✅ | Description panel (focused command help text) | `Rendering/DescriptionPanel.hpp/cpp` | — |
+| ✅ | Description panel (focused command help text) | `Rendering/DescriptionPanel.hpp/cpp`, `Rendering/GridItemStandCommand.cpp::GetDescription()` | OSS equivalent: `CommandPhysical::populateCorner()` + `GridItemText` items in `MenuGrid.cpp`. Our arch uses a free-standing overlay + `GetDescription()` per `GridItem`. Content now matches OSS: help text, syntax, slider range (no-cmd-name case), ListSelect value help text. Skipped: `is_click_to_apply`, toggle correlation `getExplanation()`, permission labels, Lua ownership — infra not yet ported. |
 | ❌ | AR notification popups above player/NPC heads | — | `CommandArNotifications.hpp/cpp` |
 | ❌ | `CommandBirender` (DX vs native renderer toggle for ESP) | — | `CommandBirender.hpp/cpp`, `AbstractRenderer.hpp/cpp` |
-| ❌ | Expanded info overlay (wanted, RP, money, session fields) | — | `CommandListInfoOverlay.hpp/cpp` |
+| 🔶 | Expanded info overlay (wanted, RP, money, session fields) | `Commands/Extra/CommandListInfoOverlay.hpp/cpp`, `Rendering/Overlay.hpp/cpp` | `CommandListInfoOverlay.hpp/cpp` — 17 of ~30 fields ported; OSS-only fields (wanted, RP, money, vehicle speed unit, session type/id/region) require infra not yet ported |
 | ❌ | Toaster / `GridToaster` (decoupled toast interface) | — | `Toaster.hpp/cpp`, `GridToaster.hpp/cpp` |
 | ❌ | `FmBanner` / `CommandFmBanner2Notify` (GTA banner interception) | — | `FmBanner.hpp/cpp`, `CommandFmBanner2Notify.hpp` |
 | ❌ | `TutorialGrid` (first-launch interactive key-teaching wizard) | — | `TutorialGrid.hpp/cpp`, `Tutorial.hpp/cpp` |
@@ -167,5 +167,5 @@ Track which Stand GUI systems are ported, partial, or still needed for 1:1 parit
 
 | System | Reason |
 |--------|--------|
-| `BackgroundBlur.hpp/cpp` | DX11 render-target capture + multi-pass box blur. DX12 equivalent needs a UAV/SRV resolve pass on the swap-chain back buffer — separate rewrite required. |
+| ~~`BackgroundBlur.hpp/cpp`~~ | Ported as DX12 — see BackgroundBlur entry above. |
 | `AbstractRendererNative.hpp/cpp` | GTA native draw path (`drawLine`, `drawRect` via scaleform). Only useful if mixing GTA-native and DX draws; pure DX12 path is preferable. |

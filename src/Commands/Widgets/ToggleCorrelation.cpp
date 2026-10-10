@@ -58,4 +58,21 @@ namespace Stand
 		const char* cond = (type < _NUM_TOGGLE_CORRELATIONS) ? kConditionNames[type] : "";
 		return std::string(invert ? "Off" : "On").append(" while ").append(cond);
 	}
+
+	std::string ToggleCorrelation::getExplanation(std::string_view command_name) const
+	{
+		if (!isActive())
+			return {};
+		static constexpr const char* kConditionNames[] = {
+			"", "Menu Open", "On Foot", "Aiming", "Freeroam", "Chatting", "Session Host"
+		};
+		const char* cond = (type < _NUM_TOGGLE_CORRELATIONS) ? kConditionNames[type] : "";
+		std::string result{command_name};
+		result += " will be ";
+		result += (invert ? "Off" : "On");
+		result += " while ";
+		result += cond;
+		result += '.';
+		return result;
+	}
 }

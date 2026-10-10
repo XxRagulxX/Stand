@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/InputCapture.hpp"
+#include "Rendering/Renderer.hpp"
 
 #include <windows.h>
 
@@ -31,6 +32,8 @@ namespace Stand
 		static void Toggle()
 		{
 			GetInstance().m_IsOpen ^= true;
+			if (GetInstance().m_IsOpen)
+				Renderer::RequestFrame();
 		}
 
 		static bool IsUsingKeyboard()
