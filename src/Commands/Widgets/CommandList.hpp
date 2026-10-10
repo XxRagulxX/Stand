@@ -72,7 +72,8 @@ namespace Stand
 		void resetChildren() noexcept;
 		void processChildrenUpdate();
 		void fixCursorAndOffset(bool no_padding = false);
-		void onActiveListUpdate();
+		virtual void onActiveListUpdate();
+		[[nodiscard]] bool isThisOrSublistActiveInMyTabMenu() const;
 
 		virtual void onBack(ThreadContext thread_context) {}
 

@@ -21,6 +21,13 @@ namespace Stand::Rendering
 		{
 		}
 
+		GridItemText(std::string text, int16_t width, int16_t height, uint8_t priority, Alignment alignment = ALIGN_BOTTOM_LEFT, GridItem* force_alignment_to = nullptr) :
+		    GridItem(GRIDITEM_INDIFFERENT, width, height, priority, alignment, force_alignment_to),
+		    m_Text(std::move(text)),
+		    m_Colour({ 1.0f, 1.0f, 1.0f, 1.0f })
+		{
+		}
+
 		void drawText() override;
 
 	private:

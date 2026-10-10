@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <soup/WeakRef.hpp>
 #include "Core/RecursiveScopedSpinlock.hpp"
 #include "Core/ThreadContext.hpp"
 #include "Game/typedecl.hpp"
@@ -13,6 +14,7 @@
 namespace Stand
 {
     class Command;
+    class CommandIssuable;
     class CommandList;
     class CommandPhysical;
     class CommandToggle;
@@ -86,10 +88,22 @@ namespace Stand
         void updateFocus(ThreadContext thread_context, Direction momentum);
         void updateActiveFocus(ThreadContext thread_context, Direction momentum, Command* prev_focus);
 
+        bool show_syntax = false;
+        bool opened = false;
+        bool user_understands_navigation = false;
+
         void sfxOpenClose(ThreadContext thread_context, bool opened) {}
         void addHotkeyToFocusedCommand() {}
         void changeHotkeyOnFocusedCommand() {}
         void saveTutorialFlags() {}
+        void inputStop() {}
+        void updateTabsIgnoreContextMenu() {}
+        void setProfilesTutorialDone() {}
+
+        [[nodiscard]] bool isInteractionMenuOpen() const noexcept { return false; }
+        [[nodiscard]] static bool parseCommand(std::wstring& command_name, std::wstring& args) { return false; }
+        [[nodiscard]] std::vector<soup::WeakRef<CommandIssuable>> findCommandsWhereCommandNameStartsWithAsWeakrefs(const std::wstring&) const { return {}; }
+        [[nodiscard]] std::vector<soup::WeakRef<CommandIssuable>> findCommandsWhereCommandNameStartsWithAsWeakrefs(const std::string&) const { return {}; }
         [[nodiscard]] std::string getActiveStateNameUtf8() const { return {}; }
         [[nodiscard]] CommandList* getStandTab() const { return nullptr; }
         void loadStateToMemory(auto&) {}

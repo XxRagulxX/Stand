@@ -44,6 +44,20 @@ namespace Stand
 	{
 	}
 
+	bool CommandList::isThisOrSublistActiveInMyTabMenu() const
+	{
+		const CommandList* current = g_gui.getCurrentUiList();
+		while (current != nullptr)
+		{
+			if (current == this)
+				return true;
+			if (current->parent == nullptr || !current->parent->isList())
+				break;
+			current = static_cast<const CommandList*>(current->parent);
+		}
+		return false;
+	}
+
 	void CommandList::open(ThreadContext thread_context)
 	{
 		g_gui.m_active_list.push_back(this);

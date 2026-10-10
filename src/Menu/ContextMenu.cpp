@@ -8,7 +8,7 @@
 #include "Commands/Context/CommandQuickCtx.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
-#include "Menu/Tutorial.hpp"
+#include "Rendering/StandPort/Tutorial.hpp"
 #include "Rendering/Gui.hpp"
 #include "Rendering/GridItemListGrid.hpp"
 #include "Rendering/MenuNavigation.hpp"

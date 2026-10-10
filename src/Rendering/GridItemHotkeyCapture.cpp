@@ -1,6 +1,6 @@
 #include "Rendering/GridItemHotkeyCapture.hpp"
 
-#include "Commands/Widgets/CommandLink.hpp"
+#include "Input/KeyBinding.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
 
@@ -18,7 +18,7 @@ namespace Stand::Rendering
 		// it exists at all.
 		constexpr std::chrono::seconds kCaptureTimeout{5};
 
-		std::string FormatChain(const CommandLink& link)
+		std::string FormatChain(const KeyBinding& link)
 		{
 			std::string text;
 			for (auto key : link.m_Chain)
@@ -31,7 +31,7 @@ namespace Stand::Rendering
 		}
 	}
 
-	GridItemHotkeyCapture::GridItemHotkeyCapture(int16_t width, int16_t height, std::string label, CommandLink* link) :
+	GridItemHotkeyCapture::GridItemHotkeyCapture(int16_t width, int16_t height, std::string label, KeyBinding* link) :
 	    GridItem(GRIDITEM_INDIFFERENT, width, height),
 	    m_Label(std::move(label)),
 	    m_Link(link)

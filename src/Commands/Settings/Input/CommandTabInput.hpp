@@ -2,7 +2,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
-#include "Commands/Widgets/CommandLink.hpp"
+#include "Input/KeyBinding.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 #include <algorithm>
@@ -24,17 +24,17 @@ namespace Stand
 	public:
 		CommandInputPresetList* const presets;
 
-		CommandLink keyOpenClose;
-		CommandLink keyPrevTab;
-		CommandLink keyNextTab;
-		CommandLink keyUp;
-		CommandLink keyDown;
-		CommandLink keyLeft;
-		CommandLink keyRight;
-		CommandLink keyClick;
-		CommandLink keyBack;
-		CommandLink keyContextMenu;
-		CommandLink keyCommandBox;
+		KeyBinding keyOpenClose;
+		KeyBinding keyPrevTab;
+		KeyBinding keyNextTab;
+		KeyBinding keyUp;
+		KeyBinding keyDown;
+		KeyBinding keyLeft;
+		KeyBinding keyRight;
+		KeyBinding keyClick;
+		KeyBinding keyBack;
+		KeyBinding keyContextMenu;
+		KeyBinding keyCommandBox;
 
 		explicit CommandInputScheme(CommandList* const parent)
 			: CommandList(parent, LIT("Keyboard Input Scheme"), CMDNAMES("inputscheme"))
@@ -606,12 +606,12 @@ namespace Stand
 	public:
 		CommandInputScheme* const inputScheme;
 
-		CommandLink ctxSaveState;
-		CommandLink ctxLoadState;
-		CommandLink ctxApplyDefault;
-		CommandLink ctxApplyDefaultChildren;
-		CommandLink ctxSetMin;
-		CommandLink ctxSetMax;
+		KeyBinding ctxSaveState;
+		KeyBinding ctxLoadState;
+		KeyBinding ctxApplyDefault;
+		KeyBinding ctxApplyDefaultChildren;
+		KeyBinding ctxSetMin;
+		KeyBinding ctxSetMax;
 
 		CommandMouseSupportList* const mouseSupport;
 		CommandControllerSupport* const controllerSupport;

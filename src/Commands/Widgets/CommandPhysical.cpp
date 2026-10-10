@@ -194,6 +194,11 @@ namespace Stand
 		return menu_name.getLocalisedUtf8();
 	}
 
+	Label CommandPhysical::getActivationNameImplCombineWithParent(const char* joiner) const
+	{
+		return LIT(std::move(std::string(parent->menu_name.getLocalisedUtf8()).append(joiner).append(menu_name.getLocalisedUtf8())));
+	}
+
 	CommandPhysical* CommandPhysical::getStateCommand()
 	{
 		if (supportsStateOperations())

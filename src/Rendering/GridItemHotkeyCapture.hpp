@@ -6,7 +6,7 @@
 
 namespace Stand
 {
-	struct CommandLink;
+	struct KeyBinding;
 }
 
 namespace Stand::Rendering
@@ -39,7 +39,7 @@ namespace Stand::Rendering
 	class GridItemHotkeyCapture : public GridItem
 	{
 	public:
-		GridItemHotkeyCapture(int16_t width, int16_t height, std::string label, CommandLink* link);
+		GridItemHotkeyCapture(int16_t width, int16_t height, std::string label, KeyBinding* link);
 
 		void draw() override;
 		void drawText() override;
@@ -59,7 +59,7 @@ namespace Stand::Rendering
 		void StopCapturing();
 
 		std::string m_Label;
-		CommandLink* m_Link;
+		KeyBinding* m_Link;
 		bool m_Capturing = false;
 		std::chrono::steady_clock::time_point m_CaptureStart;
 

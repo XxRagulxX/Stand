@@ -90,6 +90,7 @@ namespace Stand
 		void processVisualUpdate() const;
 		void loadState(ClickType type);
 		[[nodiscard]] std::string getActivationName() const;
+		[[nodiscard]] Label getActivationNameImplCombineWithParent(const char* joiner = " ") const;
 
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;

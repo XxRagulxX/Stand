@@ -3,8 +3,10 @@
 #include "Commands/Online/CommandPerm.hpp"
 #include "Commands/Widgets/Command.hpp"
 #include "Commands/Widgets/CommandRegistry.hpp"
+#include "Commands/CommandExtraInfo.hpp"
 #include "Menu/Click.hpp"
 
+#include <string>
 #include <vector>
 
 // Real Stand's CommandIssuable is the chat-command layer: command_names/
@@ -118,5 +120,8 @@ namespace Stand
 		virtual void onCommand(Click& click, std::wstring& args)
 		{
 		}
+
+		[[nodiscard]] std::wstring getCompletionHint() const { return {}; }
+		virtual void getExtraInfo(CommandExtraInfo& info, std::wstring& args) {}
 	};
 }

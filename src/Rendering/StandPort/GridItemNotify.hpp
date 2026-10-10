@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include "Util/StringUtils.hpp"
 
 namespace Stand::Rendering
 {
@@ -21,6 +22,8 @@ namespace Stand::Rendering
 		bool flashing;
 
 		explicit GridItemNotify(std::string&& text, time_t show_until, time_t flash_until, std::function<void()> on_expire);
+		explicit GridItemNotify(const std::wstring& text, time_t show_until, time_t flash_until)
+			: GridItemNotify(StringUtils::utf16_to_utf8(text), show_until, flash_until, nullptr) {}
 		~GridItemNotify();
 
 		void draw() final;

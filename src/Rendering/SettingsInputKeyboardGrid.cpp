@@ -28,7 +28,7 @@ namespace Stand::Rendering
 
 		items_draft.push_back(std::make_unique<GridItemFolder>(Theme::kContentWidth, kItemH, "Presets", &g_PresetsContent));
 
-		auto addBinding = [&](const char* label, CommandLink* link)
+		auto addBinding = [&](const char* label, KeyBinding* link)
 		{
 			items_draft.push_back(std::make_unique<GridItemHotkeyCapture>(Theme::kContentWidth, kItemH, label, link));
 			items_draft.push_back(std::make_unique<GridItemButton>(Theme::kContentWidth, kItemH, "Clear", [link] {

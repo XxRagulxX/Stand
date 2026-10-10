@@ -3,6 +3,8 @@
 #include "Rendering/StandPort/BackgroundBlur.hpp"
 #include "Rendering/StandPort/GridItemType.hpp"
 
+#include <DirectXMath.h>
+#include <SimpleMath.h>
 #include <climits>
 #include <cstdint>
 #include <string>
@@ -233,6 +235,7 @@ namespace Stand::Rendering
 			return {};
 		}
 
+		void drawBackground(const DirectX::SimpleMath::Color& colour);
 		void drawBackgroundBlur();
 
 	public:

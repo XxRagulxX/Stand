@@ -1,5 +1,6 @@
 #pragma once
 #include "Util/Joaat.hpp"
+#include "Commands/Online/CommandName.hpp"
 
 #include <string>
 #include <utility>
@@ -32,6 +33,8 @@ namespace Stand
 	public:
 		std::string literal_str{};
 
+		static const Label sNoLabel;
+
 		Label() noexcept = default;
 
 		Label(const std::string& str, TagLiteral) noexcept :
@@ -51,10 +54,15 @@ namespace Stand
 		{
 		}
 
+		Label(const std::wstring& str, TagLiteral);
+
 		Label(const Label&) noexcept = default;
 		Label(Label&&) noexcept = default;
 		Label& operator=(const Label&) noexcept = default;
 		Label& operator=(Label&&) noexcept = default;
+
+		[[nodiscard]] static Label combineWithSpace(const Label& primary, const Label& secondary);
+		[[nodiscard]] static Label combineWithBrackets(const Label& primary, const Label& secondary);
 
 		void setLiteral(const std::string& str) noexcept
 		{
@@ -109,10 +117,17 @@ namespace Stand
 			return literal_str;
 		}
 
-		[[nodiscard]] std::wstring getLocalisedUtf16() const
-		{
-			return std::wstring(literal_str.begin(), literal_str.end());
-		}
+		[[nodiscard]] std::wstring getLocalisedUtf16() const;
 
+		[[nodiscard]] bool isLiteralString(const std::string& b) const noexcept;
+
+		[[nodiscard]] std::string getLiteralUtf8() const noexcept;
+		[[nodiscard]] std::wstring getLiteralUtf16() const noexcept;
+		[[nodiscard]] std::wstring getEnglishUtf16() const noexcept;
+
+		[[nodiscard]] CommandName getLiteralForCommandName() const noexcept;
+		[[nodiscard]] CommandName getEnglishForCommandName() const noexcept;
+
+		void makeLiteralLocalised() noexcept;
 	};
 }

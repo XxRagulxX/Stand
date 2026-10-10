@@ -2,6 +2,9 @@
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Core/ThreadContext.hpp"
 
+#include <soup/TransientToken.hpp>
+#include <soup/WeakRef.hpp>
+
 #include <cstdint>
 #include <string>
 
@@ -51,6 +54,7 @@ namespace Stand
 	class Command
 	{
 	public:
+		soup::TransientToken transient_token;
 		CommandList* parent;
 		const CommandType type;
 		commandflags_t flags;
@@ -63,6 +67,12 @@ namespace Stand
 		}
 
 		virtual ~Command() = default;
+
+		template <typename T = Command>
+		[[nodiscard]] soup::WeakRef<T> getWeakRef()
+		{
+			return soup::WeakRef<T>(static_cast<T*>(this));
+		}
 		virtual void preDelete() {}
 
 		template<typename T>
