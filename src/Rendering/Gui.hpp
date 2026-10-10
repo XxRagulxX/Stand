@@ -2,15 +2,19 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 #include "Core/RecursiveScopedSpinlock.hpp"
 #include "Core/ThreadContext.hpp"
 #include "Game/typedecl.hpp"
+#include "Rendering/StandPort/Direction.hpp"
 
 namespace Stand
 {
+    class Command;
     class CommandList;
+    class CommandPhysical;
     class CommandToggle;
 
     enum class MouseMode : uint8_t
@@ -57,11 +61,38 @@ namespace Stand
         MouseMode mouse_mode = MouseMode::NONE;
         InputType last_input_type = INPUTTYPE_INDIFFERENT;
         bool hotkeys_disabled = false;
+        bool user_understands_context_menu = false;
 
         std::vector<CommandList*> m_active_list{};
+        size_t m_preOpenNavDepth = 0;
         std::vector<CommandToggle*> commands_with_correlation{};
 
+        struct StarredCommands
+        {
+            std::unordered_map<std::string, std::string> data{};
+            void save() {}
+        } starred_commands;
+
+        struct HotkeysStore
+        {
+            std::unordered_map<std::string, std::vector<int>> data{};
+            void save() {}
+        } hotkeys;
+
         [[nodiscard]] CommandList* getCurrentUiList() const noexcept;
+        [[nodiscard]] Command* getCurrentMenuFocus() const noexcept;
+        [[nodiscard]] CommandPhysical* getCurrentMenuFocusPhysical() const noexcept;
+
+        void updateFocus(ThreadContext thread_context, Direction momentum);
+        void updateActiveFocus(ThreadContext thread_context, Direction momentum, Command* prev_focus);
+
+        void sfxOpenClose(ThreadContext thread_context, bool opened) {}
+        void addHotkeyToFocusedCommand() {}
+        void changeHotkeyOnFocusedCommand() {}
+        void saveTutorialFlags() {}
+        [[nodiscard]] std::string getActiveStateNameUtf8() const { return {}; }
+        [[nodiscard]] CommandList* getStandTab() const { return nullptr; }
+        void loadStateToMemory(auto&) {}
 
         void processToggleCorrelation(ThreadContext thread_context, ToggleCorrelation_t correlation, bool value);
 
@@ -69,6 +100,15 @@ namespace Stand
         {
             return command_rows * command_columns;
         }
+
+        struct ActiveProfile
+        {
+            std::unordered_map<std::string, std::string> data{};
+            [[nodiscard]] bool isInitialised() const noexcept { return true; }
+            void save() {}
+        } active_profile;
+
+        [[nodiscard]] bool isUsingAutosaveState() const noexcept { return false; }
 
         [[nodiscard]] bool isRootStateFull() const noexcept { return true; }
         [[nodiscard]] bool isUnloadPending() const noexcept { return false; }

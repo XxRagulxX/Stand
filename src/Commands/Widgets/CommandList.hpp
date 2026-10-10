@@ -66,5 +66,21 @@ namespace Stand
 		{
 			return std::make_unique<T>(this, std::forward<Args>(args)...);
 		}
+
+		void recursivelyApplyDefaultState();
+
+		void resetChildren() noexcept;
+		void processChildrenUpdate();
+		void fixCursorAndOffset(bool no_padding = false);
+		void onActiveListUpdate();
+
+		virtual void onBack(ThreadContext thread_context) {}
+
+		void open(ThreadContext thread_context);
+		void goBackIfActive(ThreadContext thread_context);
+		[[nodiscard]] bool isCurrentUiList() const noexcept;
+
+		[[nodiscard]] Command* resolveChildByMenuName(const Label& label);
+		[[nodiscard]] Command* recursivelyResolveChildByMenuName(const Label& label);
 	};
 }

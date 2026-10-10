@@ -85,4 +85,10 @@ namespace Stand::Rendering
 		s_Stack = it->second;
 		return true;
 	}
+
+	size_t MenuNavigation::Depth()
+	{
+		std::lock_guard lock(s_Mutex);
+		return s_Stack.size();
+	}
 }

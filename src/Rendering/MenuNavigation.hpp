@@ -67,6 +67,8 @@ namespace Stand::Rendering
 		// stack - not just at the top. Safe to call from any thread.
 		static bool IsDescendantActive(const Grid* g);
 
+		static size_t Depth();
+
 	private:
 		static std::vector<Level> s_Stack;
 		static std::unordered_map<size_t, std::vector<Level>> s_SavedStacks;

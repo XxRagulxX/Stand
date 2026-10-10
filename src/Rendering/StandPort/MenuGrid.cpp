@@ -1,6 +1,6 @@
 #include "Rendering/StandPort/MenuGrid.hpp"
 
-#include "Rendering/CommandContextGrid.hpp"
+#include "Menu/ContextMenu.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Rendering/StandPort/GridItemAddressbar.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
@@ -500,9 +500,13 @@ namespace Stand::Rendering
 								auto* phys = cmd->getPhysical();
 								if (phys)
 								{
-									MenuNavigation::Push(
-										phys->getMenuName().getLocalisedUtf8(),
-										&CommandContextGrid::GetOrCreate(cmd));
+									ContextMenu::open(TC_OTHER);
+									if (ContextMenu::isOpen())
+									{
+										MenuNavigation::Push(
+											ContextMenu::view->menu_name.getLocalisedUtf8(),
+											&GridItemListGrid::GetOrCreate(ContextMenu::view));
+									}
 								}
 							}
 						}

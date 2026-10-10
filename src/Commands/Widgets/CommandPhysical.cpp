@@ -1,8 +1,13 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 
+#include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
+#include "Rendering/Gui.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Menu/Click.hpp"
+
+#include <algorithm>
 
 namespace Stand
 {
@@ -123,5 +128,83 @@ namespace Stand
 	void CommandPhysical::ensureWorkerContext(const Click& click, std::function<void()>&& func)
 	{
 		ensureWorkerContext(click.thread_context, std::move(func));
+	}
+
+	bool CommandPhysical::canHotkeyBeRemoved(const Hotkey hotkey) const noexcept
+	{
+		for (const auto& h : m_DefaultHotkeys)
+			if (h == hotkey) return false;
+		return true;
+	}
+
+	bool CommandPhysical::canCountAsCommandWithHotkeys() const noexcept
+	{
+		return supportsStateOperations();
+	}
+
+	void CommandPhysical::removeHotkey(const Hotkey hotkey)
+	{
+		auto it = std::find(hotkeys.begin(), hotkeys.end(), hotkey);
+		if (it != hotkeys.end())
+			hotkeys.erase(it);
+		updateHotkeysState();
+	}
+
+	void CommandPhysical::updateHotkeysState()
+	{
+		if (hotkeys.empty())
+			CommandHotkeyDispatch::RemoveCommand(this);
+		else
+			CommandHotkeyDispatch::AddCommand(this);
+	}
+
+	void CommandPhysical::removeFromCommandsWithHotkeys()
+	{
+		CommandHotkeyDispatch::RemoveCommand(this);
+	}
+
+	void CommandPhysical::onHotkeysChanged(ClickType type)
+	{
+	}
+
+	void CommandPhysical::processVisualUpdate() const
+	{
+	}
+
+	void CommandPhysical::loadState(ClickType type)
+	{
+		auto it = g_gui.active_profile.data.find(getPathConfig());
+		if (it != g_gui.active_profile.data.end())
+		{
+			Click click(type, TC_SCRIPT_NOYIELD);
+			setState(click, it->second);
+		}
+		else
+		{
+			applyDefaultState();
+		}
+	}
+
+	void CommandPhysical::updateHotkeysInContextMenu()
+	{
+	}
+
+	std::string CommandPhysical::getActivationName() const
+	{
+		return menu_name.getLocalisedUtf8();
+	}
+
+	CommandPhysical* CommandPhysical::getStateCommand()
+	{
+		if (supportsStateOperations())
+			return this;
+		CommandPhysical* node = this->parent;
+		while (node != nullptr)
+		{
+			if (node->supportsStateOperations())
+				return node;
+			node = node->parent;
+		}
+		return nullptr;
 	}
 }

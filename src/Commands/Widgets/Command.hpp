@@ -1,7 +1,9 @@
 #pragma once
 #include "Commands/Widgets/CommandFlags.hpp"
+#include "Core/ThreadContext.hpp"
 
 #include <cstdint>
+#include <string>
 
 namespace Stand
 {
@@ -115,6 +117,16 @@ namespace Stand
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_SLIDER;
 		}
 
+		[[nodiscard]] bool isListNonAction() const noexcept
+		{
+			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_LIST;
+		}
+
+		[[nodiscard]] bool canBeResolved() const noexcept
+		{
+			return type != COMMAND_DIVIDER;
+		}
+
 		[[nodiscard]] bool isConcealed() const noexcept
 		{
 			return (flags & CMDFLAG_CONCEALED) != 0;
@@ -127,6 +139,13 @@ namespace Stand
 		[[nodiscard]] bool isT() const noexcept { return false; }
 
 		[[nodiscard]] bool shouldShowUntrimmedName() const;
+
+		[[nodiscard]] std::string getPathConfig() const;
+		[[nodiscard]] std::string getLocalisedAddress(const std::string& separator = " > ") const;
+		[[nodiscard]] std::wstring getLocalisedAddressW(const std::wstring& separator = L" > ") const;
+		[[nodiscard]] std::wstring getEnglishAddressW(const std::wstring& separator = L" > ") const;
+
+		void openHotkeysList(ThreadContext thread_context);
 
 		virtual void onFocus() {}
 		virtual void onBlur() {}
