@@ -1,6 +1,7 @@
 #pragma once
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Core/ThreadContext.hpp"
+#include "Game/typedecl.hpp"
 
 #include <soup/TransientToken.hpp>
 #include <soup/WeakRef.hpp>
@@ -50,6 +51,8 @@ namespace Stand
 		COMMAND_ACTION_ITEM,
 		COMMAND_LIST_COLOUR,
 		COMMAND_READONLY_NAME,
+		COMMAND_LIST_READONLY,
+		COMMAND_LIST_REFRESHABLE,
 	};
 
 	class Command
@@ -59,6 +62,7 @@ namespace Stand
 		CommandList* parent;
 		const CommandType type;
 		commandflags_t flags;
+		bool job_queued = false;
 
 		explicit Command(CommandType type, CommandList* parent, commandflags_t flags = 0) :
 		    parent(parent),
@@ -75,6 +79,8 @@ namespace Stand
 			return soup::WeakRef<T>(static_cast<T*>(this));
 		}
 		virtual void preDelete() {}
+		void beGone();
+		void beGoneRootWriteLocked();
 
 		template<typename T>
 		[[nodiscard]] T* as() noexcept

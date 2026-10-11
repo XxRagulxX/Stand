@@ -86,4 +86,18 @@ namespace Stand
 	void Command::openHotkeysList(ThreadContext thread_context)
 	{
 	}
+
+	void Command::beGoneRootWriteLocked()
+	{
+		preDelete();
+		auto& siblings = parent->children;
+		siblings.erase(std::remove_if(siblings.begin(), siblings.end(),
+			[this](const std::unique_ptr<Command>& c) { return c.get() == this; }),
+			siblings.end());
+	}
+
+	void Command::beGone()
+	{
+		beGoneRootWriteLocked();
+	}
 }

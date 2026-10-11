@@ -1,5 +1,4 @@
 #pragma once
-#include "Game/typedecl.hpp"
 
 #define CMDFLAG_TEMPORARY (Stand::commandflags_t)0b1
 #define CMDFLAG_SUPPORTS_STATE_OPERATIONS (Stand::commandflags_t)0b10
@@ -30,3 +29,4 @@
 #define CMDFLAGS_TOGGLE_CUSTOM 0
 #define CMDFLAGS_READONLY_VALUE_COPY 0
 #define CMDFLAGS_SEARCH              CMDFLAGS_LIST
+#define CMDFLAG_FEATURELIST_BASIC    (Stand::commandflags_t)0

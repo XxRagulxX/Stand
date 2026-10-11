@@ -36,8 +36,6 @@ namespace Stand
 		cursor_t m_offset = 0;
 		ListIndicatorType indicator_type = LISTINDICATOR_ARROW;
 		int dividers = 0;
-		bool job_queued = false;
-
 		explicit CommandList(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names = {}, Label&& help_text = NOLABEL, commandflags_t flags = CMDFLAGS_LIST, CommandType type = COMMAND_LIST) :
 		    CommandPhysical(type, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags)
 		{

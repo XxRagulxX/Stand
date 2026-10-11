@@ -1,48 +1,29 @@
 #pragma once
-#include "Commands/CommandSliderLegacy.hpp"
 
-#include <string>
-#include <utility>
+#include "Commands/Widgets/CommandList.hpp"
 
-namespace Stand::StandWidgets
+namespace Stand
 {
-	// Ported from real Stand's own CommandSliderNamedValue - a slider
-	// where one specific value (usually its own floor) displays a name
-	// ("Don't Override", real Stand's own Maximum Health/Respawn Delay
-	// both use this) instead of the raw number. CommandSlider has no
-	// display-formatting hook at all (GridItemCommandSlider::drawText()
-	// hardcodes std::to_string()) - rather than add one there (which
-	// would mean touching an existing file this pass is meant to leave
-	// alone - see this folder's own top-level intent), GetDisplayText()
-	// below is a new public method read by a dedicated new widget,
-	// GridItemCommandSliderNamedValue (Rendering/), instead.
-	class CommandSliderNamedValue : public CommandSliderLegacy
+	template <class CommandSliderType>
+	class CommandSliderNamedValue : public CommandSliderType
 	{
-	public:
-		CommandSliderNamedValue(std::string name,
-		    std::string label,
-		    std::string description,
-		    int min,
-		    int max,
-		    int def_val,
-		    int namedValue,
-		    std::string nameForValue) :
-		    CommandSliderLegacy(std::move(name), std::move(label), std::move(description), min, max, def_val),
-		    m_NamedValue(namedValue),
-		    m_NameForValue(std::move(nameForValue))
-		{
-		}
-
-		std::string GetDisplayText()
-		{
-			if (GetState() == m_NamedValue)
-				return m_NameForValue;
-
-			return std::to_string(GetState());
-		}
-
 	private:
-		int m_NamedValue;
-		std::string m_NameForValue;
+		int value_to_name;
+		std::wstring name_for_value;
+
+	public:
+		explicit CommandSliderNamedValue(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int value_to_name, std::wstring&& name_for_value, int min_value, int max_value, int default_value, int step_size = 1)
+			: CommandSliderType(parent, std::move(menu_name), std::move(command_names), std::move(help_text), min_value, max_value, default_value, step_size), value_to_name(value_to_name), name_for_value(name_for_value)
+		{
+		}
+
+		std::wstring formatNumber(int num, bool allow_replacements) const final
+		{
+			if (num == value_to_name && allow_replacements)
+			{
+				return name_for_value;
+			}
+			return CommandSliderType::formatNumber(num, allow_replacements);
+		}
 	};
 }

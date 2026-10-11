@@ -54,7 +54,7 @@ namespace Stand
 		{
 			return cmd->onClick(click);
 		}
-		click.setResponse(LIT(fmt::format(fmt::runtime(Lang::get(cmd->perm == COMMANDPERM_USERONLY ? ATSTRINGHASH("CMDISS") : ATSTRINGHASH("CMDPERM"))), cmd->getActivationName())));
+		click.setResponse(LIT(fmt::format(fmt::runtime(Lang::get(cmd->perm == COMMANDPERM_USERONLY ? "CMDISS" : "CMDPERM")), cmd->getActivationName())));
 		click.respond();
 		click.forgetResponse();
 	}
