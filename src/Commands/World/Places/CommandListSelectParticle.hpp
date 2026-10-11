@@ -12,9 +12,9 @@ namespace Stand
     class CommandListSelectParticle : public CommandListSelect
     {
     public:
-        [[nodiscard]] static std::vector<std::pair<long long, Label>> getOptions(bool include_none = false)
+        [[nodiscard]] static std::vector<CommandListActionItemData> getOptions(bool include_none = false)
         {
-            std::vector<std::pair<long long, Label>> options;
+            std::vector<CommandListActionItemData> options;
             if (include_none)
                 options.emplace_back(0LL, LIT("None"));
             for (const auto& particle : PlaceParticles::particles)

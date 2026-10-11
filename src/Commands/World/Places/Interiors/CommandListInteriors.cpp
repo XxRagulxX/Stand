@@ -15,7 +15,7 @@ namespace
         CommandInteriorCustomisable* const m_interior;
     public:
         InteriorStyleSelect(CommandList* parent, Label&& name, std::vector<CommandName>&& cmd_names,
-                            std::vector<std::pair<long long, Label>>&& options, long long def_val,
+                            std::vector<CommandListActionItemData>&& options, long long def_val,
                             CommandInteriorCustomisable* interior)
             : CommandListSelect(parent, std::move(name), std::move(cmd_names), NOLABEL,
                                 std::move(options), def_val,
@@ -64,7 +64,7 @@ namespace Stand
             auto bunker = list->createChild<CommandInteriorBunker>();
             bunker->style = list->createChild<InteriorStyleSelect>(
                 LIT("Style"), CMDNAMES("bunkerstyle"),
-                std::vector<std::pair<long long, Label>>{{0, LIT("1")}, {1, LIT("2")}, {2, LIT("3")}},
+                std::vector<CommandListActionItemData>{{0, LIT("1")}, {1, LIT("2")}, {2, LIT("3")}},
                 1,
                 bunker
             );
@@ -85,7 +85,7 @@ namespace Stand
             auto vehware = list->createChild<CommandInteriorVehware>();
             vehware->style = list->createChild<InteriorStyleSelect>(
                 LIT("Style"), CMDNAMES("vehwarestyle"),
-                std::vector<std::pair<long long, Label>>{
+                std::vector<CommandListActionItemData>{
                     {2, LIT("Branded")},
                     {1, LIT("Urban")},
                     {0, LIT("Basic (Colours 1)")},

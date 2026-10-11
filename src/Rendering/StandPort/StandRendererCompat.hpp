@@ -8,7 +8,6 @@
 #include <soup/SharedPtr.hpp>
 
 #include "Game/gta_fwddecl.hpp"
-#include "Game/typedecl.hpp"
 #include "Game/vector.hpp"
 #include "Rendering/StandPort/Alignment.hpp"
 #include "Rendering/StandPort/Direction.hpp"
@@ -19,7 +18,10 @@ namespace Stand
     struct StandRendererCompat
     {
         Direction tabs_pos = LEFT;
+        Rendering::Alignment tabs_alignment = Rendering::ALIGN_TOP_LEFT;
         int16_t tabs_width = 112;
+        bool drawTextDebugRects = false;
+        int header_speed = 32;
 
         DirectX::SimpleMath::Color focusRectColour    { 1.0f, 0.0f, 1.0f, 1.0f };
         DirectX::SimpleMath::Color bgRectColour       { 0.0f, 0.0f, 0.0f, 0.3019f };

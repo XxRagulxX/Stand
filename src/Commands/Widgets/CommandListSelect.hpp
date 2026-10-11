@@ -1,5 +1,6 @@
 #pragma once
 #include "Commands/Widgets/CommandPhysical.hpp"
+#include "Commands/Widgets/CommandListActionItemData.hpp"
 
 #include <optional>
 #include <utility>
@@ -10,17 +11,18 @@ namespace Stand
     class CommandListSelect : public CommandPhysical
     {
     public:
-        std::vector<std::pair<long long, Label>> options;
+        std::vector<CommandListActionItemData> options;
         long long value;
         long long default_value;
 
-        explicit CommandListSelect(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, std::vector<std::pair<long long, Label>>&& options, long long default_value, commandflags_t flags = CMDFLAGS_LIST_SELECT, CommandPerm perm = COMMANDPERM_USERONLY) :
+        explicit CommandListSelect(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, std::vector<CommandListActionItemData>&& options, long long default_value, commandflags_t flags = CMDFLAGS_LIST_SELECT, CommandPerm perm = COMMANDPERM_USERONLY) :
             CommandPhysical(COMMAND_LIST_SELECT, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags, perm),
             options(std::move(options)),
             value(default_value),
             default_value(default_value)
         {
         }
+
 
         bool onLeft(Click& click, bool holding) override;
         bool onRight(Click& click, bool holding) override;

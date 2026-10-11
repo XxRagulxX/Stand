@@ -7,10 +7,10 @@ namespace Stand
 {
     std::optional<Label> CommandListSelect::getLabelForValue(long long v) const
     {
-        for (const auto& [val, lbl] : options)
+        for (const auto& opt : options)
         {
-            if (val == v)
-                return lbl;
+            if (opt.value == v)
+                return opt.menu_name;
         }
         return std::nullopt;
     }
@@ -45,9 +45,9 @@ namespace Stand
     bool CommandListSelect::onLeft(Click& click, bool holding)
     {
         std::optional<long long> prev;
-        for (const auto& [val, lbl] : options)
+        for (const auto& opt : options)
         {
-            if (val == value)
+            if (opt.value == value)
             {
                 if (prev.has_value())
                 {
@@ -57,11 +57,11 @@ namespace Stand
                 {
                     if (holding)
                         return false;
-                    updateValue(click, options.back().first);
+                    updateValue(click, options.back().value);
                 }
                 return true;
             }
-            prev = val;
+            prev = opt.value;
         }
         return true;
     }
@@ -69,21 +69,21 @@ namespace Stand
     bool CommandListSelect::onRight(Click& click, bool holding)
     {
         bool next = false;
-        for (const auto& [val, lbl] : options)
+        for (const auto& opt : options)
         {
             if (next)
             {
-                updateValue(click, val);
+                updateValue(click, opt.value);
                 return true;
             }
-            if (val == value)
+            if (opt.value == value)
                 next = true;
         }
         if (next)
         {
             if (holding)
                 return false;
-            updateValue(click, options.front().first);
+            updateValue(click, options.front().value);
         }
         return true;
     }
@@ -92,9 +92,9 @@ namespace Stand
     {
         if (this->value == new_val)
             return;
-        for (const auto& [val, lbl] : options)
+        for (const auto& opt : options)
         {
-            if (val == new_val)
+            if (opt.value == new_val)
             {
                 const long long prev = this->value;
                 this->value = new_val;
@@ -126,11 +126,11 @@ namespace Stand
             applyDefaultState();
             return;
         }
-        for (const auto& [val, lbl] : options)
+        for (const auto& opt : options)
         {
-            if (state == lbl.getEnglishUtf8())
+            if (state == opt.menu_name.getEnglishUtf8())
             {
-                setValue(click, val);
+                setValue(click, opt.value);
                 return;
             }
         }

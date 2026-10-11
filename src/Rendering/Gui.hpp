@@ -92,6 +92,11 @@ namespace Stand
         bool opened = false;
         bool user_understands_navigation = false;
 
+        bool show_cursor_pos = false;
+        int cursor_padding = 2;
+        bool cursor_pos_includes_dividers = false;
+        int unlock_recover_state = 0;
+
         void sfxOpenClose(ThreadContext thread_context, bool opened) {}
         void addHotkeyToFocusedCommand() {}
         void changeHotkeyOnFocusedCommand() {}
@@ -127,6 +132,8 @@ namespace Stand
         [[nodiscard]] bool isRootStateFull() const noexcept { return true; }
         [[nodiscard]] bool isUnloadPending() const noexcept { return false; }
         [[nodiscard]] bool canUpdateThemeSetting() const noexcept { return true; }
+        [[nodiscard]] bool canUpdateThemeSettingWithDefaultDependency() const noexcept { return true; }
+        void updateTabs(ThreadContext) { updateTabsIgnoreContextMenu(); }
         [[nodiscard]] bool isRootUpdatePendingOrInProgress() const noexcept { return false; }
         [[nodiscard]] bool isInBadBoyTimeout() const noexcept { return false; }
         [[nodiscard]] bool isAwaitingSetHotkeyInput() const noexcept { return false; }

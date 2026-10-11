@@ -256,9 +256,9 @@ namespace Stand
 
         class AtmoWeather : public CommandListSelect
         {
-            static std::vector<std::pair<long long, Label>> buildOptions()
+            static std::vector<CommandListActionItemData> buildOptions()
             {
-                std::vector<std::pair<long long, Label>> opts;
+                std::vector<CommandListActionItemData> opts;
                 opts.emplace_back(-1LL, LIT("Don't Override"));
                 for (int i = 0; i < 17; ++i)
                     opts.emplace_back((long long)i, Label(kWeatherLabels[i], Label::TagLiteral{}));
@@ -297,9 +297,9 @@ namespace Stand
 
         class AtmoClouds : public CommandListSelect
         {
-            static std::vector<std::pair<long long, Label>> buildOptions()
+            static std::vector<CommandListActionItemData> buildOptions()
             {
-                std::vector<std::pair<long long, Label>> opts;
+                std::vector<CommandListActionItemData> opts;
                 opts.emplace_back(0LL, LIT("Don't Manipulate"));
                 for (int i = 1; i < 21; ++i)
                     opts.emplace_back((long long)i, Label(kCloudHats[i], Label::TagLiteral{}));

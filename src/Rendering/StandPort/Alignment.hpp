@@ -18,3 +18,17 @@ namespace Stand::Rendering
 		ALIGN_BOTTOM_RIGHT = 0b1010,
 	};
 }
+
+namespace Stand
+{
+	using Rendering::Alignment;
+	using Rendering::ALIGN_TOP_LEFT;
+	using Rendering::ALIGN_TOP_CENTRE;
+	using Rendering::ALIGN_TOP_RIGHT;
+	using Rendering::ALIGN_CENTRE_LEFT;
+	using Rendering::ALIGN_CENTRE;
+	using Rendering::ALIGN_CENTRE_RIGHT;
+	using Rendering::ALIGN_BOTTOM_LEFT;
+	using Rendering::ALIGN_BOTTOM_CENTRE;
+	using Rendering::ALIGN_BOTTOM_RIGHT;
+}
