@@ -44,6 +44,8 @@ namespace Stand
         explicit NotifyGrid();
 
         void update() { invalidate(); }
+        void updatePositions() { invalidate(); }
+        template<typename F> void updateSetting(F&& func) { func(); invalidate(); }
 
         void onTick();
         void setOriginNextToMap();
