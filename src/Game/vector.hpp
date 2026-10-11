@@ -172,6 +172,8 @@ namespace Stand
 		v3 operator-(const v3& o) const { return {x - o.x, y - o.y, z - o.z}; }
 		v3 operator*(float s) const { return {x * s, y * s, z * s}; }
 
+		[[nodiscard]] float heading() const noexcept { return (z < 0.0f) ? (z + 360.0f) : z; }
+
 		[[nodiscard]] rage::Vector2 getScreenPos() const { return {}; }
 	};
 }

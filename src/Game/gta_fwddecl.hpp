@@ -15,12 +15,27 @@ namespace rage
 
 	struct Vector3
 	{
-		float x, y, z;
+		float x, y, z, w;
 	};
+	static_assert(sizeof(Vector3) == 0x10);
 
 	class fwExtensionList;
+	class fwExtension;
 	struct phArchetypeDamp;
+
+	class netObject;
+	class netObjectMgrBase;
 }
+
+class CBaseModelInfo;
+class CPhysical;
+class CObject;
+class CPed;
+class CVehicle;
+class CPlayerInfo;
+class CPedHeadBlendData;
+
+using compactplayer_t = uint8_t;
 
 struct CCustomShaderEffectBaseType;
 struct CVehicleModelInfoData;
