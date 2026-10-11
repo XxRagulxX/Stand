@@ -126,6 +126,7 @@ namespace Stand
 
         [[nodiscard]] bool isRootStateFull() const noexcept { return true; }
         [[nodiscard]] bool isUnloadPending() const noexcept { return false; }
+        [[nodiscard]] bool canUpdateThemeSetting() const noexcept { return true; }
         [[nodiscard]] bool isRootUpdatePendingOrInProgress() const noexcept { return false; }
         [[nodiscard]] bool isInBadBoyTimeout() const noexcept { return false; }
         [[nodiscard]] bool isAwaitingSetHotkeyInput() const noexcept { return false; }

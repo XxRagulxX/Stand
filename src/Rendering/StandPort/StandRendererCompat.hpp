@@ -23,8 +23,10 @@ namespace Stand
 
         DirectX::SimpleMath::Color focusRectColour    { 1.0f, 0.0f, 1.0f, 1.0f };
         DirectX::SimpleMath::Color bgRectColour       { 0.0f, 0.0f, 0.0f, 0.3019f };
-        DirectX::SimpleMath::Color focusTextColour    { 1.0f, 1.0f, 1.0f, 1.0f };
-        DirectX::SimpleMath::Color bgTextColour       { 1.0f, 1.0f, 1.0f, 1.0f };
+        DirectX::SimpleMath::Color focusTextColour      { 1.0f, 1.0f, 1.0f, 1.0f };
+        DirectX::SimpleMath::Color focusRightTextColour { 1.0f, 1.0f, 1.0f, 1.0f };
+        DirectX::SimpleMath::Color focusSpriteColour    { 1.0f, 1.0f, 1.0f, 1.0f };
+        DirectX::SimpleMath::Color bgTextColour         { 1.0f, 1.0f, 1.0f, 1.0f };
         DirectX::SimpleMath::Color notifyBorderColour { 1.0f, 0.0f, 1.0f, 1.0f };
         DirectX::SimpleMath::Color notifyFlashColour  { 0.6196f, 0.0f, 0.6196f, 1.0f };
         DirectX::SimpleMath::Color notifyBgColour     { 0.0f, 0.0f, 0.0f, 0.3019f };
