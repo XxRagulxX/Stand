@@ -100,4 +100,32 @@ namespace Stand
 	{
 		beGoneRootWriteLocked();
 	}
+
+	CommandList* Command::resolveParent(const CommandType type)
+	{
+		CommandList* list = isT<CommandList>() ? as<CommandList>() : parent;
+		while (list->type != type)
+		{
+			list = list->parent;
+			if (list == nullptr)
+			{
+				break;
+			}
+		}
+		return list;
+	}
+
+	const CommandList* Command::resolveParent(const CommandType type) const
+	{
+		const CommandList* list = isT<CommandList>() ? as<CommandList>() : parent;
+		while (list->type != type)
+		{
+			list = list->parent;
+			if (list == nullptr)
+			{
+				break;
+			}
+		}
+		return list;
+	}
 }

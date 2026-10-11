@@ -82,6 +82,9 @@ namespace Stand
 		void beGone();
 		void beGoneRootWriteLocked();
 
+		[[nodiscard]] CommandList* resolveParent(CommandType type);
+		[[nodiscard]] const CommandList* resolveParent(CommandType type) const;
+
 		template<typename T>
 		[[nodiscard]] T* as() noexcept
 		{

@@ -130,6 +130,11 @@ namespace Stand
 		[[nodiscard]] virtual bool hasCommandsWhereCommandNameStartsWith(const CommandName& command_name_prefix) const noexcept;
 
 		void resetChildren() noexcept;
+		void dispatchPreDeleteForAllChildren() const;
+		void resetChildrenWithPreDelete();
+		void updateWebState() {}
+		void updateWebStateNoCheck() {}
+		void updateWebStateImpl() const {}
 		void processChildrenUpdate();
 		void fixCursorAndOffset(bool no_padding = false);
 		virtual void onActiveListUpdate();
@@ -146,6 +151,11 @@ namespace Stand
 
 		[[nodiscard]] Command* resolveChildByMenuName(const Label& label);
 		[[nodiscard]] Command* recursivelyResolveChildByMenuName(const Label& label);
+		[[nodiscard]] CommandPhysical* resolveChildByMenuNameLiteral(const std::string& target) const;
+
+		void redirectOpen(Click& click, const CommandPhysical* cmd);
+		void redirectOpen(ThreadContext tc, const CommandPhysical* cmd);
+		void redirectOpen(const CommandPhysical* cmd);
 	};
 
 	template<>

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "Core/DetourHook.hpp"
@@ -58,6 +60,14 @@ namespace Stand
 		static bool Init();
 		static void Destroy();
 
+		bool reveal_labels = false;
+		std::unordered_map<uint32_t, std::string> label_replacements = {};
+		bool owo_labels = false;
+
+		[[nodiscard]] static bool doesTextLabelExist(uint32_t hash);
+		[[nodiscard]] static const char* getLabelText(uint32_t hash);
+		[[nodiscard]] static std::string getLabelTextSafe(uint32_t hash);
+
 		// Public hook lookup.
 		static DetourHook* GetHook(std::string_view name);
 
@@ -75,11 +85,14 @@ namespace Stand
 		void BatchDisable(const std::vector<DetourHook*>& hooks);
 		void BatchRemove(const std::vector<DetourHook*>& hooks);
 
-	private:
+	public:
 		static Hooking& GetInstance()
 		{
 			static Hooking instance;
 			return instance;
 		}
 	};
+
 }
+
+#define g_hooking (::Stand::Hooking::GetInstance())

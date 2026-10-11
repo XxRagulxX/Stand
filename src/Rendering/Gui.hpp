@@ -103,6 +103,7 @@ namespace Stand
         void saveTutorialFlags() {}
         void inputStop() {}
         void updateTabsIgnoreContextMenu() {}
+        void on_command_state_change() {}
         void setProfilesTutorialDone() {}
 
         [[nodiscard]] bool isInteractionMenuOpen() const noexcept { return false; }

@@ -1,6 +1,5 @@
 #include "Core/Hooking.hpp"
 
-#include <array>
 #include <stdexcept>
 #include <string>
 #include <MinHook.h>
@@ -310,5 +309,25 @@ namespace Stand
 	DetourHook* Hooking::GetHook(std::string_view name)
 	{
 		return GetInstance().FindHook(name);
+	}
+
+	bool Hooking::doesTextLabelExist(uint32_t hash)
+	{
+		return getLabelText(hash) != nullptr;
+	}
+
+	const char* Hooking::getLabelText(uint32_t hash)
+	{
+		return nullptr;
+	}
+
+	std::string Hooking::getLabelTextSafe(uint32_t hash)
+	{
+		const char* str = getLabelText(hash);
+		if (str == nullptr)
+		{
+			return "NULL";
+		}
+		return str;
 	}
 }

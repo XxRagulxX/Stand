@@ -153,4 +153,50 @@ namespace Stand
 		recursiveForEachNonListChild(func);
 		g_gui.root_mtx.unlockRead();
 	}
+
+	void CommandList::dispatchPreDeleteForAllChildren() const
+	{
+		for (const auto& child : children)
+		{
+			child->preDelete();
+		}
+	}
+
+	void CommandList::resetChildrenWithPreDelete()
+	{
+		dispatchPreDeleteForAllChildren();
+		resetChildren();
+	}
+
+	CommandPhysical* CommandList::resolveChildByMenuNameLiteral(const std::string& target) const
+	{
+		for (const auto& _command : this->children)
+		{
+			if (!_command->isT<CommandPhysical>())
+			{
+				continue;
+			}
+			auto command = _command->as<CommandPhysical>();
+			if (command->menu_name.isLiteralString(target) && command->canBeResolved())
+			{
+				return command;
+			}
+		}
+		return nullptr;
+	}
+
+	void CommandList::redirectOpen(Click& click, const CommandPhysical* cmd)
+	{
+		redirectOpen(click.thread_context, cmd);
+	}
+
+	void CommandList::redirectOpen(ThreadContext tc, const CommandPhysical* cmd)
+	{
+		open(tc);
+	}
+
+	void CommandList::redirectOpen(const CommandPhysical* cmd)
+	{
+		open(TC_OTHER);
+	}
 }
