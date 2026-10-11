@@ -54,6 +54,12 @@ namespace Stand::Rendering
 		bool leftbound_textures_nontoggles = false;
 		std::wstring untrimmed_menu_name{};
 
+		bool addressbar_width_affected_by_columns = true;
+		bool addressbar_width_affected_by_scrollbar = true;
+
+		template<typename F>
+		void updateSetting(F&& func) { func(); }
+
 		MenuGrid();
 		~MenuGrid() override;
 

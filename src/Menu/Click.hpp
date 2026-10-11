@@ -1,20 +1,15 @@
 #pragma once
+#include "Commands/Online/CommandPerm.hpp"
 #include "Core/ThreadContext.hpp"
 #include "Menu/ClickType.hpp"
 #include "Util/Label.hpp"
 
 #include <functional>
+#include <string>
 
-// Real Stand's Click also carries a chat-command/web-command issuer
-// (compactplayer_t issued_by/issued_for, AbstractPlayer, edition/licensing
-// checks, command-box + chat-permission plumbing) - none of which this
-// project has or is building (no chat-command parser, no web bridge, no
-// commercial editions). Kept only what a Self-tab-style toggle/slider
-// command actually needs: click type, thread context, and a response/
-// sound-feedback pair. If a later ported command needs something dropped
-// here, that's the point to add it back for real, not stub it.
 namespace Stand
 {
+	class CommandPhysical;
 	enum ClickResponseType : uint8_t
 	{
 		RESPONSE_CUSTOM,
@@ -81,5 +76,10 @@ namespace Stand
 		[[nodiscard]] Label getResponse();
 		void forgetResponse() noexcept;
 		void respond();
+
+		[[nodiscard]] bool isWeb() const noexcept { return false; }
+		void stopInputIfAllowed() const noexcept {}
+		[[nodiscard]] CommandPerm getEffectivePermissions() const { return COMMANDPERM_USERONLY; }
+		[[nodiscard]] CommandPhysical* getCommandPhysicalFromArg(const std::wstring&) const { return nullptr; }
 	};
 }

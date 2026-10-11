@@ -123,5 +123,10 @@ namespace Stand
 
 		[[nodiscard]] std::wstring getCompletionHint() const { return {}; }
 		virtual void getExtraInfo(CommandExtraInfo& info, std::wstring& args) {}
+
+		[[nodiscard]] bool isAuthorised(CommandPerm) const noexcept { return true; }
 	};
+
+	template<>
+	[[nodiscard]] inline bool Command::isT<CommandIssuable>() const noexcept { return isIssuable(); }
 }

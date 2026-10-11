@@ -59,6 +59,9 @@ namespace Stand
         [[nodiscard]] DirectX::SimpleMath::Vector2 CP2C(float, float) const noexcept { return {}; }
         void drawTextC(float, float, std::wstring&&, Rendering::Alignment, float, const DirectX::SimpleMath::Color&, soup::SharedPtr<DirectX::SpriteFont>, bool) noexcept {}
         void drawUnscaled3dTextThisTickH(const v3&, std::wstring&&, float, DirectX::SimpleMath::Color&) noexcept {}
+
+        const wchar_t* address_separator = L" > ";
+        bool address_current_list_only = false;
     };
 
     inline StandRendererCompat g_renderer{};

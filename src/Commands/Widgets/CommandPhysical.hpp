@@ -3,8 +3,10 @@
 #include "Commands/Widgets/CommandIssuable.hpp"
 #include "Commands/Widgets/CommandStateSerializer.hpp"
 #include "Menu/Hotkey.hpp"
+#include "Rendering/StandPort/Direction.hpp"
 #include "Util/Label.hpp"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -95,6 +97,10 @@ namespace Stand
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
 
+		virtual void preDetach() {}
+		virtual void onFocus(ThreadContext, Direction) {}
+		virtual void onBlur(ThreadContext, Direction) {}
+
 		virtual void onClick(Click& click)
 		{
 		}
@@ -149,7 +155,35 @@ namespace Stand
 
 		virtual void fillVirtualItems(std::vector<std::unique_ptr<Rendering::GridItem>>&, Rendering::Grid*) {}
 
+		[[nodiscard]] bool hasHotkey(const Hotkey hotkey) const noexcept
+		{
+			for (const auto& h : hotkeys)
+			{
+				if (h == hotkey)
+					return true;
+			}
+			return false;
+		}
+
+		void modifyHotkeys(bool add, const Hotkey hotkey, ClickType)
+		{
+			if (add)
+			{
+				if (!hasHotkey(hotkey))
+					hotkeys.push_back(hotkey);
+			}
+			else
+			{
+				hotkeys.erase(std::remove(hotkeys.begin(), hotkeys.end(), hotkey), hotkeys.end());
+			}
+		}
+
+		void focusInParent(ThreadContext) {}
+
 	private:
 		void queueWorkerJob(std::function<void()>&& func);
 	};
+
+	template<>
+	[[nodiscard]] inline bool Command::isT<CommandPhysical>() const noexcept { return isPhysical(); }
 }

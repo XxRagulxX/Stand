@@ -27,6 +27,7 @@ namespace Stand
 
         [[nodiscard]] Label getCurrentValueMenuName() const;
         [[nodiscard]] Label getCurrentValueHelpText() const;
+        [[nodiscard]] CommandPhysical* getCurrentValueCommand() const { return nullptr; }
 
         void setValue(Click& click, long long value);
 

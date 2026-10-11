@@ -6,6 +6,8 @@
 #include "Rendering/MenuNavigation.hpp"
 #include "Util/Label.hpp"
 
+#include <functional>
+
 namespace Stand
 {
 	void CommandList::recursivelyApplyDefaultState()
@@ -105,5 +107,50 @@ namespace Stand
 			}
 		}
 		return nullptr;
+	}
+
+	int8_t CommandList::checkCommandNameMatch(const CommandName& prefix, const CommandName& name)
+	{
+		if (prefix == name)
+			return NMT_HIT;
+		if (name.size() > prefix.size() && name.compare(0, prefix.size(), prefix) == 0)
+			return NMT_GRAZED;
+		if (prefix.size() > name.size() && prefix.compare(0, name.size(), name) == 0)
+			return NMT_OVERSHOT;
+		return NMT_MISSED;
+	}
+
+	bool CommandList::hasCommandsWhereCommandNameStartsWith(const CommandName&) const noexcept
+	{
+		return true;
+	}
+
+	bool CommandList::isThisOrSublist(const CommandList* list) const
+	{
+		while (list != nullptr)
+		{
+			if (list == this)
+				return true;
+			list = list->parent;
+		}
+		return false;
+	}
+
+	void CommandList::recursiveForEachNonListChild(const std::function<void(Command*)>& func) const
+	{
+		for (const auto& child : children)
+		{
+			if (child->isList())
+				child->as<CommandList>()->recursiveForEachNonListChild(func);
+			else
+				func(child.get());
+		}
+	}
+
+	void CommandList::recursiveForEachNonListChildRootReadLocked(const std::function<void(Command*)>& func) const
+	{
+		g_gui.root_mtx.lockRead();
+		recursiveForEachNonListChild(func);
+		g_gui.root_mtx.unlockRead();
 	}
 }

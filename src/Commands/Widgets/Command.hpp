@@ -28,6 +28,7 @@ namespace Stand
 		COMMAND_ACTION = COMMAND_FIRST_PHYSICAL,
 
 		COMMAND_LIST = COMMAND_FLAG_LIST,
+		COMMAND_LIST_NAMESHARE,
 
 		COMMAND_LIST_ACTION = COMMAND_FLAG_LIST_ACTION,
 		COMMAND_LIST_SELECT,
@@ -110,6 +111,11 @@ namespace Stand
 		[[nodiscard]] bool isListAction() const noexcept
 		{
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_LIST_ACTION;
+		}
+
+		[[nodiscard]] bool isListNameshare() const noexcept
+		{
+			return type == COMMAND_LIST_NAMESHARE || isListAction();
 		}
 
 		[[nodiscard]] bool isListSelect() const noexcept
