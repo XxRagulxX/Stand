@@ -1,0 +1,56 @@
+#include "Commands/Widgets/CommandTab.hpp"
+
+#include "Rendering/StandPort/StandRendererCompat.hpp"
+
+namespace Stand
+{
+	CommandTab::CommandTab(CommandList* const root, const TabType tab_type, Label&& menu_name, std::vector<CommandName>&& command_names)
+		: CommandList(root, std::move(menu_name), std::move(command_names), NOLABEL, CMDFLAGS_LIST | (tab_type == TAB_NONE ? CMDFLAG_TEMPORARY : 0)), tab_type(tab_type)
+	{
+		updateRenderName();
+	}
+
+	void CommandTab::preDetach()
+	{
+		CommandPhysical::preDetach();
+
+		if (!g_renderer.areTabsEnabled())
+		{
+		}
+	}
+
+	std::string CommandTab::getCommandSyntax() const
+	{
+		if (!this->command_names.empty())
+		{
+			return std::string("t ").append(this->command_names.at(0).substr(1));
+		}
+		return {};
+	}
+
+	void CommandTab::updateRenderName()
+	{
+		std::wstring render_name{};
+		if ((render_mode & TABRENDER_LICON) && tab_type != TAB_NONE)
+		{
+			render_name.push_back(L'' + tab_type);
+		}
+		if (render_mode & TABRENDER_NAME)
+		{
+			if (!render_name.empty())
+			{
+				render_name.push_back(L' ');
+			}
+			render_name.append(menu_name.getLocalisedUtf16());
+		}
+		if ((render_mode & TABRENDER_RICON) && tab_type != TAB_NONE)
+		{
+			if (!render_name.empty())
+			{
+				render_name.push_back(L' ');
+			}
+			render_name.push_back(L'' + tab_type);
+		}
+		this->render_name = std::move(render_name);
+	}
+}

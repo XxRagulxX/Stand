@@ -156,6 +156,12 @@ namespace Stand
 		void redirectOpen(Click& click, const CommandPhysical* cmd);
 		void redirectOpen(ThreadContext tc, const CommandPhysical* cmd);
 		void redirectOpen(const CommandPhysical* cmd);
+
+		void evacuateCursor();
+		void evacuateCursorTab(uint8_t tab_idx);
+		void evacuateCursorWeb();
+		void evacuateCursorStandalone();
+		void evacuateCursorStandaloneNocheck();
 	};
 
 	template<>

@@ -97,6 +97,9 @@ namespace Stand
 		[[nodiscard]] virtual std::string getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
 
+		void onCommandInvalidArg(Click& click, const std::wstring& arg) const;
+		void onCommandReopen(Click& click, const std::wstring& args) const;
+
 		virtual void preDetach() {}
 		virtual void onFocus(ThreadContext, Direction) {}
 		virtual void onBlur(ThreadContext, Direction) {}

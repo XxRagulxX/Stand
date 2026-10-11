@@ -7,6 +7,9 @@
 #include <vector>
 
 #include "Core/DetourHook.hpp"
+#include "Util/hashtype.hpp"
+
+class CBaseModelInfo;
 
 namespace Stand
 {
@@ -67,6 +70,8 @@ namespace Stand
 		[[nodiscard]] static bool doesTextLabelExist(uint32_t hash);
 		[[nodiscard]] static const char* getLabelText(uint32_t hash);
 		[[nodiscard]] static std::string getLabelTextSafe(uint32_t hash);
+
+		[[nodiscard]] CBaseModelInfo* getModelInfo(hash_t hash) const noexcept;
 
 		// Public hook lookup.
 		static DetourHook* GetHook(std::string_view name);

@@ -6,6 +6,8 @@
 #include "Rendering/Gui.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Menu/Click.hpp"
+#include "Util/lang.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
 
 #include <algorithm>
 
@@ -211,5 +213,19 @@ namespace Stand
 			node = node->parent;
 		}
 		return nullptr;
+	}
+
+	void CommandPhysical::onCommandInvalidArg(Click& click, const std::wstring& arg) const
+	{
+		click.setResponse(LIT(LANG_GET("INVARG")));
+		onCommandReopen(click, arg);
+	}
+
+	void CommandPhysical::onCommandReopen(Click& click, const std::wstring& args) const
+	{
+		std::wstring prefill{ cmdNameToUtf16(command_names.at(0)) };
+		prefill.push_back(L' ');
+		prefill.append(args);
+		click.showCommandBoxIfPossible(std::move(prefill));
 	}
 }

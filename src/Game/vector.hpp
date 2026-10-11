@@ -155,6 +155,7 @@ namespace rage
 	using fvector2 = vector2;
 	using fvector3 = vector3;
 	using fvector4 = vector4;
+	using Vec4V = vector4;
 };
 #pragma pack(pop)
 

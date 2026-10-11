@@ -9,6 +9,7 @@
 #include "Core/RecursiveScopedSpinlock.hpp"
 #include "Core/ThreadContext.hpp"
 #include "Game/typedecl.hpp"
+#include "Menu/Hotkey.hpp"
 #include "Rendering/StandPort/Direction.hpp"
 
 namespace Stand
@@ -77,7 +78,7 @@ namespace Stand
 
         struct HotkeysStore
         {
-            std::unordered_map<std::string, std::vector<int>> data{};
+            std::unordered_map<std::string, std::vector<Hotkey>> data{};
             void save() {}
         } hotkeys;
 
@@ -88,6 +89,8 @@ namespace Stand
         void updateFocus(ThreadContext thread_context, Direction momentum);
         void updateActiveFocus(ThreadContext thread_context, Direction momentum, Command* prev_focus);
 
+        bool show_slider_behaviour = true;
+        void onTabRenderModeUpdate() {}
         bool show_syntax = false;
         bool opened = false;
         bool user_understands_navigation = false;

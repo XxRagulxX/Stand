@@ -199,4 +199,10 @@ namespace Stand
 	{
 		open(TC_OTHER);
 	}
+
+	void CommandList::evacuateCursor() {}
+	void CommandList::evacuateCursorTab(uint8_t tab_idx) {}
+	void CommandList::evacuateCursorWeb() {}
+	void CommandList::evacuateCursorStandalone() {}
+	void CommandList::evacuateCursorStandaloneNocheck() {}
 }

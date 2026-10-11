@@ -17,4 +17,11 @@ namespace rage
 	{
 		float x, y, z;
 	};
+
+	class fwExtensionList;
+	struct phArchetypeDamp;
 }
+
+struct CCustomShaderEffectBaseType;
+struct CVehicleModelInfoData;
+struct CVehicleLayoutInfo;

@@ -19,7 +19,7 @@ namespace Stand
 		}
 	};
 
-	class CommandInputScheme : public CommandList
+	class CommandTabInputScheme : public CommandList
 	{
 	public:
 		CommandInputPresetList* const presets;
@@ -36,7 +36,7 @@ namespace Stand
 		KeyBinding keyContextMenu;
 		KeyBinding keyCommandBox;
 
-		explicit CommandInputScheme(CommandList* const parent)
+		explicit CommandTabInputScheme(CommandList* const parent)
 			: CommandList(parent, LIT("Keyboard Input Scheme"), CMDNAMES("inputscheme"))
 			, presets(createChild<CommandInputPresetList>())
 		{
@@ -604,7 +604,7 @@ namespace Stand
 	class CommandTabInput : public CommandList
 	{
 	public:
-		CommandInputScheme* const inputScheme;
+		CommandTabInputScheme* const inputScheme;
 
 		KeyBinding ctxSaveState;
 		KeyBinding ctxLoadState;
@@ -628,7 +628,7 @@ namespace Stand
 
 		explicit CommandTabInput()
 			: CommandList(nullptr, LIT("Input"))
-			, inputScheme(createChild<CommandInputScheme>())
+			, inputScheme(createChild<CommandTabInputScheme>())
 			, mouseSupport(createChild<CommandMouseSupportList>())
 			, controllerSupport(createChild<CommandControllerSupport>())
 			, controllerScheme(createChild<CommandControllerScheme>())

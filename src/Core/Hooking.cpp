@@ -6,6 +6,7 @@
 #include "Core/DetourHook.hpp"
 #include "Core/Hooks.hpp"
 #include "Core/Pointers.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
 namespace Stand
 {
@@ -329,5 +330,10 @@ namespace Stand
 			return "NULL";
 		}
 		return str;
+	}
+
+	CBaseModelInfo* Hooking::getModelInfo(hash_t hash) const noexcept
+	{
+		return nullptr;
 	}
 }
