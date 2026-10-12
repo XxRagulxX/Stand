@@ -226,8 +226,8 @@ namespace Stand
 		CommandNumberSliders* const numberSliders;
 		CommandSelectableDividers* const selectableDividers;
 
-		explicit CommandTabCommands()
-			: CommandList(nullptr, LIT("Commands"))
+		explicit CommandTabCommands(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Commands"))
 			, text(createChild<CommandCommandText>())
 			, colourCommands(createChild<CommandColourCommands>())
 			, prefillCommandBox(createChild<CommandPrefillCommandBox>())

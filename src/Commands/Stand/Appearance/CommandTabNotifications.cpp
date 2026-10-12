@@ -1,4 +1,5 @@
 #include "Commands/Stand/Appearance/CommandTabNotifications.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 #include "Rendering/NotifySettings.hpp"
 #include "Rendering/Notifications.hpp"
@@ -28,7 +29,6 @@ namespace Stand::Features
 {
 	Stand::CommandTabNotifications& GetCommandTabNotifications()
 	{
-		static Stand::CommandTabNotifications instance{};
-		return instance;
+		return *GetCommandTabStand().notifications;
 	}
 }

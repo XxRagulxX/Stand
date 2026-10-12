@@ -18,7 +18,7 @@ namespace Stand
 
 		void onClick(Click& click) override;
 
-		[[nodiscard]] std::string getCommandSyntax() const override;
+		[[nodiscard]] std::wstring getCommandSyntax() const override;
 
 		virtual void onChange(Click& click);
 		virtual void onEnable(Click& click);

@@ -8,13 +8,9 @@
 
 namespace Stand
 {
-	std::string CommandInputRid::getCommandSyntax() const
+	std::wstring CommandInputRid::getCommandSyntax() const
 	{
-		std::string syntax{ LANG_GET("CMD") };
-		syntax.append(": ");
-		syntax.append(command_names.at(0));
-		syntax.append(" [rid]");
-		return syntax;
+		return std::move(LANG_GET_W("CMD").append(L": ").append(cmdNameToUtf16(command_names.at(0))).append(L" [rid]"));
 	}
 
 	void CommandInputRid::onCommand(Click& click, std::wstring& args)

@@ -18,7 +18,7 @@ namespace Stand
 		explicit CommandInput(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, std::string&& default_value, std::string&& value, const commandflags_t flags = CMDFLAGS_ACTION_VALUE, const CommandPerm perm = COMMANDPERM_USERONLY);
 		explicit CommandInput(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text = NOLABEL, std::string&& default_value = {}, const commandflags_t flags = CMDFLAGS_ACTION_VALUE, const CommandPerm perm = COMMANDPERM_USERONLY);
 
-		std::string getCommandSyntax() const override;
+		std::wstring getCommandSyntax() const override;
 
 		void onClick(Click& click) override;
 		void onCommand(Click& click, std::wstring& args) override;

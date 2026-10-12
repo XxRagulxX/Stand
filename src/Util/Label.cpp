@@ -1,6 +1,7 @@
 #include "Util/Label.hpp"
 
 #include "Util/StringUtils.hpp"
+#include "Util/lang.hpp"
 
 namespace Stand
 {
@@ -28,9 +29,35 @@ namespace Stand
 		return LIT(std::move(str));
 	}
 
+	std::string Label::getLocalisedUtf8() const noexcept
+	{
+		if (loc_hash != 0)
+			return Lang::get(loc_hash);
+		return literal_str;
+	}
+
+	std::string Label::getEnglishUtf8() const noexcept
+	{
+		if (loc_hash != 0)
+			return Lang::getEn(loc_hash);
+		return literal_str;
+	}
+
+	std::string Label::getWebString() const noexcept
+	{
+		return getLocalisedUtf8();
+	}
+
 	std::wstring Label::getLocalisedUtf16() const
 	{
+		if (loc_hash != 0)
+			return Lang::getW(loc_hash);
 		return StringUtils::utf8_to_utf16(literal_str);
+	}
+
+	std::wstring Label::getEnglishUtf16() const noexcept
+	{
+		return StringUtils::utf8_to_utf16(getEnglishUtf8());
 	}
 
 	bool Label::isLiteralString(const std::string& b) const noexcept
@@ -44,11 +71,6 @@ namespace Stand
 	}
 
 	std::wstring Label::getLiteralUtf16() const noexcept
-	{
-		return StringUtils::utf8_to_utf16(literal_str);
-	}
-
-	std::wstring Label::getEnglishUtf16() const noexcept
 	{
 		return StringUtils::utf8_to_utf16(literal_str);
 	}

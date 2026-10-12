@@ -19,6 +19,6 @@ namespace Stand
 
 		[[nodiscard]] CommandListNameshare* getListNameshare() const;
 
-		std::string getCommandSyntax() const final;
+		std::wstring getCommandSyntax() const final;
 	};
 }

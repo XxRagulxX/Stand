@@ -55,8 +55,8 @@ namespace Stand
 		CommandNotifySampleMedium* const medium;
 		CommandNotifySampleLarge* const large_;
 
-		explicit CommandTabNotifySample()
-			: CommandList(nullptr, LIT("Sample Notifications"))
+		explicit CommandTabNotifySample(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Sample Notifications"))
 			, small_(createChild<CommandNotifySampleSmall>())
 			, medium(createChild<CommandNotifySampleMedium>())
 			, large_(createChild<CommandNotifySampleLarge>())

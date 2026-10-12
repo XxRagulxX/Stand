@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <string>
+#include "Util/StringUtils.hpp"
 
 namespace Stand::Rendering
 {
@@ -82,7 +83,7 @@ namespace Stand::Rendering
 		{
 			if (!result.empty())
 				result += '\n';
-			result += syntax;
+			result += StringUtils::utf16_to_utf8(syntax);
 		}
 
 		if (m_Command->isSlider() && Theme::kShowSliderBehaviour)

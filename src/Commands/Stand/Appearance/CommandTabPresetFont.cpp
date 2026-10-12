@@ -1,10 +1,10 @@
 #include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 namespace Stand::Features
 {
 	Stand::CommandTabPresetFont& GetCommandTabPresetFont()
 	{
-		static Stand::CommandTabPresetFont instance{};
-		return instance;
+		return *GetCommandTabStand().presetFont;
 	}
 }

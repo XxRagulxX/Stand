@@ -22,12 +22,12 @@ namespace Stand
 		}
 	}
 
-	std::string CommandPhysical::getCommandSyntax() const
+	std::wstring CommandPhysical::getCommandSyntax() const
 	{
 		if (command_names.empty())
 			return {};
 
-		return "Command: " + command_names.front();
+		return L"Command: " + cmdNameToUtf16(command_names.front());
 	}
 
 	bool CommandPhysical::canBeUsedByOtherPlayers() const

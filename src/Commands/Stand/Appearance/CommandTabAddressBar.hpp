@@ -233,8 +233,8 @@ namespace Stand
 		CommandCursorPos* const cursorPos;
 		CommandCursorPosIncludesDividers* const cursorPosDividers;
 
-		explicit CommandTabAddressBar()
-			: CommandList(nullptr, LIT("Address Bar"))
+		explicit CommandTabAddressBar(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Address Bar"))
 			, show(createChild<CommandShowAddressbar>())
 			, separator(createChild<CommandAddressSeparator>())
 			, currentListOnly(createChild<CommandAddressCurrentListOnly>())

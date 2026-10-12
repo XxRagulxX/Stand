@@ -1,10 +1,10 @@
 #include "Commands/Stand/Appearance/CommandTabTabs.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 namespace Stand::Features
 {
 	Stand::CommandTabTabs& GetCommandTabTabs()
 	{
-		static Stand::CommandTabTabs instance{};
-		return instance;
+		return *GetCommandTabStand().tabs;
 	}
 }

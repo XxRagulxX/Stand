@@ -130,8 +130,8 @@ namespace Stand
 		CommandPreviewObjDist* const objDist;
 		CommandPreviewVehDist* const vehDist;
 
-		explicit CommandTabEntityPreviews()
-			: CommandList(nullptr, LIT("Entity Previews"))
+		explicit CommandTabEntityPreviews(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Entity Previews"))
 			, disable(createChild<CommandDisableEntityPreviews>())
 			, opaque(createChild<CommandPreviewOpaque>())
 			, rotationSpeed(createChild<CommandPreviewRotationSpeed>())

@@ -126,8 +126,8 @@ namespace Stand
 		CommandMenuY* const y;
 		CommandMenuMouseMove* const mouseMove;
 
-		explicit CommandTabPosition()
-			: CommandList(nullptr, LIT("Position"), CMDNAMES("menupos"))
+		explicit CommandTabPosition(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Position"), CMDNAMES("menupos"))
 			, x(createChild<CommandMenuX>())
 			, y(createChild<CommandMenuY>())
 			, mouseMove(createChild<CommandMenuMouseMove>(x, y))

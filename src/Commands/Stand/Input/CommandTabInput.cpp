@@ -1,10 +1,10 @@
 #include "Commands/Stand/Input/CommandTabInput.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 namespace Stand::Features
 {
 	Stand::CommandTabInput& GetCommandTabInput()
 	{
-		static Stand::CommandTabInput instance{};
-		return instance;
+		return *GetCommandTabStand().input;
 	}
 }

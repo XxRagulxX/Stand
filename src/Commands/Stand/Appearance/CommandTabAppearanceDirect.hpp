@@ -152,8 +152,8 @@ namespace Stand
 		CommandOpenThemeFolder* const openThemeFolder;
 		CommandStreamproof* const streamproof;
 
-		explicit CommandTabAppearanceDirect()
-			: CommandList(nullptr, LIT("Appearance"))
+		explicit CommandTabAppearanceDirect(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Appearance"))
 			, columns(createChild<CommandColumns>())
 			, menuheight(createChild<CommandMenuHeight>())
 			, listwidth(createChild<CommandListWidth>())

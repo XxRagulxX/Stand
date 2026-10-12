@@ -8,7 +8,7 @@ namespace Stand
     public:
         explicit CommandSavePos(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names);
 
-        [[nodiscard]] std::string getCommandSyntax() const override;
+        [[nodiscard]] std::wstring getCommandSyntax() const override;
 
         void onCommand(Click& click, std::wstring& args) override;
 

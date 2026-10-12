@@ -55,8 +55,8 @@ namespace Stand
 		CommandPresetFontNanumGothic* const nanumGothic;
 		CommandPresetFontBeVietnamProLight* const beVietnamProLight;
 
-		explicit CommandTabPresetFont()
-			: CommandList(nullptr, LIT("Preset Fonts"))
+		explicit CommandTabPresetFont(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Preset Fonts"))
 			, yahei(createChild<CommandPresetFontYahei>())
 			, nanumGothic(createChild<CommandPresetFontNanumGothic>())
 			, beVietnamProLight(createChild<CommandPresetFontBeVietnamProLight>())

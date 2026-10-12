@@ -14,13 +14,13 @@ namespace Stand
 	{
 	}
 
-	std::string CommandActionModel::getCommandSyntax() const
+	std::wstring CommandActionModel::getCommandSyntax() const
 	{
-		std::string syntax{ LANG_GET("CMD") };
-		syntax.append(": ");
-		syntax.append(command_names.at(0));
-		syntax.push_back(' ');
-		syntax.append(LANG_GET("ARGMDLNME"));
+		std::wstring syntax{ LANG_GET_W("CMD") };
+		syntax.append(L": ");
+		syntax.append(cmdNameToUtf16(command_names.at(0)));
+		syntax.push_back(L' ');
+		syntax.append(LANG_GET_W("ARGMDLNME"));
 		return syntax;
 	}
 

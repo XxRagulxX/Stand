@@ -1,10 +1,10 @@
 #include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 namespace Stand::Features
 {
 	Stand::CommandTabEntityPreviews& GetCommandTabEntityPreviews()
 	{
-		static Stand::CommandTabEntityPreviews instance{};
-		return instance;
+		return *GetCommandTabStand().entityPreviews;
 	}
 }

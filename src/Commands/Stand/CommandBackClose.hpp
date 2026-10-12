@@ -1,0 +1,21 @@
+#pragma once
+
+#include "Commands/Widgets/CommandToggle.hpp"
+
+#include "Rendering/Gui.hpp"
+
+namespace Stand
+{
+	class CommandBackClose : public CommandToggle
+	{
+	public:
+		explicit CommandBackClose(CommandList* const parent)
+			: CommandToggle(parent, LOC("BKCLS"), CMDNAMES("backclose"), LOC("BKCLS_H"))
+		{
+		}
+
+		void onChange(Click& click) final
+		{
+		}
+	};
+}

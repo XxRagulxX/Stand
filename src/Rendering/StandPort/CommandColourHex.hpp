@@ -1,7 +1,9 @@
 #pragma once
 #include "Rendering/StandPort/CommandAction.hpp"
 #include "Commands/Widgets/CommandIssuable.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 #include "Menu/Click.hpp"
+#include "Util/lang.hpp"
 
 namespace Stand
 {
@@ -13,12 +15,11 @@ namespace Stand
 		{
 		}
 
-		[[nodiscard]] std::string getCommandSyntax() const final
+		[[nodiscard]] std::wstring getCommandSyntax() const final
 		{
-			std::string syntax = "Command: ";
-			if (!parent->command_names.empty())
-				syntax += cmdNameToUtf8(parent->command_names.at(0));
-			syntax += " <value>";
+			std::wstring syntax{ LANG_GET_W("CMD") };
+			syntax.append(L": ").append(cmdNameToUtf16(parent->command_names.at(0))).push_back(L' ');
+			syntax.append(LANG_GET_W("ARGVAL"));
 			return syntax;
 		}
 

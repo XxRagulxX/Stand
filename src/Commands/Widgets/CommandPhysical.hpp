@@ -94,7 +94,7 @@ namespace Stand
 		[[nodiscard]] std::string getActivationName() const;
 		[[nodiscard]] Label getActivationNameImplCombineWithParent(const char* joiner = " ") const;
 
-		[[nodiscard]] virtual std::string getCommandSyntax() const;
+		[[nodiscard]] virtual std::wstring getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
 
 		void onCommandInvalidArg(Click& click, const std::wstring& arg) const;

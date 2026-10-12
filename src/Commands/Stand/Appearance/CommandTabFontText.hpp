@@ -150,10 +150,10 @@ namespace Stand
 		}
 	};
 
-	class CommandSetFont : public CommandPhysical
+	class CommandSetFontFile : public CommandPhysical
 	{
 	public:
-		explicit CommandSetFont(CommandList* const parent)
+		explicit CommandSetFontFile(CommandList* const parent)
 			: CommandPhysical(COMMAND_ACTION, parent, LIT("Set Font"), CMDNAMES("setfont"), NOLABEL)
 		{
 		}
@@ -192,15 +192,15 @@ namespace Stand
 	class CommandTabFontText : public CommandList
 	{
 	public:
-		CommandSetFont* const setFont;
+		CommandSetFontFile* const setFont;
 		CommandReloadFont* const reloadFont;
 		CommandCommandBoxInput* const commandBoxInput;
 		CommandSmallText* const smallText;
 		CommandShowTextBoundingBoxes* const showTextBoundingBoxes;
 
-		explicit CommandTabFontText()
-			: CommandList(nullptr, LIT("Font & Text"))
-			, setFont(createChild<CommandSetFont>())
+		explicit CommandTabFontText(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Font & Text"))
+			, setFont(createChild<CommandSetFontFile>())
 			, reloadFont(createChild<CommandReloadFont>())
 			, commandBoxInput(createChild<CommandCommandBoxInput>())
 			, smallText(createChild<CommandSmallText>())

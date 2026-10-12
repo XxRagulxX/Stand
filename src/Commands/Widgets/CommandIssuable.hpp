@@ -7,6 +7,7 @@
 #include "Menu/Click.hpp"
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 // Real Stand's CommandIssuable is the chat-command layer: command_names/
@@ -89,6 +90,8 @@ namespace Stand
 	class CommandIssuable : public Command
 	{
 	public:
+		static inline std::unordered_set<std::wstring> collapse_command_names = {};
+
 		std::vector<CommandName> command_names;
 		CommandPerm perm;
 

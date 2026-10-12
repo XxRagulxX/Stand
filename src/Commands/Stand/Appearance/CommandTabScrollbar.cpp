@@ -1,10 +1,10 @@
 #include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 namespace Stand::Features
 {
 	Stand::CommandTabScrollbar& GetCommandTabScrollbar()
 	{
-		static Stand::CommandTabScrollbar instance{};
-		return instance;
+		return *GetCommandTabStand().scrollbar;
 	}
 }

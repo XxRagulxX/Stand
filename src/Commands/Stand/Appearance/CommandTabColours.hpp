@@ -323,8 +323,8 @@ namespace Stand
 		CommandMinigameRainbow* const minigameRainbow;
 		CommandCopyPrimaryToMinigame* const copyPrimaryToMinigame;
 
-		explicit CommandTabColours()
-			: CommandList(nullptr, LIT("Colours"))
+		explicit CommandTabColours(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Colours"))
 			, primary(createChild<CommandPrimaryColour>())
 			, focusText(createChild<CommandFocusTextColour>())
 			, focusRightText(createChild<CommandFocusRightTextColour>())

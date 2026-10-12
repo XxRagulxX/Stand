@@ -10,7 +10,7 @@ namespace Stand
 		using CommandInput::CommandInput;
 
 	public:
-		std::string getCommandSyntax() const final;
+		std::wstring getCommandSyntax() const final;
 
 		void onCommand(Click& click, std::wstring& args) final;
 

@@ -35,28 +35,11 @@
 #include "Commands/Self/Weapons/CommandTabWeapons.hpp"
 #include "Commands/Self/Movement/CommandTabSuperFlight.hpp"
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
-#include "Commands/Stand/Appearance/CommandTabAddressBar.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
-#include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
-#include "Commands/Stand/Appearance/CommandTabHeader.hpp"
-#include "Commands/Stand/Appearance/CommandTabBorder.hpp"
-#include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
-#include "Commands/Stand/Appearance/CommandTabFontText.hpp"
-#include "Commands/Stand/Input/CommandTabInput.hpp"
 #include "Commands/Stand/Input/CommandTabInputPresets.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifications.hpp"
 #include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
 #include "Commands/Stand/Appearance/CommandTabNotifyTiming.hpp"
-#include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
-#include "Commands/Stand/Appearance/CommandTabTextures.hpp"
-#include "Commands/Stand/Appearance/CommandTabColours.hpp"
-#include "Commands/Stand/Appearance/CommandTabCommandInfoText.hpp"
-#include "Commands/Stand/Appearance/CommandTabCommands.hpp"
-#include "Commands/Stand/Appearance/CommandTabCursor.hpp"
-#include "Commands/Stand/Appearance/CommandTabPosition.hpp"
-#include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
-#include "Commands/Stand/Appearance/CommandTabTabs.hpp"
 
 namespace Stand
 {
@@ -79,28 +62,11 @@ namespace Stand
 		(void)Features::GetCommandTabSuperFlight();
 		(void)Features::GetCommandTabFloppy();
 		(void)Features::GetCommandTabTransform();
-		(void)Features::GetCommandTabAddressBar();
-		(void)Features::GetCommandTabStand();
-		(void)Features::GetCommandTabAppearanceDirect();
-		(void)Features::GetCommandTabBorder();
-		(void)Features::GetCommandTabEntityPreviews();
-		(void)Features::GetCommandTabFontText();
-		(void)Features::GetCommandTabInput();
-		(void)Features::GetCommandTabTextures();
-		(void)Features::GetCommandTabColours();
-		(void)Features::GetCommandTabCommandInfoText();
-		(void)Features::GetCommandTabCommands();
-		(void)Features::GetCommandTabCursor();
-		(void)Features::GetCommandTabHeader();
-		(void)Features::GetCommandTabPosition();
-		(void)Features::GetCommandTabScrollbar();
-		(void)Features::GetCommandTabTabs();
+		Features::GetCommandTabStand().populate();
 		(void)Features::GetCommandTabInputPresets();
-		(void)Features::GetCommandTabNotifications();
 		(void)Features::GetCommandTabNotifyPosition();
 		(void)Features::GetCommandTabNotifySample();
 		(void)Features::GetCommandTabNotifyTiming();
-		(void)Features::GetCommandTabPresetFont();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;

@@ -66,8 +66,8 @@ namespace Stand
 		CommandLeftTextures* const leftTextures;
 		CommandReloadTextures* const reloadTextures;
 
-		explicit CommandTabTextures()
-			: CommandList(nullptr, LIT("Textures"))
+		explicit CommandTabTextures(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Textures"))
 			, leftTextures(createChild<CommandLeftTextures>())
 			, reloadTextures(createChild<CommandReloadTextures>())
 		{

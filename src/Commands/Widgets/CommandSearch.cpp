@@ -2,6 +2,7 @@
 
 #include "Commands/Widgets/CommandSearchResult.hpp"
 #include "Util/Label.hpp"
+#include "Util/lang.hpp"
 #include "lib/soup/unicode.hpp"
 
 #include <algorithm>
@@ -20,9 +21,12 @@ namespace Stand
         return getActivationNameImplCombineWithParent(": ");
     }
 
-    std::string CommandSearch::getCommandSyntax() const
+    std::wstring CommandSearch::getCommandSyntax() const
     {
-        return std::string("Command: ") + std::string(command_names[0].begin(), command_names[0].end()) + " <query>";
+        std::wstring syntax{ LANG_GET_W("CMD") };
+        syntax.append(L": ").append(cmdNameToUtf16(command_names.at(0))).push_back(L' ');
+        syntax.append(LANG_GET_W("ARGCLU"));
+        return syntax;
     }
 
     void CommandSearch::onClick(Click& click)

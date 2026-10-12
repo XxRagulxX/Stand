@@ -1,4 +1,5 @@
 #include "Commands/Stand/Appearance/CommandTabColours.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 namespace Stand
 {
@@ -70,7 +71,6 @@ namespace Stand::Features
 {
 	Stand::CommandTabColours& GetCommandTabColours()
 	{
-		static Stand::CommandTabColours instance{};
-		return instance;
+		return *GetCommandTabStand().colours;
 	}
 }

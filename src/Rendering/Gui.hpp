@@ -63,6 +63,7 @@ namespace Stand
 
         MouseMode mouse_mode = MouseMode::NONE;
         InputType last_input_type = INPUTTYPE_INDIFFERENT;
+        bool no_extra_clear = false;
         bool hotkeys_disabled = false;
         bool user_understands_context_menu = false;
 

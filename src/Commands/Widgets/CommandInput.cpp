@@ -17,13 +17,11 @@ namespace Stand
 	{
 	}
 
-	std::string CommandInput::getCommandSyntax() const
+	std::wstring CommandInput::getCommandSyntax() const
 	{
-		std::string syntax{ LANG_GET("CMD") };
-		syntax.append(": ");
-		syntax.append(command_names.at(0));
-		syntax.push_back(' ');
-		syntax.append(LANG_GET("ARGVAL"));
+		std::wstring syntax{ LANG_GET_W("CMD") };
+		syntax.append(L": ").append(cmdNameToUtf16(command_names.at(0))).push_back(L' ');
+		syntax.append(LANG_GET_W("ARGVAL"));
 		return syntax;
 	}
 

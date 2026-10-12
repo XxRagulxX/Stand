@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <string>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
 #include <fmt/format.h>
+#pragma clang diagnostic pop
 
 #include "Util/LangData.hpp"
 
@@ -18,15 +21,15 @@ namespace Stand
 
 	struct Lang
 	{
-		inline static lang_t active_id = LANG_EN;
-		inline static const LangData* active_data = nullptr;
+		static lang_t active_id;
+		static const LangData* active_data;
 
-		[[nodiscard]] static std::string get(const char* key) noexcept { return key; }
-		[[nodiscard]] static std::string get(const std::string& key) noexcept { return key; }
-		[[nodiscard]] static std::string get(const hash_t) noexcept { return {}; }
-		[[nodiscard]] static std::wstring getW(const hash_t) noexcept { return {}; }
-		[[nodiscard]] static std::string getEn(const hash_t) noexcept { return {}; }
-		[[nodiscard]] static const LangData* id_to_data(const lang_t) noexcept { return nullptr; }
+		[[nodiscard]] static std::string get(const char* key) noexcept;
+		[[nodiscard]] static std::string get(const std::string& key) noexcept;
+		[[nodiscard]] static std::string get(hash_t key) noexcept;
+		[[nodiscard]] static std::wstring getW(hash_t key) noexcept;
+		[[nodiscard]] static std::string getEn(hash_t key) noexcept;
+		[[nodiscard]] static const LangData* id_to_data(lang_t) noexcept { return nullptr; }
 	};
 }
 

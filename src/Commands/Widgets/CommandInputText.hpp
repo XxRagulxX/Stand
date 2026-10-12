@@ -9,6 +9,6 @@ namespace Stand
 	public:
 		using CommandInput::CommandInput;
 
-		std::string getCommandSyntax() const final;
+		std::wstring getCommandSyntax() const final;
 	};
 }

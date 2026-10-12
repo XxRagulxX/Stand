@@ -93,8 +93,8 @@ namespace Stand
 		CommandColour* const borderColour;
 		CommandCursorBorderRainbow* const borderRainbow;
 
-		explicit CommandTabCursor()
-			: CommandList(nullptr, LIT("Cursor"))
+		explicit CommandTabCursor(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Cursor"))
 			, padding(createChild<CommandCursorPadding>())
 			, borderWidth(createChild<CommandCursorBorderWidth>())
 			, borderRounded(createChild<CommandCursorBorderRounded>())

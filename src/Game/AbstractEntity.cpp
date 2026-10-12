@@ -203,6 +203,20 @@ namespace Stand
 		}
 	}
 
+	bool AbstractEntity::getAllPeds(const std::function<bool(AbstractEntity&&)>& collector)
+	{
+		return true;
+	}
+
+	void AbstractEntity::getAllPeds(std::vector<AbstractEntity>& vec)
+	{
+		getAllPeds([&](AbstractEntity&& ent)
+		{
+			vec.push_back(std::move(ent));
+			return true;
+		});
+	}
+
 	int AbstractEntity::getSeat(AbstractEntity& veh)
 	{
 		if (ensureHandle() && veh.ensureHandle())

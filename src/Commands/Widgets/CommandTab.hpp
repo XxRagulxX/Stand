@@ -32,7 +32,7 @@ namespace Stand
 
 		void preDetach() final;
 
-		std::string getCommandSyntax() const final;
+		std::wstring getCommandSyntax() const final;
 
 		void updateRenderName();
 	};

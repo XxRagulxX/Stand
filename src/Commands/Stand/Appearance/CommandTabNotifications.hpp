@@ -203,8 +203,8 @@ namespace Stand
 		CommandNotifyCopyBg* const copyBg;
 		CommandNotifyFlashNow* const flashNow;
 
-		explicit CommandTabNotifications()
-			: CommandList(nullptr, LIT("Notifications"))
+		explicit CommandTabNotifications(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Notifications"))
 			, type(createChild<CommandNotifyType>())
 			, invertFlow(createChild<CommandNotifyInvertFlow>())
 			, width(createChild<CommandNotifyWidth>())

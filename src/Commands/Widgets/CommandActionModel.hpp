@@ -12,7 +12,7 @@ namespace Stand
 		explicit CommandActionModel(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text = NOLABEL, const commandflags_t flags = 0, const CommandPerm perm = COMMANDPERM_USERONLY);
 
 	public:
-		std::string getCommandSyntax() const final;
+		std::wstring getCommandSyntax() const final;
 
 		void onCommand(Click& click, std::wstring& args) override;
 

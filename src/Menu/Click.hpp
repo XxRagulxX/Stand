@@ -46,12 +46,6 @@ namespace Stand
 		[[nodiscard]] Click derive(ClickType type) const noexcept;
 		[[nodiscard]] Click deriveAuto() const noexcept;
 
-		// Runs func() immediately if already on a script thread, or via
-		// FiberPool::queueJob() otherwise - same shape as real Stand's own
-		// (FiberPool::queueJob is already the same name/signature in this
-		// project). ensureWorkerContext() also goes through FiberPool: this
-		// project has no separate background-Worker thread the way Stand
-		// does, so a script-thread job is the substitute.
 		void ensureYieldableScriptThread(std::function<void()>&& func) const;
 		void ensureScriptThread(std::function<void()>&& func) const;
 		void ensureScriptThread(std::function<void(Click&)>&& func);
@@ -78,6 +72,7 @@ namespace Stand
 		void respond();
 
 		[[nodiscard]] bool isWeb() const noexcept { return false; }
+		inline static bool self_chat_commands_friends_perms = false;
 		void stopInputIfAllowed() const noexcept {}
 		[[nodiscard]] CommandPerm getEffectivePermissions() const { return COMMANDPERM_USERONLY; }
 		[[nodiscard]] CommandPhysical* getCommandPhysicalFromArg(const std::wstring&) const { return nullptr; }

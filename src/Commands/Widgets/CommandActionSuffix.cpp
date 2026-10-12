@@ -2,7 +2,6 @@
 
 #include "Commands/Widgets/CommandListNameshare.hpp"
 #include "Util/lang.hpp"
-#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
@@ -45,7 +44,7 @@ namespace Stand
 		return list->as<CommandListNameshare>();
 	}
 
-	std::string CommandActionSuffix::getCommandSyntax() const
+	std::wstring CommandActionSuffix::getCommandSyntax() const
 	{
 		if (command_suffixes.empty())
 		{
@@ -60,6 +59,6 @@ namespace Stand
 		syntax.append(L": ").append(cmdNameToUtf16(base->command_names.at(0)));
 		syntax.push_back(L' ');
 		syntax.append(cmdNameToUtf16(command_suffixes.at(0)));
-		return StringUtils::utf16_to_utf8(syntax);
+		return syntax;
 	}
 }

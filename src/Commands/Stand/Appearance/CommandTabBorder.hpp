@@ -76,8 +76,8 @@ namespace Stand
 		CommandColour* const colour;
 		CommandBorderRainbow* const rainbow;
 
-		explicit CommandTabBorder()
-			: CommandList(nullptr, LIT("Border"))
+		explicit CommandTabBorder(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Border"))
 			, width(createChild<CommandBorderWidth>())
 			, rounded(createChild<CommandBorderRounded>())
 			, colour(createChild<CommandBorderColour>())

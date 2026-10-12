@@ -1,16 +1,10 @@
 #pragma once
 #include "Commands/Widgets/CommandPhysical.hpp"
+#include "Util/lang.hpp"
 
 #include <string>
 #include <utility>
 
-// Real Stand's CommandSlider also carries a command-box prefill/parse
-// path (openCommandBoxWithPrefill/onCommand), chat-syntax help, and a
-// web-relay state sync (updateState's g_relay.sendLine calls). None of
-// that exists here. onLeft()/onRight()'s actual step math - the
-// default-value snap and min/max wraparound-while-holding behaviour -
-// is ported verbatim, since that's real, load-bearing logic, not display
-// plumbing.
 namespace Stand
 {
 	class CommandSlider : public CommandPhysical
@@ -71,11 +65,14 @@ namespace Stand
 			return std::to_string(min_value) + " to " + std::to_string(max_value);
 		}
 
-		[[nodiscard]] std::string getCommandSyntax() const override
+		[[nodiscard]] std::wstring getCommandSyntax() const override
 		{
 			if (command_names.empty())
 				return {};
-			return "Command: " + command_names.front() + " [" + getRangeString() + "]";
+			std::wstring syntax{ LANG_GET_W("CMD") };
+			const auto range = getRangeString();
+			syntax.append(L": ").append(cmdNameToUtf16(command_names.at(0))).append(L" [").append(range.begin(), range.end()).append(L"]");
+			return syntax;
 		}
 
 		[[nodiscard]] virtual std::vector<std::pair<int, std::string>> getNamedValues() const

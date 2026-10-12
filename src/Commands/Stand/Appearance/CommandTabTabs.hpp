@@ -259,8 +259,8 @@ namespace Stand
 		CommandTabsRightIcon* const rightIcon;
 		CommandTabsIconsTextColour* const iconsTextColour;
 
-		explicit CommandTabTabs()
-			: CommandList(nullptr, LIT("Tabs"))
+		explicit CommandTabTabs(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Tabs"))
 			, visible(createChild<CommandTabsVisible>())
 			, positionMode(createChild<CommandTabsPositionMode>())
 			, width(createChild<CommandTabsWidth>())

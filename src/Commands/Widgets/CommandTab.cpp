@@ -19,11 +19,11 @@ namespace Stand
 		}
 	}
 
-	std::string CommandTab::getCommandSyntax() const
+	std::wstring CommandTab::getCommandSyntax() const
 	{
 		if (!this->command_names.empty())
 		{
-			return std::string("t ").append(this->command_names.at(0).substr(1));
+			return std::wstring(L"t ").append(cmdNameToUtf16(this->command_names.at(0).substr(1)));
 		}
 		return {};
 	}

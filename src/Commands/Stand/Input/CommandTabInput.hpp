@@ -626,8 +626,8 @@ namespace Stand
 		CommandDisableHotkeys* const disableHotkeys;
 		CommandModifierKeyMatching* const modifierKeyMatching;
 
-		explicit CommandTabInput()
-			: CommandList(nullptr, LIT("Input"))
+		explicit CommandTabInput(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Input"))
 			, inputScheme(createChild<CommandTabInputScheme>())
 			, mouseSupport(createChild<CommandMouseSupportList>())
 			, controllerSupport(createChild<CommandControllerSupport>())

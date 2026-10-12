@@ -211,8 +211,8 @@ namespace Stand
 		CommandHeaderBgBlur* const bgBlur;
 		CommandHeaderOpenFolder* const openFolder;
 
-		explicit CommandTabHeader()
-			: CommandList(nullptr, LIT("Header"))
+		explicit CommandTabHeader(CommandList* parent = nullptr)
+			: CommandList(parent, LIT("Header"))
 			, animationSpeed(createChild<CommandHeaderAnimationSpeed>())
 			, bgBlur(createChild<CommandHeaderBgBlur>())
 			, openFolder(createChild<CommandHeaderOpenFolder>())

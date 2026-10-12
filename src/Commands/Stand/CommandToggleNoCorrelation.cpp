@@ -13,12 +13,12 @@ namespace Stand
 		onChange(click);
 	}
 
-	std::string CommandToggleNoCorrelation::getCommandSyntax() const
+	std::wstring CommandToggleNoCorrelation::getCommandSyntax() const
 	{
 		if (command_names.empty())
 			return {};
 
-		return CommandPhysical::getCommandSyntax() + " [on/off]";
+		return CommandPhysical::getCommandSyntax() + L" [on/off]";
 	}
 
 	void CommandToggleNoCorrelation::onChange(Click& click)

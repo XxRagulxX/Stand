@@ -20,7 +20,7 @@ namespace Stand
 
         [[nodiscard]] Label getActivationName() const;
 
-        std::string getCommandSyntax() const override;
+        std::wstring getCommandSyntax() const override;
 
         void onClick(Click& click) override;
 
