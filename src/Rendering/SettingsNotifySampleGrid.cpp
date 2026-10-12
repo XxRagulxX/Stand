@@ -1,6 +1,6 @@
 #include "Rendering/SettingsNotifySampleGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabNotifySample.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

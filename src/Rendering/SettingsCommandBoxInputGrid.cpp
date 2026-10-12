@@ -1,6 +1,6 @@
 #include "Rendering/SettingsCommandBoxInputGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabFontText.hpp"
+#include "Commands/Stand/Appearance/CommandTabFontText.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

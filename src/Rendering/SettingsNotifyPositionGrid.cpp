@@ -1,6 +1,6 @@
 #include "Rendering/SettingsNotifyPositionGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabNotifyPosition.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

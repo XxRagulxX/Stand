@@ -1,6 +1,6 @@
 #include "Rendering/SettingsInputControllerSchemeGrid.hpp"
 
-#include "Commands/Settings/Input/CommandTabInput.hpp"
+#include "Commands/Stand/Input/CommandTabInput.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

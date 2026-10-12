@@ -1,6 +1,6 @@
 #include "Rendering/SettingsCursorGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabCursor.hpp"
+#include "Commands/Stand/Appearance/CommandTabCursor.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"

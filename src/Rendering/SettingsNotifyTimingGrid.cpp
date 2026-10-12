@@ -1,6 +1,6 @@
 #include "Rendering/SettingsNotifyTimingGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabNotifyTiming.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifyTiming.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/SettingsNotifySampleGrid.hpp"

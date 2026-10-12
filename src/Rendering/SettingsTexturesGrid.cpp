@@ -1,6 +1,6 @@
 #include "Rendering/SettingsTexturesGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabTextures.hpp"
+#include "Commands/Stand/Appearance/CommandTabTextures.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

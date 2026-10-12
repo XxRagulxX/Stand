@@ -27,7 +27,7 @@
 #include "Scripting/Script.hpp"
 #include "Scripting/Natives.hpp"
 #include "Core/ExceptionHandler.hpp"
-#include "Commands/Settings/Game/CommandTabESP.hpp"
+#include "Commands/Stand/Game/CommandTabESP.hpp"
 #include "Commands/Self/Movement/CommandTabFloppy.hpp"
 #include "Commands/Self/Movement/CommandTabLevitation.hpp"
 #include "Commands/Self/Movement/CommandTabMovement.hpp"
@@ -35,28 +35,28 @@
 #include "Commands/Self/Weapons/CommandTabWeapons.hpp"
 #include "Commands/Self/Movement/CommandTabSuperFlight.hpp"
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
-#include "Commands/Settings/Appearance/CommandTabAddressBar.hpp"
-#include "Commands/Settings/CommandTabSettings.hpp"
-#include "Commands/Settings/Appearance/CommandTabAppearanceDirect.hpp"
-#include "Commands/Settings/Appearance/CommandTabHeader.hpp"
-#include "Commands/Settings/Appearance/CommandTabBorder.hpp"
-#include "Commands/Settings/Appearance/CommandTabEntityPreviews.hpp"
-#include "Commands/Settings/Appearance/CommandTabFontText.hpp"
-#include "Commands/Settings/Input/CommandTabInput.hpp"
-#include "Commands/Settings/Input/CommandTabInputPresets.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifications.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifyPosition.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifySample.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifyTiming.hpp"
-#include "Commands/Settings/Appearance/CommandTabPresetFont.hpp"
-#include "Commands/Settings/Appearance/CommandTabTextures.hpp"
-#include "Commands/Settings/Appearance/CommandTabColours.hpp"
-#include "Commands/Settings/Appearance/CommandTabCommandInfoText.hpp"
-#include "Commands/Settings/Appearance/CommandTabCommands.hpp"
-#include "Commands/Settings/Appearance/CommandTabCursor.hpp"
-#include "Commands/Settings/Appearance/CommandTabPosition.hpp"
-#include "Commands/Settings/Appearance/CommandTabScrollbar.hpp"
-#include "Commands/Settings/Appearance/CommandTabTabs.hpp"
+#include "Commands/Stand/Appearance/CommandTabAddressBar.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
+#include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
+#include "Commands/Stand/Appearance/CommandTabHeader.hpp"
+#include "Commands/Stand/Appearance/CommandTabBorder.hpp"
+#include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
+#include "Commands/Stand/Appearance/CommandTabFontText.hpp"
+#include "Commands/Stand/Input/CommandTabInput.hpp"
+#include "Commands/Stand/Input/CommandTabInputPresets.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifications.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifyTiming.hpp"
+#include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
+#include "Commands/Stand/Appearance/CommandTabTextures.hpp"
+#include "Commands/Stand/Appearance/CommandTabColours.hpp"
+#include "Commands/Stand/Appearance/CommandTabCommandInfoText.hpp"
+#include "Commands/Stand/Appearance/CommandTabCommands.hpp"
+#include "Commands/Stand/Appearance/CommandTabCursor.hpp"
+#include "Commands/Stand/Appearance/CommandTabPosition.hpp"
+#include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
+#include "Commands/Stand/Appearance/CommandTabTabs.hpp"
 
 namespace Stand
 {
@@ -80,7 +80,7 @@ namespace Stand
 		(void)Features::GetCommandTabFloppy();
 		(void)Features::GetCommandTabTransform();
 		(void)Features::GetCommandTabAddressBar();
-		(void)Features::GetCommandTabSettings();
+		(void)Features::GetCommandTabStand();
 		(void)Features::GetCommandTabAppearanceDirect();
 		(void)Features::GetCommandTabBorder();
 		(void)Features::GetCommandTabEntityPreviews();

@@ -1,6 +1,6 @@
 #include "Rendering/SettingsNotificationsGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabNotifications.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifications.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"

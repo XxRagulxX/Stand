@@ -1,6 +1,6 @@
 #include "Rendering/SettingsColoursGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabColours.hpp"
+#include "Commands/Stand/Appearance/CommandTabColours.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"

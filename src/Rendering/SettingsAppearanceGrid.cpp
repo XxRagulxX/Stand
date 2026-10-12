@@ -1,6 +1,6 @@
 #include "Rendering/SettingsAppearanceGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabAppearanceDirect.hpp"
+#include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/SettingsAddressBarGrid.hpp"

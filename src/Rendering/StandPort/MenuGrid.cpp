@@ -14,7 +14,7 @@
 #include "Commands/Self/CommandTabSelf.hpp"
 #include "Commands/Vehicle/CommandTabVehicle.hpp"
 #include "Commands/World/CommandTabWorld.hpp"
-#include "Commands/Settings/CommandTabSettings.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
 
 #include <utility>
 #include <windows.h>
@@ -33,13 +33,13 @@ namespace Stand::Rendering
 			    "Self",
 			    "Vehicle",
 			    "World",
-			    "Settings"};
+			    "Stand"};
 		}
 
 		constexpr size_t kSelfIndex = 0;
 		constexpr size_t kVehicleIndex = 1;
 		constexpr size_t kWorldIndex = 2;
-		constexpr size_t kSettingsIndex = 3;
+		constexpr size_t kStandIndex = 3;
 
 		[[nodiscard]] int16_t ContentVisibleHeight(const Grid* content)
 		{
@@ -114,7 +114,7 @@ namespace Stand::Rendering
 		    {kSelfIndex,     "Self",     &GridItemListGrid::GetOrCreate(&Features::GetCommandTabSelf())},
 		    {kVehicleIndex,  "Vehicle",  &GridItemListGrid::GetOrCreate(&Features::GetCommandTabVehicle())},
 		    {kWorldIndex,    "World",    &GridItemListGrid::GetOrCreate(&Features::GetCommandTabWorld())},
-		    {kSettingsIndex, "Settings", &GridItemListGrid::GetOrCreate(&Features::GetCommandTabSettings())},
+		    {kStandIndex, "Stand", &GridItemListGrid::GetOrCreate(&Features::GetCommandTabStand())},
 		};
 	}
 

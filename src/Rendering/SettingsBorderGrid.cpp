@@ -1,6 +1,6 @@
 #include "Rendering/SettingsBorderGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabBorder.hpp"
+#include "Commands/Stand/Appearance/CommandTabBorder.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"

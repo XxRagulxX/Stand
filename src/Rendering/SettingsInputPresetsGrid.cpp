@@ -1,6 +1,6 @@
 #include "Rendering/SettingsInputPresetsGrid.hpp"
 
-#include "Commands/Settings/Input/CommandTabInputPresets.hpp"
+#include "Commands/Stand/Input/CommandTabInputPresets.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

@@ -1,6 +1,6 @@
 #include "Rendering/SettingsGameGrid.hpp"
 
-#include "Commands/Settings/Game/CommandTabESP.hpp"
+#include "Commands/Stand/Game/CommandTabESP.hpp"
 #include "Rendering/GridItemCommandColourCustom.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemStandCommand.hpp"

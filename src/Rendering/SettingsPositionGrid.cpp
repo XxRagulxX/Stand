@@ -1,7 +1,7 @@
 #include "Rendering/SettingsPositionGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabPosition.hpp"
-#include "Commands/Settings/Appearance/CommandTabTabs.hpp"
+#include "Commands/Stand/Appearance/CommandTabPosition.hpp"
+#include "Commands/Stand/Appearance/CommandTabTabs.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

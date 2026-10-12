@@ -1,6 +1,6 @@
 #include "Rendering/SettingsAddressBarTextGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabAddressBar.hpp"
+#include "Commands/Stand/Appearance/CommandTabAddressBar.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

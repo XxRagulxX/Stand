@@ -1,6 +1,6 @@
 #include "Rendering/SettingsScrollbarGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabScrollbar.hpp"
+#include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"
 

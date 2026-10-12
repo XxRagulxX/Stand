@@ -1,6 +1,6 @@
 #include "Rendering/SettingsHeaderGrid.hpp"
 
-#include "Commands/Settings/Appearance/CommandTabHeader.hpp"
+#include "Commands/Stand/Appearance/CommandTabHeader.hpp"
 #include "Rendering/GridItemCommandListSelect.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/Theme.hpp"

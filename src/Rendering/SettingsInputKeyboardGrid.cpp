@@ -1,6 +1,6 @@
 #include "Rendering/SettingsInputKeyboardGrid.hpp"
 
-#include "Commands/Settings/Input/CommandTabInput.hpp"
+#include "Commands/Stand/Input/CommandTabInput.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/GridItemHotkeyCapture.hpp"
