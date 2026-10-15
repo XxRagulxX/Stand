@@ -43,6 +43,11 @@
 #include "Commands/Widgets/CommandSearchMenu.hpp"
 #include "Commands/Widgets/CommandReadonlyLink.hpp"
 #include "Commands/Widgets/CommandReadonlyName.hpp"
+#include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandTogglePointer.hpp"
+#include "Rendering/StandPort/CommandSliderPointer.hpp"
+#include "Rendering/StandPort/Commandbox.hpp"
+#include "Rendering/StandPort/CommandboxGrid.hpp"
 #include "Menu/Click.hpp"
 #include "Core/ThreadContext.hpp"
 
@@ -96,8 +101,10 @@ namespace Stand
 			{
 				auto autoProceed = warnings->createChild<CommandList>(LOC("WARNAUTOPROC"));
 				autoProceed->createChild<CommandAutoProceedWarningsForCommands>();
+				autoProceed->createChild<CommandTogglePointer>(&Click::auto_proceed_warnings_for_hotkeys, LOC("HOTKEY"), CMDNAMES("hotkeysskipwarnings", "hotkeyskipswarnings", "hotkeyskipwarnings"));
 			}
 			warnings->createChild<CommandForceWarningRead>();
+			warnings->createChild<CommandTogglePointer>(&g_gui.skip_accepted_warnings, LOC("WARNSKIPPROC"), CMDNAMES("skiprepeatwarnings"));
 		}
 
 		{
@@ -113,6 +120,14 @@ namespace Stand
 		settings->createChild<CommandButtonInstructions>();
 		settings->createChild<CommandAutoOpen>();
 		settings->createChild<CommandDiscord>();
+		settings->createChild<CommandTogglePointer>(&g_gui.sound, LOC("SFX"), CMDNAMES("sfx"));
+		settings->createChild<CommandTogglePointer>(&g_gui.menu_navigation_reminders, LOC("MNUNVRMD"));
+
+		{
+			auto command_box = settings->createChild<CommandList>(LOC("B_CB"));
+			command_box->createChild<CommandSliderPointer<CommandSlider, size_t>>(LOC("MAXSHWMCHCMD"), CMDNAMES("cbmaxshownmatching"), NOLABEL, &g_commandbox_grid.max_shown_matching_commands, 1, 1000);
+			command_box->createChild<CommandTogglePointer>(&g_commandbox.keep_content_on_close, LOC("KPDRFCLS"), CMDNAMES("cbkeepdraft"));
+		}
 
 		this->createChild<CommandProfiles>();
 		this->createChild<CommandScripts>();
@@ -168,6 +183,7 @@ namespace Stand
 		this->createChild<CommandSearchMenu>();
 		this->createChild<CommandDefault>();
 		this->createChild<CommandListNonDefaults>();
+		this->createChild<CommandReadonlyLink>(LOC("HELP"), "https://stand.sh/help/");
 		this->createChild<CommandListStarred>();
 		this->createChild<CommandWeb>();
 		this->createChild<CommandConsole>();

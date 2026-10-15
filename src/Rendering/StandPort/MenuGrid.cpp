@@ -412,7 +412,9 @@ namespace Stand::Rendering
 
 		if (auto* content = MenuNavigation::Current())
 		{
-			if (auto* item = content->findItemAt(hx, hy))
+			if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+				listGrid->handleMouseHover(hx, hy);
+			else if (auto* item = content->findItemAt(hx, hy))
 				MenuFocus::SetFocusedItem(content, item);
 		}
 	}
@@ -430,7 +432,11 @@ namespace Stand::Rendering
 
 		if (auto* content = MenuNavigation::Current())
 		{
-			if (auto* item = content->findItemAt(hx, hy))
+			if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+			{
+				listGrid->handleMouseClick(hx, hy, ctrl, shift, doubleClick);
+			}
+			else if (auto* item = content->findItemAt(hx, hy))
 			{
 				MenuFocus::SetFocusedItem(content, item);
 				item->onClickEx(hx, hy, ctrl, shift, doubleClick);

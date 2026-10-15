@@ -17,7 +17,7 @@ namespace Stand::Rendering
 	{
 	public:
 		bool number_sliders_rightbound_values = true;
-		bool left_space_before_all_commands = true;
+		bool left_space_before_all_commands = false;
 		bool leftbound_textures_toggles = false;
 		bool leftbound_textures_nontoggles = false;
 		std::wstring untrimmed_menu_name{};

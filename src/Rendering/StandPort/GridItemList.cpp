@@ -58,8 +58,8 @@ namespace Stand
         if (g_MenuGrid.number_sliders_rightbound_values)
         {
             rightbound_text = std::move(value);
-            auto ms = GridRenderer::MeasureText("", Theme::kTextScale);
-            rightbound_text_width = (float)rightbound_text.size() * ms.x * 0.6f;
+            std::string utf8(rightbound_text.begin(), rightbound_text.end());
+            rightbound_text_width = GridRenderer::MeasureText(utf8.c_str(), Theme::kTextScale).x;
             command_name_max_width -= rightbound_text_width;
         }
         else
@@ -426,22 +426,24 @@ namespace Stand
             if (cmd.focused)
             {
                 focus_y = fy + (float)(kContentItemHeight * draw_cursor);
-                GridRenderer::DrawRect(fx, fy, fw, (float)(kContentItemHeight * draw_cursor), kPanelBackground);
-                GridRenderer::DrawRect(fx, focus_y, fw, (float)kContentItemHeight, cmd.hasRectColourOverride ? cmd.rectColourOverride : kAccent);
-                GridRenderer::DrawRect(fx, focus_y + (float)kContentItemHeight,
-                    fw, (float)(kContentItemHeight * (int16_t)(dd.list.size() - (int)(g_gui.lerp != 0) - dd.has_extra_top - draw_cursor) - (int)kContentItemHeight),
-                    kPanelBackground);
-
-                if (kCursorBorderWidth > 0)
+                if (draw_cursor >= 0 && draw_cursor < (int16_t)g_gui.command_rows)
                 {
-                    const float bw = (float)kCursorBorderWidth;
-                    const float ih = (float)kContentItemHeight;
-                    GridRenderer::DrawRect(fx,              focus_y,              fw,  bw,      kCursorBorderColour);
-                    GridRenderer::DrawRect(fx,              focus_y + ih - bw,    fw,  bw,      kCursorBorderColour);
-                    GridRenderer::DrawRect(fx,              focus_y,              bw,  ih,      kCursorBorderColour);
-                    GridRenderer::DrawRect(fx + fw - bw,   focus_y,              bw,  ih,      kCursorBorderColour);
-                }
+                    GridRenderer::DrawRect(fx, fy, fw, (float)(kContentItemHeight * draw_cursor), kPanelBackground);
+                    GridRenderer::DrawRect(fx, focus_y, fw, (float)kContentItemHeight, cmd.hasRectColourOverride ? cmd.rectColourOverride : kAccent);
+                    GridRenderer::DrawRect(fx, focus_y + (float)kContentItemHeight,
+                        fw, (float)((g_gui.command_rows - draw_cursor - 1) * kContentItemHeight),
+                        kPanelBackground);
 
+                    if (kCursorBorderWidth > 0)
+                    {
+                        const float bw = (float)kCursorBorderWidth;
+                        const float ih = (float)kContentItemHeight;
+                        GridRenderer::DrawRect(fx,              focus_y,              fw,  bw,      kCursorBorderColour);
+                        GridRenderer::DrawRect(fx,              focus_y + ih - bw,    fw,  bw,      kCursorBorderColour);
+                        GridRenderer::DrawRect(fx,              focus_y,              bw,  ih,      kCursorBorderColour);
+                        GridRenderer::DrawRect(fx + fw - bw,   focus_y,              bw,  ih,      kCursorBorderColour);
+                    }
+                }
                 any_focused = true;
                 break;
             }
@@ -455,14 +457,16 @@ namespace Stand
         const float icon_size = (float)(kContentItemHeight - 4);
         for (const auto& cmd : dd.list)
         {
-            const float item_y = fy + (float)(kContentItemHeight * draw_cursor) + 2.f;
+            if (draw_cursor >= 0 && draw_cursor < (int16_t)g_gui.command_rows)
+            {
+                const float item_y = fy + (float)(kContentItemHeight * draw_cursor) + 2.f;
 
-            if (cmd.leftIcon != Rendering::IconSlot::Count)
-                Rendering::ThemeIcons::QueueDraw(cmd.leftIcon, fx + 2.f, item_y, icon_size, cmd.iconColour);
+                if (cmd.leftIcon != Rendering::IconSlot::Count)
+                    Rendering::ThemeIcons::QueueDraw(cmd.leftIcon, fx + 2.f, item_y, icon_size, cmd.iconColour);
 
-            if (cmd.rightIcon != Rendering::IconSlot::Count)
-                Rendering::ThemeIcons::QueueDraw(cmd.rightIcon, fx + fw - (float)kContentItemHeight + 2.f, item_y, icon_size, cmd.iconColour);
-
+                if (cmd.rightIcon != Rendering::IconSlot::Count)
+                    Rendering::ThemeIcons::QueueDraw(cmd.rightIcon, fx + fw - (float)kContentItemHeight + 2.f, item_y, icon_size, cmd.iconColour);
+            }
             ++draw_cursor;
         }
     }
@@ -481,30 +485,32 @@ namespace Stand
         int16_t draw_cursor = dd.has_extra_top ? -1 : 0;
         for (const auto& cmd : dd.list)
         {
-            float draw_y = fy + (float)(kContentItemHeight * draw_cursor);
-            const float text_x_offset = (cmd.leftIcon != Rendering::IconSlot::Count || g_MenuGrid.left_space_before_all_commands)
-                ? (float)kContentItemHeight : 5.f;
-            float text_x = fx + text_x_offset;
-            std::string utf8(cmd.trimmed_name.begin(), cmd.trimmed_name.end());
-
-            if (cmd.centered)
+            if (draw_cursor >= 0 && draw_cursor < (int16_t)g_gui.command_rows)
             {
-                float tw = GridRenderer::MeasureText(utf8.c_str(), kTextScale).x;
-                GridRenderer::DrawText(fx + (fw - tw) * 0.5f, draw_y, utf8.c_str(),
-                    cmd.textColour, kTextScale);
-            }
-            else
-            {
-                GridRenderer::DrawText(text_x, draw_y, utf8.c_str(), cmd.textColour, kTextScale);
-            }
+                float draw_y = fy + (float)(kContentItemHeight * draw_cursor);
+                const float text_x_offset = (cmd.leftIcon != Rendering::IconSlot::Count || g_MenuGrid.left_space_before_all_commands)
+                    ? (float)kContentItemHeight : 5.f;
+                float text_x = fx + text_x_offset;
+                std::string utf8(cmd.trimmed_name.begin(), cmd.trimmed_name.end());
 
-            if (!cmd.rightbound_text.empty())
-            {
-                std::string rtext(cmd.rightbound_text.begin(), cmd.rightbound_text.end());
-                float rx = fx + fw - cmd.rightbound_text_width - 5.f;
-                GridRenderer::DrawText(rx, draw_y, rtext.c_str(), cmd.rightTextColour, kTextScale);
-            }
+                if (cmd.centered)
+                {
+                    float tw = GridRenderer::MeasureText(utf8.c_str(), kTextScale).x;
+                    GridRenderer::DrawText(fx + (fw - tw) * 0.5f, draw_y, utf8.c_str(),
+                        cmd.textColour, kTextScale);
+                }
+                else
+                {
+                    GridRenderer::DrawText(text_x, draw_y, utf8.c_str(), cmd.textColour, kTextScale);
+                }
 
+                if (!cmd.rightbound_text.empty())
+                {
+                    std::string rtext(cmd.rightbound_text.begin(), cmd.rightbound_text.end());
+                    float rx = fx + fw - cmd.rightbound_text_width - 5.f;
+                    GridRenderer::DrawText(rx, draw_y, rtext.c_str(), cmd.rightTextColour, kTextScale);
+                }
+            }
             ++draw_cursor;
         }
     }

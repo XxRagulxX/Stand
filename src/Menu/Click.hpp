@@ -73,6 +73,8 @@ namespace Stand
 
 		[[nodiscard]] bool isWeb() const noexcept { return false; }
 		inline static bool self_chat_commands_friends_perms = false;
+		inline static bool auto_proceed_warnings_for_commands = false;
+		inline static bool auto_proceed_warnings_for_hotkeys = false;
 		void stopInputIfAllowed() const noexcept {}
 		[[nodiscard]] CommandPerm getEffectivePermissions() const { return COMMANDPERM_USERONLY; }
 		[[nodiscard]] CommandPhysical* getCommandPhysicalFromArg(const std::wstring&) const { return nullptr; }

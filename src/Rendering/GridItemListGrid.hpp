@@ -22,6 +22,8 @@ namespace Stand::Rendering
 
         void ScriptTick() override;
         void handleKey(unsigned int vkCode);
+        void handleMouseHover(int16_t hx, int16_t hy);
+        void handleMouseClick(int16_t hx, int16_t hy, bool ctrl, bool shift, bool doubleClick);
 
     protected:
         void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override;
@@ -29,6 +31,7 @@ namespace Stand::Rendering
     private:
         Stand::CommandList* m_List;
         GridItemList* m_Item = nullptr;
+        cursor_t m_CommandRows = 0;
 
         void moveCursor(int delta);
         void activateFocused();

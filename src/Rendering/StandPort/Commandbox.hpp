@@ -20,6 +20,7 @@ namespace Stand
 
         time_t last_command_issuance = 0;
         bool opened_for_chaining = false;
+        bool keep_content_on_close = false;
 
         void resetSecondaryStates() final;
 

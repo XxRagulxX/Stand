@@ -66,6 +66,9 @@ namespace Stand
         bool no_extra_clear = false;
         bool hotkeys_disabled = false;
         bool user_understands_context_menu = false;
+        bool sound = true;
+        bool menu_navigation_reminders = true;
+        bool skip_accepted_warnings = false;
 
         std::vector<CommandList*> m_active_list{};
         size_t m_preOpenNavDepth = 0;

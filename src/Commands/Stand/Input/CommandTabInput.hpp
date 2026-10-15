@@ -2,6 +2,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Context/CommandQuickCtx.hpp"
 #include "Input/KeyBinding.hpp"
 #include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
@@ -605,6 +606,7 @@ namespace Stand
 	{
 	public:
 		CommandTabInputScheme* const inputScheme;
+		CommandQuickCtx* const quickCtx;
 
 		KeyBinding ctxSaveState;
 		KeyBinding ctxLoadState;
@@ -629,6 +631,7 @@ namespace Stand
 		explicit CommandTabInput(CommandList* parent = nullptr)
 			: CommandList(parent, LIT("Input"))
 			, inputScheme(createChild<CommandTabInputScheme>())
+			, quickCtx(createChild<CommandQuickCtx>())
 			, mouseSupport(createChild<CommandMouseSupportList>())
 			, controllerSupport(createChild<CommandControllerSupport>())
 			, controllerScheme(createChild<CommandControllerScheme>())
