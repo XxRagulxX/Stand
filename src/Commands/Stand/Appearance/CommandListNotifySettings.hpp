@@ -6,7 +6,6 @@
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Rendering/NotifySettings.hpp"
-#include "Rendering/Theme.hpp"
 #include "Menu/Click.hpp"
 
 #include <algorithm>
@@ -20,7 +19,7 @@ namespace Stand
 
 	public:
 		explicit CommandNotifyType(CommandList* const parent)
-			: CommandSlider(parent, LIT("Type"), CMDNAMES("notifytype"), NOLABEL, 0, 2, 0, 1)
+			: CommandSlider(parent, LIT("Type"), {}, NOLABEL, 0, 2, 1, 1)
 		{
 		}
 
@@ -45,7 +44,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandNotifyInvertFlow(CommandList* const parent)
-			: CommandToggle(parent, LIT("Invert Flow"), CMDNAMES("notifyinvertflow"), NOLABEL, false)
+			: CommandToggle(parent, LIT("Invert Flow"), {}, NOLABEL, false)
 		{
 		}
 
@@ -73,7 +72,7 @@ namespace Stand
 	{
 	public:
 		explicit CommandNotifyPadding(CommandList* const parent)
-			: CommandSlider(parent, LIT("Padding"), CMDNAMES("notifypadding"), NOLABEL, 0, 1000, 0, 10)
+			: CommandSlider(parent, LIT("Padding"), CMDNAMES("notifypadding"), NOLABEL, 0, 15000, 10, 1)
 		{
 		}
 
@@ -180,14 +179,74 @@ namespace Stand
 	{
 	public:
 		explicit CommandNotifyFlashNow(CommandList* const parent)
-			: CommandPhysical(COMMAND_ACTION, parent, LIT("Flash Notification"), CMDNAMES("notifyflashnow"), NOLABEL)
+			: CommandPhysical(COMMAND_ACTION, parent, LIT("Flash Notification"), {}, NOLABEL)
 		{
 		}
 
 		void onClick(Click& click) override;
 	};
 
-	class CommandTabNotifications : public CommandList
+	class CommandNotifyReadSpeed : public CommandSlider
+	{
+	public:
+		explicit CommandNotifyReadSpeed(CommandList* const parent)
+			: CommandSlider(parent, LIT("Reading Speed (WPM)"), CMDNAMES("readspeed", "readingspeed"),
+				NOLABEL, 0, 1000, 250, 10)
+		{
+		}
+
+		void onChange(Click& click, int prev_value) override
+		{
+			Rendering::NotifySettings::kReadingSpeedWpm = static_cast<uint16_t>(value > 0 ? value : 0);
+		}
+	};
+
+	class CommandNotifyReadStartDelay : public CommandSlider
+	{
+	public:
+		explicit CommandNotifyReadStartDelay(CommandList* const parent)
+			: CommandSlider(parent, LIT("Reading Start Delay (ms)"), CMDNAMES("readstartdelay", "readingstartdelay"),
+				NOLABEL, 0, 1000, 0, 50)
+		{
+		}
+
+		void onChange(Click& click, int prev_value) override
+		{
+			Rendering::NotifySettings::kReadingStartDelayMs = value;
+		}
+	};
+
+	class CommandNotifyMinDuration : public CommandSlider
+	{
+	public:
+		explicit CommandNotifyMinDuration(CommandList* const parent)
+			: CommandSlider(parent, LIT("Min Duration (ms)"), CMDNAMES("notifyminduration"),
+				NOLABEL, 0, 60000, 2000, 100)
+		{
+		}
+
+		void onChange(Click& click, int prev_value) override
+		{
+			Rendering::NotifySettings::kMinDurationMs = value;
+		}
+	};
+
+	class CommandNotifyMaxDuration : public CommandSlider
+	{
+	public:
+		explicit CommandNotifyMaxDuration(CommandList* const parent)
+			: CommandSlider(parent, LIT("Max Duration (ms)"), CMDNAMES("notifymaxduration"),
+				NOLABEL, 0, 60000, 10000, 100)
+		{
+		}
+
+		void onChange(Click& click, int prev_value) override
+		{
+			Rendering::NotifySettings::kMaxDurationMs = value;
+		}
+	};
+
+	class CommandListNotifySettings : public CommandList
 	{
 	public:
 		CommandNotifyType* const type;
@@ -202,8 +261,9 @@ namespace Stand
 		CommandColour* const bgColour;
 		CommandNotifyCopyBg* const copyBg;
 		CommandNotifyFlashNow* const flashNow;
+		CommandList* const timing;
 
-		explicit CommandTabNotifications(CommandList* parent = nullptr)
+		explicit CommandListNotifySettings(CommandList* parent = nullptr)
 			: CommandList(parent, LIT("Notifications"))
 			, type(createChild<CommandNotifyType>())
 			, invertFlow(createChild<CommandNotifyInvertFlow>())
@@ -217,12 +277,17 @@ namespace Stand
 			, bgColour(createChild<CommandNotifyBackgroundColour>())
 			, copyBg(createChild<CommandNotifyCopyBg>())
 			, flashNow(createChild<CommandNotifyFlashNow>())
+			, timing(createChild<CommandList>(LIT("Timing")))
 		{
+			timing->createChild<CommandNotifyReadSpeed>();
+			timing->createChild<CommandNotifyReadStartDelay>();
+			timing->createChild<CommandNotifyMinDuration>();
+			timing->createChild<CommandNotifyMaxDuration>();
 		}
 	};
 }
 
 namespace Stand::Features
 {
-	Stand::CommandTabNotifications& GetCommandTabNotifications();
+	Stand::CommandListNotifySettings& GetCommandListNotifySettings();
 }

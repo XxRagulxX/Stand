@@ -72,7 +72,7 @@ namespace Stand
 			tabs = appearance->createChild<CommandTabTabs>();
 			scrollbar = appearance->createChild<CommandTabScrollbar>();
 			commandInfoText = appearance->createChild<CommandTabCommandInfoText>();
-			notifications = appearance->createChild<CommandTabNotifications>();
+			notifications = appearance->createChild<CommandListNotifySettings>();
 			commands = appearance->createChild<CommandTabCommands>();
 			border = appearance->createChild<CommandTabBorder>();
 			appearanceDirect = appearance->createChild<CommandTabAppearanceDirect>();

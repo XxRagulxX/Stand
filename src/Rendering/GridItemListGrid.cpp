@@ -50,6 +50,13 @@ namespace Stand::Rendering
 
     void GridItemListGrid::ScriptTick()
     {
+        if (m_List && m_Item && !m_List->children.empty())
+        {
+            const cursor_t childCount = static_cast<cursor_t>(m_List->children.size());
+            const cursor_t maxRows = Theme::kMenuHeight > 0 ? static_cast<cursor_t>(Theme::kMenuHeight) : 11;
+            m_CommandRows = std::min(maxRows, childCount);
+            m_Item->height = static_cast<int16_t>(m_CommandRows * Theme::kContentItemHeight);
+        }
         if (m_CommandRows > 0)
             g_gui.command_rows = m_CommandRows;
         if (m_Item)

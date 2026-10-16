@@ -39,7 +39,6 @@
 #include "Commands/Stand/Input/CommandTabInputPresets.hpp"
 #include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifyTiming.hpp"
 
 namespace Stand
 {
@@ -66,7 +65,6 @@ namespace Stand
 		(void)Features::GetCommandTabInputPresets();
 		(void)Features::GetCommandTabNotifyPosition();
 		(void)Features::GetCommandTabNotifySample();
-		(void)Features::GetCommandTabNotifyTiming();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;

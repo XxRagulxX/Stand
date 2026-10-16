@@ -10,6 +10,14 @@
 
 namespace Stand
 {
+	void CommandList::onClick(Click& click)
+	{
+		if (click.type == CLICK_MENU)
+			g_gui.m_active_list.push_back(this);
+		else
+			open(click.thread_context);
+	}
+
 	void CommandList::recursivelyApplyDefaultState()
 	{
 		for (auto& child : children)
@@ -17,12 +25,14 @@ namespace Stand
 			if (!child->isPhysical())
 				continue;
 			auto* cmd = static_cast<CommandPhysical*>(child.get());
+			if (cmd->flags & CMDFLAG_STATE_AND_CHECK_FINISHLIST)
+				break;
 			if (cmd->supportsSavedState())
 			{
 				Click click(CLICK_AUTO, TC_SCRIPT_NOYIELD);
 				cmd->applyDefaultState();
 			}
-			if (cmd->isList())
+			if (cmd->isListNonAction())
 				static_cast<CommandList*>(cmd)->recursivelyApplyDefaultState();
 		}
 	}
@@ -205,4 +215,57 @@ namespace Stand
 	void CommandList::evacuateCursorWeb() {}
 	void CommandList::evacuateCursorStandalone() {}
 	void CommandList::evacuateCursorStandaloneNocheck() {}
+
+	void CommandList::recursivelyApplyStateFromMemory(const std::unordered_map<std::string, std::string>& state, const std::string& prefix)
+	{
+		for (const auto& _command : children)
+		{
+			if (!_command->isPhysical()) continue;
+			auto* cmd = static_cast<CommandPhysical*>(_command.get());
+			if (cmd->flags & CMDFLAG_TEMPORARY) continue;
+			if (cmd->flags & CMDFLAG_STATE_AND_CHECK_FINISHLIST) break;
+			if (cmd->supportsStateOperations() && cmd->supportsSavedState())
+			{
+				std::string path = std::string(prefix).append(cmd->getNameForConfig());
+				auto it = state.find(path);
+				Click click(CLICK_AUTO, TC_SCRIPT_NOYIELD);
+				if (it != state.end())
+					cmd->setState(click, it->second);
+				else
+					cmd->applyDefaultState();
+			}
+			if (cmd->isListNonAction())
+			{
+				std::string child_prefix = std::string(prefix).append(cmd->getNameForConfig());
+				child_prefix.push_back('>');
+				static_cast<CommandList*>(cmd)->recursivelyApplyStateFromMemory(state, child_prefix);
+			}
+		}
+	}
+
+	void CommandList::recursivelySaveStateInMemory(std::unordered_map<std::string, std::string>& state, const std::string& prefix) const
+	{
+		for (const auto& _command : this->children)
+		{
+			if (!_command->isPhysical())
+				continue;
+			auto* command = (const CommandPhysical*)_command.get();
+			if (command->flags & CMDFLAG_TEMPORARY)
+				continue;
+			if (command->flags & CMDFLAG_STATE_AND_CHECK_FINISHLIST)
+				break;
+			if (command->supportsStateOperations() && command->supportsSavedState())
+			{
+				std::string command_state = command->getState();
+				if (command_state != command->getDefaultState())
+					state.emplace(std::string(prefix).append(command->getNameForConfig()), command_state);
+			}
+			if (command->isListNonAction())
+			{
+				std::string prefix_{ prefix };
+				prefix_.append(command->getNameForConfig()).push_back('>');
+				((CommandList*)command)->recursivelySaveStateInMemory(state, std::move(prefix_));
+			}
+		}
+	}
 }

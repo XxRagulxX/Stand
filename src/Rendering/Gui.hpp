@@ -34,6 +34,17 @@ namespace Stand
         INPUTTYPE_MOUSE_CLICK,
     };
 
+    enum class UnloadState : uint8_t
+    {
+        NONE,
+        REQUESTED,
+        SAVE_PENDING_CONFIGS,
+        APPLY_DEFAULT_STATE,
+        EMPTY_PLAYER_LIST,
+        SWITCH_TO_GUI_NONE,
+        HAND_OVER_TO_MAIN
+    };
+
     struct WarningData
     {
         uint64_t hash;
@@ -138,7 +149,12 @@ namespace Stand
         [[nodiscard]] bool isUsingAutosaveState() const noexcept { return false; }
 
         [[nodiscard]] bool isRootStateFull() const noexcept { return true; }
-        [[nodiscard]] bool isUnloadPending() const noexcept { return false; }
+        void saveStateInMemory(std::unordered_map<std::string, std::string>& state);
+        void applyDefaultState();
+        void applyStateFromMemory(std::unordered_map<std::string, std::string> state);
+        bool root_update_in_progress = false;
+        UnloadState unload_state = UnloadState::NONE;
+        [[nodiscard]] bool isUnloadPending() const noexcept { return unload_state != UnloadState::NONE; }
         [[nodiscard]] bool canUpdateThemeSetting() const noexcept { return true; }
         [[nodiscard]] bool canUpdateThemeSettingWithDefaultDependency() const noexcept { return true; }
         void updateTabs(ThreadContext) { updateTabsIgnoreContextMenu(); }

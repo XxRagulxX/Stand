@@ -5,6 +5,8 @@
 
 #include <functional>
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -76,7 +78,11 @@ namespace Stand
 			return std::make_unique<T>(this, std::forward<Args>(args)...);
 		}
 
+		void onClick(Click& click) override;
+
 		void recursivelyApplyDefaultState();
+		void recursivelySaveStateInMemory(std::unordered_map<std::string, std::string>& state, const std::string& prefix = {}) const;
+		void recursivelyApplyStateFromMemory(const std::unordered_map<std::string, std::string>& state, const std::string& prefix = {});
 
 		[[nodiscard]] static int8_t checkCommandNameMatch(const CommandName& prefix, const CommandName& name);
 

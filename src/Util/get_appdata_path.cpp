@@ -17,7 +17,7 @@ namespace Stand
 	std::wstring get_appdata_path()
 	{
 		auto path = get_roaming_path();
-		path.append(StringUtils::utf8_to_utf16(soup::ObfusString("Stand\\").str()));
+		path.append(StringUtils::utf8_to_utf16(soup::ObfusString("StandEnhanced\\").str()));
 		return path;
 	}
 

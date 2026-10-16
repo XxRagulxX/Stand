@@ -3,10 +3,21 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
-#include "Rendering/GridItemListGrid.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/MenuNavigation.hpp"
+#include "Commands/Stand/Game/CommandTabESP.hpp"
+#include "Commands/Self/CommandTabSelf.hpp"
+#include "Commands/Self/Weapons/CommandTabWeapons.hpp"
+#include "Commands/Self/Movement/CommandTabLevitation.hpp"
+#include "Commands/Self/Movement/CommandTabMovement.hpp"
+#include "Commands/Self/Movement/CommandTabSuperFlight.hpp"
+#include "Commands/Self/Movement/CommandTabFloppy.hpp"
+#include "Commands/Self/Appearance/CommandTabTransform.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
+#include "Commands/Stand/Input/CommandTabInputPresets.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
+#include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
 
 namespace Stand
 {
@@ -49,6 +60,50 @@ namespace Stand
     void Gui::updateActiveFocus(ThreadContext thread_context, Direction momentum, Command* prev_focus)
     {
         m_preOpenNavDepth = Rendering::MenuNavigation::Depth();
+    }
+
+    static void forEachTab(std::function<void(CommandList&)> fn)
+    {
+        fn(Features::GetCommandTabESP());
+        fn(Features::GetCommandTabSelf());
+        fn(Features::GetCommandTabWeapons());
+        fn(Features::GetCommandTabLevitation());
+        fn(Features::GetCommandTabMovement());
+        fn(Features::GetCommandTabSuperFlight());
+        fn(Features::GetCommandTabFloppy());
+        fn(Features::GetCommandTabTransform());
+        fn(Features::GetCommandTabStand());
+        fn(Features::GetCommandTabInputPresets());
+        fn(Features::GetCommandTabNotifyPosition());
+        fn(Features::GetCommandTabNotifySample());
+    }
+
+    void Gui::saveStateInMemory(std::unordered_map<std::string, std::string>& state)
+    {
+        state.clear();
+        EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+        forEachTab([&state](CommandList& tab) {
+            std::string prefix = tab.getNameForConfig();
+            prefix.push_back('>');
+            tab.recursivelySaveStateInMemory(state, std::move(prefix));
+        });
+        EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+    }
+
+    void Gui::applyDefaultState()
+    {
+        forEachTab([](CommandList& tab) {
+            tab.recursivelyApplyDefaultState();
+        });
+    }
+
+    void Gui::applyStateFromMemory(std::unordered_map<std::string, std::string> state)
+    {
+        forEachTab([&state](CommandList& tab) {
+            std::string prefix = tab.getNameForConfig();
+            prefix.push_back('>');
+            tab.recursivelyApplyStateFromMemory(state, std::move(prefix));
+        });
     }
 
     void Gui::processToggleCorrelation(ThreadContext thread_context, ToggleCorrelation_t correlation, bool value)

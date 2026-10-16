@@ -8,6 +8,7 @@
 #include "Rendering/InputCapture.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
+#include "Util/StringUtils.hpp"
 
 #include <algorithm>
 #include <unordered_set>
@@ -107,7 +108,15 @@ namespace Stand::Rendering
 						    click.respond();
 					    });
 				    },
-				    nullptr,
+				    [physical](const std::string& args) {
+					    FiberPool::queueJob([physical, args] {
+						    Stand::Click click(Stand::CLICK_COMMAND, Stand::TC_SCRIPT_YIELDABLE);
+						    std::wstring wargs = Stand::StringUtils::utf8_to_utf16(args);
+						    physical->onCommand(click, wargs);
+						    click.ensureResponse();
+						    click.respond();
+					    });
+				    },
 				});
 			}
 
@@ -131,6 +140,18 @@ namespace Stand::Rendering
 		s_SelectedIndex = -1;
 		s_Open = true;
 		InputCapture::SetTextInputActive(true);
+	}
+
+	void MenuCommandConsole::Open(std::string prefill)
+	{
+		s_Buffer = std::move(prefill);
+		s_DirectCallback = nullptr;
+		s_DirectHint.clear();
+		s_Matches.clear();
+		s_SelectedIndex = -1;
+		s_Open = true;
+		InputCapture::SetTextInputActive(true);
+		UpdateMatches();
 	}
 
 	void MenuCommandConsole::Open(std::string prefill, std::function<void(const std::string&)> callback, std::string hint)

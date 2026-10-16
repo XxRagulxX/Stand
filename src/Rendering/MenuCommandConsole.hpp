@@ -9,6 +9,7 @@ namespace Stand::Rendering
 	{
 	public:
 		static void Open();
+		static void Open(std::string prefill);
 		static void Open(std::string prefill, std::function<void(const std::string&)> callback, std::string hint = {});
 		static bool IsOpen();
 		static void Close();

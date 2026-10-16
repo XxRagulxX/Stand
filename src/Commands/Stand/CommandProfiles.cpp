@@ -1,5 +1,6 @@
 #include "Commands/Stand/CommandProfiles.hpp"
 
+#include "Commands/Stand/CommandProfile.hpp"
 #include "Commands/Stand/CommandProfilesCreate.hpp"
 #include "Rendering/Gui.hpp"
 
@@ -29,10 +30,11 @@ namespace Stand
 
 	CommandListFolderItemData* CommandProfiles::getItemData(Command* cmd) const noexcept
 	{
-		return nullptr;
+		return getItemDataImpl<CommandProfile>(cmd);
 	}
 
 	void CommandProfiles::createItem(CommandList* list, std::wstring&& filename_no_ext, CommandListFolderItemData&& data) const
 	{
+		list->createChild<CommandProfile>(std::move(filename_no_ext), std::move(data));
 	}
 }

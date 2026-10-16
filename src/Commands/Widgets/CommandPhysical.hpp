@@ -97,16 +97,17 @@ namespace Stand
 		[[nodiscard]] virtual std::wstring getCommandSyntax() const;
 		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
 
+		[[nodiscard]] virtual std::string getNameForConfig() const;
+
 		void onCommandInvalidArg(Click& click, const std::wstring& arg) const;
 		void onCommandReopen(Click& click, const std::wstring& args) const;
+		[[nodiscard]] bool onCommandValidateFileName(Click& click, std::wstring& args);
 
 		virtual void preDetach() {}
 		virtual void onFocus(ThreadContext, Direction) {}
 		virtual void onBlur(ThreadContext, Direction) {}
 
-		virtual void onClick(Click& click)
-		{
-		}
+		virtual void onClick(Click& click);
 
 		virtual bool onLeft(Click& click, bool holding)
 		{

@@ -24,6 +24,8 @@ namespace Stand
 	public:
 		Util() = delete;
 
+		static const unsigned long menu_names_version;
+
 		[[nodiscard]] static float angles_dist(float a1, float a2) noexcept
 		{
 			return 180.0f - fabsf(fabsf(a1 - a2) - 180.0f);

@@ -11,7 +11,7 @@
 #include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
 #include "Commands/Stand/Appearance/CommandTabFontText.hpp"
 #include "Commands/Stand/Appearance/CommandTabHeader.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifications.hpp"
+#include "Commands/Stand/Appearance/CommandListNotifySettings.hpp"
 #include "Commands/Stand/Appearance/CommandTabPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
 #include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
@@ -39,7 +39,7 @@ namespace Stand
 		CommandTabBorder* border = nullptr;
 		CommandTabTextures* textures = nullptr;
 		CommandTabEntityPreviews* entityPreviews = nullptr;
-		CommandTabNotifications* notifications = nullptr;
+		CommandListNotifySettings* notifications = nullptr;
 		CommandTabFontText* fontText = nullptr;
 		CommandTabPresetFont* presetFont = nullptr;
 		CommandTabAppearanceDirect* appearanceDirect = nullptr;

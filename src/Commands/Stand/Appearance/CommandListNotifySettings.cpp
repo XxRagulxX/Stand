@@ -1,4 +1,4 @@
-#include "Commands/Stand/Appearance/CommandTabNotifications.hpp"
+#include "Commands/Stand/Appearance/CommandListNotifySettings.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
 
 #include "Rendering/NotifySettings.hpp"
@@ -21,13 +21,13 @@ namespace Stand
 
 	void CommandNotifyFlashNow::onClick(Click& click)
 	{
-		Notifications::FlashPreview();
+		Notifications::Show("StandEnhanced", "Here's some text to feast your eyes upon.", NotificationType::Info);
 	}
 }
 
 namespace Stand::Features
 {
-	Stand::CommandTabNotifications& GetCommandTabNotifications()
+	Stand::CommandListNotifySettings& GetCommandListNotifySettings()
 	{
 		return *GetCommandTabStand().notifications;
 	}

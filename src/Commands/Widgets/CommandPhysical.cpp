@@ -1,6 +1,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 
 #include "Commands/Widgets/CommandList.hpp"
+#include "Util/validate_file_name.hpp"
 #include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Rendering/Gui.hpp"
@@ -215,6 +216,11 @@ namespace Stand
 		return nullptr;
 	}
 
+	std::string CommandPhysical::getNameForConfig() const
+	{
+		return menu_name.getEnglishUtf8();
+	}
+
 	void CommandPhysical::onCommandInvalidArg(Click& click, const std::wstring& arg) const
 	{
 		click.setResponse(LIT(LANG_GET("INVARG")));
@@ -227,5 +233,32 @@ namespace Stand
 		prefill.push_back(L' ');
 		prefill.append(args);
 		click.showCommandBoxIfPossible(std::move(prefill));
+	}
+
+	bool CommandPhysical::onCommandValidateFileName(Click& click, std::wstring& args)
+	{
+		if (args.empty())
+		{
+			onClick(click);
+			return false;
+		}
+		if (validate_file_name(args, true))
+		{
+			return true;
+		}
+		click.setResponse(LOC("BADFILE"));
+		onCommandReopen(click, args);
+		args.clear();
+		return false;
+	}
+
+	void CommandPhysical::onClick(Click& click)
+	{
+		if (!command_names.empty())
+		{
+			std::wstring prefill{ cmdNameToUtf16(command_names.at(0)) };
+			prefill.push_back(L' ');
+			click.showCommandBoxIfPossible(std::move(prefill));
+		}
 	}
 }
