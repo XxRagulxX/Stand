@@ -1,9 +1,5 @@
 #include "Scheduler.hpp"
 
-#if !SOUP_WINDOWS
-#include <netinet/tcp.h> // TCP_NODELAY
-#endif
-
 #include "log.hpp"
 #include "os.hpp"
 #include "Promise.hpp"
@@ -21,7 +17,7 @@
 
 NAMESPACE_SOUP
 {
-	void Scheduler::addWorker(SharedPtr<Worker>&& w)
+	void Scheduler::addWorker(SharedPtr<Worker> w)
 	{
 		SOUP_ASSERT(w); // SharedPtr must hold a pointer
 		pending_workers.emplace_front(std::move(w));
@@ -31,16 +27,14 @@ NAMESPACE_SOUP
 	SharedPtr<Socket> Scheduler::addSocket() SOUP_EXCAL
 	{
 		auto s = soup::make_shared<Socket>();
-		addSocket(s);
+		//addSocket(s); // can't setBlocking on an uninitalised socket
+		addWorker(s);
 		return s;
 	}
 
 	void Scheduler::addSocket(SharedPtr<Socket> sock) SOUP_EXCAL
 	{
-#if !SOUP_WINDOWS
-		sock->setNonBlocking();
-#endif
-		sock->setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
+		sock->setBlocking(blocking);
 		return addWorker(std::move(sock));
 	}
 #endif
@@ -143,7 +137,7 @@ NAMESPACE_SOUP
 			if ((*i)->type == WORKER_TYPE_SOCKET)
 			{
 #if !SOUP_WASM
-				SOUP_IF_UNLIKELY (static_cast<Socket*>(i->get())->fd == -1)
+				SOUP_IF_UNLIKELY (!static_cast<Socket*>(i->get())->hasConnection())
 				{
 					processClosedSocket(*static_cast<Socket*>(i->get()));
 				}
@@ -249,7 +243,7 @@ NAMESPACE_SOUP
 		// - If a scheduler that is only waiting on sockets has addWorker called on it, we don't want an insane delay until that worker starts.
 		int timeout = 50;
 #if SOUP_WINDOWS
-		if (add_worker_can_wait_forever_for_all_i_care)
+		if (blocking)
 		{
 			timeout = -1;
 		}
@@ -276,7 +270,7 @@ NAMESPACE_SOUP
 		for (auto i = pollfds.begin(); i != pollfds.end(); ++i)
 		{
 			if (i->revents != 0
-				&& i->fd != -1
+				&& i->fd != (Socket::fd_t)-1
 				)
 			{
 				auto workers_i = workers.begin() + (i - pollfds.begin());

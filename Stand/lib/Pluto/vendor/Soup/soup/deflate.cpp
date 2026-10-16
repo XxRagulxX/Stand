@@ -7,6 +7,7 @@
 #include "adler32.hpp"
 #include "crc32.hpp"
 #include "Endian.hpp"
+#include "memory.hpp" // construct_at
 
 /*
 Original source: https://github.com/Artexety/inflatecpp
@@ -76,9 +77,9 @@ NAMESPACE_SOUP
 	private:
 		int shifter_bit_count_ = 0;
 		shifter_t shifter_data_ = 0;
-		unsigned char* in_block_;
-		unsigned char* in_block_end_;
-		unsigned char* in_block_start_;
+		const uint8_t* in_block_;
+		const uint8_t* in_block_end_;
+		const uint8_t* in_block_start_;
 
 	public:
 		/**
@@ -87,13 +88,13 @@ NAMESPACE_SOUP
 		 * @param in_block pointer to the start of the compressed block
 		 * @param in_block_end pointer to the end of the compressed block + 1
 		 */
-		explicit DeflateBitReader(unsigned char* in_block, unsigned char* in_block_end)
+		explicit DeflateBitReader(const uint8_t* in_block, const uint8_t* in_block_end) noexcept
 			: in_block_(in_block), in_block_end_(in_block_end), in_block_start_(in_block)
 		{
 		}
 
 		/** Refill 32 bits at a time if the architecture allows it, otherwise do nothing. */
-		void refill32()
+		void refill32() noexcept
 		{
 #if SOUP_BITS == 64
 			if (this->shifter_bit_count_ <= 32 && (this->in_block_ + 4) <= this->in_block_end_)
@@ -124,13 +125,13 @@ NAMESPACE_SOUP
 		 *
 		 * @param n size of value to consume, in bits
 		 */
-		void consumeBits(const int n)
+		void consumeBits(const int n) noexcept
 		{
 			this->shifter_data_ >>= n;
 			this->shifter_bit_count_ -= n;
 		}
 
-		void modifyInBlock(const int v)
+		void modifyInBlock(const int v) noexcept
 		{
 			this->in_block_ += v;
 		}
@@ -142,7 +143,7 @@ NAMESPACE_SOUP
 		 *
 		 * @return value, or -1 for failure
 		 */
-		unsigned int getBits(const int n)
+		[[nodiscard]] unsigned int getBits(const int n) noexcept
 		{
 			if (this->shifter_bit_count_ < n)
 			{
@@ -174,7 +175,7 @@ NAMESPACE_SOUP
 		 *
 		 * @return value
 		 */
-		unsigned int peekBits()
+		[[nodiscard]] unsigned int peekBits() noexcept
 		{
 			if (this->shifter_bit_count_ < 16)
 			{
@@ -191,9 +192,10 @@ NAMESPACE_SOUP
 		}
 
 		/** Re-align bitstream on a byte */
-		bool alignToByte()
+		bool alignToByte() noexcept
 		{
-			while (this->shifter_bit_count_ >= 8) {
+			while (this->shifter_bit_count_ >= 8)
+			{
 				this->shifter_bit_count_ -= 8;
 				this->in_block_--;
 				if (this->in_block_ < this->in_block_start_)
@@ -207,10 +209,12 @@ NAMESPACE_SOUP
 			return true;
 		}
 
-		unsigned char* getInBlock() { return this->in_block_; };
-		unsigned char* getInBlockEnd() { return this->in_block_end_; };
-		unsigned char* getInBlockStart() { return this->in_block_start_; };
+		[[nodiscard]] const uint8_t* getInBlock() noexcept { return this->in_block_; };
+		[[nodiscard]] const uint8_t* getInBlockEnd() noexcept { return this->in_block_end_; };
+		[[nodiscard]] const uint8_t* getInBlockStart() noexcept { return this->in_block_start_; };
 	};
+	static_assert(sizeof(deflate::Context) >= sizeof(DeflateBitReader));
+	static_assert(std::is_trivially_destructible_v<DeflateBitReader>);
 
 	constexpr auto kMaxSymbols = 288;
 	constexpr auto kCodeLenSyms = 19;
@@ -232,7 +236,7 @@ NAMESPACE_SOUP
 		 * @param rev_symbol_table array of 2 * symbols entries for storing the reverse lookup table
 		 * @param code_length codeword lengths table
 		 */
-		bool prepareTable(unsigned int* rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length)
+		bool prepareTable(unsigned int* rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length) noexcept
 		{
 			int num_symbols_per_len[16];
 			int i;
@@ -281,7 +285,7 @@ NAMESPACE_SOUP
 		 *
 		 * @param rev_symbol_table array of 2 * symbols entries that contains the reverse lookup table
 		 */
-		bool finaliseTable(unsigned int* rev_symbol_table)
+		bool finaliseTable(unsigned int* rev_symbol_table) noexcept
 		{
 			const int symbols = this->symbols_;
 			unsigned int canonical_code_word = 0;
@@ -365,7 +369,7 @@ NAMESPACE_SOUP
 		 * @param code_length output code lengths table
 		 * @param bit_reader bit reader context
 		 */
-		static bool readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader)
+		static bool readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader) noexcept
 		{
 			const unsigned char code_len_syms[kCodeLenSyms] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 			int i;
@@ -400,7 +404,7 @@ NAMESPACE_SOUP
 		 * @param code_length output code lengths table
 		 * @param bit_reader bit reader context
 		 */
-		bool readLength(const unsigned int* tables_rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader)
+		bool readLength(const unsigned int* tables_rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader) noexcept
 		{
 			int i;
 			if (read_symbols < 0 || symbols < 0 || read_symbols > symbols)
@@ -469,7 +473,7 @@ NAMESPACE_SOUP
 		 *
 		 * @return symbol, or -1 for error
 		 */
-		unsigned int readValue(const unsigned int* rev_symbol_table, DeflateBitReader& bit_reader)
+		unsigned int readValue(const unsigned int* rev_symbol_table, DeflateBitReader& bit_reader) noexcept
 		{
 			unsigned int stream = bit_reader.peekBits();
 			unsigned int fast_sym_bits = this->fast_symbol_[stream & ((1 << kFastSymbolBits) - 1)];
@@ -504,8 +508,7 @@ NAMESPACE_SOUP
 		}
 	};
 
-
-	unsigned int copyStored(DeflateBitReader& bit_reader, unsigned char* out, size_t out_offset, size_t block_size_max)
+	static unsigned int copy_stored(DeflateBitReader& bit_reader, unsigned char* out, size_t out_offset, size_t block_size_max) noexcept
 	{
 		SOUP_IF_UNLIKELY (!bit_reader.alignToByte())
 		{
@@ -539,7 +542,7 @@ NAMESPACE_SOUP
 		return stored_length;
 	}
 
-	unsigned int decompressBlock(DeflateBitReader& br, bool dynamic_block, unsigned char* out, size_t out_offset, size_t block_size_max)
+	static unsigned int decompress_block(DeflateBitReader& br, bool dynamic_block, unsigned char* out, size_t out_offset, size_t block_size_max) noexcept
 	{
 		HuffmanDecoder literals_decoder;
 		HuffmanDecoder offset_decoder;
@@ -763,33 +766,31 @@ NAMESPACE_SOUP
 
 	using DecompressResult = deflate::DecompressResult;
 
-	DecompressResult deflate::decompress(const std::string& compressed_data)
+	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t decompressed_size) SOUP_EXCAL
 	{
-		return decompress(compressed_data.data(), compressed_data.size());
-	}
-
-	DecompressResult deflate::decompress(const std::string& compressed_data, size_t max_decompressed_size)
-	{
-		return decompress(compressed_data.data(), compressed_data.size(), max_decompressed_size);
-	}
-
-	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size)
-	{
-		return decompress(compressed_data, compressed_data_size, getMaxDecompressedSize(compressed_data, compressed_data_size));
-	}
-
-	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size)
-	{
-		uint8_t* current_compressed_data = (unsigned char*)compressed_data;
-		uint8_t* end_compressed_data = current_compressed_data + compressed_data_size;
-
 		DecompressResult res{};
+		res.decompressed = std::string(decompressed_size, '\0'); // excal
+		res.compressed_size = decompress(compressed_data, compressed_data_size, res.decompressed.data(), decompressed_size, res.checksum_state);
+		SOUP_IF_UNLIKELY (res.compressed_size == -1)
+		{
+			return {};
+		}
+		res.decompressed.resize(decompressed_size);
+		return res;
+	}
+
+	size_t deflate::decompress(const void* compressed_data, size_t compressed_data_size, void* _out, size_t& decompressed_size, ChecksumState& out_checksum_state) noexcept
+	{
+		const size_t max_decompressed_size = decompressed_size;
+
+		const uint8_t* current_compressed_data = static_cast<const uint8_t*>(compressed_data);
+		const uint8_t* end_compressed_data = current_compressed_data + compressed_data_size;
 
 		checksum_type checksum_type = checksum_type::NONE;
 
-		if ((current_compressed_data + 2) > end_compressed_data)
+		SOUP_IF_UNLIKELY ((current_compressed_data + 2) > end_compressed_data)
 		{
-			return {};
+			return -1;
 		}
 
 		if (current_compressed_data[0] == 0x1f && current_compressed_data[1] == 0x8b) // gzip magic
@@ -797,7 +798,7 @@ NAMESPACE_SOUP
 			current_compressed_data += 2;
 			if ((current_compressed_data + 8) > end_compressed_data || current_compressed_data[0] != 0x08)
 			{
-				return {};
+				return -1;
 			}
 
 			current_compressed_data++;
@@ -809,7 +810,7 @@ NAMESPACE_SOUP
 			{
 				if ((current_compressed_data + 2) > end_compressed_data)
 				{
-					return {};
+					return -1;
 				}
 
 				current_compressed_data += 2;
@@ -819,7 +820,7 @@ NAMESPACE_SOUP
 			{
 				if ((current_compressed_data + 2) > end_compressed_data)
 				{
-					return {};
+					return -1;
 				}
 
 				unsigned short extra_field_len = ((unsigned short)current_compressed_data[0]) | (((unsigned short)current_compressed_data[1]) << 8);
@@ -827,7 +828,7 @@ NAMESPACE_SOUP
 
 				if ((current_compressed_data + extra_field_len) > end_compressed_data)
 				{
-					return {};
+					return -1;
 				}
 
 				current_compressed_data += extra_field_len;
@@ -839,7 +840,7 @@ NAMESPACE_SOUP
 				{
 					if (current_compressed_data >= end_compressed_data)
 					{
-						return {};
+						return -1;
 					}
 
 					current_compressed_data++;
@@ -852,7 +853,7 @@ NAMESPACE_SOUP
 				{
 					if (current_compressed_data >= end_compressed_data)
 					{
-						return {};
+						return -1;
 					}
 
 					current_compressed_data++;
@@ -861,10 +862,10 @@ NAMESPACE_SOUP
 
 			if (flags & 0x20)
 			{
-				return {};
+				return -1;
 			}
 
-			res.checksum_present = true;
+			out_checksum_state = CHKSUM_FAIL;
 			checksum_type = checksum_type::GZIP;
 		}
 		else if ((current_compressed_data[0] & 0x0f) == 0x08)
@@ -880,13 +881,13 @@ NAMESPACE_SOUP
 				{
 					if ((current_compressed_data + 4) > end_compressed_data)
 					{
-						return {};
+						return -1;
 					}
 					current_compressed_data += 4;
 				}
 			}
 
-			res.checksum_present = true;
+			out_checksum_state = CHKSUM_FAIL;
 			checksum_type = checksum_type::ZLIB;
 		}
 
@@ -898,36 +899,15 @@ NAMESPACE_SOUP
 
 		DeflateBitReader br(current_compressed_data, end_compressed_data);
 
-		res.decompressed = std::string(max_decompressed_size, '\0');
-		auto out = reinterpret_cast<uint8_t*>(&res.decompressed[0]);
+		auto out = reinterpret_cast<uint8_t*>(_out);
 		size_t current_out_offset = 0;
-		while (true)
+		bool final_block;
+		do
 		{
-			bool final_block = br.getBits(1);
-			auto block_type = br.getBits(2);
-
-			unsigned int block_result;
-			switch (block_type)
+			unsigned int block_result = decompressBlock(reinterpret_cast<Context&>(br), out, current_out_offset, max_decompressed_size, final_block);
+			SOUP_IF_UNLIKELY (block_result == -1)
 			{
-			case 0:
-				block_result = copyStored(br, out, current_out_offset, max_decompressed_size - current_out_offset);
-				break;
-
-			case 1:
-				block_result = decompressBlock(br, false, out, current_out_offset, max_decompressed_size - current_out_offset);
-				break;
-
-			case 2:
-				block_result = decompressBlock(br, true, out, current_out_offset, max_decompressed_size - current_out_offset);
-				break;
-
-			default:
-				return {};
-			}
-
-			if (block_result == -1)
-			{
-				return {};
+				return -1;
 			}
 
 			switch (checksum_type)
@@ -945,14 +925,9 @@ NAMESPACE_SOUP
 			}
 
 			current_out_offset += block_result;
+		} while (!final_block);
 
-			if (final_block)
-			{
-				break;
-			}
-		}
-
-		res.decompressed.resize(current_out_offset);
+		decompressed_size = current_out_offset;
 
 		br.alignToByte();
 		current_compressed_data = br.getInBlock();
@@ -967,7 +942,7 @@ NAMESPACE_SOUP
 		case checksum_type::GZIP:
 			if ((current_compressed_data + 4) > end_compressed_data)
 			{
-				return {};
+				return -1;
 			}
 
 			stored_check_sum = ((unsigned int)current_compressed_data[0]);
@@ -975,7 +950,10 @@ NAMESPACE_SOUP
 			stored_check_sum |= ((unsigned int)current_compressed_data[2]) << 16;
 			stored_check_sum |= ((unsigned int)current_compressed_data[3]) << 24;
 
-			res.checksum_mismatch |= (stored_check_sum != check_sum);
+			if (stored_check_sum == check_sum)
+			{
+				out_checksum_state = CHKSUM_PASS;
+			}
 
 			current_compressed_data += 4;
 			break;
@@ -983,7 +961,7 @@ NAMESPACE_SOUP
 		case checksum_type::ZLIB:
 			if ((current_compressed_data + 4) > end_compressed_data)
 			{
-				return {};
+				return -1;
 			}
 
 			stored_check_sum = ((unsigned int)current_compressed_data[0]) << 24;
@@ -991,14 +969,63 @@ NAMESPACE_SOUP
 			stored_check_sum |= ((unsigned int)current_compressed_data[2]) << 8;
 			stored_check_sum |= ((unsigned int)current_compressed_data[3]);
 
-			res.checksum_mismatch |= (stored_check_sum != check_sum);
+			if (stored_check_sum == check_sum)
+			{
+				out_checksum_state = CHKSUM_PASS;
+			}
 
 			current_compressed_data += 4;
 			break;
 		}
 
-		res.compressed_size = (current_compressed_data - (unsigned char*)compressed_data);
+		return (current_compressed_data - (unsigned char*)compressed_data);
+	}
 
-		return res;
+	void deflate::initContext(Context& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept
+	{
+		soup::construct_at<DeflateBitReader>(reinterpret_cast<DeflateBitReader*>(&ctx), compressed_data, compressed_data + compressed_data_size);
+	}
+
+	unsigned int deflate::decompressBlock(Context& ctx, uint8_t* out, size_t current_out_offset, size_t max_decompressed_size, bool& final_block) noexcept
+	{
+		auto& br = reinterpret_cast<DeflateBitReader&>(ctx);
+		final_block = br.getBits(1);
+		const auto block_type = br.getBits(2);
+		switch (block_type)
+		{
+		case 0:
+			return copy_stored(br, out, current_out_offset, max_decompressed_size - current_out_offset);
+
+		case 1:
+			return decompress_block(br, false, out, current_out_offset, max_decompressed_size - current_out_offset);
+
+		case 2:
+			return decompress_block(br, true, out, current_out_offset, max_decompressed_size - current_out_offset);
+
+		case 3:
+			return -1;
+		}
+		SOUP_UNREACHABLE;
+	}
+
+	std::string deflate::decompressZeroTerminated(const std::string& data) SOUP_EXCAL
+	{
+		Context ctx;
+		initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
+		const size_t max_decompressed_size = getMaxDecompressedSize(data.data(), data.size());
+		std::string out(max_decompressed_size, '\0'); // excal
+		size_t current_out_offset = 0;
+		unsigned int block_result;
+		do {
+			bool final_block;
+			block_result = decompressBlock(ctx, reinterpret_cast<uint8_t*>(out.data()), current_out_offset, max_decompressed_size, final_block);
+			SOUP_IF_UNLIKELY (block_result == -1)
+			{
+				return {};
+			}
+			current_out_offset += block_result;
+		} while (block_result != 0);
+		out.resize(current_out_offset);
+		return out;
 	}
 }

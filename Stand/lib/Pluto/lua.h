@@ -28,7 +28,7 @@
 #define LUA_VERSION_NUM  (LUA_VERSION_MAJOR_N * 100 + LUA_VERSION_MINOR_N)
 #define LUA_VERSION_RELEASE_NUM  (LUA_VERSION_NUM * 100 + LUA_VERSION_RELEASE_N)
 
-#define PLUTO_VERSION "Pluto 0.13.1"
+#define PLUTO_VERSION "Pluto 0.13.2"
 #define PLUTO_COPYRIGHT_NO_BASED PLUTO_VERSION ", Copyright (C) 2022-2026 PlutoLang.org, PlutoLang (https://github.com/PlutoLang)"
 #define PLUTO_COPYRIGHT PLUTO_COPYRIGHT_NO_BASED "\r\nBased on " LUA_COPYRIGHT
 
@@ -260,7 +260,7 @@ LUA_API const char *(lua_pushexternalstring) (lua_State *L,
 LUA_API const char *(lua_pushstring) (lua_State *L, const char *s);
 #ifdef __cplusplus
 PLUTO_API const char *(pluto_pushstring) (lua_State* L, const std::string& str);
-PLUTO_API const char *(pluto_pushstring) (lua_State* L, const std::string_view&& str);
+PLUTO_API const char *(pluto_pushstring) (lua_State* L, const std::string_view& str);
 #endif
 LUA_API const char *(lua_pushvfstring) (lua_State *L, const char *fmt,
                                                       va_list argp);

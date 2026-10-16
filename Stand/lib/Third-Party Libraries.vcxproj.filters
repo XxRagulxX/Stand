@@ -1883,6 +1883,9 @@
     <ClInclude Include="Pluto\vendor\Soup\soup\aes_intrin.hpp">
       <Filter>Pluto\vendor\Soup</Filter>
     </ClInclude>
+    <ClInclude Include="Pluto\vendor\Soup\soup\tunables.hpp">
+      <Filter>Pluto\vendor\Soup</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTK\TeapotData.inc">

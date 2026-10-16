@@ -372,7 +372,7 @@ namespace Stand
 		{
 			g_gui.on_command_state_change();
 		}
-		if (!click.isWeb() && isActiveOnWeb())
+		if (click.type != CLICK_WEB && isActiveOnWeb())
 		{
 			Exceptional::createManagedExceptionalThread(__FUNCTION__, [this]
 			{

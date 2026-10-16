@@ -1,4 +1,9 @@
 <p>Time is provided as observed in Central Europe.</p>
+<?php printHeader('Stand 26.10.1', '16/10/2026 14:08'); ?>
+<ul>
+	<li>Fixed some commands not updating their state on the web interface when used via web interface command box</li>
+	<li>Lua API: Updated Pluto to 0.13.2 (<a href="https://pluto.do/changes" target="_blank">https://pluto.do/changes</a>)</li>
+</ul>
 <?php printHeader('Stand 26.9.1', '10/09/2026 21:57'); ?>
 <ul>
 	<li>Updated the communication protocol of the web interface to be more responsive by using a LAN route when available</li>
@@ -258,6 +263,10 @@
 	<li>Re-added kick all & crash all</li>
 	<li>Improved Rapid Fire Vehicle Weapons</li>
 	<li>Some other improvements and bugfixes</li>
+</ul>
+<?php printHeader('Stand Launchpad 1.9.3', '20/09/2024 08:02'); ?>
+<ul>
+	<li>Updated "no DLLs injected" message to mention BattlEye as a possible reason</li>
 </ul>
 <?php printHeader('Stand 24.9.4', '19/09/2024 16:36'); ?>
 <ul>

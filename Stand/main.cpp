@@ -369,14 +369,6 @@ namespace Stand
 		}
 	}
 
-	struct LogSink : public soup::logSink
-	{
-		void write(std::string&& message) final
-		{
-			g_logger.log_no_nl(std::move(message));
-		}
-	};
-
 	void mainThread()
 	{
 		THREAD_NAME("Main");
@@ -387,7 +379,10 @@ namespace Stand
 				mainInitDeferables();
 			}
 
-			soup::logSetSink(soup::make_unique<LogSink>());
+			soup::logSetWrite([](std::string&& message)
+			{
+				g_logger.log_no_nl(std::move(message));
+			});
 
 			g_hooking.init();
 

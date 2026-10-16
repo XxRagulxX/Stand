@@ -157,7 +157,7 @@ static void expr (LexState *ls, expdesc *v, tdn_t *nprop = nullptr, TypeHint *pr
 static l_noret throwerr (LexState *ls, const char *err, const char *here, intptr_t line_or_tidx, const char *note = nullptr) {
   const auto line = Pluto::ErrorMessage::decodeLine(ls, line_or_tidx);
   err = luaG_addinfo(ls->L, err, ls->source, line);
-  auto msg = new Pluto::ErrorMessage{ ls, HRED "syntax error: " BWHT }; // We'll only throw syntax errors if 'throwerr' is called
+  auto msg = new Pluto::ErrorMessage{ ls }; // We'll only throw syntax errors if 'throwerr' is called
   msg->addMsg(err);
   if (ls->t.token == TK_EOS && strstr(err, "near '<eof>'") == nullptr) {  /* for 'incomplete' in REPL */
     msg->addMsg(" near ")
@@ -279,27 +279,27 @@ static l_noret error_expected (LexState *ls, int token) {
     }
     case TK_IN: {
       throwerr(ls,
-        "expected 'in' to delimit loop iterator.", "expected 'in' symbol.",
+        "expected 'in' to delimit loop iterator", "expected 'in' symbol.",
         Pluto::ErrorMessage::encodePos(luaX_getpos(ls)));
     }
     case TK_DO: {
       throwerr(ls,
-        "expected 'do' to establish block.", "you need to replace this with the 'do' symbol.",
+        "expected 'do' to establish block", "you need to replace this with the 'do' symbol.",
         Pluto::ErrorMessage::encodePos(luaX_getpos(ls)));
     }
     case TK_END: {
       throwerr(ls,
-        "expected 'end' to terminate block.", "expected 'end' symbol after or on this line.",
+        "expected 'end' to terminate block", "expected 'end' symbol after or on this line.",
         Pluto::ErrorMessage::encodePos(luaX_getpos(ls)));
     }
     case TK_NAME: {
       throwerr(ls,
-        "expected an identifier.", "this needs a name.",
+        "expected an identifier", "this needs a name.",
         Pluto::ErrorMessage::encodePos(luaX_getpos(ls)));
     }
     case TK_PCONTINUE: {
       throwerr(ls,
-        "expected 'continue' inside a loop.", "this is not within a loop.",
+        "expected 'continue' inside a loop", "this is not within a loop.",
         Pluto::ErrorMessage::encodePos(luaX_getpos(ls)));
     }
     default: {
@@ -397,21 +397,7 @@ static void check_match (LexState *ls, int what, int who, int where, const char*
         throwerr(ls, msg, "this was the last statement.", ls->getLineNumberOfLastNonEmptyLine());
       }
       else {
-        auto err = new Pluto::ErrorMessage{ ls, RED "syntax error: " BWHT };
-        err->addMsg(luaX_token2str(ls, what))
-          .addMsg(" expected (to close ")
-          .addMsg(luaX_token2str(ls, who))
-          .addMsg(" on line ")
-          .addMsg(luaO_fmt(ls->L, "%d", where))
-          .addMsg(")")
-          .addSrcLine(ls->getLineNumberOfLastNonEmptyLine())
-          .addGenericHere();
-
-        if (note != nullptr) {
-          err->addNote(note);
-        }
-
-        err->finalizeAndThrow();
+        throwerr(ls, luaO_fmt(ls->L, "%s expected (to close %s on line %d)", luaX_token2str(ls, what), luaX_token2str(ls, who), where), "this was the last statement.", ls->getLineNumberOfLastNonEmptyLine(), note);
       }
     }
   }
@@ -1967,29 +1953,34 @@ static void field (LexState *ls, ConsControl *cc, bool for_class = false) {
   }
   else switch(ls->t.token) {
     case TK_NAME: {  /* may be 'listfield', 'recfield' or static 'funcfield' */
-      if (strcmp(getstr(ls->t.seminfo.ts), "static") == 0) {
-        luaX_next(ls);
-        check(ls, TK_FUNCTION);
-        funcfield(ls, cc, false);
+      if (luaX_lookahead(ls) == TK_FUNCTION) {
+        if (strcmp(getstr(ls->t.seminfo.ts), "static") == 0) {
+          luaX_next(ls);
+          funcfield(ls, cc, false);
+          break;
+        }
+        if (for_class) {
+          if (strcmp(getstr(ls->t.seminfo.ts), "public") == 0) {
+            luaX_next(ls);
+            funcfield(ls, cc, true);
+            break;
+          }
+          if (strcmp(getstr(ls->t.seminfo.ts), "protected") == 0) {
+            luaX_next(ls);
+            funcfield(ls, cc, true, false, true);
+            break;
+          }
+          if (strcmp(getstr(ls->t.seminfo.ts), "private") == 0) {
+            luaX_next(ls);
+            funcfield(ls, cc, true, true);
+            break;
+          }
+        }
       }
-      else if (for_class && luaX_lookahead(ls) == TK_FUNCTION && strcmp(getstr(ls->t.seminfo.ts), "public") == 0) {
-        luaX_next(ls);
-        funcfield(ls, cc, true);
-      }
-      else if (for_class && luaX_lookahead(ls) == TK_FUNCTION && strcmp(getstr(ls->t.seminfo.ts), "protected") == 0) {
-        luaX_next(ls);
-        funcfield(ls, cc, true, false, true);
-      }
-      else if (for_class && luaX_lookahead(ls) == TK_FUNCTION && strcmp(getstr(ls->t.seminfo.ts), "private") == 0) {
-        luaX_next(ls);
-        funcfield(ls, cc, true, true);
-      }
-      else {
-        if (!for_class && luaX_lookahead(ls) != '=')  /* expression? */
-          listfield(ls, cc);
-        else
-          recfield(ls, cc, for_class);
-      }
+      if (!for_class && luaX_lookahead(ls) != '=')  /* expression? */
+        listfield(ls, cc);
+      else
+        recfield(ls, cc, for_class);
       break;
     }
     case '[': {
@@ -2959,7 +2950,7 @@ static void funcargs (LexState *ls, expdesc *f, TypeDesc *funcdesc = nullptr) {
         }
         if (ls->t.token != ')') {
           if (!isnamedarg(ls)) {  /* is this not a named argument? */
-            error_expected(ls, ')');  /* then raise syntax error similar to Lua */
+            check_match(ls, ')', '(', line);  /* then raise syntax error similar to Lua */
           }
           if (!funcdesc) {
             luaX_syntaxerror(ls, "can't use named arguments here because the function was not found at parse-time");

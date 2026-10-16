@@ -657,6 +657,7 @@
     <ClInclude Include="Pluto\vendor\Soup\soup\Token.hpp" />
     <ClInclude Include="Pluto\vendor\Soup\soup\TransientToken.hpp" />
     <ClInclude Include="Pluto\vendor\Soup\soup\TrustStore.hpp" />
+    <ClInclude Include="Pluto\vendor\Soup\soup\tunables.hpp" />
     <ClInclude Include="Pluto\vendor\Soup\soup\type.hpp" />
     <ClInclude Include="Pluto\vendor\Soup\soup\type_traits.hpp" />
     <ClInclude Include="Pluto\vendor\Soup\soup\unicode.hpp" />

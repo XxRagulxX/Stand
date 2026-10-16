@@ -135,27 +135,24 @@ namespace Stand
 
 	void HttpRequestBuilder::updateNetConfig(soup::netConfig& conf) SOUP_EXCAL
 	{
-		soup::SharedPtr<soup::dnsResolver> resolver;
 		switch (dns_conduit)
 		{
 		default:
 		case Stand::DNS_CONDUIT_OS:
-			resolver = soup::make_shared<soup::dnsOsResolver>();
+			conf.dns_resolver = soup::make_shared<soup::dnsOsResolver>();
 			break;
 		case Stand::DNS_CONDUIT_SMART:
-			resolver = soup::make_shared<soup::dnsSmartResolver>();
+			conf.dns_resolver = soup::make_shared<soup::dnsSmartResolver>();
 			break;
 		case Stand::DNS_CONDUIT_HTTP:
-			resolver = soup::make_shared<soup::dnsHttpResolver>();
+			conf.dns_resolver = soup::make_shared<soup::dnsHttpResolver>();
 			break;
 		case Stand::DNS_CONDUIT_UDP:
-			resolver = soup::make_shared<soup::dnsUdpResolver>();
+			conf.dns_resolver = soup::make_shared<soup::dnsUdpResolver>();
 			break;
 		}
 #if USE_DNS_CACHE
-		conf.dns_resolver = soup::make_shared<soup::dnsCacheResolver>(std::move(resolver));
-#else
-		conf.dns_resolver = std::move(resolver);
+		conf.dns_resolver = soup::make_shared<soup::dnsCacheResolver>(std::move(conf.dns_resolver));
 #endif
 	}
 }

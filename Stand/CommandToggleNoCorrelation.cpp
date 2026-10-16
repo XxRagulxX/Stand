@@ -173,7 +173,7 @@ namespace Stand
 		{
 			processStateChange();
 		}
-		if (!click.isWeb())
+		if (click.type != CLICK_WEB)
 		{
 			updateWebState();
 		}
