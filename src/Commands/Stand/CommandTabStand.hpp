@@ -11,7 +11,7 @@
 #include "Commands/Stand/Appearance/CommandTabFontText.hpp"
 #include "Commands/Stand/Appearance/CommandTabHeader.hpp"
 #include "Commands/Stand/Appearance/CommandListNotifySettings.hpp"
-#include "Commands/Stand/Appearance/CommandTabPosition.hpp"
+#include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
 #include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
 #include "Commands/Stand/Appearance/CommandTabTabs.hpp"
@@ -26,7 +26,7 @@ namespace Stand
 		CommandList* secret = nullptr;
 
 	public:
-		CommandTabPosition* position = nullptr;
+		CommandMenuPosition* position = nullptr;
 		CommandTabHeader* header = nullptr;
 		CommandTabAddressBar* addressBar = nullptr;
 		CommandTabCursor* cursor = nullptr;

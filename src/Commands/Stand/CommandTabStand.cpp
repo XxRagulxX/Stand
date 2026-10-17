@@ -1,5 +1,6 @@
 #include "Commands/Stand/CommandTabStand.hpp"
 
+#include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandStreamproof.hpp"
 #include "Commands/Stand/CommandMenuRainbow.hpp"
 #include "Commands/Widgets/CommandBackgroundColour.hpp"
@@ -103,7 +104,7 @@ namespace Stand
 				minigame->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("minigamerainbow") }, Rendering::Theme::kMinigame);
 				{ auto r = std::move(minigame->children.back()); minigame->children.pop_back(); minigame->children.insert(minigame->children.begin(), std::move(r)); }
 			}
-			position = appearance->createChild<CommandTabPosition>();
+			position = appearance->createChild<CommandMenuPosition>();
 			header = appearance->createChild<CommandTabHeader>();
 			addressBar = appearance->createChild<CommandTabAddressBar>();
 			cursor = appearance->createChild<CommandTabCursor>();

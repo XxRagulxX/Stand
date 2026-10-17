@@ -19,6 +19,7 @@ namespace Stand
 		explicit CommandPosition2dMouse(CommandList* parent, const CommandName& command_name);
 
 		void onEnable(Click& click) final;
+		void onTick() override;
 	private:
 		void updatePos(DirectX::SimpleMath::Vector2&& cursor_pos) const;
 	public:
