@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Rendering/StandPort/CommandColourCustom.hpp"
+#include "Rendering/StandPort/CommandColour.hpp"
 
 #include "Rendering/Gui.hpp"
-#include "Rendering/StandPort/StandRendererCompat.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
-	class CommandPrimaryColour : public CommandColourCustom
+	class CommandPrimaryColour : public CommandColour
 	{
 	public:
 		explicit CommandPrimaryColour(CommandList* const parent)
-			: CommandColourCustom(parent, LOC("CLRFR"), { CMDNAME("primary") }, NOLABEL, DirectX::SimpleMath::Color(1.0f, 0.0f, 1.0f, 1.0f))
+			: CommandColour(parent, LOC("CLRFR"), { CMDNAME("primary") }, NOLABEL, 255, 0, 255, 255)
 		{
 		}
 
@@ -19,7 +19,7 @@ namespace Stand
 		{
 			if (g_gui.canUpdateThemeSetting())
 			{
-				g_renderer.focusRectColour = getRGBA();
+				Rendering::Theme::kAccent = getRGBA();
 			}
 		}
 	};

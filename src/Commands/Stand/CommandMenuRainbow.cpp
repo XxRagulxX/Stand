@@ -19,6 +19,7 @@ namespace Stand
 	void CommandMenuRainbow::onHueChanged()
 	{
 		negateXMFLOAT4IfInsufficientContrast(Rendering::Theme::kFocusText, m_Target);
+		negateXMFLOAT4IfInsufficientContrast(Rendering::Theme::kFocusRightText, m_Target);
 		negateXMFLOAT4IfInsufficientContrast(Rendering::Theme::kFocusTexture, m_Target);
 	}
 }

@@ -3,6 +3,7 @@
 #include "Rendering/StandPort/CommandColour.hpp"
 
 #include "Rendering/Gui.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -16,6 +17,10 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
+			if (g_gui.canUpdateThemeSetting())
+			{
+				Rendering::Theme::kUnfocusedTexture = getRGBA();
+			}
 		}
 	};
 }

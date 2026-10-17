@@ -20,6 +20,8 @@ namespace Stand::Rendering
 
         static GridItemListGrid& GetOrCreate(Stand::CommandList* list);
 
+        [[nodiscard]] std::string GetFocusedDescription() const;
+
         void ScriptTick() override;
         void handleKey(unsigned int vkCode);
         void handleMouseHover(int16_t hx, int16_t hy);
@@ -33,7 +35,9 @@ namespace Stand::Rendering
         GridItemList* m_Item = nullptr;
         cursor_t m_CommandRows = 0;
 
+
         void moveCursor(int delta);
         void activateFocused();
+        void arrowFocused(int delta);
     };
 }

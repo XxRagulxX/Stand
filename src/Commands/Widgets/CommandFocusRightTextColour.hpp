@@ -3,7 +3,7 @@
 #include "Rendering/StandPort/CommandColour.hpp"
 
 #include "Rendering/Gui.hpp"
-#include "Rendering/StandPort/StandRendererCompat.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -19,7 +19,7 @@ namespace Stand
 		{
 			if (g_gui.canUpdateThemeSetting())
 			{
-				g_renderer.focusRightTextColour = getRGBA();
+				Rendering::Theme::kFocusRightText = getRGBA();
 			}
 		}
 	};

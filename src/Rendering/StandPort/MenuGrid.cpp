@@ -322,6 +322,14 @@ namespace Stand::Rendering
 		case VK_NUMPAD4:
 			if (MenuFocus::GetRegion() == MenuFocus::Region::Content)
 			{
+				if (auto* content = MenuNavigation::Current())
+				{
+					if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+					{
+						listGrid->handleKey(vkCode);
+						break;
+					}
+				}
 				auto* focused = MenuNavigation::Current() ? MenuFocus::GetFocusedItem(MenuNavigation::Current()) : nullptr;
 				if (!focused || !focused->onArrow(-1))
 					MenuFocus::SetRegion(MenuFocus::Region::Sidebar);
@@ -336,6 +344,11 @@ namespace Stand::Rendering
 			}
 			else if (auto* content = MenuNavigation::Current())
 			{
+				if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+				{
+					listGrid->handleKey(vkCode);
+					break;
+				}
 				if (auto* focused = MenuFocus::GetFocusedItem(content))
 					focused->onArrow(1);
 			}

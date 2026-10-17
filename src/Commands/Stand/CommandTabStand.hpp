@@ -4,7 +4,6 @@
 #include "Commands/Stand/Appearance/CommandTabAddressBar.hpp"
 #include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
 #include "Commands/Stand/Appearance/CommandTabBorder.hpp"
-#include "Commands/Stand/Appearance/CommandTabColours.hpp"
 #include "Commands/Stand/Appearance/CommandTabCommandInfoText.hpp"
 #include "Commands/Stand/Appearance/CommandTabCommands.hpp"
 #include "Commands/Stand/Appearance/CommandTabCursor.hpp"
@@ -27,7 +26,6 @@ namespace Stand
 		CommandList* secret = nullptr;
 
 	public:
-		CommandTabColours* colours = nullptr;
 		CommandTabPosition* position = nullptr;
 		CommandTabHeader* header = nullptr;
 		CommandTabAddressBar* addressBar = nullptr;

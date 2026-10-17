@@ -2,6 +2,7 @@
 
 #include "Rendering/StandPort/GridItem.hpp"
 #include "Rendering/GridRenderer.hpp"
+#include "Rendering/GridItemListGrid.hpp"
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/TextWrap.hpp"
@@ -20,13 +21,17 @@ namespace Stand::Rendering
 		// (3) between chrome pieces (Grid(default_origin, 3)).
 		constexpr float kBoxGap    = 3.f;
 
-		GridItem* FocusedItem()
+		std::string GetCurrentDescription()
 		{
 			auto* current = MenuNavigation::Current();
 			if (!current)
-				return nullptr;
+				return {};
 
-			return MenuFocus::GetFocusedItem(current);
+			if (auto* listGrid = dynamic_cast<GridItemListGrid*>(current))
+				return listGrid->GetFocusedDescription();
+
+			auto* item = MenuFocus::GetFocusedItem(current);
+			return item ? item->GetDescription() : std::string{};
 		}
 
 		// Split description on '\n' and word-wrap each section separately.
@@ -95,11 +100,7 @@ namespace Stand::Rendering
 
 	void DescriptionPanel::Draw(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 	{
-		auto* item = FocusedItem();
-		if (!item)
-			return;
-
-		const auto description = item->GetDescription();
+		const auto description = GetCurrentDescription();
 		if (description.empty())
 			return;
 
@@ -123,11 +124,7 @@ namespace Stand::Rendering
 
 	void DescriptionPanel::DrawText(int16_t contentX, int16_t contentY, int16_t contentRightX, int16_t sidebarX, int16_t sidebarBottomY)
 	{
-		auto* item = FocusedItem();
-		if (!item)
-			return;
-
-		const auto description = item->GetDescription();
+		const auto description = GetCurrentDescription();
 		if (description.empty())
 			return;
 

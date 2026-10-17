@@ -55,6 +55,8 @@ namespace Stand
 
         [[nodiscard]] bool containsCommand(const Command* target) const noexcept;
 
+        [[nodiscard]] std::string GetDescription() const override;
+
         void draw() override;
         void drawText() override;
 

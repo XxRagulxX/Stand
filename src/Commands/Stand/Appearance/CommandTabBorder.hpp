@@ -1,6 +1,6 @@
 #pragma once
 #include "Rendering/StandPort/CommandColour.hpp"
-#include "Commands/Stand/Appearance/CommandTabColours.hpp"
+#include "Commands/Widgets/CommandColourRainbow.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"

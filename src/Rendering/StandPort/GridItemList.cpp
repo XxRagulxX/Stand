@@ -7,7 +7,7 @@
 #include "Commands/CommandTextslider.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"
-#include "Commands/Widgets/CommandReadonlyValue.hpp"
+#include "Rendering/StandPort/CommandReadonlyValue.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
@@ -20,6 +20,7 @@
 #include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Rendering/StandPort/ColourUtil.hpp"
 #include "Util/Joaat.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
@@ -296,19 +297,19 @@ namespace Stand
                 }
                 else if (command->type == COMMAND_READONLY_VALUE)
                 {
-                    auto val = command->as<StandWidgets::CommandReadonlyValue>()->GetValue();
-                    if (!val.empty())
+                    auto* rov = static_cast<Stand::CommandReadonlyValue*>(command);
+                    if (!rov->value.empty())
                     {
-                        std::wstring wval(val.begin(), val.end());
-                        auto val_w = GridRenderer::MeasureText(val.c_str(), Theme::kTextScale).x;
-                        auto name_w = GridRenderer::MeasureText(std::string(name.begin(), name.end()).c_str(), Theme::kTextScale).x;
+                        std::string utf8val(rov->value.begin(), rov->value.end());
+                        float val_w = GridRenderer::MeasureText(utf8val.c_str(), Theme::kTextScale).x;
+                        float name_w = GridRenderer::MeasureText(std::string(name.begin(), name.end()).c_str(), Theme::kTextScale).x;
                         if (val_w > command_name_max_width - (name_w + 5.f))
                         {
-                            name.append(L": ").append(wval);
+                            name.append(L": ").append(rov->value);
                         }
                         else
                         {
-                            draw_data.rightbound_text = std::move(wval);
+                            draw_data.rightbound_text = rov->value;
                             draw_data.rightbound_text_width = val_w;
                             command_name_max_width -= val_w;
                         }
@@ -513,5 +514,63 @@ namespace Stand
             }
             ++draw_cursor;
         }
+    }
+
+    std::string GridItemList::GetDescription() const
+    {
+        if (!view || view->children.empty())
+            return {};
+
+        auto* cmd = view->children[view->m_cursor].get();
+        if (!cmd)
+            return {};
+
+        auto* physical = cmd->getPhysical();
+        if (!physical)
+            return {};
+
+        std::string result = physical->help_text.getLocalisedUtf8();
+
+        if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+        {
+            if (!result.empty())
+                result += '\n';
+            result += StringUtils::utf16_to_utf8(syntax);
+        }
+
+        if (cmd->isSlider() && Rendering::Theme::kShowSliderBehaviour)
+        {
+            auto* slider = cmd->as<CommandSlider>();
+            if (slider->is_click_to_apply)
+            {
+                result += '\n';
+                result += "Click to apply.";
+            }
+            else if (!slider->command_names.empty())
+            {
+                result += '\n';
+                result += "Click to input a value.";
+            }
+            else
+            {
+                result += '\n';
+                result += slider->getRangeString();
+            }
+        }
+        else if (auto* toggle = dynamic_cast<CommandToggle*>(cmd))
+        {
+            if (toggle->correlation.isActive())
+            {
+                auto explanation = toggle->correlation.getExplanation(physical->menu_name.getLocalisedUtf8());
+                if (!explanation.empty())
+                {
+                    if (!result.empty())
+                        result += '\n';
+                    result += std::move(explanation);
+                }
+            }
+        }
+
+        return result;
     }
 }

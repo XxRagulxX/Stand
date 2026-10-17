@@ -1,16 +1,15 @@
 #include "Rendering/StandPort/CommandColourCustom.hpp"
 
+#include "Commands/Widgets/CommandDivider.hpp"
 #include "Commands/Widgets/CommandIssuable.hpp"
 #include "Rendering/StandPort/CommandColourSlider.hpp"
 #include "Commands/Widgets/CommandStateSerializer.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/StandPort/ColourUtil.hpp"
-#include "Rendering/StandPort/CommandDivider.hpp"
 #include "Rendering/StandPort/CommandColourHex.hpp"
 #include "Rendering/StandPort/CommandCurrentCustomColourHex.hpp"
 #include "Rendering/StandPort/CommandLambdaAction.hpp"
 #include "Rendering/StandPort/get_next_arg.hpp"
-#include "lib/soup/Rgb.hpp"
 #include "lib/soup/unicode.hpp"
 
 #include <format>
@@ -61,7 +60,10 @@ namespace Stand
 
 	void CommandColourCustom::populateWithOptionalCopyFrom(CommandColourCustom* const copy_from)
 	{
-		populate();
+		if (copy_from)
+			populate(copy_from);
+		else
+			populate();
 	}
 
 	void CommandColourCustom::populate(CommandColourCustom* const copy_from)

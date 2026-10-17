@@ -1,6 +1,18 @@
 #include "Commands/Stand/CommandTabStand.hpp"
 
 #include "Commands/Stand/Appearance/CommandStreamproof.hpp"
+#include "Commands/Stand/CommandMenuRainbow.hpp"
+#include "Commands/Widgets/CommandBackgroundColour.hpp"
+#include "Commands/Widgets/CommandBlurRightTextColour.hpp"
+#include "Commands/Widgets/CommandBlurSpriteColour.hpp"
+#include "Commands/Widgets/CommandBlurTextColour.hpp"
+#include "Commands/Widgets/CommandColourPointerDirectx.hpp"
+#include "Commands/Widgets/CommandColourRainbow.hpp"
+#include "Commands/Widgets/CommandFocusRightTextColour.hpp"
+#include "Commands/Widgets/CommandFocusSpriteColour.hpp"
+#include "Commands/Widgets/CommandFocusTextColour.hpp"
+#include "Commands/Widgets/CommandPrimaryColour.hpp"
+#include "Rendering/Theme.hpp"
 #include "Commands/Stand/CommandApartments.hpp"
 #include "Commands/Stand/CommandAutoOpen.hpp"
 #include "Commands/Stand/CommandAutoProceedWarningsForCommands.hpp"
@@ -64,7 +76,33 @@ namespace Stand
 		{
 			auto appearance = settings->createChild<CommandList>(LOC("VIS"));
 
-			colours = appearance->createChild<CommandTabColours>();
+			{
+				auto colours = appearance->createChild<CommandList>(LOC("CLRS"));
+				auto* primary = colours->createChild<CommandPrimaryColour>();
+				primary->children.insert(primary->children.begin(), std::make_unique<CommandMenuRainbow>(primary));
+				auto* focusText = colours->createChild<CommandFocusTextColour>();
+				colours->createChild<CommandFocusRightTextColour>(focusText);
+				colours->createChild<CommandFocusSpriteColour>(focusText);
+				colours->createChild<CommandBackgroundColour>();
+				auto* blurText = colours->createChild<CommandBlurTextColour>();
+				colours->createChild<CommandBlurRightTextColour>(blurText);
+				colours->createChild<CommandBlurSpriteColour>(blurText);
+				auto* hud = colours->createChild<CommandColourPointerDirectx>(
+					reinterpret_cast<DirectX::SimpleMath::Color*>(&Rendering::Theme::kHud),
+					LOC("CLRHU"), std::vector<CommandName>{ CMDNAME("hud") }, primary);
+				hud->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("hudrainbow") }, Rendering::Theme::kHud);
+				{ auto r = std::move(hud->children.back()); hud->children.pop_back(); hud->children.insert(hud->children.begin(), std::move(r)); }
+				auto* ar = colours->createChild<CommandColourPointerDirectx>(
+					reinterpret_cast<DirectX::SimpleMath::Color*>(&Rendering::Theme::kAr),
+					LOC("CLRAR"), std::vector<CommandName>{ CMDNAME("ar") }, primary);
+				ar->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("arrainbow") }, Rendering::Theme::kAr);
+				{ auto r = std::move(ar->children.back()); ar->children.pop_back(); ar->children.insert(ar->children.begin(), std::move(r)); }
+				auto* minigame = colours->createChild<CommandColourPointerDirectx>(
+					reinterpret_cast<DirectX::SimpleMath::Color*>(&Rendering::Theme::kMinigame),
+					LOC("CLRMGME"), std::vector<CommandName>{ CMDNAME("minigame") }, primary);
+				minigame->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("minigamerainbow") }, Rendering::Theme::kMinigame);
+				{ auto r = std::move(minigame->children.back()); minigame->children.pop_back(); minigame->children.insert(minigame->children.begin(), std::move(r)); }
+			}
 			position = appearance->createChild<CommandTabPosition>();
 			header = appearance->createChild<CommandTabHeader>();
 			addressBar = appearance->createChild<CommandTabAddressBar>();

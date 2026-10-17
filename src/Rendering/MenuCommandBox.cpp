@@ -121,11 +121,11 @@ namespace Stand::Rendering
 
 		const auto layout = ComputeLayout();
 
-		const auto& title = s_Title;
-		const auto titleSize = GridRenderer::MeasureText(title.c_str(), Theme::kSmallTextScaleMutable);
+		constexpr const char* kTitle = "Stand Command Box";
+		const auto titleSize = GridRenderer::MeasureText(kTitle, Theme::kSmallTextScaleMutable);
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.titleY + std::max(0.f, (layout.titleHeight - titleSize.y) * 0.5f),
-		    title.c_str(),
+		    kTitle,
 		    Theme::kText,
 		    Theme::kSmallTextScaleMutable);
 
