@@ -3,7 +3,7 @@
 #include "Commands/Widgets/CommandSlider.hpp"
 
 #include "Rendering/Gui.hpp"
-#include "Rendering/StandPort/StandRendererCompat.hpp"
+#include "Rendering/HeaderBanner.hpp"
 
 namespace Stand
 {
@@ -19,7 +19,7 @@ namespace Stand
 		{
 			if (g_gui.canUpdateThemeSetting())
 			{
-				g_renderer.header_speed = value;
+				Rendering::HeaderBanner::SetFrameIntervalMs(static_cast<int64_t>(value));
 			}
 		}
 	};

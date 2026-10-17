@@ -9,7 +9,6 @@
 #include "Commands/Stand/Appearance/CommandTabCursor.hpp"
 #include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
 #include "Commands/Stand/Appearance/CommandTabFontText.hpp"
-#include "Commands/Stand/Appearance/CommandTabHeader.hpp"
 #include "Commands/Stand/Appearance/CommandListNotifySettings.hpp"
 #include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
@@ -27,7 +26,6 @@ namespace Stand
 
 	public:
 		CommandMenuPosition* position = nullptr;
-		CommandTabHeader* header = nullptr;
 		CommandTabAddressBar* addressBar = nullptr;
 		CommandTabCursor* cursor = nullptr;
 		CommandTabTabs* tabs = nullptr;

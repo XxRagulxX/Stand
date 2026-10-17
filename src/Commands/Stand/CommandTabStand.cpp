@@ -2,6 +2,10 @@
 
 #include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandStreamproof.hpp"
+#include "Commands/Widgets/CommandHeader.hpp"
+#include "Commands/Widgets/CommandHeaderAnimationSpeed.hpp"
+#include "Commands/Widgets/CommandHeaderBgBlur.hpp"
+#include "Commands/Widgets/CommandHeaderOpenFolder.hpp"
 #include "Commands/Stand/CommandMenuRainbow.hpp"
 #include "Commands/Widgets/CommandBackgroundColour.hpp"
 #include "Commands/Widgets/CommandBlurRightTextColour.hpp"
@@ -105,7 +109,13 @@ namespace Stand
 				{ auto r = std::move(minigame->children.back()); minigame->children.pop_back(); minigame->children.insert(minigame->children.begin(), std::move(r)); }
 			}
 			position = appearance->createChild<CommandMenuPosition>();
-			header = appearance->createChild<CommandTabHeader>();
+			{
+				auto* headerList = appearance->createChild<CommandList>(LOC("HDR"));
+				headerList->createChild<CommandHeader>();
+				headerList->createChild<CommandHeaderAnimationSpeed>();
+				headerList->createChild<CommandHeaderBgBlur>();
+				headerList->createChild<CommandHeaderOpenFolder>();
+			}
 			addressBar = appearance->createChild<CommandTabAddressBar>();
 			cursor = appearance->createChild<CommandTabCursor>();
 			tabs = appearance->createChild<CommandTabTabs>();
