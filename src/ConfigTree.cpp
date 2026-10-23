@@ -35,12 +35,12 @@ namespace Stand
 			return;
 
 		auto buf = std::string();
-		EXCEPTIONAL_LOCK_READ(g_gui.root_mtx)
+		g_gui.root_mtx.lockRead();
 		buf.append("Tree Compatibility Version: ");
 		buf.append(fmt::to_string(Util::menu_names_version));
 		buf.push_back('\n');
 		saveImpl(buf, {}, {}, g_gui.root_list.get(), [](){});
-		EXCEPTIONAL_UNLOCK_READ(g_gui.root_mtx)
+		g_gui.root_mtx.unlockRead();
 
 		auto path = getPath();
 		std::filesystem::create_directories(std::filesystem::path(path).parent_path());

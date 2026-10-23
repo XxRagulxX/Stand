@@ -5,25 +5,13 @@
 #include <atomic>
 
 #define EXCEPTIONAL_LOCK_READ(mtx) \
-	mtx.lockRead();                \
-	__try                          \
-	{
+	mtx.lockRead();
 #define EXCEPTIONAL_UNLOCK_READ(mtx) \
-	}                                \
-	__EXCEPTIONAL()                  \
-	{                                \
-	}                                \
 	mtx.unlockRead();
 
 #define EXCEPTIONAL_LOCK_WRITE(mtx) \
-	mtx.lockWrite();                \
-	__try                           \
-	{
+	mtx.lockWrite();
 #define EXCEPTIONAL_UNLOCK_WRITE(mtx) \
-	}                                 \
-	__EXCEPTIONAL()                   \
-	{                                 \
-	}                                 \
 	mtx.unlockWrite();
 
 namespace Stand

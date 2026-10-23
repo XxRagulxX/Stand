@@ -84,37 +84,31 @@ namespace Stand
 								cacheupdate_thread.awaitCompletion();
 								cacheupdate_thread.start([](soup::Capture&&)
 								{
-									__try
+									bool loop = false;
+									do
 									{
-										bool loop = false;
-										do
-										{
 #if COMPACT_COMMAND_NAMES
-											auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(StringUtils::utf16_to_utf8(g_commandbox_grid.cacheupdate_input));
+										auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(StringUtils::utf16_to_utf8(g_commandbox_grid.cacheupdate_input));
 #else
-											auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(g_commandbox_grid.cacheupdate_input);
+										auto data = g_gui.findCommandsWhereCommandNameStartsWithAsWeakrefs(g_commandbox_grid.cacheupdate_input);
 #endif
-											g_commandbox_grid.cache_mtx.lock();
-											{
-												g_commandbox_grid.cache_data = std::move(data);
-												g_commandbox_grid.cache_input = std::move(g_commandbox_grid.cacheupdate_input);
-												g_commandbox_grid.cache_hasData = true;
+										g_commandbox_grid.cache_mtx.lock();
+										{
+											g_commandbox_grid.cache_data = std::move(data);
+											g_commandbox_grid.cache_input = std::move(g_commandbox_grid.cacheupdate_input);
+											g_commandbox_grid.cache_hasData = true;
 
-												loop = !g_commandbox_grid.cacheupdate_next_input.empty();
-												g_commandbox_grid.cacheupdate_running = loop;
-												if (loop)
-												{
-													g_commandbox_grid.cacheupdate_input = std::move(g_commandbox_grid.cacheupdate_next_input);
-													g_commandbox_grid.cacheupdate_next_input.clear();
-												}
+											loop = !g_commandbox_grid.cacheupdate_next_input.empty();
+											g_commandbox_grid.cacheupdate_running = loop;
+											if (loop)
+											{
+												g_commandbox_grid.cacheupdate_input = std::move(g_commandbox_grid.cacheupdate_next_input);
+												g_commandbox_grid.cacheupdate_next_input.clear();
 											}
-											g_commandbox_grid.cache_mtx.unlock();
-											g_commandbox_grid.update();
-										} while (loop);
-									}
-									__EXCEPTIONAL()
-									{
-									}
+										}
+										g_commandbox_grid.cache_mtx.unlock();
+										g_commandbox_grid.update();
+									} while (loop);
 								});
 							}
 						}
