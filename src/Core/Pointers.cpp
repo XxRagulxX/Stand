@@ -599,7 +599,7 @@ namespace Stand
 		while (!sc)
 		{
 			LOG(WARNING) << "Waiting for socialclub.dll";
-			std::this_thread::sleep_for(5s);
+			std::this_thread::sleep_for(20s);
 
 			if (IsSocialClubNeverGoingToLoad())
 			{

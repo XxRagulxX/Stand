@@ -10,28 +10,29 @@ namespace Stand
 	class CommandRootName : public CommandList
 	{
 	private:
-		int m_idx = 0;
+		int m_idx = 1;
 
 		static constexpr const char* k_names[] = {
 			"StandEnhanced",
-			"Stand",
-			"Self",
-			"Vehicle",
-			"Online",
-			"Players",
-			"World",
-			"Game",
 			"Hidden",
+			"Stand",
+			"26.10.1",
 			"Stand 26.10.1",
 			"Stand 26.10.1 (Ultimate)",
 			"Stand 26.10.1 Team Lavender",
 			"Stand 26.10.1 Red Edition",
 			"Stand 26.10.1 Model X",
-			"Stand \U0001F4AF",
 			"Stand 26.10.1 Early Access",
 			"Sit 26.10.1",
+			"Stan 26.10.1",
+			"Sand 26.10.1",
+			"Kiddion's VIP Menu 26.10.1",
+			"Rockstar Admin Tool 26.10.1",
+			"Stand 26.10.1 Femboy Edition",
+			"Stand 26.10.1 Crash Addict Edition",
+			"Stand 26.10.1 崩溃小子版",
 		};
-		static constexpr int k_count = 17;
+		static constexpr int k_count = 20;
 
 	public:
 		explicit CommandRootName(CommandList* const parent)
@@ -41,7 +42,7 @@ namespace Stand
 			{
 				createChild<CommandLambdaAction>(LIT(k_names[i]), std::vector<CommandName>{}, NOLABEL, [this, i](Click& click) {
 					m_idx = i;
-					Rendering::Theme::kAddressBarRootName = k_names[i];
+					Rendering::Theme::kAddressBarRootName = (i == 1) ? "" : k_names[i];
 				});
 			}
 		}
@@ -54,14 +55,14 @@ namespace Stand
 		bool onLeft(Click& click, bool) override
 		{
 			m_idx = (m_idx - 1 + k_count) % k_count;
-			Rendering::Theme::kAddressBarRootName = k_names[m_idx];
+			Rendering::Theme::kAddressBarRootName = (m_idx == 1) ? "" : k_names[m_idx];
 			return true;
 		}
 
 		bool onRight(Click& click, bool) override
 		{
 			m_idx = (m_idx + 1) % k_count;
-			Rendering::Theme::kAddressBarRootName = k_names[m_idx];
+			Rendering::Theme::kAddressBarRootName = (m_idx == 1) ? "" : k_names[m_idx];
 			return true;
 		}
 	};

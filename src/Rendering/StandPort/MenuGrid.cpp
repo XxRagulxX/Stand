@@ -208,18 +208,22 @@ namespace Stand::Rendering
 		if (m_Header)
 		{
 			const auto& sep = Theme::kAddressSeparator;
+			const auto& rootName = Theme::kAddressBarRootName;
 			const auto path = MenuNavigation::BreadcrumbPath();
 			std::string title;
 			if (Theme::kAddressCurrentListOnly)
 			{
 				const auto pos = path.rfind(sep);
 				title = pos == std::string::npos ? path : path.substr(pos + sep.size());
-				if (title.empty())
-					title = Theme::kAddressBarRootName;
+				if (title.empty() && !rootName.empty())
+					title = rootName;
 			}
 			else
 			{
-				title = Theme::kAddressBarRootName + sep + path;
+				if (rootName.empty())
+					title = path;
+				else
+					title = rootName + sep + path;
 			}
 			m_Header->SetTitle(std::move(title));
 

@@ -64,7 +64,7 @@ namespace Stand::Rendering::Theme
 	inline int16_t kMenuOriginY = kDefaultMenuOriginY;
 	inline bool kAddressBarVisible = true;
 	inline int16_t kAddressBarHeight = kHeaderHeight;
-	inline std::string kAddressBarRootName = "StandEnhanced";
+	inline std::string kAddressBarRootName = "";
 	inline std::string kAddressSeparator = " > ";
 	inline bool kAddressCurrentListOnly = false;
 	inline bool kAddressbarWidthAffectedByScrollbar = false;
