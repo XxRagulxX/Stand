@@ -1,5 +1,4 @@
 #pragma once
-#include "Commands/Stand/Appearance/CommandTabAddressBar.hpp"
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"

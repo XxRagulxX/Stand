@@ -17,7 +17,9 @@
 #include "Commands/Widgets/CommandFocusSpriteColour.hpp"
 #include "Commands/Widgets/CommandFocusTextColour.hpp"
 #include "Commands/Widgets/CommandPrimaryColour.hpp"
+#include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
+#include <climits>
 #include "Commands/Stand/CommandApartments.hpp"
 #include "Commands/Stand/CommandAutoOpen.hpp"
 #include "Commands/Stand/CommandAutoProceedWarningsForCommands.hpp"
@@ -45,6 +47,15 @@
 #include "Commands/Stand/CommandOpenStandFolder.hpp"
 #include "Commands/Stand/CommandProfiles.hpp"
 #include "Commands/Stand/CommandRabbitHole.hpp"
+#include "Commands/Stand/CommandRootName.hpp"
+#include "Commands/Stand/CommandShowAddressbar.hpp"
+#include "Commands/Widgets/CommandAddressbarWidthAffectedByColumns.hpp"
+#include "Commands/Widgets/CommandAddressbarWidthAffectedByScrollbar.hpp"
+#include "Commands/Widgets/CommandAddressCurrentListOnly.hpp"
+#include "Commands/Widgets/CommandAddressSeparator.hpp"
+#include "Commands/Widgets/CommandCursorPos.hpp"
+#include "Commands/Widgets/CommandCursorPosIncludesDividers.hpp"
+#include "Rendering/StandPort/CommandLambdaSlider.hpp"
 #include "Commands/Stand/CommandScripts.hpp"
 #include "Commands/Stand/CommandSelfChatCommandsFriendsPerms.hpp"
 #include "Commands/Stand/CommandShowInt.hpp"
@@ -116,7 +127,37 @@ namespace Stand
 				headerList->createChild<CommandHeaderBgBlur>();
 				headerList->createChild<CommandHeaderOpenFolder>();
 			}
-			addressBar = appearance->createChild<CommandTabAddressBar>();
+			{
+				auto addressbar = appearance->createChild<CommandList>(LOC("ADDRBAR"));
+				addressbar->createChild<CommandShowAddressbar>();
+				addressbar->createChild<CommandRootName>();
+				addressbar->createChild<CommandAddressSeparator>();
+				addressbar->createChild<CommandAddressCurrentListOnly>();
+				addressbar->createChild<CommandAddressbarWidthAffectedByScrollbar>();
+				addressbar->createChild<CommandAddressbarWidthAffectedByColumns>();
+				addressbar->createChild<CommandLambdaSlider<CommandSlider>>(LOC("HHT"), CMDNAMES("addressbarheight"), NOLABEL, 0, SHRT_MAX, 24, 1, [](int value, Click& click)
+				{
+					Rendering::Theme::kAddressBarHeight = static_cast<int16_t>(value);
+					Rendering::GridRenderer::InvalidateMenuLayout();
+				});
+				{
+						auto textSettings = addressbar->createChild<CommandList>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("addressbartext") });
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SCLE"), CMDNAMES("addressbartextscale"), NOLABEL, 1, SHRT_MAX, static_cast<int>(Rendering::Theme::kSmallTextScale * 10000.f), 1, [](int value, Click& click)
+						{
+							Rendering::Theme::kAddressbarText.scale = value / 10000.f;
+						});
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_X"), CMDNAMES("addressbartextxoffset"), NOLABEL, -15, 15, 5, 1, [](int value, Click& click)
+						{
+							Rendering::Theme::kAddressbarText.x_offset = static_cast<float>(value);
+						});
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_Y"), CMDNAMES("addressbartextyoffset"), NOLABEL, -10, 10, 0, 1, [](int value, Click& click)
+						{
+							Rendering::Theme::kAddressbarText.y_offset = static_cast<float>(value);
+						});
+					}
+				addressbar->createChild<CommandCursorPos>();
+				addressbar->createChild<CommandCursorPosIncludesDividers>();
+			}
 			cursor = appearance->createChild<CommandTabCursor>();
 			tabs = appearance->createChild<CommandTabTabs>();
 			scrollbar = appearance->createChild<CommandTabScrollbar>();

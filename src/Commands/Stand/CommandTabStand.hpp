@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Commands/Widgets/CommandTab.hpp"
-#include "Commands/Stand/Appearance/CommandTabAddressBar.hpp"
 #include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
 #include "Commands/Stand/Appearance/CommandTabBorder.hpp"
 #include "Commands/Stand/Appearance/CommandTabCommandInfoText.hpp"
@@ -26,7 +25,6 @@ namespace Stand
 
 	public:
 		CommandMenuPosition* position = nullptr;
-		CommandTabAddressBar* addressBar = nullptr;
 		CommandTabCursor* cursor = nullptr;
 		CommandTabTabs* tabs = nullptr;
 		CommandTabScrollbar* scrollbar = nullptr;

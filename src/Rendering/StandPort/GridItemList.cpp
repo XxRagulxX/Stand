@@ -186,7 +186,7 @@ namespace Stand
 
                     if (list->type == COMMAND_LIST_SELECT)
                     {
-                        auto current_value_label = static_cast<const CommandListSelect*>(command)->getCurrentValueMenuName();
+                        auto current_value_label = command->getCurrentValueMenuName();
                         auto cur_val = current_value_label.getLocalisedUtf16();
                         if (focused)
                         {

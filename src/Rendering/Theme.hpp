@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/StandPort/Position2d.hpp"
+#include "Rendering/StandPort/TextSettings.hpp"
 
 #include <DirectXMath.h>
 
@@ -63,13 +64,12 @@ namespace Stand::Rendering::Theme
 	inline int16_t kMenuOriginY = kDefaultMenuOriginY;
 	inline bool kAddressBarVisible = true;
 	inline int16_t kAddressBarHeight = kHeaderHeight;
+	inline std::string kAddressBarRootName = "StandEnhanced";
 	inline std::string kAddressSeparator = " > ";
 	inline bool kAddressCurrentListOnly = false;
 	inline bool kAddressbarWidthAffectedByScrollbar = false;
 	inline bool kAddressbarWidthAffectedByColumns = false;
-	inline float kAddressbarTextScale = kSmallTextScale;
-	inline float kAddressbarTextXOffset = 5.f;
-	inline float kAddressbarTextYOffset = 0.f;
+	inline TextSettings kAddressbarText{ 0.525f, 5.f, 0.f };
 	inline bool kShowCursorPos = false;
 	inline bool kCursorPosIncludesDividers = false;
 	inline int kCursorPadding = 2;

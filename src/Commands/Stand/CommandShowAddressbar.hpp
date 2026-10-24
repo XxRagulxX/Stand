@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Commands/Widgets/CommandToggle.hpp"
+#include "Rendering/GridRenderer.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -14,6 +16,8 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
+			Rendering::Theme::kAddressBarVisible = m_on;
+			Rendering::GridRenderer::InvalidateMenuLayout();
 		}
 	};
 }

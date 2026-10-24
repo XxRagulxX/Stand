@@ -119,6 +119,11 @@ namespace Stand
 			return true;
 		}
 
+		[[nodiscard]] virtual Label getCurrentValueMenuName() const
+		{
+			return NOLABEL;
+		}
+
 		[[nodiscard]] virtual std::string getState() const
 		{
 			return {};

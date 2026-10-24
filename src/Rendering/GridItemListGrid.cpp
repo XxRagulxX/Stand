@@ -181,7 +181,15 @@ namespace Stand::Rendering
             return;
 
         auto* cmd = m_List->children[m_List->m_cursor].get();
-        if (cmd->isList())
+        if (cmd->isListSelect() && !cmd->isList())
+        {
+            auto* ls = static_cast<Stand::CommandListSelect*>(cmd->getPhysical());
+            FiberPool::queueJob([ls] {
+                Click click(CLICK_MENU, TC_SCRIPT_YIELDABLE);
+                ls->onRight(click, false);
+            });
+        }
+        else if (cmd->isList())
         {
             auto* childList = static_cast<Stand::CommandList*>(cmd->getPhysical());
             if (!childList)
@@ -239,14 +247,6 @@ namespace Stand::Rendering
                     });
             }
         }
-        else if (cmd->isListSelect())
-        {
-            auto* ls = static_cast<Stand::CommandListSelect*>(cmd->getPhysical());
-            FiberPool::queueJob([ls] {
-                Click click(CLICK_MENU, TC_SCRIPT_YIELDABLE);
-                ls->onRight(click, false);
-            });
-        }
         else if (auto* phys = cmd->getPhysical())
         {
             FiberPool::queueJob([phys] {
@@ -275,13 +275,13 @@ namespace Stand::Rendering
         }
         else if (cmd->isListSelect())
         {
-            auto* ls = static_cast<Stand::CommandListSelect*>(cmd->getPhysical());
-            FiberPool::queueJob([ls, delta] {
+            auto* phys = cmd->getPhysical();
+            FiberPool::queueJob([phys, delta] {
                 Click click(CLICK_MENU, TC_SCRIPT_YIELDABLE);
                 if (delta > 0)
-                    ls->onRight(click, false);
+                    phys->onRight(click, false);
                 else
-                    ls->onLeft(click, false);
+                    phys->onLeft(click, false);
             });
         }
     }

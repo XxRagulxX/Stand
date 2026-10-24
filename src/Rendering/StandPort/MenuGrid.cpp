@@ -16,6 +16,8 @@
 #include "Commands/World/CommandTabWorld.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
 
+#include "Commands/Widgets/CommandList.hpp"
+
 #include <utility>
 #include <windows.h>
 
@@ -73,7 +75,7 @@ namespace Stand::Rendering
 
 		if (Theme::kAddressBarVisible)
 		{
-			auto header = std::make_unique<GridItemAddressbar>(headerW, Theme::kAddressBarHeight, "StandEnhanced");
+			auto header = std::make_unique<GridItemAddressbar>(headerW, Theme::kAddressBarHeight, Theme::kAddressBarRootName);
 			m_Header = header.get();
 			items_draft.push_back(std::move(header));
 		}
@@ -82,7 +84,8 @@ namespace Stand::Rendering
 		{
 			if (sidebarIsVertical)
 			{
-				auto sidebar = std::make_unique<GridItemTabsVertical>(Theme::kTabsWidth, Theme::kTabsHeight, SidebarLabels(), kSelfIndex);
+				const size_t initialTab = (m_LastSidebarIndex != static_cast<size_t>(-1)) ? m_LastSidebarIndex : kSelfIndex;
+				auto sidebar = std::make_unique<GridItemTabsVertical>(Theme::kTabsWidth, Theme::kTabsHeight, SidebarLabels(), initialTab);
 
 				if (position == Theme::TabsPosition::Right)
 				{
@@ -96,7 +99,8 @@ namespace Stand::Rendering
 			}
 			else
 			{
-				auto sidebar = std::make_unique<GridItemTabsHorizontal>(static_cast<float>(Theme::kTabsHeight), SidebarLabels(), kSelfIndex);
+				const size_t initialTab = (m_LastSidebarIndex != static_cast<size_t>(-1)) ? m_LastSidebarIndex : kSelfIndex;
+				auto sidebar = std::make_unique<GridItemTabsHorizontal>(static_cast<float>(Theme::kTabsHeight), SidebarLabels(), initialTab);
 
 				if (position == Theme::TabsPosition::Bottom)
 				{
@@ -211,13 +215,33 @@ namespace Stand::Rendering
 				const auto pos = path.rfind(sep);
 				title = pos == std::string::npos ? path : path.substr(pos + sep.size());
 				if (title.empty())
-					title = "StandEnhanced";
+					title = Theme::kAddressBarRootName;
 			}
 			else
 			{
-				title = "StandEnhanced" + sep + path;
+				title = Theme::kAddressBarRootName + sep + path;
 			}
 			m_Header->SetTitle(std::move(title));
+
+			std::string cursorPos;
+			if (Theme::kShowCursorPos)
+			{
+				if (auto* content = MenuNavigation::Current())
+				{
+					if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
+					{
+						if (auto* list = listGrid->getCommandList())
+						{
+							const auto dividers = Theme::kCursorPosIncludesDividers ? 0 : list->dividers;
+							const auto total = static_cast<int>(list->children.size()) - dividers;
+							const auto cursor = static_cast<int>(list->m_cursor) + 1;
+							if (total > 0)
+								cursorPos = std::to_string(cursor) + "/" + std::to_string(total);
+						}
+					}
+				}
+			}
+			m_Header->SetCursorPos(std::move(cursorPos));
 		}
 	}
 

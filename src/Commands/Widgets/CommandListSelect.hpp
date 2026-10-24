@@ -27,7 +27,7 @@ namespace Stand
         bool onLeft(Click& click, bool holding) override;
         bool onRight(Click& click, bool holding) override;
 
-        [[nodiscard]] Label getCurrentValueMenuName() const;
+        [[nodiscard]] Label getCurrentValueMenuName() const override;
         [[nodiscard]] Label getCurrentValueHelpText() const;
         [[nodiscard]] CommandPhysical* getCurrentValueCommand() const { return nullptr; }
 

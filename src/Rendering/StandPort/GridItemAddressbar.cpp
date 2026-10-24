@@ -14,8 +14,20 @@ namespace Stand::Rendering
 
 	void GridItemAddressbar::drawText()
 	{
-		const float scale = Theme::kAddressbarTextScale;
-		const float maxW = static_cast<float>(width) - Theme::kAddressbarTextXOffset * 2.f;
+		const float scale = Theme::kAddressbarText.scale;
+		const float xOffset = Theme::kAddressbarText.x_offset;
+		const float yOffset = Theme::kAddressbarText.y_offset;
+
+		float reservedRight = 0.f;
+		if (!m_CursorPos.empty())
+		{
+			const auto cpSize = GridRenderer::MeasureText(m_CursorPos.c_str(), scale);
+			reservedRight = cpSize.x + xOffset;
+			const float textY = y + yOffset + std::max(0.f, (height - cpSize.y) * 0.5f);
+			GridRenderer::DrawText(x + width - reservedRight, textY, m_CursorPos.c_str(), Theme::kText, scale);
+		}
+
+		const float maxW = static_cast<float>(width) - xOffset * 2.f - reservedRight;
 
 		std::string display = m_Title;
 		const std::string& sep = Theme::kAddressSeparator;
@@ -28,7 +40,7 @@ namespace Stand::Rendering
 			display = display.substr(pos + sep.size());
 		}
 
-		const float textY = y + Theme::kAddressbarTextYOffset + std::max(0.f, (height - GridRenderer::MeasureText(display.c_str(), scale).y) * 0.5f);
-		GridRenderer::DrawText(x + Theme::kAddressbarTextXOffset, textY, display.c_str(), Theme::kText, scale);
+		const float textY = y + yOffset + std::max(0.f, (height - GridRenderer::MeasureText(display.c_str(), scale).y) * 0.5f);
+		GridRenderer::DrawText(x + xOffset, textY, display.c_str(), Theme::kText, scale);
 	}
 }

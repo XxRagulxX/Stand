@@ -22,7 +22,13 @@ namespace Stand::Rendering
 			m_Title = std::move(title);
 		}
 
+		void SetCursorPos(std::string cursorPos)
+		{
+			m_CursorPos = std::move(cursorPos);
+		}
+
 	private:
 		std::string m_Title;
+		std::string m_CursorPos;
 	};
 }
