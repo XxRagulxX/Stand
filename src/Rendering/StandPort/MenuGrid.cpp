@@ -256,6 +256,13 @@ namespace Stand::Rendering
 
 		if (auto* content = MenuNavigation::Current())
 		{
+			const auto currentOrigin = Theme::GetContentOrigin();
+			if (content->origin.x != currentOrigin.x || content->origin.y != currentOrigin.y)
+			{
+				content->origin = currentOrigin;
+				content->InvalidateLayout();
+			}
+
 			const auto visibleHeight = ContentVisibleHeight(content);
 
 			int16_t cx, cy, cw, ch;

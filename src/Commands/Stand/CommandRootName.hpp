@@ -32,7 +32,7 @@ namespace Stand
 			"Stand 26.10.1 Crash Addict Edition",
 			"Stand 26.10.1 崩溃小子版",
 		};
-		static constexpr int k_count = 20;
+		static constexpr int k_count = 18;
 
 	public:
 		explicit CommandRootName(CommandList* const parent)

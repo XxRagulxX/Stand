@@ -82,7 +82,8 @@ namespace Stand::Rendering::Theme
 
 	Position2d GetContentOrigin()
 	{
-		const auto contentY = static_cast<int16_t>(kDefaultMenuOriginY + kHeaderHeight + kSpacer);
+		const auto addressBarOffset = kAddressBarVisible ? static_cast<int16_t>(kAddressBarHeight + kSpacer) : 0;
+		const auto contentY = static_cast<int16_t>(kDefaultMenuOriginY + addressBarOffset);
 
 		if (!kTabsVisible)
 			return Position2d{kDefaultMenuOriginX, contentY};
