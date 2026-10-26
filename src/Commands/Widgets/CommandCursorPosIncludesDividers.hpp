@@ -2,7 +2,7 @@
 
 #include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Rendering/Gui.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -16,10 +16,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
-			if (g_gui.canUpdateThemeSetting())
-			{
-				g_gui.cursor_pos_includes_dividers = m_on;
-			}
+			Rendering::Theme::kCursorPosIncludesDividers = m_on;
 		}
 	};
 }

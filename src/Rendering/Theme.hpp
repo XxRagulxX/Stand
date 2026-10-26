@@ -69,7 +69,7 @@ namespace Stand::Rendering::Theme
 	inline bool kAddressCurrentListOnly = false;
 	inline bool kAddressbarWidthAffectedByScrollbar = false;
 	inline bool kAddressbarWidthAffectedByColumns = false;
-	inline TextSettings kAddressbarText{ 0.525f, 5.f, 0.f };
+	inline TextSettings kAddressbarText{ 0.525f, -2.f, 2.f };
 	inline bool kShowCursorPos = false;
 	inline bool kCursorPosIncludesDividers = false;
 	inline int kCursorPadding = 2;

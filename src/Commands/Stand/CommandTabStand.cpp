@@ -142,15 +142,15 @@ namespace Stand
 				});
 				{
 						auto textSettings = addressbar->createChild<CommandList>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("addressbartext") });
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SCLE"), CMDNAMES("addressbartextscale"), NOLABEL, 1, SHRT_MAX, static_cast<int>(Rendering::Theme::kSmallTextScale * 10000.f), 1, [](int value, Click& click)
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SCLE"), CMDNAMES("addressbartextscale"), NOLABEL, 1, 50, static_cast<int>(Rendering::Theme::kSmallTextScale * 20.f), 1, [](int value, Click& click)
 						{
-							Rendering::Theme::kAddressbarText.scale = value / 10000.f;
+							Rendering::Theme::kAddressbarText.scale = value / 20.f;
 						});
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_X"), CMDNAMES("addressbartextxoffset"), NOLABEL, -15, 15, 5, 1, [](int value, Click& click)
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_X"), CMDNAMES("addressbartextxoffset"), NOLABEL, -15, 15, -2, 1, [](int value, Click& click)
 						{
 							Rendering::Theme::kAddressbarText.x_offset = static_cast<float>(value);
 						});
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_Y"), CMDNAMES("addressbartextyoffset"), NOLABEL, -10, 10, 0, 1, [](int value, Click& click)
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_Y"), CMDNAMES("addressbartextyoffset"), NOLABEL, -10, 10, 2, 1, [](int value, Click& click)
 						{
 							Rendering::Theme::kAddressbarText.y_offset = static_cast<float>(value);
 						});

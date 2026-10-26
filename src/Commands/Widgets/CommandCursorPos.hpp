@@ -2,8 +2,7 @@
 
 #include "Commands/Widgets/CommandToggle.hpp"
 
-#include "Rendering/StandPort/MenuGrid.hpp"
-#include "Rendering/Gui.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -17,10 +16,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
-			g_MenuGrid.updateSetting([this]
-			{
-				g_gui.show_cursor_pos = m_on;
-			});
+			Rendering::Theme::kShowCursorPos = m_on;
 		}
 	};
 }
