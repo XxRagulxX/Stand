@@ -54,7 +54,9 @@
 #include "Commands/Widgets/CommandAddressCurrentListOnly.hpp"
 #include "Commands/Widgets/CommandAddressSeparator.hpp"
 #include "Commands/Widgets/CommandCursorPos.hpp"
+#include "Commands/Widgets/CommandCursorPadding.hpp"
 #include "Commands/Widgets/CommandCursorPosIncludesDividers.hpp"
+#include "Rendering/StandPort/CommandColour.hpp"
 #include "Rendering/StandPort/CommandLambdaSlider.hpp"
 #include "Commands/Stand/CommandScripts.hpp"
 #include "Commands/Stand/CommandSelfChatCommandsFriendsPerms.hpp"
@@ -78,6 +80,22 @@
 #include "Rendering/StandPort/CommandboxGrid.hpp"
 #include "Menu/Click.hpp"
 #include "Core/ThreadContext.hpp"
+
+namespace Stand
+{
+	class CommandCursorBorderColour : public CommandColour
+	{
+	public:
+		explicit CommandCursorBorderColour(CommandList* const parent)
+			: CommandColour(parent, LIT("Colour"), CMDNAMES("cursorbordercolour"), LIT("The colour of the cursor border."), 255, 255, 255, 255)
+		{}
+		void onChange(Click& click) override
+		{
+			auto rgba = getRGBA();
+			Rendering::Theme::kCursorBorderColour = { rgba.x, rgba.y, rgba.z, rgba.w };
+		}
+	};
+}
 
 namespace Stand
 {
@@ -158,7 +176,19 @@ namespace Stand
 				addressbar->createChild<CommandCursorPos>();
 				addressbar->createChild<CommandCursorPosIncludesDividers>();
 			}
-			cursor = appearance->createChild<CommandTabCursor>();
+			{
+				auto cursor = appearance->createChild<CommandList>(LIT("Cursor"), CMDNAMES("cursor"));
+				cursor->createChild<CommandCursorPadding>();
+				cursor->createChild<CommandDivider>(LIT("Border"));
+				cursor->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Width"), CMDNAMES("cursorborderwidth"), NOLABEL, 0, SHRT_MAX, 0, 1, [](int value, Click& click)
+				{
+					Rendering::Theme::kCursorBorderWidth = static_cast<int16_t>(value);
+				});
+				cursor->createChild<CommandTogglePointer>(&Rendering::Theme::kCursorBorderRounded, LIT("Rounded"), CMDNAMES("cursorborderrounded"));
+				auto* colour = cursor->createChild<CommandCursorBorderColour>();
+				colour->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), CMDNAMES("cursorborderrainbow"), Rendering::Theme::kCursorBorderColour);
+				{ auto r = std::move(colour->children.back()); colour->children.pop_back(); colour->children.insert(colour->children.begin(), std::move(r)); }
+			}
 			tabs = appearance->createChild<CommandTabTabs>();
 			scrollbar = appearance->createChild<CommandTabScrollbar>();
 			commandInfoText = appearance->createChild<CommandTabCommandInfoText>();

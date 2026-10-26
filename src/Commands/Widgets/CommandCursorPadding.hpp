@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Commands/Widgets/CommandSlider.hpp"
-#include "Rendering/Gui.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -15,10 +15,7 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
-			if (g_gui.canUpdateThemeSetting())
-			{
-				g_gui.cursor_padding = value;
-			}
+			Rendering::Theme::kCursorPadding = value;
 		}
 	};
 }
