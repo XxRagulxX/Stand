@@ -11,7 +11,6 @@
 #include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
 #include "Commands/Stand/Appearance/CommandTabScrollbar.hpp"
-#include "Commands/Stand/Appearance/CommandTabTabs.hpp"
 #include "Commands/Stand/Appearance/CommandTabTextures.hpp"
 #include "Commands/Stand/Input/CommandTabInput.hpp"
 
@@ -24,7 +23,6 @@ namespace Stand
 
 	public:
 		CommandMenuPosition* position = nullptr;
-		CommandTabTabs* tabs = nullptr;
 		CommandTabScrollbar* scrollbar = nullptr;
 		CommandTabCommandInfoText* commandInfoText = nullptr;
 		CommandTabCommands* commands = nullptr;

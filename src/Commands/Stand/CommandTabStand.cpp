@@ -73,7 +73,9 @@
 #include "Commands/Widgets/CommandSearchMenu.hpp"
 #include "Commands/Widgets/CommandReadonlyLink.hpp"
 #include "Commands/Widgets/CommandReadonlyName.hpp"
+#include "Commands/Widgets/CommandListSelect.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
 #include "Commands/Widgets/CommandTogglePointer.hpp"
 #include "Rendering/StandPort/CommandSliderPointer.hpp"
 #include "Rendering/StandPort/Commandbox.hpp"
@@ -83,6 +85,65 @@
 
 namespace Stand
 {
+	class CommandTabsVisible : public CommandToggle
+	{
+	public:
+		explicit CommandTabsVisible(CommandList* const parent)
+			: CommandToggle(parent, LIT("Tabs"), CMDNAMES("tabs"), NOLABEL, true)
+		{}
+		void onChange(Click& click) override
+		{
+			Rendering::Theme::kTabsVisible = m_on;
+			Rendering::GridRenderer::InvalidateMenuLayout();
+		}
+	};
+
+	class CommandTabsPositionMode : public CommandListSelect
+	{
+	public:
+		explicit CommandTabsPositionMode(CommandList* const parent)
+			: CommandListSelect(parent, LOC("POS"), CMDNAMES("tabsposition"), NOLABEL, {
+				{0, LIT("Left"),   CMDNAMES("left")},
+				{1, LIT("Right"),  CMDNAMES("right")},
+				{2, LIT("Top"),    CMDNAMES("top")},
+				{3, LIT("Bottom"), CMDNAMES("bottom")},
+			}, 0)
+		{}
+		void onChange(Click& click, long long prev_value) override
+		{
+			using P = Rendering::Theme::TabsPosition;
+			switch (value)
+			{
+			case 1: Rendering::Theme::kTabsPosition = P::Right; break;
+			case 2: Rendering::Theme::kTabsPosition = P::Top; break;
+			case 3: Rendering::Theme::kTabsPosition = P::Bottom; break;
+			default: Rendering::Theme::kTabsPosition = P::Left; break;
+			}
+			Rendering::GridRenderer::InvalidateMenuLayout();
+		}
+	};
+
+	class CommandTabsAlignment : public CommandListSelect
+	{
+	public:
+		explicit CommandTabsAlignment(CommandList* const parent)
+			: CommandListSelect(parent, LOC("TA"), CMDNAMES("tabsalignment"), NOLABEL, {
+				{0, LIT("Left"),   CMDNAMES("left")},
+				{1, LIT("Centre"), CMDNAMES("centre", "center")},
+				{2, LIT("Right"),  CMDNAMES("right")},
+			}, 0)
+		{}
+		void onChange(Click& click, long long prev_value) override
+		{
+			switch (value)
+			{
+			case 1: Rendering::Theme::kTabsAlignment = Rendering::Theme::TabsAlignment::Centre; break;
+			case 2: Rendering::Theme::kTabsAlignment = Rendering::Theme::TabsAlignment::Right; break;
+			default: Rendering::Theme::kTabsAlignment = Rendering::Theme::TabsAlignment::Left; break;
+			}
+		}
+	};
+
 	class CommandCursorBorderColour : public CommandColour
 	{
 	public:
@@ -160,9 +221,9 @@ namespace Stand
 				});
 				{
 						auto textSettings = addressbar->createChild<CommandList>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("addressbartext") });
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SCLE"), CMDNAMES("addressbartextscale"), NOLABEL, 1, 50, static_cast<int>(Rendering::Theme::kSmallTextScale * 20.f), 1, [](int value, Click& click)
+						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SCLE"), CMDNAMES("addressbartextscale"), NOLABEL, 1, SHRT_MAX, static_cast<int>(Rendering::Theme::kSmallTextScale * 10000.f), 1, [](int value, Click& click)
 						{
-							Rendering::Theme::kAddressbarText.scale = value / 20.f;
+							Rendering::Theme::kAddressbarText.scale = value / 10000.f;
 						});
 						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_X"), CMDNAMES("addressbartextxoffset"), NOLABEL, -15, 15, -2, 1, [](int value, Click& click)
 						{
@@ -177,7 +238,7 @@ namespace Stand
 				addressbar->createChild<CommandCursorPosIncludesDividers>();
 			}
 			{
-				auto cursor = appearance->createChild<CommandList>(LIT("Cursor"), CMDNAMES("cursor"));
+				auto cursor = appearance->createChild<CommandList>(LIT("Cursor"));
 				cursor->createChild<CommandCursorPadding>();
 				cursor->createChild<CommandDivider>(LIT("Border"));
 				cursor->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Width"), CMDNAMES("cursorborderwidth"), NOLABEL, 0, SHRT_MAX, 0, 1, [](int value, Click& click)
@@ -189,7 +250,41 @@ namespace Stand
 				colour->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), CMDNAMES("cursorborderrainbow"), Rendering::Theme::kCursorBorderColour);
 				{ auto r = std::move(colour->children.back()); colour->children.pop_back(); colour->children.insert(colour->children.begin(), std::move(r)); }
 			}
-			tabs = appearance->createChild<CommandTabTabs>();
+			{
+				auto tabs = appearance->createChild<CommandList>(LIT("Tabs"));
+				tabs->createChild<CommandTabsVisible>();
+				tabs->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Width"), CMDNAMES("tabswidth"), NOLABEL, 1, SHRT_MAX, Rendering::Theme::kSidebarWidth, 1, [](int value, Click& click)
+				{
+					Rendering::Theme::kTabsWidth = static_cast<int16_t>(value);
+					Rendering::GridRenderer::InvalidateMenuLayout();
+				});
+				tabs->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Height"), CMDNAMES("tabsheight"), NOLABEL, 1, SHRT_MAX, Rendering::Theme::kSidebarEntryHeight, 1, [](int value, Click& click)
+				{
+					Rendering::Theme::kTabsHeight = static_cast<int16_t>(value);
+					Rendering::GridRenderer::InvalidateMenuLayout();
+				});
+				tabs->createChild<CommandTabsPositionMode>();
+				{
+					auto text = tabs->createChild<CommandList>(LIT("Text"), CMDNAMES("tabstext"));
+					text->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Scale"), CMDNAMES("tabstextscale"), NOLABEL, 1, SHRT_MAX, static_cast<int>(Rendering::Theme::kTextScale * 10000.f), 1, [](int value, Click& click)
+					{
+						Rendering::Theme::kTabsTextScale = value / 10000.f;
+					});
+					text->createChild<CommandLambdaSlider<CommandSlider>>(LIT("X Offset"), CMDNAMES("tabstextxoffset"), NOLABEL, -15, 15, 5, 1, [](int value, Click& click)
+					{
+						Rendering::Theme::kTabsTextXOffset = static_cast<float>(value);
+					});
+					text->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Y Offset"), CMDNAMES("tabstextyoffset"), NOLABEL, -10, 10, 0, 1, [](int value, Click& click)
+					{
+						Rendering::Theme::kTabsTextYOffset = static_cast<float>(value);
+					});
+				}
+				tabs->createChild<CommandTabsAlignment>();
+				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowLeftIcon, LIT("Show Icon Left"), CMDNAMES("tabslefticon"));
+				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowName, LIT("Show Name"), CMDNAMES("tabsname"));
+				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowRightIcon, LIT("Show Icon Right"), CMDNAMES("tabsrighticon"));
+				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsIconsUseTextColour, LIT("Icons Use Text Colour"), CMDNAMES("tabsiconsusetext"));
+			}
 			scrollbar = appearance->createChild<CommandTabScrollbar>();
 			commandInfoText = appearance->createChild<CommandTabCommandInfoText>();
 			notifications = appearance->createChild<CommandListNotifySettings>();

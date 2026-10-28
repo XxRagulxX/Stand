@@ -180,27 +180,27 @@ namespace Stand::Rendering
 
 	void MenuGrid::SyncNavigation()
 	{
-		if (!SidebarItem())
-			return;
-
-		const auto activeIndex = SidebarActiveIndex();
-		if (activeIndex != m_LastSidebarIndex)
+		if (SidebarItem())
 		{
-			// Save focus index and full stack for the departing tab.
-			MenuFocus::SaveFor(MenuNavigation::Current());
-			if (m_LastSidebarIndex != static_cast<size_t>(-1))
-				MenuNavigation::SaveStackFor(m_LastSidebarIndex);
-
-			m_LastSidebarIndex = activeIndex;
-
-			for (auto& root : m_Roots)
+			const auto activeIndex = SidebarActiveIndex();
+			if (activeIndex != m_LastSidebarIndex)
 			{
-				if (root.SidebarIndex == activeIndex)
+				// Save focus index and full stack for the departing tab.
+				MenuFocus::SaveFor(MenuNavigation::Current());
+				if (m_LastSidebarIndex != static_cast<size_t>(-1))
+					MenuNavigation::SaveStackFor(m_LastSidebarIndex);
+
+				m_LastSidebarIndex = activeIndex;
+
+				for (auto& root : m_Roots)
 				{
-					if (!MenuNavigation::RestoreStackFor(activeIndex))
-						MenuNavigation::Reset(root.Label, root.Content);
-					MenuFocus::RestoreFor(MenuNavigation::Current());
-					break;
+					if (root.SidebarIndex == activeIndex)
+					{
+						if (!MenuNavigation::RestoreStackFor(activeIndex))
+							MenuNavigation::Reset(root.Label, root.Content);
+						MenuFocus::RestoreFor(MenuNavigation::Current());
+						break;
+					}
 				}
 			}
 		}
