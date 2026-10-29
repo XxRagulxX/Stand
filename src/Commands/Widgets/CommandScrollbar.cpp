@@ -1,5 +1,6 @@
 #include "Commands/Widgets/CommandScrollbar.hpp"
 
+#include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
 
 namespace Stand
@@ -16,5 +17,6 @@ namespace Stand
 	void CommandScrollbar::onChange(Click& click, long long prev_value)
 	{
 		Rendering::Theme::kScrollbarMode = (Rendering::Theme::ScrollbarMode)value;
+		Rendering::GridRenderer::InvalidateMenuLayout();
 	}
 }

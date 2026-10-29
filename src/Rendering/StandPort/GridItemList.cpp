@@ -21,34 +21,38 @@
 #include "Rendering/StandPort/ColourUtil.hpp"
 #include "Util/Joaat.hpp"
 #include "Util/StringUtils.hpp"
+#include "Util/atStringHash.hpp"
 
 namespace Stand
 {
     static std::optional<Rendering::IconSlot> getSpriteByMenuName(const Label& menu_name)
     {
         using Rendering::IconSlot;
-        switch (menu_name.getHash())
+        if (!menu_name.isLiteral())
         {
-        case "on"_J:
-            return IconSlot::Enabled;
+            switch (menu_name.getLocalisationHash())
+            {
+            case ATSTRINGHASH("ON"):
+                return IconSlot::Enabled;
 
-        case "doff"_J:
-        case "noone"_J:
-            return IconSlot::Disabled;
+            case ATSTRINGHASH("DOFF"):
+            case ATSTRINGHASH("NOONE"):
+                return IconSlot::Disabled;
 
-        case "ps_f_s"_J:
-        case "psc_m"_J:
-        case "issuer"_J:
-            return IconSlot::User;
+            case ATSTRINGHASH("PS_F_S"):
+            case ATSTRINGHASH("PSC_M"):
+            case ATSTRINGHASH("ISSUER"):
+                return IconSlot::User;
 
-        case "ps_s"_J:
-        case "psc_fm"_J:
-        case "issuer_n_me"_J:
-            return IconSlot::Friends;
+            case ATSTRINGHASH("PS_S"):
+            case ATSTRINGHASH("PSC_FM"):
+            case ATSTRINGHASH("ISSUER_N_ME"):
+                return IconSlot::Friends;
 
-        case "psc_cfm"_J:
-        case "everyone"_J:
-            return IconSlot::Users;
+            case ATSTRINGHASH("PSC_CFM"):
+            case ATSTRINGHASH("EVERYONE"):
+                return IconSlot::Users;
+            }
         }
         return std::nullopt;
     }

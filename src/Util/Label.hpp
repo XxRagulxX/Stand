@@ -80,6 +80,11 @@ namespace Stand
 			return literal_str.empty() && loc_hash == 0;
 		}
 
+		[[nodiscard]] bool isLiteral() const noexcept
+		{
+			return loc_hash == 0;
+		}
+
 		void reset() noexcept
 		{
 			hash = 0;

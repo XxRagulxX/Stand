@@ -103,6 +103,15 @@ namespace Stand::Rendering
 
 		struct EmbeddedFallback { IconSlot slot; const uint8_t* data; size_t size; };
 		static constexpr EmbeddedFallback kEmbedded[] = {
+		    { IconSlot::Enabled,       IconData::kEnabled,       IconData::kEnabledSize       },
+		    { IconSlot::Disabled,      IconData::kDisabled,      IconData::kDisabledSize      },
+		    { IconSlot::ToggleOn,      IconData::kToggleOn,      IconData::kToggleOnSize      },
+		    { IconSlot::ToggleOff,     IconData::kToggleOff,     IconData::kToggleOffSize     },
+		    { IconSlot::ToggleOnAuto,  IconData::kToggleOnAuto,  IconData::kToggleOnAutoSize  },
+		    { IconSlot::ToggleOffAuto, IconData::kToggleOffAuto, IconData::kToggleOffAutoSize },
+		    { IconSlot::ToggleOnList,  IconData::kToggleOnList,  IconData::kToggleOnListSize  },
+		    { IconSlot::ToggleOffList, IconData::kToggleOffList, IconData::kToggleOffListSize },
+		    { IconSlot::List,          IconData::kList,          IconData::kListSize          },
 		    { IconSlot::WantedStar, IconData::kWantedStar, IconData::kWantedStarSize },
 		    { IconSlot::Lock,       IconData::kLock,       IconData::kLockSize       },
 		    { IconSlot::Rs,         IconData::kRs,         IconData::kRsSize         },

@@ -74,6 +74,7 @@
 #include "Commands/Widgets/CommandReadonlyLink.hpp"
 #include "Commands/Widgets/CommandReadonlyName.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"
+#include "Commands/Widgets/CommandScrollbar.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Commands/Widgets/CommandTogglePointer.hpp"
@@ -285,7 +286,15 @@ namespace Stand
 				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowRightIcon, LIT("Show Icon Right"), CMDNAMES("tabsrighticon"));
 				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsIconsUseTextColour, LIT("Icons Use Text Colour"), CMDNAMES("tabsiconsusetext"));
 			}
-			scrollbar = appearance->createChild<CommandTabScrollbar>();
+			{
+				auto scrollbar = appearance->createChild<CommandList>(LOC("SCRLBR"));
+				scrollbar->createChild<CommandScrollbar>();
+				scrollbar->createChild<CommandLambdaSlider<CommandSlider>>(LOC("WDT"), CMDNAMES("scrollbarwidth"), NOLABEL, 1, SHRT_MAX, 6, 1, [](int value, Click& click)
+				{
+					Rendering::Theme::kScrollbarWidthMutable = static_cast<int16_t>(value);
+					Rendering::GridRenderer::InvalidateMenuLayout();
+				});
+			}
 			commandInfoText = appearance->createChild<CommandTabCommandInfoText>();
 			notifications = appearance->createChild<CommandListNotifySettings>();
 			commands = appearance->createChild<CommandTabCommands>();
