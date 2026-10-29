@@ -2,6 +2,8 @@
 
 #include "Commands/Widgets/CommandToggle.hpp"
 
+#include "Rendering/Gui.hpp"
+
 namespace Stand
 {
 	class CommandShowCmdOwners : public CommandToggle
@@ -14,6 +16,7 @@ namespace Stand
 
 		void onChange(Click& click) final
 		{
+			g_gui.show_cmd_owner = m_on;
 		}
 	};
 }

@@ -3,6 +3,8 @@
 #include "Commands/Widgets/CommandListSelect.hpp"
 
 #include "Rendering/StandPort/Alignment.hpp"
+#include "Rendering/GridRenderer.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -21,6 +23,22 @@ namespace Stand
 
 		void onChange(Click& click, long long prev_value) final
 		{
+			switch (value)
+			{
+			case ALIGN_BOTTOM_LEFT:
+				Rendering::Theme::kInfoTextPosition = Rendering::Theme::InfoTextPosition::Bottom;
+				break;
+			case ALIGN_TOP_RIGHT:
+				Rendering::Theme::kInfoTextPosition = Rendering::Theme::InfoTextPosition::Right;
+				break;
+			case ALIGN_BOTTOM_RIGHT:
+				Rendering::Theme::kInfoTextPosition = Rendering::Theme::InfoTextPosition::BelowTabs;
+				break;
+			default:
+				Rendering::Theme::kInfoTextPosition = Rendering::Theme::InfoTextPosition::Left;
+				break;
+			}
+			Rendering::GridRenderer::InvalidateMenuLayout();
 		}
 	};
 }

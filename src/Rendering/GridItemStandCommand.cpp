@@ -1,4 +1,5 @@
 #include "Rendering/GridItemStandCommand.hpp"
+#include "Rendering/GridListSelectOptions.hpp"
 
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
@@ -15,6 +16,7 @@
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/GridStandCommandList.hpp"
 #include "Rendering/MenuNavigation.hpp"
+#include "Rendering/Gui.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Scripting/FiberPool.hpp"
@@ -77,16 +79,21 @@ namespace Stand::Rendering
 		if (!physical)
 			return {};
 
-		std::string result = physical->help_text.getLocalisedUtf8();
+		std::string result;
+		if (g_gui.show_help_text)
+			result = physical->help_text.getLocalisedUtf8();
 
-		if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+		if (g_gui.show_syntax)
 		{
-			if (!result.empty())
-				result += '\n';
-			result += StringUtils::utf16_to_utf8(syntax);
+			if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += StringUtils::utf16_to_utf8(syntax);
+			}
 		}
 
-		if (m_Command->isSlider() && Theme::kShowSliderBehaviour)
+		if (m_Command->isSlider() && g_gui.show_slider_behaviour)
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
 			if (slider->is_click_to_apply)
@@ -139,11 +146,11 @@ namespace Stand::Rendering
 		{
 			auto* sel = m_Command->as<Stand::CommandListSelect>();
 
-			if (Theme::kShowSliderBehaviour)
+			if (g_gui.show_slider_behaviour)
 			{
 				if (!result.empty())
 					result += '\n';
-				result += "Click to select.";
+				result += "Click to select a value.";
 			}
 
 			auto valueHelp = sel->getCurrentValueHelpText();
@@ -157,7 +164,7 @@ namespace Stand::Rendering
 			}
 		}
 
-		if (physical->canBeUsedByOtherPlayers())
+		if (physical->canBeUsedByOtherPlayers() && g_gui.show_nonuseronly)
 		{
 			auto permLabel = getCommandPermLabel(physical->perm).getLocalisedUtf8();
 			if (!permLabel.empty())
@@ -477,7 +484,7 @@ namespace Stand::Rendering
 		if (m_Command->isToggle())
 			ToggleClicked();
 		else if (m_Command->isListSelect())
-			ListSelectStep(1);
+			Rendering::OpenListSelectOptions(m_Command->as<Stand::CommandListSelect>());
 		else if (m_Command->isList())
 			OpenSubList();
 		else if (auto* physical = m_Command->getPhysical())

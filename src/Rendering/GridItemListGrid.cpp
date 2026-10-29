@@ -1,4 +1,5 @@
 #include "Rendering/GridItemListGrid.hpp"
+#include "Rendering/GridListSelectOptions.hpp"
 
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandListRefreshable.hpp"
@@ -14,6 +15,7 @@
 #include "Commands/Widgets/CommandSliderFloat.hpp"
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
+#include "Commands/Online/CommandPerm.hpp"
 #include "Util/StringUtils.hpp"
 
 #include <algorithm>
@@ -98,16 +100,21 @@ namespace Stand::Rendering
         if (!physical)
             return {};
 
-        std::string result = physical->help_text.getLocalisedUtf8();
+        std::string result;
+        if (g_gui.show_help_text)
+            result = physical->help_text.getLocalisedUtf8();
 
-        if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+        if (g_gui.show_syntax)
         {
-            if (!result.empty())
-                result += '\n';
-            result += StringUtils::utf16_to_utf8(syntax);
+            if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+            {
+                if (!result.empty())
+                    result += '\n';
+                result += StringUtils::utf16_to_utf8(syntax);
+            }
         }
 
-        if (cmd->isSlider() && Theme::kShowSliderBehaviour)
+        if (cmd->isSlider() && g_gui.show_slider_behaviour)
         {
             auto* slider = static_cast<Stand::CommandSlider*>(cmd->getPhysical());
             if (slider->is_click_to_apply)
@@ -137,6 +144,33 @@ namespace Stand::Rendering
                         result += '\n';
                     result += std::move(explanation);
                 }
+            }
+        }
+        else if (cmd->isListSelect() && g_gui.show_slider_behaviour)
+        {
+            auto* sel = static_cast<Stand::CommandListSelect*>(physical);
+            if (!result.empty())
+                result += '\n';
+            result += "Click to select a value.";
+            auto valueHelp = sel->getCurrentValueHelpText();
+            if (!valueHelp.empty())
+            {
+                result += '\n';
+                result += sel->getCurrentValueMenuName().getLocalisedUtf8();
+                result += ": ";
+                result += valueHelp.getLocalisedUtf8();
+            }
+        }
+
+        if (physical->canBeUsedByOtherPlayers() && g_gui.show_nonuseronly)
+        {
+            auto permLabel = getCommandPermLabel(physical->perm).getLocalisedUtf8();
+            if (!permLabel.empty())
+            {
+                if (!result.empty())
+                    result += '\n';
+                result += "Other players: ";
+                result += std::move(permLabel);
             }
         }
 
@@ -181,13 +215,10 @@ namespace Stand::Rendering
             return;
 
         auto* cmd = m_List->children[m_List->m_cursor].get();
-        if (cmd->isListSelect() && !cmd->isList())
+        if (cmd->isListSelect())
         {
             auto* ls = static_cast<Stand::CommandListSelect*>(cmd->getPhysical());
-            FiberPool::queueJob([ls] {
-                Click click(CLICK_MENU, TC_SCRIPT_YIELDABLE);
-                ls->onRight(click, false);
-            });
+            Rendering::OpenListSelectOptions(ls);
         }
         else if (cmd->isList())
         {

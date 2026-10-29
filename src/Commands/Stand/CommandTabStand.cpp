@@ -34,10 +34,17 @@
 #include "Commands/Stand/CommandFeatureList.hpp"
 #include "Commands/Stand/CommandForceWarningRead.hpp"
 #include "Commands/Stand/CommandGallery.hpp"
+#include "Commands/Stand/CommandHelpPos.hpp"
+#include "Commands/Stand/CommandHelpText.hpp"
 #include "Commands/Stand/CommandInfoAlign.hpp"
 #include "Commands/Stand/CommandInfoDropShadow.hpp"
 #include "Commands/Stand/CommandInfoPos.hpp"
 #include "Commands/Stand/CommandInfoScale.hpp"
+#include "Commands/Stand/CommandInfoTextPadding.hpp"
+#include "Commands/Stand/CommandShowCmdOwners.hpp"
+#include "Commands/Stand/CommandShowNonuseronly.hpp"
+#include "Commands/Stand/CommandSyntax.hpp"
+#include "Commands/Widgets/CommandShowSliderBehaviour.hpp"
 #include "Commands/Stand/CommandLang.hpp"
 #include "Commands/Stand/CommandListMillion.hpp"
 #include "Commands/Stand/CommandListNonDefaults.hpp"
@@ -295,7 +302,21 @@ namespace Stand
 					Rendering::GridRenderer::InvalidateMenuLayout();
 				});
 			}
-			commandInfoText = appearance->createChild<CommandTabCommandInfoText>();
+			{
+				auto cmd_info_text = appearance->createChild<CommandList>(LOC("CMDINFOTXT"));
+				cmd_info_text->createChild<CommandHelpPos>();
+				cmd_info_text->createChild<CommandLambdaSlider<CommandSlider>>(LOC("WDT"), CMDNAMES("infowidth"), NOLABEL, 1, SHRT_MAX, 300, 1, [](int value, Click& click)
+				{
+					Rendering::Theme::kInfoWidth = static_cast<int16_t>(value);
+					Rendering::GridRenderer::InvalidateMenuLayout();
+				});
+				cmd_info_text->createChild<CommandInfoTextPadding>();
+				cmd_info_text->createChild<CommandHelpText>();
+				cmd_info_text->createChild<CommandSyntax>();
+				cmd_info_text->createChild<CommandShowSliderBehaviour>();
+				cmd_info_text->createChild<CommandShowNonuseronly>();
+				cmd_info_text->createChild<CommandShowCmdOwners>();
+			}
 			notifications = appearance->createChild<CommandListNotifySettings>();
 			commands = appearance->createChild<CommandTabCommands>();
 			border = appearance->createChild<CommandTabBorder>();

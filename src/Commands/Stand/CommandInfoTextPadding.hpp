@@ -2,6 +2,9 @@
 
 #include "Commands/Widgets/CommandSlider.hpp"
 
+#include "Rendering/GridRenderer.hpp"
+#include "Rendering/Theme.hpp"
+
 namespace Stand
 {
 	class CommandInfoTextPadding : public CommandSlider
@@ -14,6 +17,8 @@ namespace Stand
 
 		void onChange(Click& click, int prev_value) final
 		{
+			Rendering::Theme::kInfoPadding = static_cast<int16_t>(value);
+			Rendering::GridRenderer::InvalidateMenuLayout();
 		}
 	};
 }
