@@ -5,10 +5,12 @@
 #include "Scripting/NativeHooks.hpp"
 #include "Game/ControllerInputs.hpp"
 #include "Rendering/MenuPopup.hpp"
+#include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/ToggleCorrelation.hpp"
 #include "Rendering/Gui.hpp"
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/StandPort/Grid.hpp"
+#include "Rendering/StandPort/NotifyGrid.hpp"
 
 namespace Stand
 {
@@ -181,12 +183,18 @@ namespace Stand
 				}
 			}
 
+			g_gui.opened = GUI::IsOpen();
+
 			if (GUI::IsOpen())
 			{
 				if (auto* content = Rendering::MenuNavigation::Current())
 					content->ScriptTick();
 			}
 
+			for (auto* list : CommandList::s_active_list_update_listeners)
+				list->onActiveListUpdate();
+
+			Stand::g_notify_grid.onTick();
 			Script::current()->yield();
 		}
 	}

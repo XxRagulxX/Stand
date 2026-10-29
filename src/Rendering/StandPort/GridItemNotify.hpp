@@ -5,36 +5,30 @@
 #include <functional>
 #include <string>
 #include <vector>
-#include "Util/StringUtils.hpp"
 
 namespace Stand::Rendering
 {
-	class GridItemNotify : public GridItem
-	{
-	public:
-		static void Freeze();
-		static void Unfreeze();
-		[[nodiscard]] static bool IsFrozen() noexcept;
+    class GridItemNotify : public GridItem
+    {
+    public:
+        const time_t show_until;
+        time_t flash_until;
+        bool frozen;
+        bool flashing;
 
-		const time_t show_until;
-		time_t flash_until;
-		bool frozen;
-		bool flashing;
+        explicit GridItemNotify(std::string&& text, time_t show_until, time_t flash_until, std::function<void()> on_expire);
+        explicit GridItemNotify(const std::wstring& text, time_t show_until, time_t flash_until);
+        ~GridItemNotify();
 
-		explicit GridItemNotify(std::string&& text, time_t show_until, time_t flash_until, std::function<void()> on_expire);
-		explicit GridItemNotify(const std::wstring& text, time_t show_until, time_t flash_until)
-			: GridItemNotify(StringUtils::utf16_to_utf8(text), show_until, flash_until, nullptr) {}
-		~GridItemNotify();
+        void draw() final;
 
-		void draw() final;
+    protected:
+        void drawText();
 
-	protected:
-		void drawText();
+    private:
+        const std::string text;
+        const std::function<void()> m_OnExpire;
 
-	private:
-		const std::string text;
-		const std::function<void()> m_OnExpire;
-
-		static std::vector<GridItemNotify*> s_Instances;
-	};
+        static std::vector<GridItemNotify*> s_Instances;
+    };
 }

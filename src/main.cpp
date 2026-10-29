@@ -37,8 +37,6 @@
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
 #include "Commands/Stand/Input/CommandTabInputPresets.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
 
 namespace Stand
 {
@@ -63,8 +61,6 @@ namespace Stand
 		(void)Features::GetCommandTabTransform();
 		Features::GetCommandTabStand().populate();
 		(void)Features::GetCommandTabInputPresets();
-		(void)Features::GetCommandTabNotifyPosition();
-		(void)Features::GetCommandTabNotifySample();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;

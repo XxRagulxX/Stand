@@ -143,6 +143,9 @@ namespace Stand
 		void updateWebStateImpl() const {}
 		void processChildrenUpdate();
 		void fixCursorAndOffset(bool no_padding = false);
+		static std::vector<CommandList*> s_active_list_update_listeners;
+		void registerForActiveListUpdate();
+		void unregisterFromActiveListUpdate();
 		virtual void onActiveListUpdate();
 		[[nodiscard]] bool isThisOrSublistActiveInMyTabMenu() const;
 		[[nodiscard]] bool isThisOrSublist(const CommandList* list) const;

@@ -17,6 +17,7 @@
 #include "Commands/Stand/CommandTabStand.hpp"
 
 #include "Commands/Widgets/CommandList.hpp"
+#include "Rendering/Gui.hpp"
 
 #include <utility>
 #include <windows.h>
@@ -317,6 +318,8 @@ namespace Stand::Rendering
 		case VK_BACK:
 		case VK_NUMPAD0:
 			MenuNavigation::Pop();
+			if (!g_gui.m_active_list.empty())
+				g_gui.m_active_list.pop_back();
 			break;
 
 		case VK_UP:

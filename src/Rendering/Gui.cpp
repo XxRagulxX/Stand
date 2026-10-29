@@ -16,8 +16,6 @@
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
 #include "Commands/Stand/Input/CommandTabInputPresets.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifyPosition.hpp"
-#include "Commands/Stand/Appearance/CommandTabNotifySample.hpp"
 
 namespace Stand
 {
@@ -74,8 +72,6 @@ namespace Stand
         fn(Features::GetCommandTabTransform());
         fn(Features::GetCommandTabStand());
         fn(Features::GetCommandTabInputPresets());
-        fn(Features::GetCommandTabNotifyPosition());
-        fn(Features::GetCommandTabNotifySample());
     }
 
     void Gui::saveStateInMemory(std::unordered_map<std::string, std::string>& state)

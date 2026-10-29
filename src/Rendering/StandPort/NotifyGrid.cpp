@@ -5,6 +5,7 @@
 #include "Scripting/Natives.hpp"
 #include "Scripting/ScriptGlobal.hpp"
 #include "Util/get_current_time_millis.hpp"
+#include "Util/StringUtils.hpp"
 #include "Util/Util.hpp"
 
 namespace Stand
@@ -72,6 +73,29 @@ namespace Stand
         }
     }
 
+    void NotifyGrid::draw()
+    {
+        ensurePopulated();
+        auto items_capture{ items };
+        if (!items_capture)
+            return;
+        for (const auto& item : *items_capture)
+        {
+            item->draw();
+        }
+    }
+
+    void NotifyGrid::drawText()
+    {
+        auto items_capture{ items };
+        if (!items_capture)
+            return;
+        for (const auto& item : *items_capture)
+        {
+            item->drawText();
+        }
+    }
+
     void NotifyGrid::populate(std::vector<std::unique_ptr<Rendering::GridItem>>& items_draft)
     {
         if (!persistent_notify.empty())
@@ -109,7 +133,9 @@ namespace Stand
             {
                 i->expiry_divisor = live_notifies + 1;
             }
-            items_draft.emplace_back(std::make_unique<Rendering::GridItemNotify>(i->text, i->expiry_time, i->flash_time));
+            items_draft.emplace_back(std::make_unique<Rendering::GridItemNotify>(
+            StringUtils::utf16_to_utf8(i->text), i->expiry_time, i->flash_time,
+            []() { g_notify_grid.update(); }));
             ++live_notifies;
             ++i;
         }

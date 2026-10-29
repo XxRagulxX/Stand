@@ -6,7 +6,7 @@
 #include "Commands/Stand/Appearance/CommandTabCommands.hpp"
 #include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
 #include "Commands/Stand/Appearance/CommandTabFontText.hpp"
-#include "Commands/Stand/Appearance/CommandListNotifySettings.hpp"
+#include "Commands/Widgets/CommandListNotifySettings.hpp"
 #include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
 #include "Commands/Stand/Appearance/CommandTabTextures.hpp"

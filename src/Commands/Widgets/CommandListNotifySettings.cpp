@@ -7,6 +7,7 @@
 #include "Rendering/Gui.hpp"
 #include "Rendering/StandPort/GridToaster.hpp"
 #include "Rendering/StandPort/NotifyGrid.hpp"
+#include "Util/lang.hpp"
 #include "Util/Toaster.hpp"
 
 #include "Commands/Widgets/CommandNotifyType.hpp"
@@ -21,6 +22,7 @@ namespace Stand
 	CommandListNotifySettings::CommandListNotifySettings(CommandList* parent, CommandColourCustom* primaryColour, CommandColourCustom* bgColour)
 		: CommandList(parent, LOC("NOTFS"))
 	{
+		registerForActiveListUpdate();
 		auto* type = createChild<CommandNotifyType>();
 		type->custom_pos = createChild<CommandNotifyPosition>();
 		createChild<CommandNotifyInvertFlow>();
@@ -53,8 +55,51 @@ namespace Stand
 		timing->createChild<CommandSliderPointer<CommandSlider, time_t>>(LOC("MAXDUR"), CMDNAMES("notifymaxduration"), NOLABEL, &g_grid_toaster.notifydur_max, 0, 60000, 100);
 	}
 
+	CommandListNotifySettings::~CommandListNotifySettings()
+	{
+		unregisterFromActiveListUpdate();
+	}
+
 	void CommandListNotifySettings::onActiveListUpdate()
 	{
+		if (g_gui.opened
+			&& isThisOrSublistActiveInMyTabMenu()
+			&& !timing->isThisOrSublistActiveInMyTabMenu()
+			)
+		{
+			if (!is_active)
+			{
+				is_active = true;
+				showPersistentToast();
+			}
+		}
+		else
+		{
+			if (is_active)
+			{
+				is_active = false;
+				hidePersistentToast();
+			}
+		}
+	}
+
+	void CommandListNotifySettings::onBack(ThreadContext thread_context)
+	{
+		if (is_active)
+		{
+			is_active = false;
+			hidePersistentToast();
+		}
+	}
+
+	void CommandListNotifySettings::showPersistentToast()
+	{
+		g_toaster->setPersistentToast(LANG_GET_W("IPSUM"));
+	}
+
+	void CommandListNotifySettings::hidePersistentToast()
+	{
+		g_toaster->clearPersistentToast();
 	}
 
 	void CommandListNotifySettings::setToaster(ThreadContext thread_context, Toaster* toaster)

@@ -226,8 +226,10 @@ namespace Stand::Rendering
 	public:
 		soup::SharedPtr<std::vector<std::unique_ptr<GridItem>>> items;
 
-	private:
+	protected:
 		void ensurePopulated();
+
+	private:
 
 		// Re-clamps m_ScrollOffset to [0, content height - visibleHeight]
 		// - shared by ScrollBy() and ScrollToShow(), both of which need

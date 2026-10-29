@@ -14,10 +14,15 @@ namespace Stand
 		bool is_active = false;
 
 		explicit CommandListNotifySettings(CommandList* parent, CommandColourCustom* primaryColour, CommandColourCustom* bgColour);
+		~CommandListNotifySettings();
 
 		void onActiveListUpdate() final;
+		void onBack(ThreadContext thread_context) final;
 
 		void setToaster(ThreadContext thread_context, Toaster* toaster);
 		void updateGameColour(ThreadContext thread_context);
+
+		static void showPersistentToast();
+		static void hidePersistentToast();
 	};
 }

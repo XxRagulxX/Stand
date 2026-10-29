@@ -1,6 +1,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 
 #include "Menu/Click.hpp"
+#include <algorithm>
 #include "Rendering/GridItemListGrid.hpp"
 #include "Rendering/Gui.hpp"
 #include "Rendering/MenuNavigation.hpp"
@@ -50,6 +51,19 @@ namespace Stand
 
 	void CommandList::fixCursorAndOffset(bool no_padding)
 	{
+	}
+
+	std::vector<CommandList*> CommandList::s_active_list_update_listeners{};
+
+	void CommandList::registerForActiveListUpdate()
+	{
+		s_active_list_update_listeners.push_back(this);
+	}
+
+	void CommandList::unregisterFromActiveListUpdate()
+	{
+		auto& v = s_active_list_update_listeners;
+		v.erase(std::remove(v.begin(), v.end(), this), v.end());
 	}
 
 	void CommandList::onActiveListUpdate()

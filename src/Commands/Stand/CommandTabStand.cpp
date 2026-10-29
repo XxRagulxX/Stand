@@ -317,7 +317,7 @@ namespace Stand
 				cmd_info_text->createChild<CommandShowNonuseronly>();
 				cmd_info_text->createChild<CommandShowCmdOwners>();
 			}
-			notifications = appearance->createChild<CommandListNotifySettings>();
+			notifications = appearance->createChild<CommandListNotifySettings>(nullptr, nullptr);
 			commands = appearance->createChild<CommandTabCommands>();
 			border = appearance->createChild<CommandTabBorder>();
 			appearanceDirect = appearance->createChild<CommandTabAppearanceDirect>();

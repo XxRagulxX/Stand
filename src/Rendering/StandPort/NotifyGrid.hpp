@@ -51,6 +51,8 @@ namespace Stand
         void setOriginNextToMap();
 
         void populate(std::vector<std::unique_ptr<Rendering::GridItem>>& items_draft) override;
+        void draw() override;
+        void drawText() override;
 
         void clear();
 

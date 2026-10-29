@@ -16,7 +16,7 @@
 #include "Rendering/MenuPopup.hpp"
 #include "Core/Pointers.hpp"
 #include "Rendering/InputCapture.hpp"
-#include "Rendering/Notifications.hpp"
+#include "Rendering/StandPort/NotifyGrid.hpp"
 #include "Rendering/Overlay.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Rendering/Theme.hpp"
@@ -323,25 +323,7 @@ namespace Stand::Rendering
 				MenuCommandBox::Draw();
 			}
 
-			// Real Stand's own CommandListNotifySettings::onActiveListUpdate()
-			// (Commands/Online/CommandListNotifySettings.cpp on origin/
-			// stand-reference) - shows a persistent preview notification
-			// live while Settings > Notifications (or its Custom Position
-			// sub-page) is the one currently displayed, so every setting
-			// there (Type/Position/Colour/Width/Padding) has an
-			Notifications::SetPreviewActive(false);
-
-			// Always drawn, regardless of menuActive above - see
-			// Notifications.hpp's own class comment (Overlay.cpp's own
-			// watermark-style FPS/business overlay, ESP, ChatDisplay,
-			// Onboarding, and AutoDriveHUD are the same shape: always
-			// visible, independent of any menu). MenuCommandConsole joins
-			// this group rather than the menuActive-gated one above - it
-			// now opens (the 'U' key) and works independently of
-			// GUI::IsOpen(), same as real Stand's own Gui::showCommandBox()
-			// (see its own class comment and the ungated
-			// AddWindowProcedureCallback registration in Init()).
-			Notifications::Draw();
+			Stand::g_notify_grid.draw();
 			Overlay::Draw();
 			ESP::Draw();
 			ChatDisplay::Draw();
@@ -392,7 +374,7 @@ namespace Stand::Rendering
 				MenuCommandBox::DrawText();
 			}
 
-			Notifications::DrawText();
+			Stand::g_notify_grid.drawText();
 			Overlay::DrawText();
 			ESP::DrawText();
 			ChatDisplay::DrawText();
