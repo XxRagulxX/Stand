@@ -2,7 +2,6 @@
 
 #include "Commands/Widgets/CommandTab.hpp"
 #include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
-#include "Commands/Stand/Appearance/CommandTabBorder.hpp"
 #include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
 #include "Commands/Stand/Appearance/CommandTabFontText.hpp"
 #include "Commands/Widgets/CommandListNotifySettings.hpp"
@@ -20,7 +19,6 @@ namespace Stand
 
 	public:
 		CommandMenuPosition* position = nullptr;
-		CommandTabBorder* border = nullptr;
 		CommandTabTextures* textures = nullptr;
 		CommandTabEntityPreviews* entityPreviews = nullptr;
 		CommandListNotifySettings* notifications = nullptr;

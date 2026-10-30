@@ -2,6 +2,7 @@
 
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
+#include "Rendering/StandPort/MenuGrid.hpp"
 
 #include <algorithm>
 
@@ -14,9 +15,9 @@ namespace Stand::Rendering
 
 	void GridItemAddressbar::drawText()
 	{
-		const float scale = Theme::kAddressbarText.scale;
-		const float xOffset = Theme::kAddressbarText.x_offset;
-		const float yOffset = Theme::kAddressbarText.y_offset;
+		const float scale = g_MenuGrid.addressbar_text.scale;
+		const float xOffset = g_MenuGrid.addressbar_text.x_offset;
+		const float yOffset = g_MenuGrid.addressbar_text.y_offset;
 
 		float reservedRight = 0.f;
 		if (!m_CursorPos.empty())

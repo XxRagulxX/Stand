@@ -1,7 +1,10 @@
 #pragma once
 #include "Rendering/StandPort/GridItem.hpp"
 #include "Rendering/StandPort/Position2d.hpp"
+#include "Rendering/StandPort/dx_common.hpp"
 #include "Util/Joaat.hpp"
+
+#include <SimpleMath.h>
 
 #include <soup/SharedPtr.hpp>
 
@@ -41,15 +44,17 @@ namespace Stand::Rendering
 	//   comment for why (DirectXTK12's two-pass rendering, and this
 	//   project not having Stand's Command tree to route clicks through
 	//   instead).
-	// - No border_width/border_colour/predraw_flags/content_update_queued
-	//   - all exist in Stand to support borders and the background
-	//   Worker-driven repopulation above, neither of which this project
-	//   has yet.
+	// - No predraw_flags/content_update_queued - those support the
+	//   background Worker-driven repopulation above, which this project
+	//   does not yet have.
 	class Grid
 	{
 	public:
 		Position2d origin;
 		int16_t spacer_size;
+		int16_t border_width = 0;
+		bool border_rounded = false;
+		DirectX::SimpleMath::Color border_colour = { 1.0f, 0.0f, 1.0f, 1.0f };
 
 		explicit Grid(Position2d origin, int16_t spacer_size) :
 		    origin(origin),

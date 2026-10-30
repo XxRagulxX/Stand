@@ -1,6 +1,8 @@
 #pragma once
+#include "Rendering/StandPort/dx_common.hpp"
 #include "Rendering/StandPort/Grid.hpp"
 #include "Rendering/StandPort/GridItemScrollbar.hpp"
+#include "Rendering/StandPort/TextSettings.hpp"
 
 #include <cstddef>
 #include <string>
@@ -24,6 +26,7 @@ namespace Stand::Rendering
 
 		bool addressbar_width_affected_by_columns = true;
 		bool addressbar_width_affected_by_scrollbar = true;
+		TextSettings addressbar_text{ float(12.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
 
 		template<typename F>
 		void updateSetting(F&& func) { func(); }

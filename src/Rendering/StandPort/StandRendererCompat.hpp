@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Rendering/StandPort/dx_common.hpp"
+
 #include <DirectXMath.h>
 #include <SimpleMath.h>
 #include <SpriteFont.h>
@@ -33,8 +35,9 @@ namespace Stand
         DirectX::SimpleMath::Color notifyFlashColour  { 0.6196f, 0.0f, 0.6196f, 1.0f };
         DirectX::SimpleMath::Color notifyBgColour     { 0.0f, 0.0f, 0.0f, 0.3019f };
 
-        TextSettings small_text{ 12.0f * 2.0f, -2.0f, 2.0f };
-        TextSettings command_text{ float(15.0 * 0.021875 * 2.0), -2.0f, 2.0f };
+        TextSettings small_text{ float(12.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
+        TextSettings tabs_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
+        TextSettings command_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
 
         bool preview_colour_in_sprite = true;
         bool preview_colour_in_list = true;

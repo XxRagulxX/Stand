@@ -84,6 +84,7 @@
 #include "Commands/Stand/CommandPreviewColourInList.hpp"
 #include "Rendering/StandPort/MenuGrid.hpp"
 #include "Rendering/StandPort/StandRendererCompat.hpp"
+#include "Rendering/StandPort/create_colour_with_rainbow.hpp"
 #include "Commands/Widgets/CommandSearchMenu.hpp"
 #include "Commands/Widgets/CommandReadonlyLink.hpp"
 #include "Commands/Widgets/CommandReadonlyName.hpp"
@@ -234,21 +235,7 @@ namespace Stand
 					Rendering::Theme::kAddressBarHeight = static_cast<int16_t>(value);
 					Rendering::GridRenderer::InvalidateMenuLayout();
 				});
-				{
-						auto textSettings = addressbar->createChild<CommandList>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("addressbartext") });
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SCLE"), CMDNAMES("addressbartextscale"), NOLABEL, 1, SHRT_MAX, static_cast<int>(Rendering::Theme::kSmallTextScale * 10000.f), 1, [](int value, Click& click)
-						{
-							Rendering::Theme::kAddressbarText.scale = value / 10000.f;
-						});
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_X"), CMDNAMES("addressbartextxoffset"), NOLABEL, -15, 15, -2, 1, [](int value, Click& click)
-						{
-							Rendering::Theme::kAddressbarText.x_offset = static_cast<float>(value);
-						});
-						textSettings->createChild<CommandLambdaSlider<CommandSlider>>(LOC("OFF_Y"), CMDNAMES("addressbartextyoffset"), NOLABEL, -10, 10, 2, 1, [](int value, Click& click)
-						{
-							Rendering::Theme::kAddressbarText.y_offset = static_cast<float>(value);
-						});
-					}
+				addressbar->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("addressbartext") }, &g_MenuGrid.addressbar_text);
 				addressbar->createChild<CommandCursorPos>();
 				addressbar->createChild<CommandCursorPosIncludesDividers>();
 			}
@@ -279,21 +266,7 @@ namespace Stand
 					Rendering::GridRenderer::InvalidateMenuLayout();
 				});
 				tabs->createChild<CommandTabsPositionMode>();
-				{
-					auto text = tabs->createChild<CommandList>(LIT("Text"), CMDNAMES("tabstext"));
-					text->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Scale"), CMDNAMES("tabstextscale"), NOLABEL, 1, SHRT_MAX, static_cast<int>(Rendering::Theme::kTextScale * 10000.f), 1, [](int value, Click& click)
-					{
-						Rendering::Theme::kTabsTextScale = value / 10000.f;
-					});
-					text->createChild<CommandLambdaSlider<CommandSlider>>(LIT("X Offset"), CMDNAMES("tabstextxoffset"), NOLABEL, -15, 15, 5, 1, [](int value, Click& click)
-					{
-						Rendering::Theme::kTabsTextXOffset = static_cast<float>(value);
-					});
-					text->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Y Offset"), CMDNAMES("tabstextyoffset"), NOLABEL, -10, 10, 0, 1, [](int value, Click& click)
-					{
-						Rendering::Theme::kTabsTextYOffset = static_cast<float>(value);
-					});
-				}
+				tabs->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("tabstext") }, &g_renderer.tabs_text);
 				tabs->createChild<CommandTabsAlignment>();
 				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowLeftIcon, LIT("Show Icon Left"), CMDNAMES("tabslefticon"));
 				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowName, LIT("Show Name"), CMDNAMES("tabsname"));
@@ -357,7 +330,28 @@ namespace Stand
 
 				commands->createChild<CommandTogglePointer>(&CommandDivider::selectable, LOC("SELDIV"), CMDNAMES("selectabledividers"));
 			}
-			border = appearance->createChild<CommandTabBorder>();
+			{
+				auto border = appearance->createChild<CommandList>(LOC("BRD"));
+				border->createChild<CommandLambdaSlider<CommandSlider>>(LOC("WDT"), CMDNAMES("borderwidth"), NOLABEL, 0, SHRT_MAX, 0, 1, [](int value, Click& click)
+				{
+					g_MenuGrid.updateSetting([value]
+					{
+						g_MenuGrid.border_width = value;
+					});
+				});
+				border->createChild<CommandLambdaToggle>(LOC("RNDD"), CMDNAMES("borderrounded", "borderounded"), [](bool on, Click& click)
+				{
+					g_MenuGrid.updateSetting([on]
+					{
+						g_MenuGrid.border_rounded = on;
+					});
+				});
+				create_colour_with_rainbow(
+					border,
+					&g_MenuGrid.border_colour,
+					{ CMDNAME("border") }
+				);
+			}
 			appearanceDirect = appearance->createChild<CommandTabAppearanceDirect>();
 			fontText = appearance->createChild<CommandTabFontText>();
 			presetFont = appearance->createChild<CommandTabPresetFont>();

@@ -4,12 +4,11 @@
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Rendering/Gui.hpp"
 #include "Rendering/StandPort/NotifyGrid.hpp"
+#include "Rendering/StandPort/dx_common.hpp"
 #include "Rendering/StandPort/TextSettings.hpp"
 
 namespace Stand
 {
-	static constexpr float TEXT_HEIGHT_PX = 0.021875f;
-
 	CommandListTextSettings::CommandListTextSettings(CommandList* const parent, Label&& menu_name, std::vector<CommandName>&& command_names, TextSettings* settings)
 		: CommandList(parent, std::move(menu_name), std::move(command_names))
 	{

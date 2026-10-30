@@ -2,6 +2,7 @@
 
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
+#include "Rendering/StandPort/StandRendererCompat.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
 
 #include <algorithm>
@@ -43,7 +44,7 @@ namespace Stand::Rendering
 		if (!Theme::kTabsShowName)
 			return;
 
-		const float scale = Theme::kTabsTextScale;
+		const float scale = g_renderer.tabs_text.scale;
 
 		for (size_t i = 0; i < m_Entries.size(); ++i)
 		{
@@ -64,15 +65,15 @@ namespace Stand::Rendering
 				textX = x + leftInset + (availWidth - size.x) * 0.5f;
 				break;
 			case Theme::TabsAlignment::Right:
-				textX = x + leftInset + availWidth - size.x - Theme::kTabsTextXOffset;
+				textX = x + leftInset + availWidth - size.x - g_renderer.tabs_text.x_offset;
 				break;
 			default:
-				textX = x + leftInset + Theme::kTabsTextXOffset;
+				textX = x + leftInset + g_renderer.tabs_text.x_offset;
 				break;
 			}
 			GridRenderer::DrawText(
 			    textX,
-			    rowY + Theme::kTabsTextYOffset + std::max(0.f, (m_EntryHeight - size.y) * 0.5f),
+			    rowY + g_renderer.tabs_text.y_offset + std::max(0.f, (m_EntryHeight - size.y) * 0.5f),
 			    m_Entries[i].c_str(),
 			    i == m_ActiveIndex ? Theme::kText : Theme::kUnfocusedText,
 			    scale);
