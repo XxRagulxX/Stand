@@ -5,6 +5,7 @@
 #include "Rendering/Gui.hpp"
 
 #include "Rendering/StandPort/CommandPosition2d.hpp"
+#include "Rendering/StandPort/GameToaster.hpp"
 #include "Rendering/StandPort/GridToaster.hpp"
 #include "Rendering/StandPort/NotifyGrid.hpp"
 
@@ -32,24 +33,37 @@ namespace Stand
 			{
 				return;
 			}
-			((CommandListNotifySettings*)parent)->setToaster(click.thread_context, &g_grid_toaster);
-			g_notify_grid.next_to_map = (value <= 1);
-			if (g_notify_grid.next_to_map)
+			auto* settings = (CommandListNotifySettings*)parent;
+			settings->is_game_type = (value == 0);
+			if (value == 0)
 			{
-				g_notify_grid.origin.y = 1060;
-				g_notify_grid.setOriginNextToMap();
-				g_notify_grid.update();
+				settings->setToaster(click.thread_context, &g_game_toaster);
 			}
 			else
 			{
-				g_notify_grid.origin = custom_pos->getPosition();
-				if (g_notify_grid.invert_flow)
+				settings->setToaster(click.thread_context, &g_grid_toaster);
+				g_notify_grid.next_to_map = (value == 1);
+				if (g_notify_grid.next_to_map)
 				{
+					g_notify_grid.origin.y = 1060;
+					g_notify_grid.setOriginNextToMap();
 					g_notify_grid.update();
 				}
 				else
 				{
-					g_notify_grid.updatePositions();
+					g_notify_grid.origin = custom_pos->getPosition();
+					if (g_notify_grid.invert_flow)
+					{
+						g_notify_grid.update();
+					}
+					else
+					{
+						g_notify_grid.updatePositions();
+					}
+				}
+				if (settings->is_active)
+				{
+					CommandListNotifySettings::showPersistentToast();
 				}
 			}
 		}

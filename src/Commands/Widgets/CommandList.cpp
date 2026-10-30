@@ -14,7 +14,10 @@ namespace Stand
 	void CommandList::onClick(Click& click)
 	{
 		if (click.type == CLICK_MENU)
+		{
 			g_gui.m_active_list.push_back(this);
+			onActiveListUpdate();
+		}
 		else
 			open(click.thread_context);
 	}

@@ -12,6 +12,7 @@ namespace Stand
 	public:
 		CommandList* timing;
 		bool is_active = false;
+		bool is_game_type = false;
 
 		explicit CommandListNotifySettings(CommandList* parent, CommandColourCustom* primaryColour, CommandColourCustom* bgColour);
 		~CommandListNotifySettings();

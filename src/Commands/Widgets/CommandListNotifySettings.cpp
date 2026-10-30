@@ -5,6 +5,8 @@
 #include "Rendering/StandPort/CommandSliderPointer.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Rendering/Gui.hpp"
+#include "Rendering/GridItemListGrid.hpp"
+#include "Rendering/MenuNavigation.hpp"
 #include "Rendering/StandPort/GridToaster.hpp"
 #include "Rendering/StandPort/NotifyGrid.hpp"
 #include "Util/lang.hpp"
@@ -16,6 +18,7 @@
 #include "Commands/Widgets/CommandNotifyBorderColour.hpp"
 #include "Commands/Widgets/CommandNotifyFlashColour.hpp"
 #include "Commands/Widgets/CommandNotifyBgColour.hpp"
+#include "Commands/Widgets/CommandSampleToast.hpp"
 
 namespace Stand
 {
@@ -53,6 +56,7 @@ namespace Stand
 		timing->createChild<CommandSliderPointer<CommandSlider, time_t>>(LOC("READSTRT"), CMDNAMES("readstartdelay", "readingstartdelay"), NOLABEL, &g_grid_toaster.reading_start_delay, 0, 1000, 50);
 		timing->createChild<CommandSliderPointer<CommandSlider, time_t>>(LOC("MINDUR"), CMDNAMES("notifyminduration"), NOLABEL, &g_grid_toaster.notifydur_min, 0, 60000, 100);
 		timing->createChild<CommandSliderPointer<CommandSlider, time_t>>(LOC("MAXDUR"), CMDNAMES("notifymaxduration"), NOLABEL, &g_grid_toaster.notifydur_max, 0, 60000, 100);
+		timing->createChild<CommandSampleToast>();
 	}
 
 	CommandListNotifySettings::~CommandListNotifySettings()
@@ -63,8 +67,8 @@ namespace Stand
 	void CommandListNotifySettings::onActiveListUpdate()
 	{
 		if (g_gui.opened
-			&& isThisOrSublistActiveInMyTabMenu()
-			&& !timing->isThisOrSublistActiveInMyTabMenu()
+			&& Rendering::MenuNavigation::IsDescendantActive(&Rendering::GridItemListGrid::GetOrCreate(this))
+			&& !Rendering::MenuNavigation::IsDescendantActive(&Rendering::GridItemListGrid::GetOrCreate(timing))
 			)
 		{
 			if (!is_active)
@@ -104,7 +108,20 @@ namespace Stand
 
 	void CommandListNotifySettings::setToaster(ThreadContext thread_context, Toaster* toaster)
 	{
-		g_toaster = toaster;
+		if (g_toaster == toaster)
+		{
+			return;
+		}
+		if (is_active)
+		{
+			hidePersistentToast();
+			g_toaster = toaster;
+			showPersistentToast();
+		}
+		else
+		{
+			g_toaster = toaster;
+		}
 	}
 
 	void CommandListNotifySettings::updateGameColour(ThreadContext thread_context)
