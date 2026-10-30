@@ -10,6 +10,9 @@ namespace Stand
 	class CommandSlider : public CommandPhysical
 	{
 	public:
+		inline static bool prefill_value = true;
+		inline static bool selectable_na = false;
+
 		int min_value;
 		int max_value;
 		int value;

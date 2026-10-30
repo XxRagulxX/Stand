@@ -5,7 +5,8 @@
 #include "Commands/Widgets/CommandTickDispatch.hpp"
 #include "Config/Settings.hpp"
 #include "Core/FileMgr.hpp"
-#include "Rendering/Notifications.hpp"
+#include "Util/Toaster.hpp"
+#include "Util/lang.hpp"
 #include "Core/Hooking.hpp"
 #include "Core/ModuleMgr.hpp"
 #include "Rendering/Renderer.hpp"
@@ -129,7 +130,7 @@ namespace Stand
 		FiberPool::queueJob([] {
 			while (DLC::GET_IS_LOADING_SCREEN_ACTIVE())
 				Script::current()->yield(500);
-			Notifications::Show("StandEnhanced", "Loaded successfully", NotificationType::Success);
+			Stand::g_toaster->toast(LANG_GET_W("HI"));
 		});
 
 		if (InWine().value_or(false))

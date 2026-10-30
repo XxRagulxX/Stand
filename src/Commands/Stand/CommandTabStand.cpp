@@ -76,7 +76,14 @@
 #include "Commands/Stand/CommandUnload.hpp"
 #include "Commands/Stand/CommandWeb.hpp"
 #include "Commands/Widgets/CommandDivider.hpp"
+#include "Commands/Widgets/CommandInput.hpp"
+#include "Commands/Widgets/CommandLambdaToggle.hpp"
 #include "Commands/Widgets/CommandList.hpp"
+#include "Commands/Widgets/CommandListTextSettings.hpp"
+#include "Commands/Stand/CommandPreviewColourInSprite.hpp"
+#include "Commands/Stand/CommandPreviewColourInList.hpp"
+#include "Rendering/StandPort/MenuGrid.hpp"
+#include "Rendering/StandPort/StandRendererCompat.hpp"
 #include "Commands/Widgets/CommandSearchMenu.hpp"
 #include "Commands/Widgets/CommandReadonlyLink.hpp"
 #include "Commands/Widgets/CommandReadonlyName.hpp"
@@ -318,7 +325,38 @@ namespace Stand
 				cmd_info_text->createChild<CommandShowCmdOwners>();
 			}
 			notifications = appearance->createChild<CommandListNotifySettings>(nullptr, nullptr);
-			commands = appearance->createChild<CommandTabCommands>();
+
+			{
+				auto commands = appearance->createChild<CommandList>(LOC("CMDS"));
+
+				commands->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("commandtext") }, &g_renderer.command_text);
+
+				{
+					auto colour_commands = commands->createChild<CommandList>(LOC("CLRCMDS"));
+					colour_commands->createChild<CommandPreviewColourInSprite>();
+					colour_commands->createChild<CommandPreviewColourInList>();
+				}
+
+				{
+					auto prefill_value = commands->createChild<CommandList>(LOC("PRFILVAL"));
+					prefill_value->createChild<CommandTogglePointer>(&CommandSlider::prefill_value, LOC("CMDTP_S"));
+					prefill_value->createChild<CommandTogglePointer>(&CommandInput::prefill_value, LOC("CMDTP_AV"));
+				}
+
+				{
+					auto number_sliders = commands->createChild<CommandList>(LOC("CMDTP_S_N"));
+					number_sliders->createChild<CommandTogglePointer>(&CommandSlider::selectable_na, LOC("SELNA"), std::vector<CommandName>{ CMDNAME("selectablenasliders") });
+					number_sliders->createChild<CommandLambdaToggle>(LOC("RHTBNDVAL"), std::vector<CommandName>{ CMDNAME("slidersrightbound") }, [](bool on, Click& click)
+					{
+						g_MenuGrid.updateSetting([on]
+						{
+							g_MenuGrid.number_sliders_rightbound_values = on;
+						});
+					}, true);
+				}
+
+				commands->createChild<CommandTogglePointer>(&CommandDivider::selectable, LOC("SELDIV"), CMDNAMES("selectabledividers"));
+			}
 			border = appearance->createChild<CommandTabBorder>();
 			appearanceDirect = appearance->createChild<CommandTabAppearanceDirect>();
 			fontText = appearance->createChild<CommandTabFontText>();

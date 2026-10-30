@@ -34,6 +34,10 @@ namespace Stand
         DirectX::SimpleMath::Color notifyBgColour     { 0.0f, 0.0f, 0.0f, 0.3019f };
 
         TextSettings small_text{ 12.0f * 2.0f, -2.0f, 2.0f };
+        TextSettings command_text{ float(15.0 * 0.021875 * 2.0), -2.0f, 2.0f };
+
+        bool preview_colour_in_sprite = true;
+        bool preview_colour_in_list = true;
 
         struct Size2d { float x = 1920.0f, y = 1080.0f; } client_size;
         struct Point2d { float x = 0.0f, y = 0.0f; };

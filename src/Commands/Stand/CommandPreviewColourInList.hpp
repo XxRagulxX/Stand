@@ -3,6 +3,7 @@
 #include "Commands/Widgets/CommandToggle.hpp"
 
 #include "Rendering/Gui.hpp"
+#include "Rendering/StandPort/StandRendererCompat.hpp"
 
 namespace Stand
 {
@@ -18,6 +19,7 @@ namespace Stand
 		{
 			if (g_gui.canUpdateThemeSetting())
 			{
+				g_renderer.preview_colour_in_list = m_on;
 			}
 		}
 	};
