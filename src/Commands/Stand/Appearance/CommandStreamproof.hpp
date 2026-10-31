@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Core/Pointers.hpp"
 #include "Menu/Click.hpp"
@@ -7,37 +8,28 @@
 
 namespace Stand
 {
-	// Ported from real Stand's own CommandStreamproof
-	// (src/Commands/Online/CommandStreamproof.hpp in origin/dev).
-	//
-	// Real Stand hooks a second IDXGISwapChain::Present call so only the
-	// menu overlay is excluded from capture. Our D3D12 renderer shares one
-	// Present path, so we use SetWindowDisplayAffinity with
-	// WDA_EXCLUDEFROMCAPTURE (Windows 10 Build 2004+) instead — this
-	// excludes the entire game window from capture tools rather than only
-	// the overlay, but is the correct non-legacy equivalent available in our
-	// architecture. WDA_NONE restores normal capture on disable.
 	class CommandStreamproof : public CommandToggle
 	{
-		// WDA_EXCLUDEFROMCAPTURE = 0x11, documented in Windows SDK 10.0.19041+
-		static constexpr DWORD kWdaExcludeFromCapture = 0x00000011;
-		static constexpr DWORD kWdaNone              = 0x00000000;
-
 	public:
-		explicit CommandStreamproof(CommandList* const parent)
-			: CommandToggle(parent, LIT("Stream-Proof Rendering"), CMDNAMES("streamproof"),
-				LIT("Prevents Stand being visible to streaming software, if it uses DirectX/game capture."),
-				false)
+		explicit CommandStreamproof(CommandList* parent)
+			: CommandToggle(parent, LOC("STRMPRF"), CMDNAMES("streamproof", "stream"), LOC("STRMPRF_H"))
 		{
 		}
 
-		void onChange(Click& click) override
+		void onEnable(Click& click) final
 		{
-			if (!Pointers.Hwnd || !*Pointers.Hwnd)
-				return;
+			if (Pointers.Hwnd && *Pointers.Hwnd)
+				SetWindowDisplayAffinity(*Pointers.Hwnd, 0x00000011);
+		}
 
-			const DWORD affinity = m_on ? kWdaExcludeFromCapture : kWdaNone;
-			SetWindowDisplayAffinity(*Pointers.Hwnd, affinity);
+		void onDisable(Click& click) final
+		{
+			if (Pointers.Hwnd && *Pointers.Hwnd)
+				SetWindowDisplayAffinity(*Pointers.Hwnd, 0x00000000);
+		}
+
+		void applyDefaultState() final
+		{
 		}
 	};
 }

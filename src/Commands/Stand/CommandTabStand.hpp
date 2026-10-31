@@ -4,7 +4,6 @@
 #include "Commands/Stand/CommandEntityPreviews.hpp"
 #include "Commands/Widgets/CommandListNotifySettings.hpp"
 #include "Commands/Stand/CommandMenuPosition.hpp"
-#include "Commands/Stand/Appearance/CommandTabTextures.hpp"
 #include "Commands/Stand/Input/CommandTabInput.hpp"
 
 namespace Stand
@@ -16,7 +15,6 @@ namespace Stand
 
 	public:
 		CommandMenuPosition* position = nullptr;
-		CommandTabTextures* textures = nullptr;
 		CommandEntityPreviews* entityPreviews = nullptr;
 		CommandListNotifySettings* notifications = nullptr;
 		CommandTabInput* input = nullptr;

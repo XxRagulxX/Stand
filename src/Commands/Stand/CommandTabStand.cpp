@@ -2,6 +2,8 @@
 
 #include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandStreamproof.hpp"
+#include "Commands/Stand/CommandLeftbound.hpp"
+#include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Commands/Stand/CommandSetFont.hpp"
 #include "Commands/Stand/CommandPresetFont.hpp"
 #include "Commands/Widgets/CommandTextBoxes.hpp"
@@ -67,6 +69,12 @@
 #include "Commands/Widgets/CommandCursorPos.hpp"
 #include "Commands/Widgets/CommandCursorPadding.hpp"
 #include "Commands/Widgets/CommandCursorPosIncludesDividers.hpp"
+#include "Commands/Widgets/CommandTabs.hpp"
+#include "Commands/Widgets/CommandTabsPos.hpp"
+#include "Commands/Widgets/CommandTabsAlignment.hpp"
+#include "Commands/Widgets/CommandShowTabLicon.hpp"
+#include "Commands/Widgets/CommandShowTabName.hpp"
+#include "Commands/Widgets/CommandShowTabRicon.hpp"
 #include "Rendering/StandPort/CommandColour.hpp"
 #include "Rendering/StandPort/CommandLambdaSlider.hpp"
 #include "Commands/Stand/CommandScripts.hpp"
@@ -113,65 +121,6 @@
 
 namespace Stand
 {
-	class CommandTabsVisible : public CommandToggle
-	{
-	public:
-		explicit CommandTabsVisible(CommandList* const parent)
-			: CommandToggle(parent, LIT("Tabs"), CMDNAMES("tabs"), NOLABEL, true)
-		{}
-		void onChange(Click& click) override
-		{
-			Rendering::Theme::kTabsVisible = m_on;
-			Rendering::GridRenderer::InvalidateMenuLayout();
-		}
-	};
-
-	class CommandTabsPositionMode : public CommandListSelect
-	{
-	public:
-		explicit CommandTabsPositionMode(CommandList* const parent)
-			: CommandListSelect(parent, LOC("POS"), CMDNAMES("tabsposition"), NOLABEL, {
-				{0, LIT("Left"),   CMDNAMES("left")},
-				{1, LIT("Right"),  CMDNAMES("right")},
-				{2, LIT("Top"),    CMDNAMES("top")},
-				{3, LIT("Bottom"), CMDNAMES("bottom")},
-			}, 0)
-		{}
-		void onChange(Click& click, long long prev_value) override
-		{
-			using P = Rendering::Theme::TabsPosition;
-			switch (value)
-			{
-			case 1: Rendering::Theme::kTabsPosition = P::Right; break;
-			case 2: Rendering::Theme::kTabsPosition = P::Top; break;
-			case 3: Rendering::Theme::kTabsPosition = P::Bottom; break;
-			default: Rendering::Theme::kTabsPosition = P::Left; break;
-			}
-			Rendering::GridRenderer::InvalidateMenuLayout();
-		}
-	};
-
-	class CommandTabsAlignment : public CommandListSelect
-	{
-	public:
-		explicit CommandTabsAlignment(CommandList* const parent)
-			: CommandListSelect(parent, LOC("TA"), CMDNAMES("tabsalignment"), NOLABEL, {
-				{0, LIT("Left"),   CMDNAMES("left")},
-				{1, LIT("Centre"), CMDNAMES("centre", "center")},
-				{2, LIT("Right"),  CMDNAMES("right")},
-			}, 0)
-		{}
-		void onChange(Click& click, long long prev_value) override
-		{
-			switch (value)
-			{
-			case 1: Rendering::Theme::kTabsAlignment = Rendering::Theme::TabsAlignment::Centre; break;
-			case 2: Rendering::Theme::kTabsAlignment = Rendering::Theme::TabsAlignment::Right; break;
-			default: Rendering::Theme::kTabsAlignment = Rendering::Theme::TabsAlignment::Left; break;
-			}
-		}
-	};
-
 	class CommandCursorBorderColour : public CommandColour
 	{
 	public:
@@ -199,30 +148,32 @@ namespace Stand
 		{
 			auto appearance = settings->createChild<CommandList>(LOC("VIS"));
 
+			CommandPrimaryColour* primaryColour = nullptr;
+			CommandBackgroundColour* bgColour = nullptr;
 			{
 				auto colours = appearance->createChild<CommandList>(LOC("CLRS"));
-				auto* primary = colours->createChild<CommandPrimaryColour>();
-				primary->children.insert(primary->children.begin(), std::make_unique<CommandMenuRainbow>(primary));
+				primaryColour = colours->createChild<CommandPrimaryColour>();
+				primaryColour->children.insert(primaryColour->children.begin(), std::make_unique<CommandMenuRainbow>(primaryColour));
 				auto* focusText = colours->createChild<CommandFocusTextColour>();
 				colours->createChild<CommandFocusRightTextColour>(focusText);
 				colours->createChild<CommandFocusSpriteColour>(focusText);
-				colours->createChild<CommandBackgroundColour>();
+				bgColour = colours->createChild<CommandBackgroundColour>();
 				auto* blurText = colours->createChild<CommandBlurTextColour>();
 				colours->createChild<CommandBlurRightTextColour>(blurText);
 				colours->createChild<CommandBlurSpriteColour>(blurText);
 				auto* hud = colours->createChild<CommandColourPointerDirectx>(
 					reinterpret_cast<DirectX::SimpleMath::Color*>(&Rendering::Theme::kHud),
-					LOC("CLRHU"), std::vector<CommandName>{ CMDNAME("hud") }, primary);
+					LOC("CLRHU"), std::vector<CommandName>{ CMDNAME("hud") }, primaryColour);
 				hud->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("hudrainbow") }, Rendering::Theme::kHud);
 				{ auto r = std::move(hud->children.back()); hud->children.pop_back(); hud->children.insert(hud->children.begin(), std::move(r)); }
 				auto* ar = colours->createChild<CommandColourPointerDirectx>(
 					reinterpret_cast<DirectX::SimpleMath::Color*>(&Rendering::Theme::kAr),
-					LOC("CLRAR"), std::vector<CommandName>{ CMDNAME("ar") }, primary);
+					LOC("CLRAR"), std::vector<CommandName>{ CMDNAME("ar") }, primaryColour);
 				ar->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("arrainbow") }, Rendering::Theme::kAr);
 				{ auto r = std::move(ar->children.back()); ar->children.pop_back(); ar->children.insert(ar->children.begin(), std::move(r)); }
 				auto* minigame = colours->createChild<CommandColourPointerDirectx>(
 					reinterpret_cast<DirectX::SimpleMath::Color*>(&Rendering::Theme::kMinigame),
-					LOC("CLRMGME"), std::vector<CommandName>{ CMDNAME("minigame") }, primary);
+					LOC("CLRMGME"), std::vector<CommandName>{ CMDNAME("minigame") }, primaryColour);
 				minigame->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), std::vector<CommandName>{ CMDNAME("minigamerainbow") }, Rendering::Theme::kMinigame);
 				{ auto r = std::move(minigame->children.back()); minigame->children.pop_back(); minigame->children.insert(minigame->children.begin(), std::move(r)); }
 			}
@@ -252,38 +203,38 @@ namespace Stand
 				addressbar->createChild<CommandCursorPosIncludesDividers>();
 			}
 			{
-				auto cursor = appearance->createChild<CommandList>(LIT("Cursor"));
+				auto cursor = appearance->createChild<CommandList>(LOC("CRS"));
 				cursor->createChild<CommandCursorPadding>();
-				cursor->createChild<CommandDivider>(LIT("Border"));
-				cursor->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Width"), CMDNAMES("cursorborderwidth"), NOLABEL, 0, SHRT_MAX, 0, 1, [](int value, Click& click)
+				cursor->createChild<CommandDivider>(LOC("BRD"));
+				cursor->createChild<CommandLambdaSlider<CommandSlider>>(LOC("WDT"), CMDNAMES("cursorborderwidth"), NOLABEL, 0, SHRT_MAX, 0, 1, [](int value, Click& click)
 				{
 					Rendering::Theme::kCursorBorderWidth = static_cast<int16_t>(value);
 				});
-				cursor->createChild<CommandTogglePointer>(&Rendering::Theme::kCursorBorderRounded, LIT("Rounded"), CMDNAMES("cursorborderrounded"));
+				cursor->createChild<CommandTogglePointer>(&Rendering::Theme::kCursorBorderRounded, LOC("RNDD"), CMDNAMES("cursorborderrounded", "cursorborderounded"));
 				auto* colour = cursor->createChild<CommandCursorBorderColour>();
 				colour->createChild<CommandColourRainbow>(LIT("Rainbow Mode"), CMDNAMES("cursorborderrainbow"), Rendering::Theme::kCursorBorderColour);
 				{ auto r = std::move(colour->children.back()); colour->children.pop_back(); colour->children.insert(colour->children.begin(), std::move(r)); }
 			}
 			{
-				auto tabs = appearance->createChild<CommandList>(LIT("Tabs"));
-				tabs->createChild<CommandTabsVisible>();
-				tabs->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Width"), CMDNAMES("tabswidth"), NOLABEL, 1, SHRT_MAX, Rendering::Theme::kSidebarWidth, 1, [](int value, Click& click)
+				auto tabs = appearance->createChild<CommandList>(LOC("TABS"));
+				auto* show_tabs = tabs->createChild<CommandTabs>();
+				tabs->createChild<CommandLambdaSlider<CommandSlider>>(LOC("WDT"), CMDNAMES("tabswidth"), NOLABEL, 1, SHRT_MAX, Rendering::Theme::kSidebarWidth, 1, [](int value, Click& click)
 				{
 					Rendering::Theme::kTabsWidth = static_cast<int16_t>(value);
 					Rendering::GridRenderer::InvalidateMenuLayout();
 				});
-				tabs->createChild<CommandLambdaSlider<CommandSlider>>(LIT("Height"), CMDNAMES("tabsheight"), NOLABEL, 1, SHRT_MAX, Rendering::Theme::kSidebarEntryHeight, 1, [](int value, Click& click)
+				tabs->createChild<CommandLambdaSlider<CommandSlider>>(LOC("HHT"), CMDNAMES("tabsheight"), NOLABEL, 1, SHRT_MAX, Rendering::Theme::kSidebarEntryHeight, 1, [](int value, Click& click)
 				{
 					Rendering::Theme::kTabsHeight = static_cast<int16_t>(value);
 					Rendering::GridRenderer::InvalidateMenuLayout();
 				});
-				tabs->createChild<CommandTabsPositionMode>();
+				show_tabs->pos = tabs->createChild<CommandTabsPos>(show_tabs);
 				tabs->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("tabstext") }, &Rendering::Theme::kTabsText);
 				tabs->createChild<CommandTabsAlignment>();
-				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowLeftIcon, LIT("Show Icon Left"), CMDNAMES("tabslefticon"));
-				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowName, LIT("Show Name"), CMDNAMES("tabsname"));
-				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowRightIcon, LIT("Show Icon Right"), CMDNAMES("tabsrighticon"));
-				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsIconsUseTextColour, LIT("Icons Use Text Colour"), CMDNAMES("tabsiconsusetext"));
+				tabs->createChild<CommandShowTabLicon>();
+				tabs->createChild<CommandShowTabName>();
+				tabs->createChild<CommandShowTabRicon>();
+				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsIconsUseTextColour, LOC("ICUTXTCLR"), CMDNAMES());
 			}
 			{
 				auto scrollbar = appearance->createChild<CommandList>(LOC("SCRLBR"));
@@ -309,7 +260,7 @@ namespace Stand
 				cmd_info_text->createChild<CommandShowNonuseronly>();
 				cmd_info_text->createChild<CommandShowCmdOwners>();
 			}
-			notifications = appearance->createChild<CommandListNotifySettings>(nullptr, nullptr);
+			notifications = appearance->createChild<CommandListNotifySettings>(primaryColour, bgColour);
 
 			{
 				auto commands = appearance->createChild<CommandList>(LOC("CMDS"));
@@ -428,7 +379,15 @@ namespace Stand
 				text->createChild<CommandListTextSettings>(LOC("TXT_S"), std::vector<CommandName>{ CMDNAME("smalltext") }, &Rendering::Theme::kSmallText);
 				text->createChild<CommandTextBoxes>();
 			}
-			textures = appearance->createChild<CommandTabTextures>();
+			{
+				auto sprites = appearance->createChild<CommandList>(LOC("SPRS"));
+				sprites->createChild<CommandLeftbound>();
+				sprites->createChild<CommandLambdaAction>(LOC("RLDSPR"), CMDNAMES("reloadtextures", "reloadsprites"), NOLABEL, [](Click& click)
+				{
+					click.stopInputIfAllowed();
+					Rendering::ThemeIcons::Reload();
+				});
+			}
 			appearance->createChild<CommandStreamproof>();
 			entityPreviews = appearance->createChild<CommandEntityPreviews>();
 		}
