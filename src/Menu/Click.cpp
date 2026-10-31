@@ -1,7 +1,9 @@
 #include "Menu/Click.hpp"
 
 #include "Scripting/FiberPool.hpp"
+#include "Rendering/MenuCommandConsole.hpp"
 #include "Rendering/Notifications.hpp"
+#include "Util/StringUtils.hpp"
 
 namespace Stand
 {
@@ -106,8 +108,9 @@ namespace Stand
 		case CLICK_BULK:
 		case CLICK_AUTO:
 			return true;
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	bool Click::isBulk() const noexcept
@@ -144,6 +147,11 @@ namespace Stand
 	void Click::setResponse(Label&& response) const
 	{
 		Click(*this).setResponse(std::move(response));
+	}
+
+	void Click::showCommandBoxIfPossible(std::wstring prefill) const noexcept
+	{
+		Rendering::MenuCommandConsole::Open(StringUtils::utf16_to_utf8(prefill));
 	}
 
 	void Click::setGenericResponse(Label&& response)

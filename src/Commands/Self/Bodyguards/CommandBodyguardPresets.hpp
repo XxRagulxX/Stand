@@ -6,7 +6,6 @@
 #include "Commands/Widgets/CommandSlider.hpp"
 #include "Core/FileMgr.hpp"
 #include "Menu/Click.hpp"
-#include "Menu/Folder.hpp"
 #include "Util/Label.hpp"
 
 #include <algorithm>
@@ -93,11 +92,11 @@ namespace Stand
 			: CommandList(parent, LIT("Presets"), CMDNAMES("bodyguardpresets"))
 		{
 			const auto folder = FileMgr::GetProjectFolder("./bodyguard_presets/");
-			createChild<CommandBodyguardPresetsSave>(model, primary, secondary, count, folder.Path());
+			createChild<CommandBodyguardPresetsSave>(model, primary, secondary, count, folder);
 
-			if (std::filesystem::exists(folder.Path()))
+			if (std::filesystem::exists(folder))
 			{
-				for (const auto& entry : std::filesystem::directory_iterator(folder.Path()))
+				for (const auto& entry : std::filesystem::directory_iterator(folder))
 				{
 					if (entry.path().extension() == ".json")
 					{

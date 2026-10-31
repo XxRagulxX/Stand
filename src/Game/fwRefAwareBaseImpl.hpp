@@ -7,5 +7,7 @@ namespace rage
 	{
 	private:
 		void* m_Ref; // 0x08
+	public:
+		void RemoveKnownRef(void** ppReference) {}
 	};
 }

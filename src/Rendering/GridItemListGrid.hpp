@@ -1,0 +1,43 @@
+#pragma once
+#include "Rendering/StandPort/Grid.hpp"
+#include "Rendering/StandPort/Position2d.hpp"
+#include "Commands/Widgets/CommandList.hpp"
+#include "Game/typedecl.hpp"
+
+#include <unordered_map>
+
+namespace Stand { class GridItemList; }
+
+namespace Stand::Rendering
+{
+
+    class GridItemListGrid : public Grid
+    {
+    public:
+        explicit GridItemListGrid(Stand::CommandList* list);
+
+        [[nodiscard]] Stand::CommandList* getCommandList() const noexcept { return m_List; }
+
+        static GridItemListGrid& GetOrCreate(Stand::CommandList* list);
+
+        [[nodiscard]] std::string GetFocusedDescription() const;
+
+        void ScriptTick() override;
+        void handleKey(unsigned int vkCode);
+        void handleMouseHover(int16_t hx, int16_t hy);
+        void handleMouseClick(int16_t hx, int16_t hy, bool ctrl, bool shift, bool doubleClick);
+
+    protected:
+        void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override;
+
+    private:
+        Stand::CommandList* m_List;
+        GridItemList* m_Item = nullptr;
+        cursor_t m_CommandRows = 0;
+
+
+        void moveCursor(int delta);
+        void activateFocused();
+        void arrowFocused(int delta);
+    };
+}

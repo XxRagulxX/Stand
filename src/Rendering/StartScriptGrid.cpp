@@ -7,7 +7,7 @@
 #include "Rendering/GridItemIntStepper.hpp"
 #include "Rendering/GridItemLocalList.hpp"
 #include "Rendering/GridItemSelectList.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/Notifications.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
@@ -27,8 +27,8 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
-		constexpr float kItemH = Theme::kContentItemHeight;
+		const float kSectionHeaderH = Theme::kContentItemHeight;
+		const float kItemH = Theme::kContentItemHeight;
 
 		// Duplicated from MenuScripts.cpp's own file-static stackSizes[]
 		// (internal linkage there, so it isn't reachable from here) -

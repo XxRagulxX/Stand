@@ -1,6 +1,10 @@
 #include "Rendering/GridItemStandCommand.hpp"
+#include "Rendering/GridListSelectOptions.hpp"
 
 #include "Commands/Stand/CommandToggleNoCorrelation.hpp"
+#include "Commands/Widgets/CommandToggle.hpp"
+#include "Rendering/StandPort/CommandReadonlyLink.hpp"
+#include "Commands/Online/CommandPerm.hpp"
 #include "Commands/Vehicle/LSC/CommandVehicleColour.hpp"
 #include "Commands/Widgets/CommandFlags.hpp"
 #include "Commands/Widgets/CommandList.hpp"
@@ -12,14 +16,16 @@
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/GridStandCommandList.hpp"
 #include "Rendering/MenuNavigation.hpp"
+#include "Rendering/Gui.hpp"
 #include "Rendering/Theme.hpp"
-#include "Rendering/ThemeIcons.hpp"
+#include "Rendering/StandPort/ThemeIcons.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
 #include "World/Self.hpp"
 
 #include <algorithm>
 #include <string>
+#include "Util/StringUtils.hpp"
 
 namespace Stand::Rendering
 {
@@ -73,22 +79,100 @@ namespace Stand::Rendering
 		if (!physical)
 			return {};
 
-		std::string result = physical->help_text.getLocalisedUtf8();
+		std::string result;
+		if (g_gui.show_help_text)
+			result = physical->help_text.getLocalisedUtf8();
 
-		if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+		if (g_gui.show_syntax)
 		{
-			if (!result.empty())
-				result += '\n';
-			result += syntax;
+			if (auto syntax = physical->getCommandSyntax(); !syntax.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += StringUtils::utf16_to_utf8(syntax);
+			}
 		}
 
-		if (m_Command->isSlider() && Theme::kShowSliderBehaviour)
+		if (m_Command->isSlider() && g_gui.show_slider_behaviour)
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
-			if (!slider->command_names.empty())
+			if (slider->is_click_to_apply)
+			{
+				result += '\n';
+				result += "Click to apply.";
+			}
+			else if (!slider->command_names.empty())
 			{
 				result += '\n';
 				result += "Click to input a value.";
+			}
+			else
+			{
+				result += '\n';
+				result += slider->getRangeString();
+			}
+		}
+		else if (auto* toggle = dynamic_cast<Stand::CommandToggle*>(m_Command))
+		{
+			if (toggle->correlation.isActive())
+			{
+				auto explanation = toggle->correlation.getExplanation(physical->menu_name.getLocalisedUtf8());
+				if (!explanation.empty())
+				{
+					if (!result.empty())
+						result += '\n';
+					result += std::move(explanation);
+				}
+			}
+		}
+		else if (m_Command->type == COMMAND_READONLY_NAME)
+		{
+			if (!result.empty())
+				result += '\n';
+			result += "Cannot bind.";
+		}
+		else if (m_Command->type == COMMAND_READONLY_LINK)
+		{
+			auto* cmd = m_Command->as<Stand::CommandReadonlyLink>();
+			if (!cmd->link.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += "Open link: ";
+				result += cmd->link;
+			}
+		}
+		else if (m_Command->isListSelect())
+		{
+			auto* sel = m_Command->as<Stand::CommandListSelect>();
+
+			if (g_gui.show_slider_behaviour)
+			{
+				if (!result.empty())
+					result += '\n';
+				result += "Click to select a value.";
+			}
+
+			auto valueHelp = sel->getCurrentValueHelpText();
+			if (!valueHelp.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += sel->getCurrentValueMenuName().getLocalisedUtf8();
+				result += ": ";
+				result += valueHelp.getLocalisedUtf8();
+			}
+		}
+
+		if (physical->canBeUsedByOtherPlayers() && g_gui.show_nonuseronly)
+		{
+			auto permLabel = getCommandPermLabel(physical->perm).getLocalisedUtf8();
+			if (!permLabel.empty())
+			{
+				if (!result.empty())
+					result += '\n';
+				result += "Other players: ";
+				result += std::move(permLabel);
 			}
 		}
 
@@ -400,7 +484,7 @@ namespace Stand::Rendering
 		if (m_Command->isToggle())
 			ToggleClicked();
 		else if (m_Command->isListSelect())
-			ListSelectStep(1);
+			Rendering::OpenListSelectOptions(m_Command->as<Stand::CommandListSelect>());
 		else if (m_Command->isList())
 			OpenSubList();
 		else if (auto* physical = m_Command->getPhysical())

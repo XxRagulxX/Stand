@@ -1,5 +1,6 @@
 #include "Vehicle/SpawnedVehicleListGrid.hpp"
 
+#include "Rendering/StandPort/Grid.hpp"
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemFolder.hpp"
 #include "Rendering/Theme.hpp"
@@ -28,7 +29,7 @@ namespace Stand::Rendering
         protected:
             void populate(std::vector<std::unique_ptr<GridItem>>& items_draft) override
             {
-                constexpr int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
+                const int16_t h = static_cast<int16_t>(Theme::kContentItemHeight);
                 const int handle = m_Handle;
 
                 items_draft.push_back(std::make_unique<GridItemButton>(

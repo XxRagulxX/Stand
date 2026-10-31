@@ -1,8 +1,16 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 
+#include "Commands/Widgets/CommandList.hpp"
+#include "Util/validate_file_name.hpp"
+#include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
+#include "Rendering/Gui.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Menu/Click.hpp"
+#include "Util/lang.hpp"
+#include "Commands/Widgets/CommandIssuable.hpp"
+
+#include <algorithm>
 
 namespace Stand
 {
@@ -15,12 +23,17 @@ namespace Stand
 		}
 	}
 
-	std::string CommandPhysical::getCommandSyntax() const
+	std::wstring CommandPhysical::getCommandSyntax() const
 	{
 		if (command_names.empty())
 			return {};
 
-		return "Command: " + command_names.front();
+		return L"Command: " + cmdNameToUtf16(command_names.front());
+	}
+
+	bool CommandPhysical::canBeUsedByOtherPlayers() const
+	{
+		return perm != COMMANDPERM_USERONLY && !command_names.empty();
 	}
 
 	void CommandPhysical::queueJob(std::function<void()>&& func)
@@ -118,5 +131,134 @@ namespace Stand
 	void CommandPhysical::ensureWorkerContext(const Click& click, std::function<void()>&& func)
 	{
 		ensureWorkerContext(click.thread_context, std::move(func));
+	}
+
+	bool CommandPhysical::canHotkeyBeRemoved(const Hotkey hotkey) const noexcept
+	{
+		for (const auto& h : m_DefaultHotkeys)
+			if (h == hotkey) return false;
+		return true;
+	}
+
+	bool CommandPhysical::canCountAsCommandWithHotkeys() const noexcept
+	{
+		return supportsStateOperations();
+	}
+
+	void CommandPhysical::removeHotkey(const Hotkey hotkey)
+	{
+		auto it = std::find(hotkeys.begin(), hotkeys.end(), hotkey);
+		if (it != hotkeys.end())
+			hotkeys.erase(it);
+		updateHotkeysState();
+	}
+
+	void CommandPhysical::updateHotkeysState()
+	{
+		if (hotkeys.empty())
+			CommandHotkeyDispatch::RemoveCommand(this);
+		else
+			CommandHotkeyDispatch::AddCommand(this);
+	}
+
+	void CommandPhysical::removeFromCommandsWithHotkeys()
+	{
+		CommandHotkeyDispatch::RemoveCommand(this);
+	}
+
+	void CommandPhysical::onHotkeysChanged(ClickType type)
+	{
+	}
+
+	void CommandPhysical::processVisualUpdate() const
+	{
+	}
+
+	void CommandPhysical::loadState(ClickType type)
+	{
+		auto it = g_gui.active_profile.data.find(getPathConfig());
+		if (it != g_gui.active_profile.data.end())
+		{
+			Click click(type, TC_SCRIPT_NOYIELD);
+			setState(click, it->second);
+		}
+		else
+		{
+			applyDefaultState();
+		}
+	}
+
+	void CommandPhysical::updateHotkeysInContextMenu()
+	{
+	}
+
+	std::string CommandPhysical::getActivationName() const
+	{
+		return menu_name.getLocalisedUtf8();
+	}
+
+	Label CommandPhysical::getActivationNameImplCombineWithParent(const char* joiner) const
+	{
+		return LIT(std::move(std::string(parent->menu_name.getLocalisedUtf8()).append(joiner).append(menu_name.getLocalisedUtf8())));
+	}
+
+	CommandPhysical* CommandPhysical::getStateCommand()
+	{
+		if (supportsStateOperations())
+			return this;
+		CommandPhysical* node = this->parent;
+		while (node != nullptr)
+		{
+			if (node->supportsStateOperations())
+				return node;
+			node = node->parent;
+		}
+		return nullptr;
+	}
+
+	std::string CommandPhysical::getNameForConfig() const
+	{
+		return menu_name.getEnglishUtf8();
+	}
+
+	void CommandPhysical::onCommandInvalidArg(Click& click, const std::wstring& arg) const
+	{
+		click.setResponse(LIT(LANG_GET("INVARG")));
+		onCommandReopen(click, arg);
+	}
+
+	void CommandPhysical::onCommandReopen(Click& click, const std::wstring& args) const
+	{
+		std::wstring prefill{ cmdNameToUtf16(command_names.at(0)) };
+		prefill.push_back(L' ');
+		prefill.append(args);
+		click.showCommandBoxIfPossible(std::move(prefill));
+	}
+
+	bool CommandPhysical::onCommandValidateFileName(Click& click, std::wstring& args)
+	{
+		if (args.empty())
+		{
+			onClick(click);
+			return false;
+		}
+		if (validate_file_name(args, true))
+		{
+			return true;
+		}
+		click.setResponse(LOC("BADFILE"));
+		onCommandReopen(click, args);
+		args.clear();
+		return false;
+	}
+
+	void CommandPhysical::onClick(Click& click)
+	{
+		if (!command_names.empty())
+		{
+			std::wstring prefill{ cmdNameToUtf16(command_names.at(0)) };
+			prefill.push_back(L' ');
+			click.showCommandBoxIfPossible(std::move(prefill));
+		}
 	}
 }

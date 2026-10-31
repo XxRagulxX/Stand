@@ -3,8 +3,11 @@
 #include "Commands/Online/CommandPerm.hpp"
 #include "Commands/Widgets/Command.hpp"
 #include "Commands/Widgets/CommandRegistry.hpp"
+#include "Commands/CommandExtraInfo.hpp"
 #include "Menu/Click.hpp"
 
+#include <string>
+#include <unordered_set>
 #include <vector>
 
 // Real Stand's CommandIssuable is the chat-command layer: command_names/
@@ -23,6 +26,7 @@ namespace Stand
 	#define CMDNAME(x) x
 	#define utf8ToCmdName(x) x
 	#define cmdNameToUtf8(x) x
+	#define cmdNameToUtf16(x) std::wstring((x).begin(), (x).end())
 #else
 	#define CMDNAME(x) (L##x)
 	[[nodiscard]] std::wstring utf8ToCmdName(const std::string& str);
@@ -86,6 +90,8 @@ namespace Stand
 	class CommandIssuable : public Command
 	{
 	public:
+		static inline std::unordered_set<std::wstring> collapse_command_names = {};
+
 		std::vector<CommandName> command_names;
 		CommandPerm perm;
 
@@ -117,5 +123,13 @@ namespace Stand
 		virtual void onCommand(Click& click, std::wstring& args)
 		{
 		}
+
+		[[nodiscard]] std::wstring getCompletionHint() const { return {}; }
+		virtual void getExtraInfo(CommandExtraInfo& info, std::wstring& args) {}
+
+		[[nodiscard]] bool isAuthorised(CommandPerm) const noexcept { return true; }
 	};
+
+	template<>
+	[[nodiscard]] inline bool Command::isT<CommandIssuable>() const noexcept { return isIssuable(); }
 }

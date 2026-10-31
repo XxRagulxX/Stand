@@ -1,12 +1,12 @@
 #include "Core/Hooking.hpp"
 
-#include <array>
 #include <stdexcept>
 #include <string>
 #include <MinHook.h>
 #include "Core/DetourHook.hpp"
 #include "Core/Hooks.hpp"
 #include "Core/Pointers.hpp"
+#include "Game/CBaseModelInfo.hpp"
 
 namespace Stand
 {
@@ -86,10 +86,6 @@ namespace Stand
 		auto* matchmakingUnadvertiseHook = AddHook<Hooks::Matchmaking::MatchmakingUnadvertise>("MatchmakingUnadvertise", Pointers.MatchmakingUnadvertise, reinterpret_cast<void*>(Hooks::Matchmaking::MatchmakingUnadvertise));
 
 		auto* matchmakingUpdateHook = AddHook<Hooks::Matchmaking::MatchmakingUpdate>("MatchmakingUpdate", Pointers.MatchmakingUpdate, reinterpret_cast<void*>(Hooks::Matchmaking::MatchmakingUpdate));
-
-		// Misc hooks
-
-		auto* assistedAimShouldReleaseEntityHook = AddHook<Hooks::Misc::AssistedAimShouldReleaseEntity>("AssistedAimShouldReleaseEntity", Pointers.AssistedAimShouldReleaseEntity, reinterpret_cast<void*>(Hooks::Misc::AssistedAimShouldReleaseEntity));
 
 	}
 
@@ -314,5 +310,30 @@ namespace Stand
 	DetourHook* Hooking::GetHook(std::string_view name)
 	{
 		return GetInstance().FindHook(name);
+	}
+
+	bool Hooking::doesTextLabelExist(uint32_t hash)
+	{
+		return getLabelText(hash) != nullptr;
+	}
+
+	const char* Hooking::getLabelText(uint32_t hash)
+	{
+		return nullptr;
+	}
+
+	std::string Hooking::getLabelTextSafe(uint32_t hash)
+	{
+		const char* str = getLabelText(hash);
+		if (str == nullptr)
+		{
+			return "NULL";
+		}
+		return str;
+	}
+
+	CBaseModelInfo* Hooking::getModelInfo(hash_t hash) const noexcept
+	{
+		return nullptr;
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/InputCapture.hpp"
+#include "Rendering/Renderer.hpp"
 
 #include <windows.h>
 
@@ -31,6 +32,8 @@ namespace Stand
 		static void Toggle()
 		{
 			GetInstance().m_IsOpen ^= true;
+			if (GetInstance().m_IsOpen)
+				Renderer::RequestFrame();
 		}
 
 		static bool IsUsingKeyboard()
@@ -43,20 +46,8 @@ namespace Stand
 			GetInstance().RunScriptImpl();
 		}
 
-		static void SetOnboarding(bool state)
-		{
-			GetInstance().SetOnboardingImpl(state);
-		}
-
-		static bool IsOnboarding()
-		{
-			return GetInstance().m_Onboarding;
-		}
-
 	private:
 		void WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-		void SetOnboardingImpl(bool state);
 		void RunScriptImpl();
 
 		// Shows/hides the real OS cursor to match GUI::IsOpen() - the
@@ -78,6 +69,5 @@ namespace Stand
 
 	private:
 		bool m_IsOpen;
-		bool m_Onboarding;
 	};
 }

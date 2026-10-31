@@ -49,7 +49,7 @@ namespace Stand
             static void SetSelfOutfit(OutfitComponents components, OutfitProps props, bool applyHair);
 
             // json
-            static Folder CheckFolder(std::string folderName = "");
+            static std::filesystem::path CheckFolder(std::string folderName = "");
             static void ApplyOutfitFromJson(std::string folderName, std::string fileName, bool applyHair);
             static void SaveOutfit(std::string fileName, std::string folder);
 			static void RefreshList(std::string folderName, std::vector<std::string>& folders, std::vector<std::string>& files);

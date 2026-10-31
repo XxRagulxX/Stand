@@ -45,6 +45,10 @@ namespace Stand::Rendering
 			return GetInstance().m_Loaded.load();
 		}
 
+		static inline uint16_t kLoadingProgress = 0;
+		static inline uint16_t kLoadingGoal = 0;
+		static inline std::atomic<size_t> kFrameCount{0};
+
 		static float GetRenderHeight(float width)
 		{
 			return GetInstance().GetRenderHeightImpl(width);
@@ -91,14 +95,20 @@ namespace Stand::Rendering
 			D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle{};
 		};
 
+		// Uploaded on the background thread, swapped into active on the render thread in DrawImpl.
+		struct PendingResult
+		{
+			std::vector<Frame> frames;
+			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap;
+			uint64_t generation = 0;
+		};
+
 		void LoadFromFolderImpl(std::filesystem::path folder);
 		void LoadFromFileImpl(std::filesystem::path filePath);
 		void ClearImpl();
 		float GetRenderHeightImpl(float width) const;
 		void DrawImpl(ID3D12GraphicsCommandList* commandList, const D3D12_VIEWPORT& viewport, float x, float y, float width, float height);
 		void EnsureSpriteBatch(ID3D12Device* device);
-		bool LoadFrameIntoCurrent(size_t idx, const std::filesystem::path& path, uint64_t generation);
-		void LoadFrameIntoPending(size_t idx, const std::filesystem::path& path, uint64_t generation);
 
 		mutable std::mutex m_Mutex;
 		std::vector<Frame> m_Frames;
@@ -113,23 +123,10 @@ namespace Stand::Rendering
 		std::atomic<bool> m_Loaded{false};
 		std::atomic<uint64_t> m_LoadGeneration{0};
 
+		// Set by background thread (after GPU upload), consumed by render thread in DrawImpl.
+		std::atomic<std::shared_ptr<PendingResult>> m_Pending{nullptr};
+
 		ID3D12Device* m_SpriteBatchDevice = nullptr;
 		std::unique_ptr<DirectX::SpriteBatch> m_SpriteBatch;
-
-		std::vector<std::filesystem::path>           m_FramePaths;
-		size_t                                       m_StreamIdx    = 0;
-		size_t                                       m_PendingIdx   = 0;
-		bool                                         m_Streaming    = false;
-
-		mutable std::mutex                           m_PendingMutex;
-		Frame                                        m_PendingFrame;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_PendingHeap;
-		std::atomic<bool>                            m_PendingReady  {false};
-		std::atomic<bool>                            m_PendingLoading{false};
-
-		static constexpr int kStaleSlots = 3;
-		Frame                                        m_StaleFrames[kStaleSlots];
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_StaleHeaps [kStaleSlots];
-		int                                          m_StaleRingIdx = 0;
 	};
 }

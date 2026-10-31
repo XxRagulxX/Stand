@@ -3,19 +3,17 @@
 #include "Commands/Commands.hpp"
 #include "Commands/Widgets/CommandHotkeyDispatch.hpp"
 #include "Commands/Widgets/CommandTickDispatch.hpp"
-#include "Config/HotkeySystem.hpp"
 #include "Config/Settings.hpp"
 #include "Core/FileMgr.hpp"
-#include "Rendering/Notifications.hpp"
+#include "Util/Toaster.hpp"
+#include "Util/lang.hpp"
 #include "Core/Hooking.hpp"
 #include "Core/ModuleMgr.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Core/Wine.hpp"
-#include "Scripting/LuaManager.hpp"
 #include "AntiCheat/AnticheatBypass.hpp"
 #include "Network/Players.hpp"
-#include "Commands/Extra/CommandSavedLocations.hpp"
 #include "Commands/Extra/CommandSavedPlayers.hpp"
 #include "World/Self.hpp"
 #include "Scripting/NativeHooks.hpp"
@@ -30,7 +28,7 @@
 #include "Scripting/Script.hpp"
 #include "Scripting/Natives.hpp"
 #include "Core/ExceptionHandler.hpp"
-#include "Commands/Settings/Game/CommandTabESP.hpp"
+#include "Commands/Stand/Game/CommandTabESP.hpp"
 #include "Commands/Self/Movement/CommandTabFloppy.hpp"
 #include "Commands/Self/Movement/CommandTabLevitation.hpp"
 #include "Commands/Self/Movement/CommandTabMovement.hpp"
@@ -38,29 +36,8 @@
 #include "Commands/Self/Weapons/CommandTabWeapons.hpp"
 #include "Commands/Self/Movement/CommandTabSuperFlight.hpp"
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
-#include "Commands/Settings/Appearance/CommandTabAddressBar.hpp"
-#include "Commands/Settings/CommandTabSettings.hpp"
-#include "Commands/Settings/Appearance/CommandTabAppearanceDirect.hpp"
-#include "Commands/Settings/Appearance/CommandTabHeader.hpp"
-#include "Commands/Settings/Appearance/CommandTabBorder.hpp"
-#include "Commands/Settings/Appearance/CommandTabEntityPreviews.hpp"
-#include "Commands/Settings/Appearance/CommandTabFontText.hpp"
-#include "Commands/Settings/Input/CommandTabInput.hpp"
-#include "Commands/Settings/Input/CommandTabInputPresets.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifications.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifyPosition.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifySample.hpp"
-#include "Commands/Settings/Appearance/CommandTabNotifyTiming.hpp"
-#include "Commands/Settings/Appearance/CommandTabPresetFont.hpp"
-#include "Commands/Settings/Profiles/CommandTabProfiles.hpp"
-#include "Commands/Settings/Appearance/CommandTabTextures.hpp"
-#include "Commands/Settings/Appearance/CommandTabColours.hpp"
-#include "Commands/Settings/Appearance/CommandTabCommandInfoText.hpp"
-#include "Commands/Settings/Appearance/CommandTabCommands.hpp"
-#include "Commands/Settings/Appearance/CommandTabCursor.hpp"
-#include "Commands/Settings/Appearance/CommandTabPosition.hpp"
-#include "Commands/Settings/Appearance/CommandTabScrollbar.hpp"
-#include "Commands/Settings/Appearance/CommandTabTabs.hpp"
+#include "Commands/Stand/CommandTabStand.hpp"
+#include "Commands/Stand/Input/CommandTabInputPresets.hpp"
 
 namespace Stand
 {
@@ -75,8 +52,6 @@ namespace Stand
 
 		LOGF(INFO, "Welcome to StandEnhanced! Build date: {} at {}", __DATE__, __TIME__);
 
-		g_HotkeySystem.RegisterCommands();
-		SavedLocations::FetchSavedLocations();
 		(void)Features::GetCommandTabESP();
 		(void)Features::GetCommandTabSelf();
 		(void)Features::GetCommandTabWeapons();
@@ -85,29 +60,8 @@ namespace Stand
 		(void)Features::GetCommandTabSuperFlight();
 		(void)Features::GetCommandTabFloppy();
 		(void)Features::GetCommandTabTransform();
-		(void)Features::GetCommandTabAddressBar();
-		(void)Features::GetCommandTabSettings();
-		(void)Features::GetCommandTabAppearanceDirect();
-		(void)Features::GetCommandTabBorder();
-		(void)Features::GetCommandTabEntityPreviews();
-		(void)Features::GetCommandTabFontText();
-		(void)Features::GetCommandTabInput();
-		(void)Features::GetCommandTabTextures();
-		(void)Features::GetCommandTabColours();
-		(void)Features::GetCommandTabCommandInfoText();
-		(void)Features::GetCommandTabCommands();
-		(void)Features::GetCommandTabCursor();
-		(void)Features::GetCommandTabHeader();
-		(void)Features::GetCommandTabPosition();
-		(void)Features::GetCommandTabScrollbar();
-		(void)Features::GetCommandTabTabs();
+		Features::GetCommandTabStand().populate();
 		(void)Features::GetCommandTabInputPresets();
-		(void)Features::GetCommandTabNotifications();
-		(void)Features::GetCommandTabNotifyPosition();
-		(void)Features::GetCommandTabNotifySample();
-		(void)Features::GetCommandTabNotifyTiming();
-		(void)Features::GetCommandTabPresetFont();
-		(void)Features::GetCommandTabProfiles();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;
@@ -163,8 +117,6 @@ namespace Stand
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Self::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&GUI::RunScript));
 
-		g_script_mgr.addScript(module, std::make_unique<Script>(&LuaManager::RunScript));
-		g_script_mgr.addScript(module, std::make_unique<Script>(&HotkeySystem::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Commands::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Stand::CommandHotkeyDispatch::RunScript));
 		g_script_mgr.addScript(module, std::make_unique<Script>(&Stand::CommandTickDispatch::RunScript));
@@ -178,7 +130,7 @@ namespace Stand
 		FiberPool::queueJob([] {
 			while (DLC::GET_IS_LOADING_SCREEN_ACTIVE())
 				Script::current()->yield(500);
-			Notifications::Show("StandEnhanced", "Loaded successfully", NotificationType::Success);
+			Stand::g_toaster->toast(LANG_GET_W("HI"));
 		});
 
 		if (InWine().value_or(false))

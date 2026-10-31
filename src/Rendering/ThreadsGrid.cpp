@@ -7,7 +7,7 @@
 #include "Rendering/GridItemLiveText.hpp"
 #include "Rendering/GridItemLocalList.hpp"
 #include "Rendering/GridItemSelectList.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/CGameScriptHandlerNetComponent.hpp"
 #include "Scripting/FiberPool.hpp"
@@ -24,8 +24,8 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
-		constexpr float kItemH = Theme::kContentItemHeight;
+		const float kSectionHeaderH = Theme::kContentItemHeight;
+		const float kItemH = Theme::kContentItemHeight;
 
 		// Same "skip KILLED/zero-stack threads" filter the original's
 		// own combo applies - shared between the picker's rows() and

@@ -2,7 +2,7 @@
 
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/Theme.hpp"
 
 namespace Stand::Rendering

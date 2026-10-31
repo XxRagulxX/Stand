@@ -1,0 +1,33 @@
+#pragma once
+
+#include "Commands/Widgets/CommandList.hpp"
+
+#include <fmt/core.h>
+#include "Rendering/StandPort/CommandAction.hpp"
+
+namespace Stand
+{
+	class CommandListMillion : public CommandList
+	{
+	public:
+		explicit CommandListMillion(CommandList* const parent)
+			: CommandList(parent, LIT("A Million Things"), {}, NOLABEL, CMDFLAGS_LIST | CMDFLAG_TEMPORARY)
+		{
+		}
+
+		void onClick(Click& click) final
+		{
+			this->children.reserve(1000000);
+			for (cursor_t i = 1; i <= 1000000; ++i)
+			{
+				this->children.emplace_back(std::make_unique<CommandAction>(this, LIT(fmt::format("{}", i)), CMDNAMES(), NOLABEL, CMDFLAG_TEMPORARY));
+			}
+			CommandList::onClick(click);
+		}
+
+		void onBack(ThreadContext thread_context) final
+		{
+			resetChildren();
+		}
+	};
+}

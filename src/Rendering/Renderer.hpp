@@ -92,6 +92,20 @@ namespace Stand
 			return GetInstance().m_CommandQueue.Get();
 		}
 
+		static ID3D12Resource* GetCurrentBackBuffer()
+		{
+			auto& inst = GetInstance();
+			const UINT idx = inst.m_SwapChain->GetCurrentBackBufferIndex();
+			return inst.m_FrameContext[idx].Resource;
+		}
+
+		static D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferRtv()
+		{
+			auto& inst = GetInstance();
+			const UINT idx = inst.m_SwapChain->GetCurrentBackBufferIndex();
+			return inst.m_FrameContext[idx].Descriptor;
+		}
+
 		static UINT GetBufferCount()
 		{
 			return GetInstance().m_SwapChainDesc.BufferCount;
@@ -128,6 +142,11 @@ namespace Stand
 			GetInstance().m_SafeToRender = true;
 		}
 
+		static void RequestFrame()
+		{
+			GetInstance().m_FrameRequested = true;
+		}
+
 	private:
 		static void DX12EndFrame();
 
@@ -155,6 +174,7 @@ namespace Stand
 		bool m_Initialized;
 		bool m_Resizing;
 		bool m_SafeToRender;
+		bool m_FrameRequested = false;
 
 		//DX12
 		std::vector<FrameContext> m_FrameContext;

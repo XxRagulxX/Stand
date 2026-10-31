@@ -1,7 +1,8 @@
 #include "Rendering/MenuFocus.hpp"
 
-#include "Rendering/Grid.hpp"
-#include "Rendering/GridItem.hpp"
+#include "Rendering/StandPort/Grid.hpp"
+#include "Rendering/StandPort/Position2d.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 
 namespace Stand::Rendering
 {

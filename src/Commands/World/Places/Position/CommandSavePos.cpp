@@ -2,6 +2,7 @@
 
 #include "Menu/Click.hpp"
 #include "Util/Label.hpp"
+#include "Util/lang.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -13,11 +14,14 @@ namespace Stand
     {
     }
 
-    std::string CommandSavePos::getCommandSyntax() const
+    std::wstring CommandSavePos::getCommandSyntax() const
     {
         if (command_names.empty())
             return {};
-        return "Command: " + command_names.front() + " [name]";
+        std::wstring syntax{ LANG_GET_W("CMD") };
+        syntax.append(L": ").append(cmdNameToUtf16(command_names.at(0))).push_back(L' ');
+        syntax.append(LANG_GET_W("ARGNME"));
+        return syntax;
     }
 
     void CommandSavePos::saveToFile(Click& click, const std::wstring& name)

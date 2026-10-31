@@ -1,0 +1,69 @@
+#pragma once
+
+#include <optional>
+#include <unordered_map>
+
+#include <soup/base.hpp>
+
+#include "Util/hashtype.hpp"
+#include "Util/StringUtils.hpp"
+
+namespace Stand
+{
+	class LangData
+	{
+	protected:
+		const std::unordered_map<hash_t, std::wstring>* const map;
+
+	public:
+		explicit LangData(const std::unordered_map<hash_t, std::wstring>* const map) noexcept;
+		virtual ~LangData() = default;
+
+		[[nodiscard]] std::string get(const char* key) const noexcept;
+		[[nodiscard]] std::string get(const std::string& key) const noexcept;
+
+		[[nodiscard]] std::string get(const hash_t key) const noexcept
+		{
+			return StringUtils::utf16_to_utf8(getW(key));
+		}
+
+		[[nodiscard]] std::wstring getW(const hash_t key) const noexcept
+		{
+			auto res = getImpl(key);
+			if (res.has_value())
+			{
+				return std::move(res.value());
+			}
+			return getFallbackString();
+		}
+
+	protected:
+		[[nodiscard]] static std::wstring getFallbackString() noexcept;
+
+		[[nodiscard]] virtual std::optional<std::wstring> getImpl(const hash_t key) const noexcept = 0;
+	};
+
+	class LangDataMap : public LangData
+	{
+	public:
+		using LangData::LangData;
+
+		[[nodiscard]] std::optional<std::wstring> getImpl(const hash_t key) const noexcept final;
+	};
+
+	class LangEnUs : public LangData
+	{
+	public:
+		using LangData::LangData;
+
+		[[nodiscard]] std::optional<std::wstring> getImpl(const hash_t key) const noexcept final;
+	};
+
+	class LangUwu : public LangData
+	{
+	public:
+		using LangData::LangData;
+
+		[[nodiscard]] std::optional<std::wstring> getImpl(const hash_t key) const noexcept final;
+	};
+}

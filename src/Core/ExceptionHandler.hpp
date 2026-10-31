@@ -110,25 +110,13 @@ extern "C"
 //
 
 #define EXCEPTIONAL_LOCK(mtx) \
-	mtx.lock();               \
-	__try                     \
-	{
+	mtx.lock();
 #define EXCEPTIONAL_TRY_LOCK(mtx) \
-	if (mtx.tryLock())            \
-		__try                     \
-		{
+	if (mtx.tryLock())
 #define EXCEPTIONAL_UNLOCK(mtx) \
-	}                           \
-	__EXCEPTIONAL()             \
-	{                           \
-	}                           \
 	mtx.unlock();
 
-#define EXCEPTIONAL_QUIET_UNLOCK(mtx)    \
-	}                                    \
-	__except (EXCEPTION_EXECUTE_HANDLER) \
-	{                                    \
-	}                                    \
+#define EXCEPTIONAL_QUIET_UNLOCK(mtx) \
 	mtx.unlock();
 
 namespace Stand

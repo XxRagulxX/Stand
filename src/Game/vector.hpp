@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include "Game/gta_fwddecl.hpp"
 
 #pragma pack(push, 0x10)
 namespace rage
@@ -154,5 +155,25 @@ namespace rage
 	using fvector2 = vector2;
 	using fvector3 = vector3;
 	using fvector4 = vector4;
+	using Vec4V = vector4;
 };
 #pragma pack(pop)
+
+namespace Stand
+{
+	struct v3
+	{
+		float x, y, z;
+
+		constexpr v3() : x(0.0f), y(0.0f), z(0.0f) {}
+		constexpr v3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+		v3 operator+(const v3& o) const { return {x + o.x, y + o.y, z + o.z}; }
+		v3 operator-(const v3& o) const { return {x - o.x, y - o.y, z - o.z}; }
+		v3 operator*(float s) const { return {x * s, y * s, z * s}; }
+
+		[[nodiscard]] float heading() const noexcept { return (z < 0.0f) ? (z + 360.0f) : z; }
+
+		[[nodiscard]] rage::Vector2 getScreenPos() const { return {}; }
+	};
+}

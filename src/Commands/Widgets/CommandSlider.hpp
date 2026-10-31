@@ -1,34 +1,33 @@
 #pragma once
 #include "Commands/Widgets/CommandPhysical.hpp"
+#include "Util/lang.hpp"
 
 #include <string>
 #include <utility>
 
-// Real Stand's CommandSlider also carries a command-box prefill/parse
-// path (openCommandBoxWithPrefill/onCommand), chat-syntax help, and a
-// web-relay state sync (updateState's g_relay.sendLine calls). None of
-// that exists here. onLeft()/onRight()'s actual step math - the
-// default-value snap and min/max wraparound-while-holding behaviour -
-// is ported verbatim, since that's real, load-bearing logic, not display
-// plumbing.
 namespace Stand
 {
 	class CommandSlider : public CommandPhysical
 	{
 	public:
+		inline static bool prefill_value = true;
+		inline static bool selectable_na = false;
+
 		int min_value;
 		int max_value;
 		int value;
 		int default_value;
 		unsigned int step_size;
+		bool is_click_to_apply = false;
 
-		explicit CommandSlider(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, const std::vector<Hotkey>& default_hotkeys = {}, CommandType type = COMMAND_SLIDER) :
+		explicit CommandSlider(CommandList* parent, Label&& menu_name, std::vector<CommandName>&& command_names, Label&& help_text, int min_value, int max_value, int default_value, unsigned int step_size = 1, commandflags_t flags = CMDFLAGS_SLIDER, CommandPerm perm = COMMANDPERM_USERONLY, bool is_click_to_apply = false, const std::vector<Hotkey>& default_hotkeys = {}, CommandType type = COMMAND_SLIDER) :
 		    CommandPhysical(type, parent, std::move(menu_name), std::move(command_names), std::move(help_text), flags, perm, default_hotkeys),
 		    min_value(min_value),
 		    max_value(max_value),
 		    value(default_value),
 		    default_value(default_value),
-		    step_size(step_size)
+		    step_size(step_size),
+		    is_click_to_apply(is_click_to_apply)
 		{
 		}
 
@@ -52,6 +51,11 @@ namespace Stand
 		void setState(Click& click, const std::string& state) override;
 		void applyDefaultState() override;
 
+		[[nodiscard]] virtual std::wstring formatNumber(int num, bool = true) const
+		{
+			return std::to_wstring(num);
+		}
+
 		[[nodiscard]] virtual std::string getValueText() const
 		{
 			return std::to_string(value);
@@ -64,11 +68,14 @@ namespace Stand
 			return std::to_string(min_value) + " to " + std::to_string(max_value);
 		}
 
-		[[nodiscard]] std::string getCommandSyntax() const override
+		[[nodiscard]] std::wstring getCommandSyntax() const override
 		{
 			if (command_names.empty())
 				return {};
-			return "Command: " + command_names.front() + " [" + getRangeString() + "]";
+			std::wstring syntax{ LANG_GET_W("CMD") };
+			const auto range = getRangeString();
+			syntax.append(L": ").append(cmdNameToUtf16(command_names.at(0))).append(L" [").append(range.begin(), range.end()).append(L"]");
+			return syntax;
 		}
 
 		[[nodiscard]] virtual std::vector<std::pair<int, std::string>> getNamedValues() const

@@ -22,6 +22,11 @@ namespace rage
 		{
 		}
 
+		operator Stand::v3() const noexcept
+		{
+			return { x, y, z };
+		}
+
 		scrVector operator+(const scrVector& other)
 		{
 			scrVector vec;

@@ -1,5 +1,4 @@
 #pragma once
-#include "Game/typedecl.hpp"
 
 #define CMDFLAG_TEMPORARY (Stand::commandflags_t)0b1
 #define CMDFLAG_SUPPORTS_STATE_OPERATIONS (Stand::commandflags_t)0b10
@@ -8,6 +7,13 @@
 #define CMDFLAG_SECTION_HEADER (Stand::commandflags_t)0b10000
 #define CMDFLAG_SEARCH_INPUT   (Stand::commandflags_t)0b100000
 #define CMDFLAG_TEXT_INPUT     (Stand::commandflags_t)0b1000000
+#define CMDFLAG_FEATURELIST_FINISHLIST  (Stand::commandflags_t)0b001000000
+#define CMDFLAG_FEATURELIST_SKIP        (Stand::commandflags_t)0b010000000
+#define CMDFLAG_SEARCH_FINISHLIST       (Stand::commandflags_t)0b1000000000
+#define CMDFLAG_SEARCH_CHILDRENONLY (Stand::commandflags_t)0b1000000000
+#define CMDFLAG_HOTKEYS_FINISHLIST          (Stand::commandflags_t)0b1000000000000
+#define CMDFLAG_STARRED_FINISHLIST          (Stand::commandflags_t)0b1000000000000000
+#define CMDFLAG_STATE_AND_CHECK_FINISHLIST  (Stand::commandflags_t)0b10000000000000000
 
 #define CMDFLAGS_ACTION 0
 #define CMDFLAGS_ACTION_NAME CMDFLAGS_ACTION
@@ -25,3 +31,5 @@
 #define CMDFLAGS_TOGGLE_NO_CORRELATION CMDFLAG_SUPPORTS_STATE_OPERATIONS
 #define CMDFLAGS_TOGGLE CMDFLAGS_TOGGLE_NO_CORRELATION
 #define CMDFLAGS_TOGGLE_CUSTOM 0
+#define CMDFLAGS_READONLY_VALUE_COPY 0
+#define CMDFLAGS_SEARCH              CMDFLAGS_LIST

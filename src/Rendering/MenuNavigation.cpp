@@ -1,5 +1,6 @@
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/MenuFocus.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand::Rendering
 {
@@ -66,7 +67,7 @@ namespace Stand::Rendering
 		for (const auto& level : s_Stack)
 		{
 			if (!path.empty())
-				path += " > ";
+				path += Theme::kAddressSeparator;
 			path += level.Label;
 		}
 		return path;
@@ -84,5 +85,11 @@ namespace Stand::Rendering
 			return false;
 		s_Stack = it->second;
 		return true;
+	}
+
+	size_t MenuNavigation::Depth()
+	{
+		std::lock_guard lock(s_Mutex);
+		return s_Stack.size();
 	}
 }

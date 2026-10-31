@@ -1,5 +1,4 @@
 #include "Network/Players.hpp"
-#include "Scripting/LuaManager.hpp"
 #include "Commands/Extra/CommandSavedPlayers.hpp"
 #include "Core/Pointers.hpp"
 #include "Network/CNetGamePlayer.hpp"
@@ -35,11 +34,6 @@ namespace Stand
 		m_PlayerDatas[player->m_PlayerIndex] = PlayerData();
 		SavedPlayers::OnPlayerJoin(new_player);
 
-		LuaManager::DispatchEvent(MenuEvent::PlayerJoin, [player](lua_State* state){
-			lua_pushinteger(state, player->m_PlayerIndex);
-			lua_pushstring(state, player->GetName());
-			return 2;
-		});
 	}
 
 	void Players::OnPlayerLeaveImpl(CNetGamePlayer* player)
@@ -49,10 +43,6 @@ namespace Stand
 		m_Players.erase(player->m_PlayerIndex);
 		m_PlayerDatas.erase(player->m_PlayerIndex);
 
-		LuaManager::DispatchEvent(MenuEvent::PlayerLeave, [player](lua_State* state){
-			lua_pushstring(state, player->GetName());
-			return 1;
-		});
 	}
 
 	Player Players::GetByRIDImpl(uint64_t rid)

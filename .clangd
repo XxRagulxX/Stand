@@ -7,3 +7,6 @@ CompileFlags:
   # preset-independent place to find it regardless of which preset is
   # active or which OS this is built on.
   CompilationDatabase: .
+
+Diagnostics:
+  Suppress: pragma-pack

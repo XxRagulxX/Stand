@@ -1,6 +1,6 @@
 #include "Rendering/GridItemHotkeyCapture.hpp"
 
-#include "Config/HotkeySystem.hpp"
+#include "Input/KeyBinding.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
 
@@ -18,20 +18,20 @@ namespace Stand::Rendering
 		// it exists at all.
 		constexpr std::chrono::seconds kCaptureTimeout{5};
 
-		std::string FormatChain(const CommandLink& link)
+		std::string FormatChain(const KeyBinding& link)
 		{
 			std::string text;
 			for (auto key : link.m_Chain)
 			{
 				if (!text.empty())
 					text += "+";
-				text += g_HotkeySystem.GetHotkeyLabel(key);
+				text += std::to_string(key);
 			}
 			return text;
 		}
 	}
 
-	GridItemHotkeyCapture::GridItemHotkeyCapture(int16_t width, int16_t height, std::string label, CommandLink* link) :
+	GridItemHotkeyCapture::GridItemHotkeyCapture(int16_t width, int16_t height, std::string label, KeyBinding* link) :
 	    GridItem(GRIDITEM_INDIFFERENT, width, height),
 	    m_Label(std::move(label)),
 	    m_Link(link)
@@ -46,7 +46,6 @@ namespace Stand::Rendering
 		m_Capturing = true;
 		m_CaptureStart = std::chrono::steady_clock::now();
 		s_ActiveCapture = this;
-		HotkeySystem::SetBeingModifed(true);
 	}
 
 	void GridItemHotkeyCapture::StopCapturing()
@@ -55,8 +54,6 @@ namespace Stand::Rendering
 
 		if (s_ActiveCapture == this)
 			s_ActiveCapture = nullptr;
-
-		HotkeySystem::SetBeingModifed(s_ActiveCapture != nullptr);
 	}
 
 	void GridItemHotkeyCapture::activate()
@@ -82,8 +79,6 @@ namespace Stand::Rendering
 		// mirrors DrawHotkey.cpp's own per-frame CreateHotkey() call
 		// while its button was held; see this class's own header
 		// comment for why that lives in draw() here instead.
-		if (m_Capturing && m_Link)
-			g_HotkeySystem.CreateHotkey(m_Link->m_Chain);
 	}
 
 	void GridItemHotkeyCapture::drawText()

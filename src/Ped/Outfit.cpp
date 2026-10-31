@@ -50,14 +50,14 @@ namespace Stand
 			}
 		}
 
-		Folder OutfitEditor::CheckFolder(std::string folderName)
+		std::filesystem::path OutfitEditor::CheckFolder(std::string folderName)
 		{
 			return FileMgr::GetProjectFolder("./saved_outfits/" + folderName);
 		}
 
 		void OutfitEditor::ApplyOutfitFromJson(std::string folderName, std::string fileName, bool applyHair)
 		{
-			const auto file = CheckFolder(folderName).GetFile(fileName).Path();
+			const auto file = CheckFolder(folderName) / fileName;
 
 			if (!std::filesystem::exists(file))
 			{
@@ -145,7 +145,7 @@ namespace Stand
 			j["props"] = j_props;
 			j["model"] = model;
 
-			auto path = CheckFolder(folder).GetFile(fileName).Path();
+			auto path = CheckFolder(folder) / fileName;
 			std::ofstream o(path);
 			o << std::setw(4) << j << std::endl;
 			o.close();
@@ -156,14 +156,14 @@ namespace Stand
 			folders.clear();
 
 			const auto file_path = CheckFolder();
-			for (const auto& directory_entry : std::filesystem::directory_iterator(file_path.Path()))
+			for (const auto& directory_entry : std::filesystem::directory_iterator(file_path))
 				if (directory_entry.is_directory())
 					folders.push_back(directory_entry.path().filename().generic_string());
 
 			files.clear();
 
 			const auto file_path2 = CheckFolder(folderName);
-			for (const auto& directory_entry : std::filesystem::directory_iterator(file_path2.Path()))
+			for (const auto& directory_entry : std::filesystem::directory_iterator(file_path2))
 				if (directory_entry.path().extension() == ".json")
 					files.push_back(directory_entry.path().filename().generic_string());
 		}

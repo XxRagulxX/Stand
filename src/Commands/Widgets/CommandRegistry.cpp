@@ -28,8 +28,13 @@ namespace Stand
 		if (!command)
 			return;
 
-		for (const auto& name : command->command_names)
-			m_Commands.erase(Stand::Joaat(name));
+		for (auto it = m_Commands.begin(); it != m_Commands.end(); )
+		{
+			if (it->second == command)
+				it = m_Commands.erase(it);
+			else
+				++it;
+		}
 	}
 
 	CommandIssuable* CommandRegistry::GetCommandImpl(Stand::joaat_t hash)

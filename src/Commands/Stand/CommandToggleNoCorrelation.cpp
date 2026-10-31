@@ -13,12 +13,12 @@ namespace Stand
 		onChange(click);
 	}
 
-	std::string CommandToggleNoCorrelation::getCommandSyntax() const
+	std::wstring CommandToggleNoCorrelation::getCommandSyntax() const
 	{
 		if (command_names.empty())
 			return {};
 
-		return CommandPhysical::getCommandSyntax() + " [on/off]";
+		return CommandPhysical::getCommandSyntax() + L" [on/off]";
 	}
 
 	void CommandToggleNoCorrelation::onChange(Click& click)
@@ -57,6 +57,11 @@ namespace Stand
 		Click click(CLICK_BULK, TC_SCRIPT_YIELDABLE);
 		if (m_on != default_on)
 			onClick(click);
+	}
+
+	void CommandToggleNoCorrelation::applyDefaultStateImpl(Click& click, bool should_be_on)
+	{
+		setStateBool(click, should_be_on);
 	}
 
 	void CommandToggleNoCorrelation::setStateBool(Click& click, bool toggle)

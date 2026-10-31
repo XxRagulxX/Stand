@@ -188,7 +188,9 @@ namespace Stand
 	{
 		if (!m_SafeToRender)
 			return;
-
+		if (!m_FrameRequested)
+			return;
+		m_FrameRequested = false;
 		Renderer::DX12EndFrame();
 	}
 

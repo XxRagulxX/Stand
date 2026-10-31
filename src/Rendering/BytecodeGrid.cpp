@@ -2,7 +2,9 @@
 
 #include "Rendering/GridItemButton.hpp"
 #include "Rendering/GridItemHexRow.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
+#include "Rendering/StandPort/Grid.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 #include "Rendering/GridItemTextInput.hpp"
 #include "Rendering/MenuFocus.hpp"
 #include "Rendering/Theme.hpp"
@@ -14,8 +16,8 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
-		constexpr float kItemH = Theme::kContentItemHeight;
+		const float kSectionHeaderH = Theme::kContentItemHeight;
+		const float kItemH = Theme::kContentItemHeight;
 	}
 
 	// Origin (1438, 587) matches every other content Grid's. Spacer is

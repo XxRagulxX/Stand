@@ -1,9 +1,10 @@
 #include "Rendering/GridItemCommandPosition3d.hpp"
 
+#include "Rendering/StandPort/Grid.hpp"
 #include "Commands/Commands.hpp"
-#include "Rendering/Grid.hpp"
+#include "Rendering/StandPort/Position2d.hpp"
 #include "Rendering/GridItemButton.hpp"
-#include "Rendering/GridItemText.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "World/Self.hpp"
 #include "Rendering/Theme.hpp"

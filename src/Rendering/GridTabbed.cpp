@@ -1,6 +1,6 @@
 #include "Rendering/GridTabbed.hpp"
 
-#include "Rendering/GridItemTabsHorizontal.hpp"
+#include "Rendering/StandPort/GridItemTabsHorizontal.hpp"
 
 namespace Stand::Rendering
 {

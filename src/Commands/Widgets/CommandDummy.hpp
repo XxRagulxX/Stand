@@ -1,0 +1,20 @@
+#pragma once
+
+#include "Commands/Widgets/CommandIssuable.hpp"
+
+namespace Stand
+{
+	class CommandDummy : public CommandIssuable
+	{
+	public:
+		explicit CommandDummy(CommandList* parent)
+			: CommandIssuable(parent, { CMDNAME("off") })
+		{
+		}
+
+		void onCommand(Click& click, std::wstring& args) final
+		{
+			click.setGenericResponse(LIT("Intentional no-op."));
+		}
+	};
+}

@@ -21,7 +21,7 @@ namespace Stand
     {
         std::filesystem::path GetVehiclesFolder()
         {
-            return FileMgr::GetProjectFolder("./Vehicles").Path();
+            return FileMgr::GetProjectFolder("./Vehicles");
         }
 
         std::filesystem::path GetVehiclePath(const std::string& name)

@@ -105,6 +105,5 @@ namespace Stand::Hooks
 
 	namespace Misc
 	{
-		extern bool AssistedAimShouldReleaseEntity(__int64 a1);
 	}
 }

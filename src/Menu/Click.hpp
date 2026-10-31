@@ -1,20 +1,15 @@
 #pragma once
+#include "Commands/Online/CommandPerm.hpp"
 #include "Core/ThreadContext.hpp"
 #include "Menu/ClickType.hpp"
 #include "Util/Label.hpp"
 
 #include <functional>
+#include <string>
 
-// Real Stand's Click also carries a chat-command/web-command issuer
-// (compactplayer_t issued_by/issued_for, AbstractPlayer, edition/licensing
-// checks, command-box + chat-permission plumbing) - none of which this
-// project has or is building (no chat-command parser, no web bridge, no
-// commercial editions). Kept only what a Self-tab-style toggle/slider
-// command actually needs: click type, thread context, and a response/
-// sound-feedback pair. If a later ported command needs something dropped
-// here, that's the point to add it back for real, not stub it.
 namespace Stand
 {
+	class CommandPhysical;
 	enum ClickResponseType : uint8_t
 	{
 		RESPONSE_CUSTOM,
@@ -51,12 +46,6 @@ namespace Stand
 		[[nodiscard]] Click derive(ClickType type) const noexcept;
 		[[nodiscard]] Click deriveAuto() const noexcept;
 
-		// Runs func() immediately if already on a script thread, or via
-		// FiberPool::queueJob() otherwise - same shape as real Stand's own
-		// (FiberPool::queueJob is already the same name/signature in this
-		// project). ensureWorkerContext() also goes through FiberPool: this
-		// project has no separate background-Worker thread the way Stand
-		// does, so a script-thread job is the substitute.
 		void ensureYieldableScriptThread(std::function<void()>&& func) const;
 		void ensureScriptThread(std::function<void()>&& func) const;
 		void ensureScriptThread(std::function<void(Click&)>&& func);
@@ -73,6 +62,7 @@ namespace Stand
 		[[nodiscard]] bool canHaveGenericErrorResponse() const noexcept;
 		void setResponse(Label&& response) noexcept;
 		void setResponse(Label&& response) const;
+		void showCommandBoxIfPossible(std::wstring prefill) const noexcept;
 		void setGenericResponse(Label&& response);
 		void setNoResponse() noexcept;
 
@@ -80,5 +70,13 @@ namespace Stand
 		[[nodiscard]] Label getResponse();
 		void forgetResponse() noexcept;
 		void respond();
+
+		[[nodiscard]] bool isWeb() const noexcept { return false; }
+		inline static bool self_chat_commands_friends_perms = false;
+		inline static bool auto_proceed_warnings_for_commands = false;
+		inline static bool auto_proceed_warnings_for_hotkeys = false;
+		void stopInputIfAllowed() const noexcept {}
+		[[nodiscard]] CommandPerm getEffectivePermissions() const { return COMMANDPERM_USERONLY; }
+		[[nodiscard]] CommandPhysical* getCommandPhysicalFromArg(const std::wstring&) const { return nullptr; }
 	};
 }

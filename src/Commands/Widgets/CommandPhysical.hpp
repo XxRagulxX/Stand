@@ -3,8 +3,10 @@
 #include "Commands/Widgets/CommandIssuable.hpp"
 #include "Commands/Widgets/CommandStateSerializer.hpp"
 #include "Menu/Hotkey.hpp"
+#include "Rendering/StandPort/Direction.hpp"
 #include "Util/Label.hpp"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -17,6 +19,7 @@ namespace Stand
 	{
 	private:
 		bool m_JobQueued = false;
+		std::vector<Hotkey> m_DefaultHotkeys;
 
 	protected:
 		std::function<bool()> m_tickHandler;
@@ -30,7 +33,8 @@ namespace Stand
 		    CommandIssuable(parent, std::move(command_names), perm, flags, type),
 		    menu_name(std::move(menu_name)),
 		    help_text(std::move(help_text)),
-		    hotkeys(default_hotkeys)
+		    hotkeys(default_hotkeys),
+		    m_DefaultHotkeys(default_hotkeys)
 		{
 			if (supportsStateOperations())
 				CommandStateSerializer::AddCommand(this);
@@ -75,11 +79,35 @@ namespace Stand
 			return (flags & CMDFLAG_NO_SAVED_STATE) == 0;
 		}
 
-		[[nodiscard]] virtual std::string getCommandSyntax() const;
+		[[nodiscard]] CommandPhysical* getStateCommand();
 
-		virtual void onClick(Click& click)
-		{
-		}
+		[[nodiscard]] bool canHotkeyBeRemoved(const Hotkey hotkey) const noexcept;
+		[[nodiscard]] bool canCountAsCommandWithHotkeys() const noexcept;
+		void removeHotkey(const Hotkey hotkey);
+		void updateHotkeysState();
+		void removeFromCommandsWithHotkeys();
+		void onHotkeysChanged(ClickType type = CLICK_AUTO);
+		void updateHotkeysInContextMenu();
+
+		void processVisualUpdate() const;
+		void loadState(ClickType type);
+		[[nodiscard]] std::string getActivationName() const;
+		[[nodiscard]] Label getActivationNameImplCombineWithParent(const char* joiner = " ") const;
+
+		[[nodiscard]] virtual std::wstring getCommandSyntax() const;
+		[[nodiscard]] bool canBeUsedByOtherPlayers() const;
+
+		[[nodiscard]] virtual std::string getNameForConfig() const;
+
+		void onCommandInvalidArg(Click& click, const std::wstring& arg) const;
+		void onCommandReopen(Click& click, const std::wstring& args) const;
+		[[nodiscard]] bool onCommandValidateFileName(Click& click, std::wstring& args);
+
+		virtual void preDetach() {}
+		virtual void onFocus(ThreadContext, Direction) {}
+		virtual void onBlur(ThreadContext, Direction) {}
+
+		virtual void onClick(Click& click);
 
 		virtual bool onLeft(Click& click, bool holding)
 		{
@@ -89,6 +117,11 @@ namespace Stand
 		virtual bool onRight(Click& click, bool holding)
 		{
 			return true;
+		}
+
+		[[nodiscard]] virtual Label getCurrentValueMenuName() const
+		{
+			return NOLABEL;
 		}
 
 		[[nodiscard]] virtual std::string getState() const
@@ -110,6 +143,9 @@ namespace Stand
 		}
 
 		virtual void onTick();
+		virtual void onTickInGameViewport() {}
+		virtual void onTickInWebViewport() {}
+		virtual void onPreScriptedAccess() {}
 
 		void queueJob(std::function<void()>&& func);
 		void queueJob(std::function<void(ThreadContext)>&& func);
@@ -128,7 +164,35 @@ namespace Stand
 
 		virtual void fillVirtualItems(std::vector<std::unique_ptr<Rendering::GridItem>>&, Rendering::Grid*) {}
 
+		[[nodiscard]] bool hasHotkey(const Hotkey hotkey) const noexcept
+		{
+			for (const auto& h : hotkeys)
+			{
+				if (h == hotkey)
+					return true;
+			}
+			return false;
+		}
+
+		void modifyHotkeys(bool add, const Hotkey hotkey, ClickType)
+		{
+			if (add)
+			{
+				if (!hasHotkey(hotkey))
+					hotkeys.push_back(hotkey);
+			}
+			else
+			{
+				hotkeys.erase(std::remove(hotkeys.begin(), hotkeys.end(), hotkey), hotkeys.end());
+			}
+		}
+
+		void focusInParent(ThreadContext) {}
+
 	private:
 		void queueWorkerJob(std::function<void()>&& func);
 	};
+
+	template<>
+	[[nodiscard]] inline bool Command::isT<CommandPhysical>() const noexcept { return isPhysical(); }
 }

@@ -1,7 +1,13 @@
 #pragma once
 #include "Commands/Widgets/CommandFlags.hpp"
+#include "Core/ThreadContext.hpp"
+#include "Game/typedecl.hpp"
+
+#include <soup/TransientToken.hpp>
+#include <soup/WeakRef.hpp>
 
 #include <cstdint>
+#include <string>
 
 namespace Stand
 {
@@ -10,24 +16,38 @@ namespace Stand
 
 	enum CommandType : uint8_t
 	{
-		COMMAND_FULLTYPEFLAG = 0b1110000,
-		COMMAND_FLAG_LIST = 0b1000000,
+		COMMAND_FULLTYPEFLAG     = 0b1110000,
+		COMMAND_FLAG_LIST        = 0b1000000,
 		COMMAND_FLAG_LIST_ACTION = 0b1100000,
-		COMMAND_FLAG_TOGGLE = 0b0010000,
-		COMMAND_FLAG_SLIDER = 0b0100000,
+		COMMAND_FLAG_TOGGLE      = 0b0010000,
+		COMMAND_FLAG_SLIDER      = 0b0100000,
 
 		COMMAND_LINK = 0,
 		COMMAND_ISSUABLE,
 
 		COMMAND_FIRST_PHYSICAL,
 		COMMAND_ACTION = COMMAND_FIRST_PHYSICAL,
+		COMMAND_ACTION_ITEM,
+		COMMAND_INPUT,
+		COMMAND_TEXTSLIDER,
+		COMMAND_TEXTSLIDER_STATEFUL,
+		COMMAND_READONLY_NAME,
+		COMMAND_READONLY_VALUE,
+		COMMAND_READONLY_LINK,
+		COMMAND_DIVIDER,
 
 		COMMAND_LIST = COMMAND_FLAG_LIST,
+		COMMAND_LIST_NAMESHARE,
+		COMMAND_LIST_COLOUR,
+		COMMAND_LIST_READONLY,
+		COMMAND_LIST_REFRESHABLE,
+		COMMAND_LIST_SEARCH,
 
 		COMMAND_LIST_ACTION = COMMAND_FLAG_LIST_ACTION,
 		COMMAND_LIST_SELECT,
 
 		COMMAND_TOGGLE = COMMAND_FLAG_TOGGLE,
+		COMMAND_TOGGLE_CUSTOM,
 
 		COMMAND_SLIDER = COMMAND_FLAG_SLIDER,
 		COMMAND_SLIDER_FLOAT,
@@ -36,9 +56,11 @@ namespace Stand
 	class Command
 	{
 	public:
+		soup::TransientToken transient_token;
 		CommandList* parent;
 		const CommandType type;
 		commandflags_t flags;
+		bool job_queued = false;
 
 		explicit Command(CommandType type, CommandList* parent, commandflags_t flags = 0) :
 		    parent(parent),
@@ -48,6 +70,18 @@ namespace Stand
 		}
 
 		virtual ~Command() = default;
+
+		template <typename T = Command>
+		[[nodiscard]] soup::WeakRef<T> getWeakRef()
+		{
+			return soup::WeakRef<T>(static_cast<T*>(this));
+		}
+		virtual void preDelete() {}
+		void beGone();
+		void beGoneRootWriteLocked();
+
+		[[nodiscard]] CommandList* resolveParent(CommandType type);
+		[[nodiscard]] const CommandList* resolveParent(CommandType type) const;
 
 		template<typename T>
 		[[nodiscard]] T* as() noexcept
@@ -86,6 +120,11 @@ namespace Stand
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_LIST_ACTION;
 		}
 
+		[[nodiscard]] bool isListNameshare() const noexcept
+		{
+			return type == COMMAND_LIST_NAMESHARE || isListAction();
+		}
+
 		[[nodiscard]] bool isListSelect() const noexcept
 		{
 			return type == COMMAND_LIST_SELECT;
@@ -101,6 +140,16 @@ namespace Stand
 			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_SLIDER;
 		}
 
+		[[nodiscard]] bool isListNonAction() const noexcept
+		{
+			return (type & COMMAND_FULLTYPEFLAG) == COMMAND_FLAG_LIST;
+		}
+
+		[[nodiscard]] bool canBeResolved() const noexcept
+		{
+			return type != COMMAND_DIVIDER;
+		}
+
 		[[nodiscard]] bool isConcealed() const noexcept
 		{
 			return (flags & CMDFLAG_CONCEALED) != 0;
@@ -108,6 +157,18 @@ namespace Stand
 
 		[[nodiscard]] CommandPhysical* getPhysical() noexcept;
 		[[nodiscard]] const CommandPhysical* getPhysical() const noexcept;
+
+		template<typename T>
+		[[nodiscard]] bool isT() const noexcept { return false; }
+
+		[[nodiscard]] bool shouldShowUntrimmedName() const;
+
+		[[nodiscard]] std::string getPathConfig() const;
+		[[nodiscard]] std::string getLocalisedAddress(const std::string& separator = " > ") const;
+		[[nodiscard]] std::wstring getLocalisedAddressW(const std::wstring& separator = L" > ") const;
+		[[nodiscard]] std::wstring getEnglishAddressW(const std::wstring& separator = L" > ") const;
+
+		void openHotkeysList(ThreadContext thread_context);
 
 		virtual void onFocus() {}
 		virtual void onBlur() {}
