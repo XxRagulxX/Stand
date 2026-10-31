@@ -2,6 +2,7 @@
 
 #include "Rendering/StandPort/Grid.hpp"
 #include "Rendering/StandPort/GridItemNotify.hpp"
+#include "Rendering/Renderer.hpp"
 
 #include "Core/Spinlock.hpp"
 #include "Util/get_current_time_millis.hpp"
@@ -43,9 +44,9 @@ namespace Stand
 
         explicit NotifyGrid();
 
-        void update() { invalidate(); }
+        void update() { invalidate(); Renderer::RequestFrame(); }
         void updatePositions() { invalidate(); }
-        template<typename F> void updateSetting(F&& func) { func(); invalidate(); }
+        template<typename F> void updateSetting(F&& func) { func(); invalidate(); Renderer::RequestFrame(); }
 
         void onTick();
         void setOriginNextToMap();

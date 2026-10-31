@@ -126,6 +126,8 @@ namespace Stand::Rendering
 	}
 
 	bool MenuCommandConsole::s_Open = false;
+	bool MenuCommandConsole::s_OpenKeyReleased = true;
+	bool MenuCommandConsole::s_WaitingForEscapeRelease = false;
 	std::string MenuCommandConsole::s_Buffer;
 	std::vector<MenuCommandConsole::Match> MenuCommandConsole::s_Matches;
 	int MenuCommandConsole::s_SelectedIndex = -1;
@@ -140,6 +142,7 @@ namespace Stand::Rendering
 		s_Matches.clear();
 		s_SelectedIndex = -1;
 		s_Open = true;
+		s_OpenKeyReleased = false;
 		InputCapture::SetTextInputActive(true);
 		Renderer::RequestFrame();
 	}
@@ -183,7 +186,17 @@ namespace Stand::Rendering
 		s_SelectedIndex = -1;
 		s_DirectCallback = nullptr;
 		s_DirectHint.clear();
-		InputCapture::SetTextInputActive(false);
+		if (!s_WaitingForEscapeRelease)
+			InputCapture::SetTextInputActive(false);
+	}
+
+	void MenuCommandConsole::NotifyEscapeReleased()
+	{
+		if (s_WaitingForEscapeRelease)
+		{
+			s_WaitingForEscapeRelease = false;
+			InputCapture::SetTextInputActive(false);
+		}
 	}
 
 	void MenuCommandConsole::UpdateMatches()
@@ -374,6 +387,7 @@ namespace Stand::Rendering
 			break;
 
 		case VK_ESCAPE:
+			s_WaitingForEscapeRelease = true;
 			Close();
 			break;
 
@@ -419,7 +433,7 @@ namespace Stand::Rendering
 		if (!s_Open)
 			return;
 
-		if ((c == u'u' || c == u'U') && (GetKeyState('U') & 0x8000) != 0)
+		if (!s_OpenKeyReleased && (c == u'u' || c == u'U'))
 			return;
 
 		if (c >= 0x20 && c < 0x7f && s_Buffer.size() < 64)
@@ -427,5 +441,10 @@ namespace Stand::Rendering
 			s_Buffer.push_back(static_cast<char>(c));
 			UpdateMatches();
 		}
+	}
+
+	void MenuCommandConsole::NotifyOpenKeyReleased()
+	{
+		s_OpenKeyReleased = true;
 	}
 }

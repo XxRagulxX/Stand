@@ -441,7 +441,8 @@ namespace Stand::Rendering
 		if (m_IconLoadCountdown > 0 && --m_IconLoadCountdown == 0)
 			ThemeIcons::Load();
 
-		if (menuActive || MenuCommandConsole::IsOpen())
+		const bool hasNotifications = !g_notify_grid.notifies.empty() || !g_notify_grid.persistent_notify.empty();
+		if (menuActive || MenuCommandConsole::IsOpen() || hasNotifications)
 			Renderer::RequestFrame();
 	}
 
@@ -810,6 +811,10 @@ namespace Stand::Rendering
 			{
 				MenuCommandConsole::Open();
 			}
+			if (msg == WM_KEYUP && wparam == 'U')
+				MenuCommandConsole::NotifyOpenKeyReleased();
+			if (msg == WM_KEYUP && wparam == VK_ESCAPE)
+				MenuCommandConsole::NotifyEscapeReleased();
 		});
 	}
 

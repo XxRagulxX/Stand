@@ -17,6 +17,8 @@ namespace Stand::Rendering
 		static void DrawText();
 		static void HandleKey(unsigned int vkCode);
 		static void HandleChar(wchar_t c);
+		static void NotifyOpenKeyReleased();
+		static void NotifyEscapeReleased();
 
 	private:
 		struct Layout
@@ -35,8 +37,10 @@ namespace Stand::Rendering
 			std::string name;
 		};
 
-		static void UpdateMatches();	
+		static void UpdateMatches();
 		static bool s_Open;
+		static bool s_OpenKeyReleased;
+		static bool s_WaitingForEscapeRelease;
 		static std::string s_Buffer;
 		static std::vector<Match> s_Matches;
 		static int s_SelectedIndex; // -1 if s_Matches is empty
