@@ -16,8 +16,8 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
-		constexpr float kItemH = Theme::kContentItemHeight;
+		const float kSectionHeaderH = Theme::kContentItemHeight;
+		const float kItemH = Theme::kContentItemHeight;
 	}
 
 	// Origin (1438, 587) matches every other content Grid's. Spacer is

@@ -41,31 +41,57 @@ namespace Stand::Rendering
         if (!m_List)
             return;
 
-        int16_t h = static_cast<int16_t>(
+        cursor_t children_to_fit = static_cast<cursor_t>(m_List->countVisibleChildren());
+
+        int16_t max_h = static_cast<int16_t>(
             Theme::kHudHeight - static_cast<float>(origin.y) - static_cast<float>(Theme::kContentBottomMargin));
         if (Theme::kListHeight > 0)
-            h = std::min(h, Theme::kListHeight);
+            max_h = std::min(max_h, Theme::kListHeight);
         if (Theme::kMenuHeight > 0)
-            h = std::min(h, static_cast<int16_t>(Theme::kMenuHeight * Theme::kContentItemHeight));
-        if (!m_List->children.empty())
-            h = std::min(h, static_cast<int16_t>(m_List->children.size() * Theme::kContentItemHeight));
+            max_h = std::min(max_h, static_cast<int16_t>(Theme::kMenuHeight * Theme::kContentItemHeight));
 
-        g_gui.command_rows = static_cast<cursor_t>(h / Theme::kContentItemHeight);
-        m_CommandRows = g_gui.command_rows;
+        const cursor_t max_rows_from_height = static_cast<cursor_t>(max_h / Theme::kContentItemHeight);
 
-        auto item = std::make_unique<GridItemList>(m_List, h, 0, ALIGN_BOTTOM_LEFT, 0);
+        const cursor_t rows_for_split = (g_gui.command_columns > 1 && children_to_fit > 0)
+            ? static_cast<cursor_t>(ceilf(static_cast<float>(children_to_fit) / static_cast<float>(g_gui.command_columns)))
+            : max_rows_from_height;
+        const cursor_t col_rows = rows_for_split > 0 ? std::min(rows_for_split, max_rows_from_height) : max_rows_from_height;
+
+        g_gui.command_rows = col_rows;
+        m_CommandRows = col_rows;
+
+        const int16_t columns_for_this_list = (col_rows > 0 && children_to_fit > 0)
+            ? std::clamp<int16_t>(
+                static_cast<int16_t>(ceilf(static_cast<float>(children_to_fit) / static_cast<float>(col_rows))),
+                1, static_cast<int16_t>(g_gui.command_columns))
+            : 1;
+
+        const int16_t first_h = static_cast<int16_t>(Theme::kContentItemHeight * static_cast<int16_t>(std::min(children_to_fit, col_rows)));
+        auto item = std::make_unique<GridItemList>(m_List, first_h, 0, ALIGN_BOTTOM_LEFT, 0);
         m_Item = item.get();
         items_draft.push_back(std::move(item));
+
+        for (int16_t i = 1; i < columns_for_this_list; ++i)
+        {
+            children_to_fit -= col_rows;
+            const int16_t col_h = static_cast<int16_t>(Theme::kContentItemHeight * static_cast<int16_t>(std::min(children_to_fit, col_rows)));
+            items_draft.push_back(std::make_unique<GridItemList>(m_List, col_h, 0, ALIGN_TOP_RIGHT, col_rows * i));
+        }
     }
 
     void GridItemListGrid::ScriptTick()
     {
         if (m_List && m_Item && !m_List->children.empty())
         {
-            const cursor_t childCount = static_cast<cursor_t>(m_List->children.size());
+            const cursor_t childCount = static_cast<cursor_t>(m_List->countVisibleChildren());
             const cursor_t maxRows = Theme::kMenuHeight > 0 ? static_cast<cursor_t>(Theme::kMenuHeight) : 11;
-            m_CommandRows = std::min(maxRows, childCount);
-            m_Item->height = static_cast<int16_t>(m_CommandRows * Theme::kContentItemHeight);
+            const cursor_t rows_for_split = (g_gui.command_columns > 1 && childCount > 0)
+                ? static_cast<cursor_t>(ceilf(static_cast<float>(childCount) / static_cast<float>(g_gui.command_columns)))
+                : maxRows;
+            const cursor_t col_rows = rows_for_split > 0 ? std::min(rows_for_split, maxRows) : maxRows;
+            m_CommandRows = col_rows;
+            const cursor_t col0_children = std::min(childCount, col_rows);
+            m_Item->height = static_cast<int16_t>(col0_children * Theme::kContentItemHeight);
         }
         if (m_CommandRows > 0)
             g_gui.command_rows = m_CommandRows;
@@ -77,8 +103,14 @@ namespace Stand::Rendering
                     static_cast<Stand::CommandPhysical*>(child.get())->onTickInGameViewport();
             }
         }
-        if (m_Item)
-            m_Item->update();
+        if (items)
+        {
+            for (auto& gridItem : *items)
+            {
+                if (auto* listItem = dynamic_cast<GridItemList*>(gridItem.get()))
+                    listItem->update();
+            }
+        }
         if (m_List && m_Item)
         {
             const int32_t totalH = static_cast<int32_t>(m_List->children.size()) * Theme::kContentItemHeight;

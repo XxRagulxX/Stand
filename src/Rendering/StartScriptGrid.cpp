@@ -27,8 +27,8 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
-		constexpr float kItemH = Theme::kContentItemHeight;
+		const float kSectionHeaderH = Theme::kContentItemHeight;
+		const float kItemH = Theme::kContentItemHeight;
 
 		// Duplicated from MenuScripts.cpp's own file-static stackSizes[]
 		// (internal linkage there, so it isn't reachable from here) -

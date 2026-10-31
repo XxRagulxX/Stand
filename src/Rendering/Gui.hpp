@@ -69,6 +69,7 @@ namespace Stand
         time_t lerp_start = 0;
         cursor_t lerp_from_cursor = 0;
         cursor_t lerp_from_offset = 0;
+        void lerpStop() noexcept { lerp_start = 0; }
 
         std::unordered_map<int8_t, WarningData> warnings{};
 

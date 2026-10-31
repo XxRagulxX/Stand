@@ -24,8 +24,8 @@ namespace Stand::Rendering
 {
 	namespace
 	{
-		constexpr float kSectionHeaderH = Theme::kContentItemHeight;
-		constexpr float kItemH = Theme::kContentItemHeight;
+		const float kSectionHeaderH = Theme::kContentItemHeight;
+		const float kItemH = Theme::kContentItemHeight;
 
 		// Same "skip KILLED/zero-stack threads" filter the original's
 		// own combo applies - shared between the picker's rows() and

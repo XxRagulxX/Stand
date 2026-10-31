@@ -33,8 +33,8 @@ namespace Stand::Rendering::Theme
 	constexpr int16_t kHeaderHeight = 24;
 	constexpr int16_t kSidebarWidth = 112;
 	constexpr int16_t kSidebarEntryHeight = 32;
-	constexpr int16_t kContentWidth = 450;
-	constexpr int16_t kContentItemHeight = 32;
+	inline int16_t kContentWidth = 450;
+	inline int16_t kContentItemHeight = 32;
 
 	inline int16_t kInfoWidth = 300;
 	enum class InfoTextPosition : uint8_t { Left, Bottom, Right, BelowTabs };
@@ -133,7 +133,7 @@ namespace Stand::Rendering::Theme
 	inline int16_t kListHeight = 0;
 	inline int16_t kSpacerSize = 0;
 	inline int16_t kSmoothScroll = 0;
-	inline uint8_t kBlur = 0;
+	inline uint8_t kBlur = 4;
 
 	enum class InputPreset : uint8_t { Flexible, NoNumpad, Numpad };
 	inline InputPreset kInputPreset = InputPreset::Flexible;

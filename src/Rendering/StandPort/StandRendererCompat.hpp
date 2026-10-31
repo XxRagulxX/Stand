@@ -38,6 +38,9 @@ namespace Stand
         TextSettings small_text{ float(12.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
         TextSettings tabs_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
         TextSettings command_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
+        int16_t command_height = 32;
+        int16_t command_width = 450;
+        uint8_t background_blur = 4;
 
         bool preview_colour_in_sprite = true;
         bool preview_colour_in_list = true;

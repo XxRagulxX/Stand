@@ -83,6 +83,7 @@
 #include "Commands/Stand/CommandPreviewColourInSprite.hpp"
 #include "Commands/Stand/CommandPreviewColourInList.hpp"
 #include "Rendering/StandPort/MenuGrid.hpp"
+#include "Rendering/MenuNavigation.hpp"
 #include "Rendering/StandPort/StandRendererCompat.hpp"
 #include "Rendering/StandPort/create_colour_with_rainbow.hpp"
 #include "Commands/Widgets/CommandSearchMenu.hpp"
@@ -96,8 +97,15 @@
 #include "Rendering/StandPort/CommandSliderPointer.hpp"
 #include "Rendering/StandPort/Commandbox.hpp"
 #include "Rendering/StandPort/CommandboxGrid.hpp"
+#include "Rendering/StandPort/CommandLambdaAction.hpp"
+#include "Commands/Stand/CommandMenuHeight.hpp"
+#include "Rendering/Gui.hpp"
+#include "Core/FileMgr.hpp"
 #include "Menu/Click.hpp"
 #include "Core/ThreadContext.hpp"
+#include <filesystem>
+#include <shellapi.h>
+#include <windows.h>
 
 namespace Stand
 {
@@ -352,12 +360,59 @@ namespace Stand
 					{ CMDNAME("border") }
 				);
 			}
-			appearanceDirect = appearance->createChild<CommandTabAppearanceDirect>();
+			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("MAXCLMNS"), CMDNAMES("columns"), NOLABEL, 1, 50, 1, 1, [](int value, Click& click)
+			{
+				g_MenuGrid.updateSetting([value]
+				{
+					g_gui.command_columns = value;
+					if (auto* content = Rendering::MenuNavigation::Current())
+						content->InvalidateLayout();
+				});
+			});
+			appearance->createChild<CommandMenuHeight>();
+			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("LSTWDT"), CMDNAMES("listwidth", "menuwidth"), NOLABEL, 0, SHRT_MAX, static_cast<int>(Rendering::Theme::kContentWidth), 10, [](int value, Click& click)
+			{
+				g_MenuGrid.updateSetting([value]
+				{
+					Rendering::Theme::kContentWidth = static_cast<int16_t>(value);
+					g_MenuGrid.InvalidateLayout();
+				});
+			});
+			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("LSTHHT"), CMDNAMES("listheight"), NOLABEL, 0, SHRT_MAX, static_cast<int>(Rendering::Theme::kContentItemHeight), 1, [](int value, Click& click)
+			{
+				g_MenuGrid.updateSetting([value]
+				{
+					Rendering::Theme::kContentItemHeight = static_cast<int16_t>(value);
+					g_MenuGrid.InvalidateLayout();
+				});
+			});
+			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("SPCSZE"), CMDNAMES("spacersize"), NOLABEL, 0, SHRT_MAX, static_cast<int>(g_MenuGrid.spacer_size), 1, [](int value, Click& click)
+			{
+				g_MenuGrid.updateSetting([value]
+				{
+					g_MenuGrid.spacer_size = static_cast<int16_t>(value);
+					g_MenuGrid.InvalidateLayout();
+				});
+			});
+			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("LERP"), CMDNAMES("smoothscroll"), NOLABEL, 0, 1000, static_cast<int>(g_gui.lerp), 10, [](int value, Click& click)
+			{
+				g_gui.lerp = value;
+				if (value == 0) { g_gui.lerpStop(); }
+			});
+			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("BGBLR"), CMDNAMES("blur", "bgblur", "backgroundblur"), LOC("BGBLR_H"), 0, 100, static_cast<int>(Rendering::Theme::kBlur), 1, [](int value, Click& click)
+			{
+				Rendering::Theme::kBlur = static_cast<uint8_t>(value);
+			});
+			appearance->createChild<CommandLambdaAction>(LOC("OPNTHME"), CMDNAMES(), LOC("OPNTHME_H"), [](Click& click)
+			{
+				const auto folder = FileMgr::GetProjectFolder("Theme");
+				std::filesystem::create_directories(folder);
+				ShellExecuteW(nullptr, L"open", folder.wstring().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+			});
 			fontText = appearance->createChild<CommandTabFontText>();
-			presetFont = appearance->createChild<CommandTabPresetFont>();
 			textures = appearance->createChild<CommandTabTextures>();
 			appearance->createChild<CommandStreamproof>();
-			entityPreviews = appearance->createChild<CommandTabEntityPreviews>();
+			entityPreviews = appearance->createChild<CommandEntityPreviews>();
 		}
 
 		{

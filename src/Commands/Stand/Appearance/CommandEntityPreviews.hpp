@@ -120,7 +120,7 @@ namespace Stand
 		}
 	};
 
-	class CommandTabEntityPreviews : public CommandList
+	class CommandEntityPreviews : public CommandList
 	{
 	public:
 		CommandDisableEntityPreviews* const disable;
@@ -130,7 +130,7 @@ namespace Stand
 		CommandPreviewObjDist* const objDist;
 		CommandPreviewVehDist* const vehDist;
 
-		explicit CommandTabEntityPreviews(CommandList* parent = nullptr)
+		explicit CommandEntityPreviews(CommandList* parent = nullptr)
 			: CommandList(parent, LIT("Entity Previews"))
 			, disable(createChild<CommandDisableEntityPreviews>())
 			, opaque(createChild<CommandPreviewOpaque>())
@@ -145,5 +145,5 @@ namespace Stand
 
 namespace Stand::Features
 {
-	Stand::CommandTabEntityPreviews& GetCommandTabEntityPreviews();
+	Stand::CommandEntityPreviews& GetCommandEntityPreviews();
 }

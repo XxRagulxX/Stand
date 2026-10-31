@@ -6,6 +6,7 @@
 #include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/InputCapture.hpp"
+#include "Rendering/Renderer.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Util/StringUtils.hpp"
@@ -140,6 +141,7 @@ namespace Stand::Rendering
 		s_SelectedIndex = -1;
 		s_Open = true;
 		InputCapture::SetTextInputActive(true);
+		Renderer::RequestFrame();
 	}
 
 	void MenuCommandConsole::Open(std::string prefill)
@@ -151,6 +153,7 @@ namespace Stand::Rendering
 		s_SelectedIndex = -1;
 		s_Open = true;
 		InputCapture::SetTextInputActive(true);
+		Renderer::RequestFrame();
 		UpdateMatches();
 	}
 
@@ -163,6 +166,7 @@ namespace Stand::Rendering
 		s_SelectedIndex = -1;
 		s_Open = true;
 		InputCapture::SetTextInputActive(true);
+		Renderer::RequestFrame();
 		UpdateMatches();
 	}
 

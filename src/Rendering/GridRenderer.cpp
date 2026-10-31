@@ -441,7 +441,7 @@ namespace Stand::Rendering
 		if (m_IconLoadCountdown > 0 && --m_IconLoadCountdown == 0)
 			ThemeIcons::Load();
 
-		if (menuActive)
+		if (menuActive || MenuCommandConsole::IsOpen())
 			Renderer::RequestFrame();
 	}
 

@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Commands/Widgets/CommandTab.hpp"
-#include "Commands/Stand/Appearance/CommandTabAppearanceDirect.hpp"
-#include "Commands/Stand/Appearance/CommandTabEntityPreviews.hpp"
+#include "Commands/Stand/Appearance/CommandEntityPreviews.hpp"
 #include "Commands/Stand/Appearance/CommandTabFontText.hpp"
 #include "Commands/Widgets/CommandListNotifySettings.hpp"
 #include "Commands/Stand/CommandMenuPosition.hpp"
-#include "Commands/Stand/Appearance/CommandTabPresetFont.hpp"
 #include "Commands/Stand/Appearance/CommandTabTextures.hpp"
 #include "Commands/Stand/Input/CommandTabInput.hpp"
 
@@ -20,11 +18,9 @@ namespace Stand
 	public:
 		CommandMenuPosition* position = nullptr;
 		CommandTabTextures* textures = nullptr;
-		CommandTabEntityPreviews* entityPreviews = nullptr;
+		CommandEntityPreviews* entityPreviews = nullptr;
 		CommandListNotifySettings* notifications = nullptr;
 		CommandTabFontText* fontText = nullptr;
-		CommandTabPresetFont* presetFont = nullptr;
-		CommandTabAppearanceDirect* appearanceDirect = nullptr;
 		CommandTabInput* input = nullptr;
 
 		explicit CommandTabStand(CommandList* const parent);
