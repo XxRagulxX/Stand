@@ -230,13 +230,40 @@ namespace Stand::Rendering
         if (!m_List || m_List->children.empty())
             return;
 
-        const cursor_t count = static_cast<cursor_t>(m_List->children.size());
-        cursor_t c = m_List->m_cursor + delta;
+        const cursor_t count = static_cast<cursor_t>(m_List->countVisibleChildren());
+        if (count <= 0)
+            return;
 
-        if (c < 0)
-            c = 0;
-        else if (c >= count)
-            c = count - 1;
+        cursor_t c = m_List->m_cursor;
+
+        if (delta < 0)
+        {
+            if (c <= 0)
+            {
+                g_gui.lerpStop();
+                c = count - 1;
+                m_List->m_offset = count > g_gui.command_rows ? count - g_gui.command_rows : 0;
+            }
+            else
+            {
+                g_gui.lerpStart(m_List);
+                --c;
+            }
+        }
+        else
+        {
+            if (c + 1 >= count)
+            {
+                g_gui.lerpStop();
+                c = 0;
+                m_List->m_offset = 0;
+            }
+            else
+            {
+                g_gui.lerpStart(m_List);
+                ++c;
+            }
+        }
 
         while (c > 0 && c < count - 1 && isSectionHeader(m_List->children[c].get()))
             c += delta > 0 ? 1 : -1;

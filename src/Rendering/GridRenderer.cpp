@@ -1,4 +1,5 @@
 #include "Rendering/GridRenderer.hpp"
+#include "Rendering/Gui.hpp"
 
 #include "Core/FileMgr.hpp"
 #include "Menu/GUI.hpp"
@@ -442,7 +443,8 @@ namespace Stand::Rendering
 			ThemeIcons::Load();
 
 		const bool hasNotifications = !g_notify_grid.notifies.empty() || !g_notify_grid.persistent_notify.empty();
-		if (menuActive || MenuCommandConsole::IsOpen() || hasNotifications)
+		const bool lerpActive = g_gui.lerp_start != 0;
+		if (menuActive || MenuCommandConsole::IsOpen() || hasNotifications || lerpActive)
 			Renderer::RequestFrame();
 	}
 

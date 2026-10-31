@@ -1,5 +1,6 @@
 #include "Rendering/Gui.hpp"
 #include "Commands/Widgets/CommandList.hpp"
+#include "Util/get_current_time_millis.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
 #include "Menu/Click.hpp"
@@ -100,6 +101,16 @@ namespace Stand
             prefix.push_back('>');
             tab.recursivelyApplyStateFromMemory(state, std::move(prefix));
         });
+    }
+
+    void Gui::lerpStart(CommandList* list) noexcept
+    {
+        if (lerp != 0)
+        {
+            lerp_start = get_current_time_millis();
+            lerp_from_cursor = list->m_cursor - list->m_offset;
+            lerp_from_offset = list->m_offset;
+        }
     }
 
     void Gui::processToggleCorrelation(ThreadContext thread_context, ToggleCorrelation_t correlation, bool value)

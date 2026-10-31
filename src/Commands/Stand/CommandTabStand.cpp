@@ -17,6 +17,7 @@
 #include "Commands/Widgets/CommandFocusSpriteColour.hpp"
 #include "Commands/Widgets/CommandFocusTextColour.hpp"
 #include "Commands/Widgets/CommandPrimaryColour.hpp"
+#include "Rendering/GridItemListGrid.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
 #include <climits>
@@ -376,6 +377,7 @@ namespace Stand
 				{
 					Rendering::Theme::kContentWidth = static_cast<int16_t>(value);
 					g_MenuGrid.InvalidateLayout();
+					Rendering::GridItemListGrid::InvalidateAll();
 				});
 			});
 			appearance->createChild<CommandLambdaSlider<CommandSlider>>(LOC("LSTHHT"), CMDNAMES("listheight"), NOLABEL, 0, SHRT_MAX, static_cast<int>(Rendering::Theme::kContentItemHeight), 1, [](int value, Click& click)

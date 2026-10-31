@@ -15,6 +15,7 @@
 #include "Menu/Hotkey.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Gui.hpp"
+#include "Util/get_current_time_millis.hpp"
 #include "Rendering/StandPort/MenuGrid.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/StandPort/ThemeIcons.hpp"
@@ -422,6 +423,18 @@ namespace Stand
 
         const auto& dd = m_draw_data;
 
+        float lerp_perc = 0.f;
+        if (g_gui.lerp_start != 0 && g_gui.lerp > 0)
+        {
+            const auto elapsed = GET_MILLIS_SINCE(g_gui.lerp_start);
+            lerp_perc = (float)std::min(elapsed, (time_t)g_gui.lerp) / (float)g_gui.lerp;
+            if (lerp_perc >= 1.0f)
+            {
+                g_gui.lerp_start = 0;
+                lerp_perc = 0.f;
+            }
+        }
+
         int16_t draw_cursor = dd.has_extra_top ? -1 : 0;
         bool any_focused = false;
         float focus_y = 0.f;
@@ -430,13 +443,19 @@ namespace Stand
         {
             if (cmd.focused)
             {
-                focus_y = fy + (float)(kContentItemHeight * draw_cursor);
+                float cursor_offset = 0.f;
+                if (lerp_perc > 0.f)
+                    cursor_offset = std::lerp(
+                        (float)(g_gui.lerp_from_cursor - draw_cursor) * (float)kContentItemHeight,
+                        0.0f, lerp_perc);
+
+                focus_y = fy + (float)(kContentItemHeight * draw_cursor) + cursor_offset;
                 if (draw_cursor >= 0 && draw_cursor < (int16_t)g_gui.command_rows)
                 {
-                    GridRenderer::DrawRect(fx, fy, fw, (float)(kContentItemHeight * draw_cursor), kPanelBackground);
+                    GridRenderer::DrawRect(fx, fy, fw, (float)(kContentItemHeight * draw_cursor) + cursor_offset, kPanelBackground);
                     GridRenderer::DrawRect(fx, focus_y, fw, (float)kContentItemHeight, cmd.hasRectColourOverride ? cmd.rectColourOverride : kAccent);
                     GridRenderer::DrawRect(fx, focus_y + (float)kContentItemHeight,
-                        fw, (float)((g_gui.command_rows - draw_cursor - 1) * kContentItemHeight),
+                        fw, (float)((g_gui.command_rows - draw_cursor - 1) * kContentItemHeight) - cursor_offset,
                         kPanelBackground);
 
                     if (kCursorBorderWidth > 0)
