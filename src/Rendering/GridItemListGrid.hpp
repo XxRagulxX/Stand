@@ -19,6 +19,7 @@ namespace Stand::Rendering
         [[nodiscard]] Stand::CommandList* getCommandList() const noexcept { return m_List; }
 
         static GridItemListGrid& GetOrCreate(Stand::CommandList* list);
+        static void InvalidateAll();
 
         [[nodiscard]] std::string GetFocusedDescription() const;
 

@@ -30,10 +30,21 @@ namespace Stand::Rendering
     {
     }
 
-    GridItemListGrid& GridItemListGrid::GetOrCreate(Stand::CommandList* list)
+    static std::unordered_map<Stand::CommandList*, GridItemListGrid>& GetCache()
     {
         static std::unordered_map<Stand::CommandList*, GridItemListGrid> cache;
-        return cache.try_emplace(list, list).first->second;
+        return cache;
+    }
+
+    GridItemListGrid& GridItemListGrid::GetOrCreate(Stand::CommandList* list)
+    {
+        return GetCache().try_emplace(list, list).first->second;
+    }
+
+    void GridItemListGrid::InvalidateAll()
+    {
+        for (auto& [list, grid] : GetCache())
+            grid.InvalidateLayout();
     }
 
     void GridItemListGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
