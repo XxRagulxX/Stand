@@ -1,6 +1,7 @@
 #include "Rendering/StandPort/GridItemTabsHorizontal.hpp"
 
 #include "Rendering/GridRenderer.hpp"
+#include "Rendering/StandPort/GridItem.hpp"
 #include "Rendering/Theme.hpp"
 
 #include <algorithm>
@@ -17,6 +18,10 @@ namespace Stand::Rendering
 	{
 		static bool s_Logged = false;
 		if (!s_Logged) { s_Logged = true; LOG(INFO) << "[GridItemTabsHorizontal::draw] start, tabs=" << m_Tabs.size(); }
+
+		if (Theme::kBlur > 0)
+			drawBackgroundBlur();
+
 		float drawX = x;
 		for (size_t i = 0; i < m_Tabs.size(); ++i)
 		{

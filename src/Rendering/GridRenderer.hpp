@@ -29,8 +29,8 @@ namespace Stand::Rendering
 	//
 	// This provides pixel-space DrawRect()/DrawText() primitives (Stand's
 	// drawRectH/drawTextC equivalents) that Grid/GridItem-based widgets draw
-	// themselves with. Text uses the same embedded "Be Vietnam Pro" spritefont
-	// blob stand-reference itself ships (see font_bevietnamprolight.hpp).
+	// themselves with. Text uses the same embedded "Microsoft YaHei" spritefont
+	// that Stand ships as its default (see font_yahei.hpp).
 	class GridRenderer final
 	{
 	private:

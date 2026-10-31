@@ -104,7 +104,7 @@ namespace Stand::Rendering
 		if (description.empty())
 			return;
 
-		const float scale    = Theme::kSmallTextScaleMutable;
+		const float scale    = Theme::kSmallText.scale;
 		const float maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
 		const auto sections  = GetSections(description, maxWidth, scale);
 		if (sections.empty())
@@ -128,7 +128,7 @@ namespace Stand::Rendering
 		if (description.empty())
 			return;
 
-		const float scale    = Theme::kSmallTextScaleMutable;
+		const float scale    = Theme::kSmallText.scale;
 		const float maxWidth = static_cast<float>(Theme::kInfoWidth) - kPadding * 2.f;
 		const auto sections  = GetSections(description, maxWidth, scale);
 		if (sections.empty())
@@ -136,12 +136,12 @@ namespace Stand::Rendering
 
 		const auto origin     = ComputeOrigin(contentX, contentY, contentRightX, sidebarX, sidebarBottomY);
 		const auto lineHeight = GridRenderer::MeasureText("Ag", scale).y;
-		const float textXBase = origin.x + kPadding + Theme::kSmallTextXOffset;
+		const float textXBase = origin.x + kPadding + Theme::kSmallText.x_offset;
 
 		float y = origin.y;
 		for (const auto& lines : sections)
 		{
-			float textY = y + kPadding + Theme::kSmallTextYOffset;
+			float textY = y + kPadding + Theme::kSmallText.y_offset;
 			for (const auto& line : lines)
 			{
 				GridRenderer::DrawText(textXBase, textY, line.c_str(), Theme::kText, scale);

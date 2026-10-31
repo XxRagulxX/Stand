@@ -1,5 +1,6 @@
 #include "Rendering/GridItemEntityPreview.hpp"
 
+#include "Commands/Stand/CommandEntityPreviews.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
 #include "Scripting/Natives.hpp"
@@ -62,7 +63,7 @@ namespace Stand::Rendering
 		if (!kbFocused)
 			m_Control->suppressed.store(false, std::memory_order_relaxed);
 
-		const bool effectiveFocused = !Theme::kDisableEntityPreviews && kbFocused
+		const bool effectiveFocused = !CommandEntityPreviews::isDisabled() && kbFocused
 		                              && !m_Control->suppressed.load(std::memory_order_relaxed);
 		m_FocusTracker.Update(effectiveFocused);
 		m_Control->focused.store(effectiveFocused, std::memory_order_relaxed);
@@ -141,7 +142,7 @@ namespace Stand::Rendering
 		{
 			if (ShouldRotate())
 			{
-				m_RotationDegrees += Theme::kPreviewRotationSpeed;
+				m_RotationDegrees += CommandEntityPreviews::getRotationSpeed();
 				rage::fvector3 rot{};
 				rot.z = m_RotationDegrees;
 				m_Preview->SetRotation(rot);
@@ -164,7 +165,7 @@ namespace Stand::Rendering
 		OnPreviewTick(*m_Preview);
 
 		int alpha;
-		if (Theme::kPreviewOpaque)
+		if (CommandEntityPreviews::isOpaque())
 		{
 			alpha = 255;
 		}

@@ -1,5 +1,6 @@
 #include "Vehicle/VehicleEntityPreview.hpp"
 
+#include "Commands/Stand/CommandEntityPreviews.hpp"
 #include "Rendering/GridRenderer.hpp"
 #include "Rendering/Theme.hpp"
 #include "Scripting/FiberPool.hpp"
@@ -90,7 +91,7 @@ namespace Stand::Rendering
         const float dimMax = std::max({ m_ModelMax.x - m_ModelMin.x,
                                         m_ModelMax.y - m_ModelMin.y,
                                         m_ModelMax.z - m_ModelMin.z });
-        return dimMax + Theme::kPreviewVehDist + 1.0f;
+        return dimMax + (CommandEntityPreviews::instance ? CommandEntityPreviews::instance->additional_veh_dist->getFloatValue() : 0.f) + 1.0f;
     }
 
     void VehicleEntityPreview::OnPreviewTick(Entity& entity)

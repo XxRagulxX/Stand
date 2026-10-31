@@ -19,7 +19,7 @@ namespace Stand::Rendering
 
 	void GridItemTextBigCentre::drawText() const
 	{
-		const float scale = Theme::kCommandTextScale;
+		const float scale = Theme::kCommandText.scale;
 		const auto size   = GridRenderer::MeasureText(text.c_str(), scale);
 		const float tx    = x + (width / 2.f) + 1.f - (size.x / 2.f);
 		const float ty    = y + (height / 2.f) - 2.f;

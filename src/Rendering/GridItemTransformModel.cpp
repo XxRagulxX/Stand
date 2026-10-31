@@ -1,5 +1,6 @@
 #include "Rendering/GridItemTransformModel.hpp"
 
+#include "Commands/Stand/CommandEntityPreviews.hpp"
 #include "Menu/Click.hpp"
 #include "Ped/Ped.hpp"
 #include "Rendering/GridRenderer.hpp"
@@ -95,7 +96,7 @@ namespace Stand::Rendering
 			GridRenderer::DrawRect(x, y, width, height, Theme::kAccent);
 		}
 
-		if (Theme::kDisableEntityPreviews)
+		if (CommandEntityPreviews::isDisabled())
 		{
 			if (m_WasFocused)
 				StopPreview();
@@ -142,7 +143,7 @@ namespace Stand::Rendering
 			Vector3 mn, mx;
 			MISC::GET_MODEL_DIMENSIONS(hash, &mn, &mx);
 			const float dimMax = std::max({ mx.x - mn.x, mx.y - mn.y, mx.z - mn.z });
-			const float totalOffset = dimMax + Theme::kPreviewPedDist;
+			const float totalOffset = dimMax + (CommandEntityPreviews::instance ? CommandEntityPreviews::instance->additional_ped_dist->getFloatValue() : 0.f);
 
 			const auto camPos = CAMERA::GET_FINAL_RENDERED_CAM_COORD();
 			const auto camRot = CAMERA::GET_FINAL_RENDERED_CAM_ROT(2);
@@ -191,7 +192,7 @@ namespace Stand::Rendering
 					PED::RESURRECT_PED(pedHandle);
 
 				// Rotate every tick.
-				rotDeg += Theme::kPreviewRotationSpeed;
+				rotDeg += CommandEntityPreviews::getRotationSpeed();
 				rot.z = rotDeg;
 				ped.SetRotation(rot);
 
@@ -212,7 +213,7 @@ namespace Stand::Rendering
 				// we fade from any speed since we don't need vehicle ownership
 				// checks for a ped-only preview list).
 				int alpha = 255;
-				if (!Theme::kPreviewOpaque)
+				if (!CommandEntityPreviews::isOpaque())
 				{
 					const float speedPerc = std::min(Self::GetPed().GetSpeed() / 80.f, 1.f);
 					alpha = static_cast<int>(200.f - speedPerc * 150.f);
@@ -259,9 +260,9 @@ namespace Stand::Rendering
 		const bool focused = isKeyboardFocused();
 		const auto& textColour = focused ? Theme::kFocusText : Theme::kUnfocusedText;
 		const auto label = m_Cmd->getMenuName().getLocalisedUtf8();
-		const float textScale = Theme::kCommandTextScale;
+		const float textScale = Theme::kCommandText.scale;
 		const auto labelSize = GridRenderer::MeasureText(label.c_str(), textScale);
-		GridRenderer::DrawText(x + Theme::kCommandTextXOffset, y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
+		GridRenderer::DrawText(x + Theme::kCommandText.x_offset, y + Theme::kCommandText.y_offset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
 	}
 
 	void GridItemTransformModel::onClick(int16_t, int16_t)

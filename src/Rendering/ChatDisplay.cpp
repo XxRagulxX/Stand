@@ -20,7 +20,7 @@ namespace Stand
 		constexpr float kY = 200.f;
 		constexpr float kLineSpacing = 2.f;
 		constexpr float kEntryGap = 6.f;
-		constexpr float kScale = Rendering::Theme::kSmallTextScale;
+		const float kScale = Rendering::Theme::kSmallText.scale;
 	}
 
 	void ChatDisplay::ShowImpl(std::string sender, std::string message, ImColor color)

@@ -28,10 +28,10 @@ namespace Stand::Rendering
           flash_until(flash_until),
           frozen(Stand::g_notify_grid.isFrozen()),
           flashing(!IS_DEADLINE_REACHED(flash_until)),
-          text(GridRenderer::WrapText(std::move(text), Theme::kSmallTextScale, float(Stand::g_notify_grid.notify_width - 10))),
+          text(GridRenderer::WrapText(std::move(text), Theme::kSmallText.scale, float(Stand::g_notify_grid.notify_width - 10))),
           m_OnExpire(std::move(on_expire))
     {
-        height = int16_t(GridRenderer::MeasureText(this->text.c_str(), Theme::kSmallTextScale).y + 2.f * Stand::g_notify_grid.notify_padding);
+        height = int16_t(GridRenderer::MeasureText(this->text.c_str(), Theme::kSmallText.scale).y + 2.f * Stand::g_notify_grid.notify_padding);
         s_Instances.push_back(this);
     }
 
@@ -69,6 +69,6 @@ namespace Stand::Rendering
             float(y) + Stand::g_notify_grid.notify_padding,
             text.c_str(),
             Theme::kUnfocusedText,
-            Theme::kSmallTextScale);
+            Theme::kSmallText.scale);
     }
 }

@@ -14,6 +14,7 @@
 #include "Rendering/StandPort/Alignment.hpp"
 #include "Rendering/StandPort/Direction.hpp"
 #include "Rendering/StandPort/TextSettings.hpp"
+#include "Rendering/Theme.hpp"
 
 namespace Stand
 {
@@ -35,6 +36,7 @@ namespace Stand
         DirectX::SimpleMath::Color notifyFlashColour  { 0.6196f, 0.0f, 0.6196f, 1.0f };
         DirectX::SimpleMath::Color notifyBgColour     { 0.0f, 0.0f, 0.0f, 0.3019f };
 
+        TextSettings commandbox_input_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
         TextSettings small_text{ float(12.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
         TextSettings tabs_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
         TextSettings command_text{ float(15.0 * TEXT_HEIGHT_PX * 2.0), -2.0f, 2.0f };
@@ -67,6 +69,19 @@ namespace Stand
         DirectX::SimpleMath::Color arColour = { 1.0f, 0.0f, 1.0f, 0.78431f };
         float resolution_text_scale = 1.0f;
         soup::SharedPtr<DirectX::SpriteFont> m_font_user{};
+
+        void loadUserFont() noexcept
+        {
+            Rendering::Theme::kFontPath = "";
+            Rendering::Theme::kPresetFontId = -1;
+            Rendering::Theme::kFontReloadPending = true;
+        }
+        void switchToPresetFont(int id) noexcept
+        {
+            Rendering::Theme::kFontPath = "";
+            Rendering::Theme::kPresetFontId = id;
+            Rendering::Theme::kFontReloadPending = true;
+        }
 
         void drawLineCP(const rage::Vector2&, const rage::Vector2&, const DirectX::SimpleMath::Color&) noexcept {}
         void drawLineThisTickCP(const rage::Vector2&, const rage::Vector2&, const DirectX::SimpleMath::Color&) noexcept {}

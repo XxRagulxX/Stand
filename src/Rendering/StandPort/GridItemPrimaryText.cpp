@@ -12,7 +12,7 @@ namespace Stand::Rendering
 
     void GridItemPrimaryText::draw()
     {
-        draw(g_renderer.small_text);
+        draw(Theme::kSmallText);
     }
 
     void GridItemPrimaryText::draw(const TextSettings& settings)

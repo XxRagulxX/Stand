@@ -29,7 +29,12 @@ namespace Stand
 			return static_cast<float>(value) / static_cast<float>(getPrecisionScalar());
 		}
 
-		[[nodiscard]] std::string getValueText() const override;
+		[[nodiscard]] std::string getValueText() const override
+		{
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(precision) << getFloatValue();
+			return oss.str();
+		}
 
 		[[nodiscard]] std::string getRangeString() const override
 		{

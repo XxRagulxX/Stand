@@ -122,43 +122,43 @@ namespace Stand::Rendering
 		const auto layout = ComputeLayout();
 
 		constexpr const char* kTitle = "Stand Command Box";
-		const auto titleSize = GridRenderer::MeasureText(kTitle, Theme::kSmallTextScaleMutable);
+		const auto titleSize = GridRenderer::MeasureText(kTitle, Theme::kSmallText.scale);
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.titleY + std::max(0.f, (layout.titleHeight - titleSize.y) * 0.5f),
 		    kTitle,
 		    Theme::kText,
-		    Theme::kSmallTextScaleMutable);
+		    Theme::kSmallText.scale);
 
 		const auto displayLine = s_Buffer + "|";
-		const auto lineSize = GridRenderer::MeasureText(displayLine.c_str(), Theme::kCommandBoxInputScale);
-		GridRenderer::DrawText(layout.x + kPaddingX + Theme::kCommandBoxInputXOffset, layout.inputY + std::max(0.f, (layout.inputHeight - lineSize.y) * 0.5f) + Theme::kCommandBoxInputYOffset, displayLine.c_str(), Theme::kText, Theme::kCommandBoxInputScale);
+		const auto lineSize = GridRenderer::MeasureText(displayLine.c_str(), Theme::kCommandBoxInputText.scale);
+		GridRenderer::DrawText(layout.x + kPaddingX + Theme::kCommandBoxInputText.x_offset, layout.inputY + std::max(0.f, (layout.inputHeight - lineSize.y) * 0.5f) + Theme::kCommandBoxInputText.y_offset, displayLine.c_str(), Theme::kText, Theme::kCommandBoxInputText.scale);
 
-		const auto labelSize = GridRenderer::MeasureText(s_Label.c_str(), Theme::kSmallTextScaleMutable);
+		const auto labelSize = GridRenderer::MeasureText(s_Label.c_str(), Theme::kSmallText.scale);
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.labelY + std::max(0.f, (layout.labelHeight - labelSize.y) * 0.5f),
 		    s_Label.c_str(),
 		    Theme::kText,
-		    Theme::kSmallTextScaleMutable);
+		    Theme::kSmallText.scale);
 
 		if (!s_RangeText.empty())
 		{
-			const auto rangeSize = GridRenderer::MeasureText(s_RangeText.c_str(), Theme::kSmallTextScaleMutable);
+			const auto rangeSize = GridRenderer::MeasureText(s_RangeText.c_str(), Theme::kSmallText.scale);
 			GridRenderer::DrawText(layout.x + kPaddingX,
 			    layout.rangeY + std::max(0.f, (layout.rangeHeight - rangeSize.y) * 0.5f),
 			    s_RangeText.c_str(),
 			    Theme::kText,
-			    Theme::kSmallTextScaleMutable);
+			    Theme::kSmallText.scale);
 		}
 
 		if (s_ShowError)
 		{
 			const char* error = "Invalid value.";
-			const auto errorSize = GridRenderer::MeasureText(error, Theme::kSmallTextScaleMutable);
+			const auto errorSize = GridRenderer::MeasureText(error, Theme::kSmallText.scale);
 			GridRenderer::DrawText(layout.x + kPaddingX,
 			    layout.errorY + std::max(0.f, (layout.errorHeight - errorSize.y) * 0.5f),
 			    error,
 			    Theme::kError,
-			    Theme::kSmallTextScaleMutable);
+			    Theme::kSmallText.scale);
 		}
 	}
 

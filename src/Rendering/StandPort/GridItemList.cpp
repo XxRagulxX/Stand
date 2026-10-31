@@ -417,6 +417,9 @@ namespace Stand
         using namespace Rendering;
         using namespace Rendering::Theme;
 
+        if (kBlur > 0)
+            drawBackgroundBlur();
+
         const float fx = (float)x;
         const float fy = (float)y;
         const float fw = (float)width;

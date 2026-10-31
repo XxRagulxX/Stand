@@ -25,7 +25,7 @@ namespace Stand::Rendering
 		if (HeaderBanner::kLoadingGoal != 0)
 		{
 			const auto progress = fmt::format("{}/{}", HeaderBanner::kLoadingProgress, HeaderBanner::kLoadingGoal);
-			const float scale   = Theme::kSmallTextScale;
+			const float scale   = Theme::kSmallText.scale;
 			const float textW   = GridRenderer::MeasureText(progress.c_str(), scale).x;
 			GridRenderer::DrawText(float(x + width - 10) - textW, float(y) + 5.f, progress.c_str(), Theme::kUnfocusedText, scale);
 		}

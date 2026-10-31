@@ -83,9 +83,7 @@ namespace Stand::Rendering::Theme
 
 	inline int16_t kTabsWidth = kSidebarWidth;
 	inline int16_t kTabsHeight = kSidebarEntryHeight;
-	inline float kTabsTextScale = kTextScale;
-	inline float kTabsTextXOffset = 5.f;
-	inline float kTabsTextYOffset = 0.f;
+	inline TextSettings kTabsText{ kTextScale, -2.f, 2.f };
 	enum class TabsAlignment : uint8_t { Left, Centre, Right };
 	inline TabsAlignment kTabsAlignment = TabsAlignment::Left;
 	inline bool kTabsShowLeftIcon = false;
@@ -97,9 +95,7 @@ namespace Stand::Rendering::Theme
 	inline ScrollbarMode kScrollbarMode = ScrollbarMode::EnabledWhenNeeded;
 	inline int16_t kScrollbarWidthMutable = 6;
 
-	inline float kCommandTextScale = kTextScale;
-	inline float kCommandTextXOffset = 5.f;
-	inline float kCommandTextYOffset = 0.f;
+	inline TextSettings kCommandText{ kTextScale, -2.f, 2.f };
 	inline bool kPreviewColourInTexture = true;
 	inline bool kPreviewColourInList = true;
 	inline bool kPrefillSliders = true;
@@ -107,25 +103,16 @@ namespace Stand::Rendering::Theme
 	inline bool kSelectableNASliders = false;
 	inline bool kSlidersRightbound = false;
 	inline bool kSelectableDividers = false;
-	inline float kCommandBoxInputScale = kTextScale;
-	inline float kCommandBoxInputXOffset = 0.f;
-	inline float kCommandBoxInputYOffset = 0.f;
-	inline float kSmallTextScaleMutable = kSmallTextScale;
-	inline float kSmallTextXOffset = 0.f;
-	inline float kSmallTextYOffset = 0.f;
+	inline TextSettings kCommandBoxInputText{ kTextScale, -2.f, 2.f };
+	inline TextSettings kSmallText{ kSmallTextScale, -2.f, 2.f };
 	inline bool kShowTextBoundingBoxes = false;
-	inline bool kDisableEntityPreviews = false;
-	inline bool kPreviewOpaque = false;
-	inline float kPreviewRotationSpeed = 1.f;
-	inline float kPreviewPedDist = 0.f;
-	inline float kPreviewObjDist = 0.f;
-	inline float kPreviewVehDist = 0.f;
 
 	enum class LeftTexturesMode : uint8_t { Disabled, AllCommands, AllCommandsCompact, TogglesOnly, TogglesOnlyCompact };
 	inline LeftTexturesMode kLeftTextures = LeftTexturesMode::Disabled;
 
 	inline std::string kFontPath = "";
 	inline bool kFontReloadPending = false;
+	inline int kPresetFontId = -1;
 
 	inline int8_t kColumns = 1;
 	inline uint8_t kMenuHeight = 11; // Stand's own command_rows default

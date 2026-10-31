@@ -2,6 +2,9 @@
 
 #include "Commands/Stand/CommandMenuPosition.hpp"
 #include "Commands/Stand/Appearance/CommandStreamproof.hpp"
+#include "Commands/Stand/CommandSetFont.hpp"
+#include "Commands/Stand/CommandPresetFont.hpp"
+#include "Commands/Widgets/CommandTextBoxes.hpp"
 #include "Commands/Widgets/CommandHeader.hpp"
 #include "Commands/Widgets/CommandHeaderAnimationSpeed.hpp"
 #include "Commands/Widgets/CommandHeaderBgBlur.hpp"
@@ -275,7 +278,7 @@ namespace Stand
 					Rendering::GridRenderer::InvalidateMenuLayout();
 				});
 				tabs->createChild<CommandTabsPositionMode>();
-				tabs->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("tabstext") }, &g_renderer.tabs_text);
+				tabs->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("tabstext") }, &Rendering::Theme::kTabsText);
 				tabs->createChild<CommandTabsAlignment>();
 				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowLeftIcon, LIT("Show Icon Left"), CMDNAMES("tabslefticon"));
 				tabs->createChild<CommandTogglePointer>(&Rendering::Theme::kTabsShowName, LIT("Show Name"), CMDNAMES("tabsname"));
@@ -311,7 +314,7 @@ namespace Stand
 			{
 				auto commands = appearance->createChild<CommandList>(LOC("CMDS"));
 
-				commands->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("commandtext") }, &g_renderer.command_text);
+				commands->createChild<CommandListTextSettings>(LOC("TEXT"), std::vector<CommandName>{ CMDNAME("commandtext") }, &Rendering::Theme::kCommandText);
 
 				{
 					auto colour_commands = commands->createChild<CommandList>(LOC("CLRCMDS"));
@@ -411,7 +414,20 @@ namespace Stand
 				std::filesystem::create_directories(folder);
 				ShellExecuteW(nullptr, L"open", folder.wstring().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 			});
-			fontText = appearance->createChild<CommandTabFontText>();
+			{
+				auto text = appearance->createChild<CommandList>(LOC("STTNGS_TXT"));
+
+				text->createChild<CommandSetFont>();
+				text->createChild<CommandPresetFont>();
+				text->createChild<CommandLambdaAction>(LOC("RLDFNT"), CMDNAMES("reloadfont"), NOLABEL, [](Click& click)
+				{
+					click.stopInputIfAllowed();
+					g_renderer.loadUserFont();
+				});
+				text->createChild<CommandListTextSettings>(LOC("CMBINTXT"), std::vector<CommandName>{ CMDNAME("commandboxinput") }, &Rendering::Theme::kCommandBoxInputText);
+				text->createChild<CommandListTextSettings>(LOC("TXT_S"), std::vector<CommandName>{ CMDNAME("smalltext") }, &Rendering::Theme::kSmallText);
+				text->createChild<CommandTextBoxes>();
+			}
 			textures = appearance->createChild<CommandTabTextures>();
 			appearance->createChild<CommandStreamproof>();
 			entityPreviews = appearance->createChild<CommandEntityPreviews>();

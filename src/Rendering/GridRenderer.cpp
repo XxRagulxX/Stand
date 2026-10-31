@@ -22,6 +22,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/Theme.hpp"
 #include "Rendering/font_bevietnamprolight.hpp"
+#include "Rendering/font_yahei.hpp"
 
 #include <RenderTargetState.h>
 #include <ResourceUploadBatch.h>
@@ -144,10 +145,10 @@ namespace Stand::Rendering
 
 		LOG(INFO) << "[GridRenderer] DirectXTK12 rect pipeline ready";
 
-		// Text: embedded "Be Vietnam Pro" spritefont (see
-		// font_bevietnamprolight.hpp). Failure here (e.g. a malformed blob)
-		// is non-fatal - DrawTextImpl no-ops if m_Font/m_SpriteBatch are
-		// null, and rect drawing above is unaffected.
+		// Text: embedded "Microsoft YaHei" spritefont (see font_yahei.hpp).
+		// Failure here (e.g. a malformed blob) is non-fatal - DrawTextImpl
+		// no-ops if m_Font/m_SpriteBatch are null, and rect drawing above
+		// is unaffected.
 		D3D12_DESCRIPTOR_HEAP_DESC fontHeapDesc{
 		    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		    1,
@@ -168,8 +169,8 @@ namespace Stand::Rendering
 
 				m_Font = std::make_unique<DirectX::SpriteFont>(device,
 				    upload,
-				    reinterpret_cast<const uint8_t*>(font_bevietnamprolight::chunk_1),
-				    sizeof(font_bevietnamprolight::chunk_1),
+				    reinterpret_cast<const uint8_t*>(font_yahei::chunk_1),
+				    sizeof(font_yahei::chunk_1),
 				    m_FontDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
 				    m_FontDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 				m_Font->SetDefaultCharacter(L'?');
@@ -229,7 +230,15 @@ namespace Stand::Rendering
 			{
 				DirectX::ResourceUploadBatch upload(m_Device);
 				upload.Begin();
-				if (Theme::kFontPath.empty())
+				if (!Theme::kFontPath.empty())
+				{
+					std::wstring wpath(Theme::kFontPath.begin(), Theme::kFontPath.end());
+					m_Font = std::make_unique<DirectX::SpriteFont>(m_Device, upload,
+					    wpath.c_str(),
+					    m_FontDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+					    m_FontDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+				}
+				else if (Theme::kPresetFontId == 2)
 				{
 					m_Font = std::make_unique<DirectX::SpriteFont>(m_Device, upload,
 					    reinterpret_cast<const uint8_t*>(font_bevietnamprolight::chunk_1),
@@ -239,9 +248,9 @@ namespace Stand::Rendering
 				}
 				else
 				{
-					std::wstring wpath(Theme::kFontPath.begin(), Theme::kFontPath.end());
 					m_Font = std::make_unique<DirectX::SpriteFont>(m_Device, upload,
-					    wpath.c_str(),
+					    reinterpret_cast<const uint8_t*>(font_yahei::chunk_1),
+					    sizeof(font_yahei::chunk_1),
 					    m_FontDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
 					    m_FontDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 				}

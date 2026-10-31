@@ -11,6 +11,7 @@
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"
 #include "Commands/Widgets/CommandSlider.hpp"
+#include "Commands/Widgets/CommandSliderFloat.hpp"
 #include "Commands/Widgets/CommandSliderProximity.hpp"
 #include "Menu/Click.hpp"
 #include "Rendering/GridRenderer.hpp"
@@ -37,6 +38,20 @@ namespace Stand::Rendering
 		constexpr float kButtonSize = 22.f;
 		constexpr float kValueWidth = 40.f;
 		constexpr float kGap = 6.f;
+
+		static std::string SliderValueText(Stand::Command* cmd)
+		{
+			if (cmd->type == Stand::COMMAND_SLIDER_FLOAT)
+				return static_cast<Stand::CommandSliderFloat*>(cmd)->CommandSliderFloat::getValueText();
+			return static_cast<Stand::CommandSlider*>(cmd)->CommandSlider::getValueText();
+		}
+
+		static std::string SliderRangeString(Stand::Command* cmd)
+		{
+			if (cmd->type == Stand::COMMAND_SLIDER_FLOAT)
+				return static_cast<Stand::CommandSliderFloat*>(cmd)->CommandSliderFloat::getRangeString();
+			return static_cast<Stand::CommandSlider*>(cmd)->CommandSlider::getRangeString();
+		}
 
 		std::string Label(Stand::Command* command)
 		{
@@ -109,7 +124,7 @@ namespace Stand::Rendering
 			else
 			{
 				result += '\n';
-				result += slider->getRangeString();
+				result += SliderRangeString(m_Command);
 			}
 		}
 		else if (auto* toggle = dynamic_cast<Stand::CommandToggle*>(m_Command))
@@ -335,14 +350,14 @@ namespace Stand::Rendering
 			return;
 		}
 
-		const float textScale = Theme::kCommandTextScale;
+		const float textScale = Theme::kCommandText.scale;
 		const auto label = Label(m_Command);
 		const auto labelSize = GridRenderer::MeasureText(label.c_str(), textScale);
 
 		if (isSectionHeader())
 		{
 			const float centreX = x + std::max(0.f, (width - labelSize.x) * 0.5f);
-			const float centreY = y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f);
+			const float centreY = y + Theme::kCommandText.y_offset + std::max(0.f, (height - labelSize.y) * 0.5f);
 			GridRenderer::DrawText(centreX, centreY, label.c_str(), Theme::kUnfocusedRightText, textScale);
 			return;
 		}
@@ -358,7 +373,7 @@ namespace Stand::Rendering
 		const auto& textColour = focused ? Theme::kFocusText : Theme::kUnfocusedText;
 		const auto& rightColour = focused ? Theme::kFocusRightText : Theme::kUnfocusedRightText;
 
-		GridRenderer::DrawText(x + Theme::kCommandTextXOffset, y + Theme::kCommandTextYOffset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
+		GridRenderer::DrawText(x + Theme::kCommandText.x_offset, y + Theme::kCommandText.y_offset + std::max(0.f, (height - labelSize.y) * 0.5f), label.c_str(), textColour, textScale);
 
 		if (m_Command->isListSelect())
 		{
@@ -409,7 +424,7 @@ namespace Stand::Rendering
 		if (m_Command->isSlider())
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
-			const auto valueStr = slider->getValueText();
+			const auto valueStr = SliderValueText(m_Command);
 
 			if (focused)
 			{
@@ -454,7 +469,7 @@ namespace Stand::Rendering
 		if (m_Command->isSlider())
 		{
 			auto* slider = m_Command->as<Stand::CommandSlider>();
-			const auto layout = ComputeSliderLayout(slider->getValueText());
+			const auto layout = ComputeSliderLayout(SliderValueText(m_Command));
 			if (cursorX >= layout.plusX && cursorX < layout.plusX + layout.buttonSize)
 				SliderStep(1);
 			else if (cursorX >= layout.minusX && cursorX < layout.minusX + layout.buttonSize)

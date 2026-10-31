@@ -3,6 +3,7 @@
 #include "Commands/Widgets/CommandListAction.hpp"
 
 #include "Commands/Widgets/CommandListActionItem.hpp"
+#include "Rendering/StandPort/StandRendererCompat.hpp"
 
 namespace Stand
 {
@@ -21,6 +22,7 @@ namespace Stand
 		void onItemClick(Click& click, CommandListActionItem* item) final
 		{
 			CommandListAction::onItemClick(click, item);
+			g_renderer.switchToPresetFont(static_cast<int>(item->value));
 		}
 	};
 }

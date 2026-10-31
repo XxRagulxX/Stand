@@ -319,12 +319,12 @@ namespace Stand::Rendering
 		const auto layout = ComputeLayout();
 
 		const char* title = "Command Console";
-		const auto titleSize = GridRenderer::MeasureText(title, Theme::kSmallTextScale);
+		const auto titleSize = GridRenderer::MeasureText(title, Theme::kSmallText.scale);
 		GridRenderer::DrawText(layout.x + kPaddingX,
 		    layout.titleY + std::max(0.f, (layout.titleHeight - titleSize.y) * 0.5f),
 		    title,
 		    Theme::kText,
-		    Theme::kSmallTextScale);
+		    Theme::kSmallText.scale);
 
 		const auto displayLine = s_Buffer + "|";
 		const auto lineSize = GridRenderer::MeasureText(displayLine.c_str());
@@ -336,12 +336,12 @@ namespace Stand::Rendering
 		if (s_Matches.empty())
 		{
 			const char* unknown = "Unknown command.";
-			const auto unknownSize = GridRenderer::MeasureText(unknown, Theme::kSmallTextScale);
+			const auto unknownSize = GridRenderer::MeasureText(unknown, Theme::kSmallText.scale);
 			GridRenderer::DrawText(layout.x + kPaddingX,
 			    layout.firstRowY + std::max(0.f, (layout.rowHeight - unknownSize.y) * 0.5f),
 			    unknown,
 			    Theme::kError,
-			    Theme::kSmallTextScale);
+			    Theme::kSmallText.scale);
 			return;
 		}
 
@@ -349,24 +349,24 @@ namespace Stand::Rendering
 		for (size_t i = 0; i != shown; ++i)
 		{
 			const auto rowY = layout.firstRowY + static_cast<float>(i) * layout.rowHeight;
-			const auto hintSize = GridRenderer::MeasureText(s_Matches[i].hint.c_str(), Theme::kSmallTextScale);
+			const auto hintSize = GridRenderer::MeasureText(s_Matches[i].hint.c_str(), Theme::kSmallText.scale);
 			GridRenderer::DrawText(layout.x + kPaddingX,
 			    rowY + std::max(0.f, (layout.rowHeight - hintSize.y) * 0.5f),
 			    s_Matches[i].hint.c_str(),
 			    Theme::kText,
-			    Theme::kSmallTextScale);
+			    Theme::kSmallText.scale);
 		}
 
 		if (const auto more = s_Matches.size() - shown; more != 0)
 		{
 			const auto moreText = "+ " + std::to_string(more) + " more";
 			const auto rowY = layout.firstRowY + static_cast<float>(shown) * layout.rowHeight;
-			const auto moreSize = GridRenderer::MeasureText(moreText.c_str(), Theme::kSmallTextScale);
+			const auto moreSize = GridRenderer::MeasureText(moreText.c_str(), Theme::kSmallText.scale);
 			GridRenderer::DrawText(layout.x + kPaddingX,
 			    rowY + std::max(0.f, (layout.rowHeight - moreSize.y) * 0.5f),
 			    moreText.c_str(),
 			    Theme::kPlaceholderText,
-			    Theme::kSmallTextScale);
+			    Theme::kSmallText.scale);
 		}
 	}
 

@@ -63,7 +63,7 @@ namespace Stand::Rendering
 
         const cursor_t max_rows_from_height = static_cast<cursor_t>(max_h / Theme::kContentItemHeight);
 
-        const cursor_t rows_for_split = (g_gui.command_columns > 1 && children_to_fit > 0)
+        const cursor_t rows_for_split = children_to_fit > 0
             ? static_cast<cursor_t>(ceilf(static_cast<float>(children_to_fit) / static_cast<float>(g_gui.command_columns)))
             : max_rows_from_height;
         const cursor_t col_rows = rows_for_split > 0 ? std::min(rows_for_split, max_rows_from_height) : max_rows_from_height;
@@ -96,7 +96,7 @@ namespace Stand::Rendering
         {
             const cursor_t childCount = static_cast<cursor_t>(m_List->countVisibleChildren());
             const cursor_t maxRows = Theme::kMenuHeight > 0 ? static_cast<cursor_t>(Theme::kMenuHeight) : 11;
-            const cursor_t rows_for_split = (g_gui.command_columns > 1 && childCount > 0)
+            const cursor_t rows_for_split = childCount > 0
                 ? static_cast<cursor_t>(ceilf(static_cast<float>(childCount) / static_cast<float>(g_gui.command_columns)))
                 : maxRows;
             const cursor_t col_rows = rows_for_split > 0 ? std::min(rows_for_split, maxRows) : maxRows;
@@ -133,6 +133,9 @@ namespace Stand::Rendering
     std::string GridItemListGrid::GetFocusedDescription() const
     {
         if (!m_List || m_List->children.empty())
+            return {};
+
+        if (m_List->m_cursor >= static_cast<cursor_t>(m_List->children.size()))
             return {};
 
         auto* cmd = m_List->children[m_List->m_cursor].get();
