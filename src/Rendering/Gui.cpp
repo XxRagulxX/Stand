@@ -1,5 +1,7 @@
 #include "Rendering/Gui.hpp"
 #include "Commands/Widgets/CommandList.hpp"
+#include "Menu/ContextMenu.hpp"
+#include "Rendering/StandPort/MenuGrid.hpp"
 #include "Util/get_current_time_millis.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Commands/Widgets/CommandToggle.hpp"
@@ -16,7 +18,6 @@
 #include "Commands/Self/Movement/CommandTabFloppy.hpp"
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
-#include "Commands/Stand/Input/CommandTabInputPresets.hpp"
 
 namespace Stand
 {
@@ -72,7 +73,6 @@ namespace Stand
         fn(Features::GetCommandTabFloppy());
         fn(Features::GetCommandTabTransform());
         fn(Features::GetCommandTabStand());
-        fn(Features::GetCommandTabInputPresets());
     }
 
     void Gui::saveStateInMemory(std::unordered_map<std::string, std::string>& state)
@@ -111,6 +111,32 @@ namespace Stand
             lerp_from_cursor = list->m_cursor - list->m_offset;
             lerp_from_offset = list->m_offset;
         }
+    }
+
+    void Gui::addHotkeyToFocusedCommand()
+    {
+        hotkey_state = HS_ADD;
+        g_MenuGrid.InvalidateLayout();
+    }
+
+    void Gui::changeHotkeyOnFocusedCommand()
+    {
+        hotkey_state = HS_CHANGE;
+        g_MenuGrid.InvalidateLayout();
+    }
+
+    void Gui::abortSetHotkey() noexcept
+    {
+        hotkey_state = HS_NONE;
+        g_MenuGrid.InvalidateLayout();
+    }
+
+    void Gui::onSetHotkeyInput(const Hotkey hotkey)
+    {
+        auto* const command = ContextMenu::getTargetPhysical();
+        if (command)
+            command->modifyHotkeys(hotkey_state == HS_ADD, hotkey, CLICK_MENU);
+        abortSetHotkey();
     }
 
     void Gui::processToggleCorrelation(ThreadContext thread_context, ToggleCorrelation_t correlation, bool value)

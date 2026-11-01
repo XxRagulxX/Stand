@@ -9,6 +9,7 @@
 #include "Menu/Click.hpp"
 #include "Util/lang.hpp"
 #include "Commands/Widgets/CommandIssuable.hpp"
+#include "Rendering/Notifications.hpp"
 
 #include <algorithm>
 
@@ -133,11 +134,37 @@ namespace Stand
 		ensureWorkerContext(click.thread_context, std::move(func));
 	}
 
+	void CommandPhysical::modifyHotkeys(bool hotkey_add, const Hotkey hotkey, ClickType type)
+	{
+		if (!hasHotkey(hotkey))
+		{
+			if (hotkey_add)
+				hotkeys.emplace_back(hotkey);
+			else
+				hotkeys = { hotkey };
+			onHotkeysChanged(type);
+			updateHotkeysState();
+			g_gui.hotkeys.save();
+			if (type == CLICK_MENU)
+			{
+				Notifications::Show(
+					"Hotkeys",
+					LANG_FMT("HOTKEY_T", getActivationName()),
+					NotificationType::Success
+				);
+			}
+		}
+	}
+
+	const std::vector<Hotkey>& CommandPhysical::getDefaultHotkeys() const noexcept
+	{
+		static const std::vector<Hotkey> s_no_hotkeys{};
+		return s_no_hotkeys;
+	}
+
 	bool CommandPhysical::canHotkeyBeRemoved(const Hotkey hotkey) const noexcept
 	{
-		for (const auto& h : m_DefaultHotkeys)
-			if (h == hotkey) return false;
-		return true;
+		return getDefaultHotkeys().empty() || hotkeys.size() > 1;
 	}
 
 	bool CommandPhysical::canCountAsCommandWithHotkeys() const noexcept
@@ -145,11 +172,18 @@ namespace Stand
 		return supportsStateOperations();
 	}
 
-	void CommandPhysical::removeHotkey(const Hotkey hotkey)
+	void CommandPhysical::removeHotkey(const Hotkey hotkey, ClickType type)
 	{
-		auto it = std::find(hotkeys.begin(), hotkeys.end(), hotkey);
-		if (it != hotkeys.end())
-			hotkeys.erase(it);
+		for (auto i = hotkeys.begin(); i != hotkeys.end(); ++i)
+		{
+			if (*i == hotkey)
+			{
+				hotkeys.erase(i);
+				break;
+			}
+		}
+		g_gui.hotkeys.data[getPathConfig()] = hotkeys;
+		onHotkeysChanged(type);
 		updateHotkeysState();
 	}
 

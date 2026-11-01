@@ -81,9 +81,10 @@ namespace Stand
 
 		[[nodiscard]] CommandPhysical* getStateCommand();
 
+		[[nodiscard]] virtual const std::vector<Hotkey>& getDefaultHotkeys() const noexcept;
 		[[nodiscard]] bool canHotkeyBeRemoved(const Hotkey hotkey) const noexcept;
 		[[nodiscard]] bool canCountAsCommandWithHotkeys() const noexcept;
-		void removeHotkey(const Hotkey hotkey);
+		void removeHotkey(const Hotkey hotkey, ClickType type = CLICK_AUTO);
 		void updateHotkeysState();
 		void removeFromCommandsWithHotkeys();
 		void onHotkeysChanged(ClickType type = CLICK_AUTO);
@@ -174,18 +175,8 @@ namespace Stand
 			return false;
 		}
 
-		void modifyHotkeys(bool add, const Hotkey hotkey, ClickType)
-		{
-			if (add)
-			{
-				if (!hasHotkey(hotkey))
-					hotkeys.push_back(hotkey);
-			}
-			else
-			{
-				hotkeys.erase(std::remove(hotkeys.begin(), hotkeys.end(), hotkey), hotkeys.end());
-			}
-		}
+		void modifyHotkeys(bool hotkey_add, const Hotkey hotkey, ClickType type);
+
 
 		void focusInParent(ThreadContext) {}
 

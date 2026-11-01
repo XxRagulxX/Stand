@@ -3815,5 +3815,26 @@ namespace Stand
 		{ -863932014, L"DLC has loaded, but no spawnable content was found." },
 		{ -21420948, L"Spoof Models" },
 		{ 1012831146, L"Spoofs models from custom DLCs to models that are actually in the game so that players without the custom DLC can still see something." },
+
+		{ -1083704628, L"Keyboard Input Scheme" },
+		{ -1138532642, L"Presets" },
+		{ -1639596823, L"Flexible" },
+		{ 1227592386, L"No Numpad" },
+		{ 952037865, L"Numpad" },
+		{ 622225862, L"Please first press any key on your numpad to prove that you have one. :?" },
+
+		{ 1266983947, L"Open/Close Menu" },
+		{ 1022526247, L"Open/Close Menu 1" },
+		{ 107910716, L"Open/Close Menu 2" },
+		{ -1466313092, L"Previous Tab" },
+		{ 1412672949, L"Next Tab" },
+		{ -367077983, L"Up" },
+		{ -1202064868, L"Down" },
+		{ 1439083759, L"Left" },
+		{ -85756118, L"Right" },
+		{ -511785883, L"Click" },
+		{ -599410189, L"Back" },
+		{ -182742035, L"Context Menu" },
+		{ 1610235774, L"Command Box" },
 	};
 }

@@ -4,8 +4,6 @@
 #include "Commands/Stand/CommandEntityPreviews.hpp"
 #include "Commands/Widgets/CommandListNotifySettings.hpp"
 #include "Commands/Stand/CommandMenuPosition.hpp"
-#include "Commands/Stand/Input/CommandTabInput.hpp"
-
 namespace Stand
 {
 	class CommandTabStand : public CommandTab
@@ -17,7 +15,6 @@ namespace Stand
 		CommandMenuPosition* position = nullptr;
 		CommandEntityPreviews* entityPreviews = nullptr;
 		CommandListNotifySettings* notifications = nullptr;
-		CommandTabInput* input = nullptr;
 
 		explicit CommandTabStand(CommandList* const parent);
 

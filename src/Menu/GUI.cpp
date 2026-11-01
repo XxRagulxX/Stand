@@ -11,6 +11,8 @@
 #include "Rendering/MenuNavigation.hpp"
 #include "Rendering/StandPort/Grid.hpp"
 #include "Rendering/StandPort/NotifyGrid.hpp"
+#include "Input/InputStub.hpp"
+#include "Menu/Hotkey.hpp"
 
 namespace Stand
 {
@@ -99,9 +101,8 @@ namespace Stand
 	void GUI::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		if (msg == WM_KEYUP
-		    && (wparam == VK_INSERT || (wparam == VK_OEM_5 && (GetKeyState(VK_CONTROL) & 0x8000) != 0)))
+		    && Hotkey(static_cast<unsigned int>(wparam)).isAnyVkEqual(Input::scheme.key_menu_open_close))
 		{
-			// Persist and restore the cursor position between menu instances
 			static POINT CursorCoords{};
 			if (m_IsOpen)
 			{

@@ -26,6 +26,8 @@ namespace Stand
 
 	CommandPhysical* ContextMenu::getTargetPhysical() noexcept
 	{
+		if (pending_target)
+			return pending_target;
 		return g_gui.getCurrentMenuFocusPhysical();
 	}
 
@@ -62,6 +64,7 @@ namespace Stand
 
 	void ContextMenu::close(ThreadContext thread_context)
 	{
+		pending_target = nullptr;
 		g_gui.updateFocus(thread_context, TELEPORT);
 		root.reset();
 		if (!g_gui.m_active_list.empty())
@@ -72,9 +75,10 @@ namespace Stand
 		}
 	}
 
-	void ContextMenu::open(ThreadContext thread_context)
+	void ContextMenu::open(ThreadContext thread_context, CommandPhysical* target_override)
 	{
-		if (auto* const target = getTargetPhysical())
+		pending_target = target_override;
+		if (auto* const target = pending_target ? pending_target : getTargetPhysical())
 		{
 			root = std::make_unique<CommandList>(nullptr, Label(target->menu_name));
 			view = root.get();
@@ -172,10 +176,12 @@ namespace Stand
 		return (CommandCtxHotkeys*)root->resolveChildByMenuName(LOC("HOTKEYS"));
 	}
 
-	void ContextMenu::openIntoHotkeysList(ThreadContext thread_context)
+	void ContextMenu::openIntoHotkeysList(ThreadContext thread_context, CommandPhysical* target_override)
 	{
-		open(thread_context);
+		open(thread_context, target_override);
 		CommandCtxHotkeys* const hotkeys = getHotkeysList();
+		if (!hotkeys)
+			return;
 		hotkeys->open(thread_context);
 		hotkeys->close_context_menu_on_back = true;
 	}

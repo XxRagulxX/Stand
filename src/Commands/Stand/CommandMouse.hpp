@@ -16,10 +16,7 @@ namespace Stand
 
 		void onEnable(Click& click) final
 		{
-			if (click.isAuto())
-			{
-				g_gui.mouse_mode = MouseMode::NAVIGATE;
-			}
+			g_gui.mouse_mode = MouseMode::NAVIGATE;
 		}
 
 		void onDisable(Click& click) final

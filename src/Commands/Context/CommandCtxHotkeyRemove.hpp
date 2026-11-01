@@ -19,7 +19,7 @@ namespace Stand
 		{
 			parent->goBackIfActive(click.thread_context);
 			auto* target = ContextMenu::getTargetPhysical();
-			target->removeHotkey(*((CommandCtxHotkey*)parent)->hotkey);
+			target->removeHotkey(*((CommandCtxHotkey*)parent)->hotkey, click.type);
 			if (target->canCountAsCommandWithHotkeys() && target->hotkeys.empty())
 			{
 				target->removeFromCommandsWithHotkeys();

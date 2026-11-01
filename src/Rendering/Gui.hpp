@@ -120,9 +120,19 @@ namespace Stand
         bool cursor_pos_includes_dividers = false;
         int unlock_recover_state = 0;
 
+        enum HotkeyState : uint8_t
+        {
+            HS_NONE,
+            HS_ADD,
+            HS_CHANGE,
+        };
+        HotkeyState hotkey_state = HS_NONE;
+
         void sfxOpenClose(ThreadContext thread_context, bool opened) {}
-        void addHotkeyToFocusedCommand() {}
-        void changeHotkeyOnFocusedCommand() {}
+        void addHotkeyToFocusedCommand();
+        void changeHotkeyOnFocusedCommand();
+        void abortSetHotkey() noexcept;
+        void onSetHotkeyInput(const Hotkey hotkey);
         void saveTutorialFlags() {}
         void inputStop() {}
         void updateTabsIgnoreContextMenu() {}
@@ -165,7 +175,7 @@ namespace Stand
         void updateTabs(ThreadContext) { updateTabsIgnoreContextMenu(); }
         [[nodiscard]] bool isRootUpdatePendingOrInProgress() const noexcept { return false; }
         [[nodiscard]] bool isInBadBoyTimeout() const noexcept { return false; }
-        [[nodiscard]] bool isAwaitingSetHotkeyInput() const noexcept { return false; }
+        [[nodiscard]] bool isAwaitingSetHotkeyInput() const noexcept { return hotkey_state != HS_NONE; }
 		bool inputUp(ThreadContext thread_context, const bool holding = false) { return false; }
 		bool inputDown(ThreadContext thread_context, const bool holding = false) { return false; }
         [[nodiscard]] bool isPromptActive() const noexcept { return false; }

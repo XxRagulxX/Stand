@@ -69,6 +69,16 @@
 #include "Commands/Widgets/CommandCursorPos.hpp"
 #include "Commands/Widgets/CommandCursorPadding.hpp"
 #include "Commands/Widgets/CommandCursorPosIncludesDividers.hpp"
+#include "Commands/Widgets/CommandControllerKeyPointer.hpp"
+#include "Commands/Widgets/CommandHotkeyModkeyBehaviour.hpp"
+#include "Commands/Widgets/CommandInputScheme.hpp"
+#include "Commands/Context/CommandQuickCtx.hpp"
+#include "Commands/Stand/CommandMouse.hpp"
+#include "Commands/Stand/CommandControllerSupport.hpp"
+#include "Commands/Stand/CommandBackClose.hpp"
+#include "Commands/Stand/CommandKeepCursorRoot.hpp"
+#include "Commands/Stand/CommandKeepCursorBack.hpp"
+#include "Input/ControllerInputConfig.hpp"
 #include "Commands/Widgets/CommandTabs.hpp"
 #include "Commands/Widgets/CommandTabsPos.hpp"
 #include "Commands/Widgets/CommandTabsAlignment.hpp"
@@ -393,8 +403,51 @@ namespace Stand
 		}
 
 		{
-			auto inputList = settings->createChild<CommandList>(LOC("IPT"));
-			input = inputList->createChild<CommandTabInput>();
+			auto input = settings->createChild<CommandList>(LOC("IPT"));
+
+			input->createChild<CommandInputScheme>();
+			input->createChild<CommandQuickCtx>();
+
+			{
+				auto mouse = input->createChild<CommandList>(LOC("MOUSE"));
+				mouse->createChild<CommandMouse>();
+				mouse->createChild<CommandTogglePointer>(&Rendering::Theme::kMouseCursorOnNavigation, LOC("MOUSEFOCUS"));
+			}
+
+			input->createChild<CommandControllerSupport>();
+
+			{
+				auto* const controller_input_scheme = input->createChild<CommandList>(LOC("CTRLLRSCHM"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_open_close_1, LOC("B_OC_1"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_open_close_2, LOC("B_OC_2"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_root_up, LOC("B_RU"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_root_down, LOC("B_RD"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_up, LOC("B_MU"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_down, LOC("B_MD"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_left, LOC("B_ML"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_right, LOC("B_MR"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_click, LOC("B_MC"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_back, LOC("B_MB"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::menu_context, LOC("B_CTX"));
+				controller_input_scheme->createChild<CommandControllerKeyPointer>(&ControllerInputConfig::command_box, LOC("B_CB"), true);
+			}
+
+			input->createChild<CommandTogglePointer>(&Rendering::Theme::kBackReset, LOC("BKRST"), CMDNAMES_OBF("backreset"), LOC("BKRST_H"));
+			input->createChild<CommandBackClose>();
+			input->createChild<CommandTogglePointer>(&Rendering::Theme::kInterruptHoldWrapAround, LOC("WRPINTHLD"));
+
+			{
+				auto keepcursor = input->createChild<CommandList>(LOC("KPCRSR"));
+				keepcursor->createChild<CommandKeepCursorRoot>();
+				keepcursor->createChild<CommandKeepCursorBack>();
+				keepcursor->createChild<CommandTogglePointer>(&Rendering::Theme::kListsKeepCursorReducedHuge, LOC("KPCRSR_L_RDC"));
+			}
+
+			input->createChild<CommandSliderPointer<CommandSlider, int>>(LOC("KSPD"), CMDNAMES("keyrepeatinterval"), LOC("KSPD_H"), &Rendering::Theme::kKeyRepeatInterval, 0, 10000);
+			input->createChild<CommandSliderPointer<CommandSlider, int>>(LOC("KHSPD"), CMDNAMES("keylongrepeatinterval"), LOC("KHSPD_H"), &Rendering::Theme::kKeyLongRepeatInterval, 0, 10000);
+			input->createChild<CommandSliderPointer<CommandSlider, int>>(LOC("TKSPD"), CMDNAMES("tabrepeatinterval"), NOLABEL, &Rendering::Theme::kTabRepeatInterval, 0, 10000);
+			input->createChild<CommandTogglePointer>(&Rendering::Theme::kDisableHotkeys, LOC("DHK"), std::vector<CommandName>{ CMDNAME("disablehotkeys") });
+			input->createChild<CommandHotkeyModkeyBehaviour>();
 		}
 
 		{

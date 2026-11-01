@@ -26,6 +26,7 @@
 
 #include <RenderTargetState.h>
 #include <ResourceUploadBatch.h>
+#include <windowsx.h>
 #include <algorithm>
 #include <climits>
 #include <cmath>
@@ -47,10 +48,8 @@ namespace Stand::Rendering
 		// (MenuGrid's own default_origin only makes sense as an H-space
 		// coordinate - see the comment by kHeaderX/kHeaderY in
 		// MenuGrid.cpp). H2C below converts an H-space coordinate to a
-		// real client pixel for drawing. There's deliberately no C2H
-		// (OS cursor position -> H-space) any more - this menu is
-		// keyboard-only, no mouse, so nothing ever needs to convert a
-		// cursor position at all.
+		// real client pixel for drawing. C2HImpl does the inverse for
+		// mouse input when mouse_mode != NONE.
 		//
 		// hudCorrection lets a non-16:9 client area (ultrawide, or a
 		// window narrower than it is tall) black-bar the extra space
@@ -88,6 +87,18 @@ namespace Stand::Rendering
 			const auto clientSize = GetClientSizeImpl();
 			const auto correction = GetHudCorrection(clientSize);
 			return {(x / kHudWidth) * (clientSize.x - correction.x * 2.f), (y / kHudHeight) * (clientSize.y - correction.y * 2.f)};
+		}
+
+		DirectX::XMFLOAT2 C2HImpl(float clientX, float clientY)
+		{
+			const auto clientSize = GetClientSizeImpl();
+			const auto correction = GetHudCorrection(clientSize);
+			const float scaleX = clientSize.x - correction.x * 2.f;
+			const float scaleY = clientSize.y - correction.y * 2.f;
+			return {
+				(clientX - correction.x) / scaleX * kHudWidth,
+				(clientY - correction.y) / scaleY * kHudHeight
+			};
 		}
 
 		DirectX::XMFLOAT2 PosH2CImpl(float x, float y)
@@ -740,29 +751,75 @@ namespace Stand::Rendering
 			}
 		}
 
-		// Mouse is deliberately NOT wired to the menu at all - reported
-		// bug: with WM_MOUSEMOVE/WM_LBUTTONDOWN/WM_MOUSEWHEEL routed into
-		// MenuGrid (a prior pass here added this as "real mouse support,
-		// same as real Stand has"), the mouse wheel scrolled the content
-		// list any time the cursor happened to sit over it - completely
-		// unintended while just driving/aiming, not trying to touch the
-		// menu at all. Checked what real Stand actually gates its own
-		// input-blocking on rather than guessing: origin/stand-reference's
-		// own src/AntiCheat/NativeTableHooksBuiltin.cpp only ever
-		// suppresses game input while its Commandbox::shouldBlockGameInputs()
-		// is true (i.e. while its free-text command box is actively
-		// capturing keystrokes) - never merely because its menu is open
-		// and being browsed. This project's own MenuGrid::HandleKey()
-		// only ever acts on Up/Down/Left/Right/Enter/Backspace/Ctrl/
-		// Shift (see its own switch statement) - driving/aiming/shooting
-		// keys are never touched by it - so keyboard-only navigation
-		// here doesn't cost anything mouse support was providing beyond
-		// itself; onClick()/onClickEx()/onArrow() are all still there on
-		// every widget for a future pass that wants to re-add real mouse
-		// support with a fix for the wheel-hijack above, just not called
-		// from here any more. See RawInput.cpp's own comment for the
-		// other half of this bug (mouse clicks not reaching the game at
-		// all while the menu was open).
+		// Mouse input is gated on mouse_mode != NONE (i.e. the user has
+		// explicitly enabled "Mouse Support" under Stand > Settings > Input),
+		// matching real Stand's own Renderer.cpp WM_LBUTTONDOWN gate:
+		//   if (g_gui.mouse_mode != MouseMode::NONE && ...)
+		// When NONE, all mouse events fall through untouched so the game
+		// receives them normally - no wheel-hijack, no click-eating.
+		if (g_gui.mouse_mode != MouseMode::NONE && g_gui.opened)
+		{
+			if (msg == WM_MOUSEMOVE)
+			{
+				const auto h = C2HImpl(static_cast<float>(GET_X_LPARAM(lparam)),
+				                       static_cast<float>(GET_Y_LPARAM(lparam)));
+				g_MenuGrid.HandleMouseMove(static_cast<int16_t>(h.x), static_cast<int16_t>(h.y));
+				return;
+			}
+			if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK)
+			{
+				const auto h = C2HImpl(static_cast<float>(GET_X_LPARAM(lparam)),
+				                       static_cast<float>(GET_Y_LPARAM(lparam)));
+				const bool ctrl  = (wparam & MK_CONTROL) != 0;
+				const bool shift = (wparam & MK_SHIFT) != 0;
+				g_MenuGrid.HandleMouseClick(static_cast<int16_t>(h.x), static_cast<int16_t>(h.y),
+				                            ctrl, shift, msg == WM_LBUTTONDBLCLK);
+				return;
+			}
+			if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK)
+			{
+				g_MenuGrid.HandleKey(VK_BACK);
+				return;
+			}
+			if (msg == WM_MOUSEWHEEL)
+			{
+				POINT pt{ GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+				ScreenToClient(hwnd, &pt);
+				const auto h = C2HImpl(static_cast<float>(pt.x), static_cast<float>(pt.y));
+				const int delta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
+				g_MenuGrid.HandleMouseWheel(static_cast<int16_t>(h.x), static_cast<int16_t>(h.y), delta);
+				return;
+			}
+		}
+
+		if (g_gui.isAwaitingSetHotkeyInput())
+		{
+			auto isModifierKey = [](unsigned int vk) {
+				return vk == VK_CONTROL || vk == VK_SHIFT || vk == VK_MENU;
+			};
+			static unsigned int unreleased_hotkey_candidate = 0;
+			if (msg == WM_KEYDOWN)
+			{
+				if (!isModifierKey(static_cast<unsigned int>(wparam)))
+					unreleased_hotkey_candidate = static_cast<unsigned int>(wparam);
+				return;
+			}
+			if (msg == WM_KEYUP)
+			{
+				const auto vk = static_cast<unsigned int>(wparam);
+				if (vk == unreleased_hotkey_candidate)
+				{
+					unreleased_hotkey_candidate = 0;
+					g_gui.onSetHotkeyInput(Hotkey::fromPressing(vk));
+				}
+				else if (unreleased_hotkey_candidate == 0 && isModifierKey(vk))
+				{
+					g_gui.onSetHotkeyInput(Hotkey(vk));
+				}
+				return;
+			}
+			return;
+		}
 
 		// Every other key this system responds to (Up/Down/Left/Right/
 		// Enter/Backspace - see MenuGrid::HandleKey()) - the InputCapture

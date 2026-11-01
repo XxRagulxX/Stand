@@ -3,6 +3,7 @@
 #include "Commands/Widgets/CommandList.hpp"
 #include "Commands/Widgets/CommandListSelect.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
+#include "Menu/ContextMenu.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -85,6 +86,7 @@ namespace Stand
 
 	void Command::openHotkeysList(ThreadContext thread_context)
 	{
+		ContextMenu::openIntoHotkeysList(thread_context, getPhysical());
 	}
 
 	void Command::beGoneRootWriteLocked()

@@ -1,12 +1,19 @@
 #include "Commands/Widgets/CommandSchemeKey.hpp"
 
+#include "Menu/ClickType.hpp"
 #include "Rendering/Gui.hpp"
 
 namespace Stand
 {
 	void CommandSchemeKey::onClick(Click& click)
 	{
+		if (click.type == CLICK_HOTKEY)
+		{
+			click.setNoResponse();
+			return;
+		}
 		openHotkeysList(click.thread_context);
+		click.setNoResponse();
 	}
 
 	const std::vector<Hotkey>& CommandSchemeKey::getDefaultHotkeys() const noexcept

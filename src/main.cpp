@@ -37,7 +37,6 @@
 #include "Commands/Self/Movement/CommandTabSuperFlight.hpp"
 #include "Commands/Self/Appearance/CommandTabTransform.hpp"
 #include "Commands/Stand/CommandTabStand.hpp"
-#include "Commands/Stand/Input/CommandTabInputPresets.hpp"
 
 namespace Stand
 {
@@ -61,7 +60,6 @@ namespace Stand
 		(void)Features::GetCommandTabFloppy();
 		(void)Features::GetCommandTabTransform();
 		Features::GetCommandTabStand().populate();
-		(void)Features::GetCommandTabInputPresets();
 		Settings::Initialize(FileMgr::GetProjectFile("./settings.json"));
 
 		bool rendererInitialized = false;

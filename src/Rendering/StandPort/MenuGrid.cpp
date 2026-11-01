@@ -1,8 +1,11 @@
 #include "Rendering/StandPort/MenuGrid.hpp"
 
+#include "Input/InputStub.hpp"
+#include "Menu/Hotkey.hpp"
 #include "Menu/ContextMenu.hpp"
 #include "Commands/Widgets/CommandPhysical.hpp"
 #include "Rendering/StandPort/GridItemAddressbar.hpp"
+#include "Rendering/StandPort/GridItemText.hpp"
 #include "Rendering/GridItemStandCommand.hpp"
 #include "Rendering/StandPort/GridItemTabsHorizontal.hpp"
 #include "Rendering/StandPort/GridItemTabsVertical.hpp"
@@ -18,6 +21,7 @@
 
 #include "Commands/Widgets/CommandList.hpp"
 #include "Rendering/Gui.hpp"
+#include "Util/lang.hpp"
 
 #include <utility>
 #include <windows.h>
@@ -65,6 +69,30 @@ namespace Stand::Rendering
 
 	void MenuGrid::populate(std::vector<std::unique_ptr<GridItem>>& items_draft)
 	{
+		if (g_gui.isAwaitingSetHotkeyInput())
+		{
+			m_Header = nullptr;
+			m_Sidebar = nullptr;
+			m_SidebarHorizontal = nullptr;
+			if (Theme::kAddressBarVisible)
+			{
+				auto header = std::make_unique<GridItemAddressbar>(Theme::kContentWidth, Theme::kAddressBarHeight, Theme::kAddressBarRootName);
+				m_Header = header.get();
+				items_draft.push_back(std::move(header));
+			}
+			auto* const command = ContextMenu::getTargetPhysical();
+			if (command)
+			{
+				items_draft.emplace_back(std::make_unique<GridItemText>(
+					LANG_FMT("HOTKEY_U", command->getActivationName()),
+					Theme::kContentWidth,
+					static_cast<int16_t>(Theme::kContentItemHeight * 2),
+					2
+				));
+			}
+			return;
+		}
+
 		const auto position = Theme::kTabsPosition;
 		const bool visible = Theme::kTabsVisible;
 		const bool sidebarIsVertical = (position == Theme::TabsPosition::Left || position == Theme::TabsPosition::Right);
@@ -313,19 +341,33 @@ namespace Stand::Rendering
 	{
 		SyncNavigation();
 
-		switch (vkCode)
+		const auto& s = Input::scheme;
+
+		auto matches = [&](const std::vector<Hotkey>& keys) -> bool {
+			for (const auto& h : keys)
+			{
+				const unsigned int hv = h.vk();
+				if (hv == vkCode)
+					return true;
+				if (hv == VK_RSHIFT   && vkCode == VK_SHIFT   && (GetKeyState(VK_RSHIFT)   & 0x8000) != 0)
+					return true;
+				if (hv == VK_RCONTROL && vkCode == VK_CONTROL && (GetKeyState(VK_RCONTROL) & 0x8000) != 0)
+					return true;
+				if (hv == VK_LSHIFT   && vkCode == VK_SHIFT   && (GetKeyState(VK_LSHIFT)   & 0x8000) != 0)
+					return true;
+				if (hv == VK_LCONTROL && vkCode == VK_CONTROL && (GetKeyState(VK_LCONTROL) & 0x8000) != 0)
+					return true;
+			}
+			return false;
+		};
+
+		if (matches(s.key_menu_back))
 		{
-		case VK_BACK:
-		case VK_NUMPAD0:
 			MenuNavigation::Pop();
 			if (!g_gui.m_active_list.empty())
 				g_gui.m_active_list.pop_back();
-			break;
-
-		case VK_UP:
-		case VK_NUMPAD8:
-		case VK_DOWN:
-		case VK_NUMPAD2:
+		}
+		else if (matches(s.key_menu_up) || matches(s.key_menu_down))
 		{
 			if (auto* content = MenuNavigation::Current())
 			{
@@ -335,29 +377,26 @@ namespace Stand::Rendering
 				}
 				else
 				{
-					const int delta = (vkCode == VK_DOWN || vkCode == VK_NUMPAD2) ? 1 : -1;
+					const int delta = matches(s.key_menu_down) ? 1 : -1;
 					auto* focused = MenuFocus::GetFocusedItem(content);
 					if (!focused || !focused->handleNavigation(delta))
 						MenuFocus::MoveContent(content, delta);
 					MenuFocus::SetRegion(MenuFocus::Region::Content);
 				}
 			}
-			break;
 		}
-
-		case VK_CONTROL:
-		case VK_SHIFT:
+		else if (matches(s.key_menu_root_up))
+		{
 			if (SidebarItem())
-			{
-				if (vkCode == VK_CONTROL && (GetKeyState(VK_RCONTROL) & 0x8000) != 0)
-					MoveSidebarActive(1);
-				else if (vkCode == VK_SHIFT && (GetKeyState(VK_RSHIFT) & 0x8000) != 0)
-					MoveSidebarActive(-1);
-			}
-			break;
-
-		case VK_LEFT:
-		case VK_NUMPAD4:
+				MoveSidebarActive(-1);
+		}
+		else if (matches(s.key_menu_root_down))
+		{
+			if (SidebarItem())
+				MoveSidebarActive(1);
+		}
+		else if (matches(s.key_menu_left))
+		{
 			if (MenuFocus::GetRegion() == MenuFocus::Region::Content)
 			{
 				if (auto* content = MenuNavigation::Current())
@@ -365,17 +404,16 @@ namespace Stand::Rendering
 					if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
 					{
 						listGrid->handleKey(vkCode);
-						break;
+						goto scroll;
 					}
 				}
 				auto* focused = MenuNavigation::Current() ? MenuFocus::GetFocusedItem(MenuNavigation::Current()) : nullptr;
 				if (!focused || !focused->onArrow(-1))
 					MenuFocus::SetRegion(MenuFocus::Region::Sidebar);
 			}
-			break;
-
-		case VK_RIGHT:
-		case VK_NUMPAD6:
+		}
+		else if (matches(s.key_menu_right))
+		{
 			if (MenuFocus::GetRegion() == MenuFocus::Region::Sidebar)
 			{
 				MenuFocus::SetRegion(MenuFocus::Region::Content);
@@ -385,15 +423,14 @@ namespace Stand::Rendering
 				if (auto* listGrid = dynamic_cast<GridItemListGrid*>(content))
 				{
 					listGrid->handleKey(vkCode);
-					break;
+					goto scroll;
 				}
 				if (auto* focused = MenuFocus::GetFocusedItem(content))
 					focused->onArrow(1);
 			}
-			break;
-
-		case VK_RETURN:
-		case VK_NUMPAD5:
+		}
+		else if (matches(s.key_menu_click))
+		{
 			if (MenuFocus::GetRegion() == MenuFocus::Region::Sidebar)
 			{
 				MenuFocus::SetRegion(MenuFocus::Region::Content);
@@ -405,9 +442,8 @@ namespace Stand::Rendering
 				else if (auto* focused = MenuFocus::GetFocusedItem(content))
 					focused->activate();
 			}
-			break;
-
-		case 0x4F: // O — open command options for the focused item
+		}
+		else if (matches(s.key_menu_context))
 		{
 			if (MenuFocus::GetRegion() == MenuFocus::Region::Content)
 			{
@@ -437,13 +473,9 @@ namespace Stand::Rendering
 					}
 				}
 			}
-			break;
 		}
 
-		default:
-			break;
-		}
-
+	scroll:
 		if (auto* content = MenuNavigation::Current())
 		{
 			const auto visibleHeight = ContentVisibleHeight(content);
